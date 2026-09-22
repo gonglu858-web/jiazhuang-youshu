@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>装修进度验收 · 交互原型</title>
+  <meta name="description" content="装修团队协作原型：现场进度、问题整改、验收、材料与设计资料。">
+  <meta name="application-name" content="renovation-prototype">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Cpath d='M7 15l9-8 9 8M10 13v12h12V13M13 19l2 2 5-5' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="workspace-header"><a class="brand" href="#home"><span class="brand-mark">⌂</span><span>装修进度验收<small>让每一步装修，看得见</small></span></a><span class="demo-badge">交互原型 · V1</span></header>
+  <div class="workspace">
+    <aside class="demo-panel" aria-label="原型演示控制"><span class="eyebrow">体验你的装修小程序</span><h1>一个项目，<br>每个人心里有数。</h1><p class="lead">切换身份，体验从现场更新到业主确认的完整过程。</p><div id="role-controls"></div><div class="demo-note"><strong>本地演示说明</strong><p>施工与人员均为示例。切换身份可查看同一份数据；操作保存在当前浏览器，上传文件仅在本机预览。</p><p>设计海报及全景来自你提供的样例。</p><p><a class="text-button final-trial-link" href="?trial=final#home" target="_blank" rel="noopener">打开竣工试用副本 ↗</a></p><button class="text-button" data-action="reset">恢复演示数据 ↻</button></div><div class="scenario"><span class="eyebrow">建议从这里体验</span><ol><li>师傅发布一条现场记录</li><li>管家安排问题整改</li><li>师傅提交整改结果</li><li>主业主完成验收</li></ol></div></aside>
+    <div class="phone-shell"><div class="device-bar"><span>9:41</span><span aria-hidden="true">●●● ▰</span></div><details class="mobile-demo" style="padding:0 16px"><summary>本地原型 · 演示说明与重置</summary><p>施工与人员均为示例；切换身份查看同一份数据。文件仅本机预览，刷新后保留文件名。设计海报来自你提供的样例。</p><p><a class="text-button final-trial-link" href="?trial=final#home" target="_blank" rel="noopener">打开竣工试用副本 ↗</a></p><button class="text-button" data-action="reset">恢复演示数据 ↻</button></details><div id="app"></div><nav id="bottom-nav" aria-label="主要导航"></nav></div>
+  </div>
+  <dialog id="dialog"><div id="dialog-content"></div></dialog><div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./ui.mjs"></script>
+</body>
+</html>

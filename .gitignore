@@ -1,0 +1,16 @@
+# Temporary tutorial build output and local agent notes
+/.tutorial-build/
+/.learnings/
+
+# Local dependencies and caches
+**/node_modules/
+**/__pycache__/
+*.pyc
+
+# Local credentials, logs, and operating-system files
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
