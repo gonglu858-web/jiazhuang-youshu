@@ -1,0 +1,7 @@
+<view class="page">
+  <view class="card">
+    <view class="badge">开发中</view>
+    <view class="title">装修进度验收</view>
+    <view class="description">小程序工程已建立。接下来会逐步接入项目成员、施工安排和现场记录。</view>
+  </view>
+</view>

@@ -14,3 +14,6 @@
 *.log
 .DS_Store
 Thumbs.db
+
+# WeChat Developer Tools local preferences
+/miniapp/project.private.config.json
