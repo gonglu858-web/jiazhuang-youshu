@@ -1,7 +1,31 @@
 <view class="page">
-  <view class="card">
-    <view class="badge">开发中</view>
-    <view class="title">装修进度验收</view>
-    <view class="description">小程序工程已建立。接下来会逐步接入项目成员、施工安排和现场记录。</view>
+  <view class="hero">
+    <view class="badge">本地页面试用 · 全部为虚构示例</view>
+    <view class="title gap">装修项目</view>
+    <view class="muted gap">{{today}} · 先选项目，再查看今天的施工</view>
   </view>
+  <view class="notice">云连接测试已通过模拟器与用户手机；以下示例项目资料仅保存在本机，尚未实现微信身份、云端业务保存或跨设备同步。请勿录入真实客户资料。</view>
+  <view class="card connection-card">
+    <view class="subtitle">开发环境连接测试</view>
+    <view class="small muted gap">可再次点击，检查小程序是否能收到 cloud1 测试函数回应。</view>
+    <button class="check-button" bindtap="checkConnection" loading="{{checking}}" disabled="{{checking}}">{{checking ? '正在测试' : '测试云连接'}}</button>
+    <view class="connection-status {{connectionState}}">{{connectionMessage}}</view>
+    <view wx:if="{{serverTime}}" class="server-time">服务器时间（UTC）：{{serverTime}}</view>
+    <view class="small muted gap">此测试只验证连接；项目成员和现场记录仍是本机虚构示例。</view>
+  </view>
+  <view class="card">
+    <view class="subtitle">试用身份</view>
+    <view class="small muted gap">此选择器仅用于模拟不同账号，正式版由微信身份自动识别。</view>
+    <picker id="demo-account" range="{{accounts}}" range-key="label" value="{{accountIndex}}" bindchange="switchAccount"><view class="field gap">{{account.label || '选择示例账号'}} ▾</view></picker>
+  </view>
+  <view wx:if="{{error}}" class="error">{{error}}</view>
+  <view wx:for="{{projects}}" wx:key="id" class="card">
+    <view class="row"><view class="project-name">{{item.name}}</view><view class="badge">{{item.status}}</view></view>
+    <view class="small muted gap">{{item.address}} · 本人：{{item.role}}</view><view class="gap">{{item.stage}}</view>
+    <view class="metric"><view><view class="metric-number">{{item.activeCount}}</view><view class="small muted">今日施工工种</view></view><view><view class="metric-number">{{item.updatedCount}}</view><view class="small muted">今日已更新工种</view></view></view>
+    <button class="primary" data-id="{{item.id}}" bindtap="openProject">进入项目</button>
+  </view>
+  <view wx:if="{{!projects.length && !error}}" class="card empty">此示例账号没有可访问项目。<view class="small gap">可切换管家、师傅或主业主继续试用。</view></view>
+  <view class="small muted">示例日期基于 {{seedDate}} 生成。换天后可重置，重新试用今日安排。</view>
+  <button class="link" bindtap="resetDemo">重置本地虚构示例</button>
 </view>

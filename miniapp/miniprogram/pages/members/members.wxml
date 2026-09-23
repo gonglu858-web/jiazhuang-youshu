@@ -1,0 +1,5 @@
+<view class="page"><view wx:if="{{error}}" class="error">{{error}}</view><block wx:if="{{project}}">
+  <view class="notice">本地虚构成员 · 此页仅供查看，尚未接入微信邀请及身份核对。</view><view class="title">{{project.name}}</view><view class="muted gap">当前成员 {{members.length}} 人</view>
+  <view class="section"><view wx:for="{{members}}" wx:key="userId" class="card"><view class="row"><view class="subtitle">{{item.name}}</view><view class="badge">{{item.roleText}}</view></view><block wx:if="{{item.tradeText}}"><view class="gap">获授权工种：{{item.tradeText}}</view><view class="small muted gap">{{item.workText}}</view></block></view></view>
+  <view class="small muted">加入项目不等于当天安排施工。每日更新按施工安排中的工种计算；其他工种也可查看公开施工进度。</view>
+</block></view>

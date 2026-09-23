@@ -1,6 +1,10 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/project/project",
+    "pages/schedule/schedule",
+    "pages/record/record",
+    "pages/members/members"
   ],
   "window": {
     "navigationBarTitleText": "装修进度验收",

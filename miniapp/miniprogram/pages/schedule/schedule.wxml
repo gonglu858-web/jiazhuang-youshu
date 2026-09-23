@@ -1,0 +1,23 @@
+<view class="page">
+  <view wx:if="{{error}}" class="error">{{error}}</view>
+  <block wx:if="{{project}}">
+    <view class="notice">本地虚构示例 · 保存仅影响本机。每天可分别安排多个工种。</view>
+    <view class="title">{{form.id ? '调整施工安排' : '新增施工安排'}}</view><view class="muted gap">{{project.name}} · {{account.name}}</view>
+    <view class="card section">
+      <view class="label">施工工种</view><picker range="{{trades}}" value="{{tradeIndex}}" bindchange="changeTrade"><view class="field">{{form.trade}} ▾</view></picker>
+      <view class="label">施工阶段</view><picker range="{{stages}}" value="{{stageIndex}}" bindchange="changeStage"><view class="field">{{form.stage}} ▾</view></picker>
+      <view class="label">主要上传责任人</view><picker range="{{workers}}" range-key="name" value="{{workerIndex}}" bindchange="changeWorker"><view class="field">{{workers[workerIndex].name}} ▾</view></picker><view class="small muted gap">同工种其他已加入的师傅也可补充当日记录。</view>
+      <view class="label">施工开始日期</view><picker mode="date" value="{{form.start}}" data-field="start" bindchange="input"><view class="field">{{form.start}} ▾</view></picker>
+      <view class="label">施工结束日期（包含当天）</view><picker mode="date" value="{{form.end}}" data-field="end" bindchange="input"><view class="field">{{form.end}} ▾</view></picker>
+      <view class="label">预计完成日期</view><picker mode="date" value="{{form.expected}}" data-field="expected" bindchange="input"><view class="field">{{form.expected}} ▾</view></picker>
+      <view class="label">本次施工内容</view><textarea class="field" value="{{form.content}}" maxlength="500" placeholder="填写本次安排要做的施工内容" data-field="content" bindinput="input" />
+      <view class="label">休息／停工日期（可选）</view><view class="small muted">范围内默认施工，以下日期不要求每日更新。</view>
+      <picker mode="date" value="{{restDate}}" start="{{form.start}}" end="{{form.end}}" bindchange="chooseRest"><view class="field gap">{{restDate}} ▾</view></picker><button class="secondary" bindtap="addRest">添加为休息／停工日</button>
+      <view class="chips gap"><button wx:for="{{form.restDays}}" wx:key="*this" class="chip" data-date="{{item}}" bindtap="removeRest">{{item}} ×</button></view>
+      <view wx:if="{{form.restDays.length}}" class="small muted gap">点击日期可移除。调整起止日期后，请移除范围外的休息日。</view>
+    </view>
+    <button class="primary" loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到本机</button>
+    <view class="small muted gap">师傅端只读展示施工内容和预计完成日期。已发布记录继续保留当时安排。</view>
+    <view wx:if="{{history.length}}" class="section"><view class="subtitle">之前的安排</view><view wx:for="{{history}}" wx:key="version" class="card gap"><view>第 {{item.version}} 版 · {{item.trade}} · {{item.start}} 至 {{item.end}}</view><view class="small muted">{{item.updatedBy}} · {{item.updatedAt}}</view><view class="prewrap gap">{{item.content}}</view><view class="small gap">预计完成：{{item.expected}}</view></view></view>
+  </block>
+</view>

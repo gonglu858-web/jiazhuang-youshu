@@ -1,33 +1,11 @@
-.page {
-  min-height: 100vh;
-  padding: 48rpx 32rpx;
-  box-sizing: border-box;
-}
-
-.card {
-  padding: 48rpx 36rpx;
-  background: #ffffff;
-  border-radius: 24rpx;
-}
-
-.badge {
-  display: inline-block;
-  padding: 8rpx 20rpx;
-  border-radius: 100rpx;
-  color: #245dd8;
-  background: #eaf1ff;
-  font-size: 24rpx;
-}
-
-.title {
-  margin-top: 36rpx;
-  font-size: 40rpx;
-  font-weight: 600;
-}
-
-.description {
-  margin-top: 20rpx;
-  color: #65748b;
-  font-size: 28rpx;
-  line-height: 1.7;
-}
+.hero { padding: 12rpx 0 28rpx; }
+.project-name { font-size: 34rpx; font-weight: 600; }
+.metric { display: flex; gap: 32rpx; margin-top: 24rpx; }
+.metric-number { font-size: 38rpx; color: #245bd0; font-weight: 600; }
+.connection-card { border-color: #cfe0fb; }
+.check-button { background: #245dd8; color: #ffffff; }
+.check-button[disabled] { background: #dce6f7; color: #65748b; }
+.connection-status { margin-top: 24rpx; font-size: 28rpx; word-break: break-all; }
+.connection-status.success { color: #187440; }
+.connection-status.error { color: #b42318; background: transparent; padding: 0; }
+.server-time { margin-top: 12rpx; font-size: 24rpx; color: #65748b; word-break: break-all; }

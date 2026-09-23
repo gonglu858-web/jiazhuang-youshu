@@ -1,0 +1,8 @@
+{
+  "name": "connection-check",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "description": "Development cloud connectivity check",
+  "dependencies": {}
+}
