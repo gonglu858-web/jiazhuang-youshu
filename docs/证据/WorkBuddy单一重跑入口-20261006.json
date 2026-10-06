@@ -1,0 +1,193 @@
+{
+  "executedAt": "2026-10-06T02:27:12.524Z",
+  "scope": "E1 单一重跑入口：34 条与 18 条各执行一次；仅本地，无云调用",
+  "runId": "20261006-102641-11436",
+  "isolatedParent": "docs/证据重跑",
+  "entrySha256": "b882b0c13b38d55565ebd55ca407617ab6a2fd9e55d9cbbb14dbe479fb7866ea",
+  "rules": {
+    "noInProcessFallback": true,
+    "noRerunAfterAnyFailure": true,
+    "noPollingAsCompletion": true,
+    "nestedRerunForbidden": true,
+    "independentOutputPathPerRun": true,
+    "sealedRequiresAllTargetsCompleted": true
+  },
+  "targets": [
+    {
+      "label": "前轮34条",
+      "sourceScript": "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs",
+      "expect": {
+        "total": 34,
+        "sealed": 34,
+        "unsealed": 0
+      }
+    },
+    {
+      "label": "上轮18条",
+      "sourceScript": "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs",
+      "expect": {
+        "total": 18,
+        "sealed": 18,
+        "unsealed": 0
+      }
+    }
+  ],
+  "preparations": [
+    {
+      "label": "前轮34条",
+      "sourceSha256": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+      "copiedSha256": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+      "byteIdenticalToSource": true,
+      "orchestrationPatched": false,
+      "patchDetail": null
+    },
+    {
+      "label": "上轮18条",
+      "sourceSha256": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+      "copiedSha256": "bb2b8144f6f7a735b39d0ac1bd6ee9eec0a2ae713fcde58a9b11f75b10fe94f3",
+      "byteIdenticalToSource": false,
+      "orchestrationPatched": true,
+      "patchDetail": {
+        "reason": "禁止嵌套重复执行 34 条（该脚本内部会再调用 safeRerun）",
+        "matchedChars": 166,
+        "removed": "const previousRerun = await safeRerun({\n    label: 'previous-R1R5-34',\n    sourceScript: 'docs/证据/WorkBuddy返修R1R5复现-20261005.cjs',\n    outDir: '证据重跑/前轮R1R5-34条'\n  });",
+        "added": "const previousRerun = {\n  label: 'previous-R1R5-34',\n  reran: false,\n  awaited: false,\n  reason: '嵌套重跑已由单一入口 WorkBuddy单一重跑入口-20261006.cjs 统一执行并禁止重复；本副本不再自行重跑。'\n};"
+      }
+    }
+  ],
+  "records": [
+    {
+      "label": "前轮34条",
+      "sourceScript": "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs",
+      "historicalResult": "docs/证据/WorkBuddy返修R1R5复现-20261005.json",
+      "runId": "20261006-102641-11436",
+      "isolatedScript": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修R1R5复现-20261005.cjs",
+      "isolatedResult": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修R1R5复现-20261005.json",
+      "sourceSha256": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+      "copiedSha256": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+      "orchestrationPatched": false,
+      "executionCount": 1,
+      "executionMode": "subprocess-only (no in-process fallback)",
+      "completed": true,
+      "summary": {
+        "total": 34,
+        "sealed": 34,
+        "unsealed": 0,
+        "harnessErrors": 0
+      },
+      "matchesExpectation": true,
+      "expectedSummary": {
+        "total": 34,
+        "sealed": 34,
+        "unsealed": 0
+      },
+      "spawnError": null,
+      "exitStatus": 0,
+      "reason": null,
+      "historicalResultSha256Before": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+      "producedExecutedAt": "2026-10-06T02:26:42.277Z",
+      "producedSha256": "98f43d0f06748e17e92f4bbe026cb469b1b818a57f8a9ad4b7dab9efe2b95706",
+      "historicalResultSha256After": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+      "historicalResultUntouched": true
+    },
+    {
+      "label": "上轮18条",
+      "sourceScript": "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs",
+      "historicalResult": "docs/证据/WorkBuddy返修S1S5复现-20261006.json",
+      "runId": "20261006-102641-11436",
+      "isolatedScript": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修S1S5复现-20261006.cjs",
+      "isolatedResult": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修S1S5复现-20261006.json",
+      "sourceSha256": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+      "copiedSha256": "bb2b8144f6f7a735b39d0ac1bd6ee9eec0a2ae713fcde58a9b11f75b10fe94f3",
+      "orchestrationPatched": true,
+      "executionCount": 1,
+      "executionMode": "subprocess-only (no in-process fallback)",
+      "completed": true,
+      "summary": {
+        "total": 18,
+        "sealed": 18,
+        "unsealed": 0,
+        "harnessErrors": 0
+      },
+      "matchesExpectation": true,
+      "expectedSummary": {
+        "total": 18,
+        "sealed": 18,
+        "unsealed": 0
+      },
+      "spawnError": null,
+      "exitStatus": 0,
+      "reason": null,
+      "historicalResultSha256Before": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57",
+      "producedExecutedAt": "2026-10-06T02:27:12.510Z",
+      "producedSha256": "70aadbe9b6cb0ac35733f9651dcd29ca362cfb3f05dce0a987ad8b2f545af763",
+      "historicalResultSha256After": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57",
+      "historicalResultUntouched": true
+    }
+  ],
+  "completedCount": 2,
+  "incompleteCount": 0,
+  "incompleteLabels": [],
+  "sealed": true,
+  "sealedReason": "两份断言均本次实际完成且符合期望，历史证据未改动。",
+  "fatal": null,
+  "historyRevisionNote": {
+    "topic": "历史证据修订",
+    "statement": "上一轮对 docs/证据/WorkBuddy返修S1S5复现-20261006.cjs 做过修改（把其中的嵌套重跑改为安全重跑），因此「历轮全部历史证据未改」不成立。本轮不再修改任何历史 .cjs/.json，改为新增单一入口。",
+    "knownPriorStates": [
+      {
+        "file": "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs",
+        "bytes": 36977,
+        "sha256Prefix": "d26906f6",
+        "when": "上轮交付时"
+      },
+      {
+        "file": "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs",
+        "bytes": 41117,
+        "sha256Prefix": "09f23d61",
+        "when": "上一轮收尾修改后"
+      }
+    ],
+    "notClaimed": "不凭记忆伪造旧哈希，也不声称可逐字节还原旧版本。",
+    "policyFromNow": "历史证据文件只读；任何新的重跑/复现都写入本次独立路径。"
+  },
+  "historyFileHashesBefore": {
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.cjs": "942e1fb77cb1addfe3566afcc52a725b95afd24ce93293e08c67de4f4ca78e46",
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.json": "3dea0512d6ce785917c9da2c9266d2a307ba6ba2fc4e9f0a065c1e87b594303a",
+    "docs/证据/Codex驱动S1S5复核-20261006.cjs": "db7f446f2cddc7271d5438cb9835911b13e9e9e712856ec7804007b329dff118",
+    "docs/证据/Codex驱动S1S5复核-20261006.json": "d39051303be22a216396bc7cc63e53c9af929c00fe66467a5674f7b7d6ef7cd7",
+    "docs/证据/Codex驱动S3abE1复核-20261006.cjs": "052711af89ff54b1dee6a45801137a3bac03bcb798e327fca5be177caf6645c1",
+    "docs/证据/Codex驱动S3abE1复核-20261006.json": "16610736977931e4691ffdd0b451271526600ca46dfab588eddc9910846950d0",
+    "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+    "docs/证据/WorkBuddy返修R1R5复现-20261005.json": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+    "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+    "docs/证据/WorkBuddy返修S1S5复现-20261006.json": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57",
+    "docs/证据/WorkBuddy安全重跑与S3ab复现-20261006.cjs": "55ec25ba7cd53a2fb65092d693bd0a0f3c73bf96f90cb8029fe3a8765551ba78",
+    "docs/证据/WorkBuddy安全重跑与S3ab复现-20261006.json": "99960d20633adfe55eabc86594ffae766fb7ced571630493afc5579237090891"
+  },
+  "historyFileHashesAfter": {
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.cjs": "942e1fb77cb1addfe3566afcc52a725b95afd24ce93293e08c67de4f4ca78e46",
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.json": "3dea0512d6ce785917c9da2c9266d2a307ba6ba2fc4e9f0a065c1e87b594303a",
+    "docs/证据/Codex驱动S1S5复核-20261006.cjs": "db7f446f2cddc7271d5438cb9835911b13e9e9e712856ec7804007b329dff118",
+    "docs/证据/Codex驱动S1S5复核-20261006.json": "d39051303be22a216396bc7cc63e53c9af929c00fe66467a5674f7b7d6ef7cd7",
+    "docs/证据/Codex驱动S3abE1复核-20261006.cjs": "052711af89ff54b1dee6a45801137a3bac03bcb798e327fca5be177caf6645c1",
+    "docs/证据/Codex驱动S3abE1复核-20261006.json": "16610736977931e4691ffdd0b451271526600ca46dfab588eddc9910846950d0",
+    "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+    "docs/证据/WorkBuddy返修R1R5复现-20261005.json": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+    "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+    "docs/证据/WorkBuddy返修S1S5复现-20261006.json": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57",
+    "docs/证据/WorkBuddy安全重跑与S3ab复现-20261006.cjs": "55ec25ba7cd53a2fb65092d693bd0a0f3c73bf96f90cb8029fe3a8765551ba78",
+    "docs/证据/WorkBuddy安全重跑与S3ab复现-20261006.json": "99960d20633adfe55eabc86594ffae766fb7ced571630493afc5579237090891"
+  },
+  "historyDrift": [],
+  "boundaries": {
+    "installed": false,
+    "cloudCalled": false,
+    "sdkConnected": false,
+    "resourcesCreated": false,
+    "deployed": false,
+    "entryEnabled": false,
+    "cacheCleared": false,
+    "historicalEvidenceModified": false
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-25",
+  "source": "CloudBase MCP queryPermissions getResourcePermission",
+  "environment": "cloud1-d8gcq5ag39d847723",
+  "resourceType": "storage",
+  "resourceId": "636c-cloud1-d8gcq5ag39d847723-1494690189",
+  "permission": "PRIVATE",
+  "securityRule": "",
+  "requestId": "6fe70c57-e98d-41ff-a173-2462237cbb45",
+  "changed": false
+}

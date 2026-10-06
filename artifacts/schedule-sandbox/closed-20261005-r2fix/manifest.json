@@ -1,0 +1,109 @@
+{
+  "schema": "sandbox-closed-candidate/2",
+  "generatedBy": "miniapp/scripts/package-sandbox.cjs",
+  "purpose": "本地关闭候选制品；不是云端部署包，也不是已部署证明。",
+  "sourceDir": "miniapp/cloudfunctions/scheduleSandbox",
+  "packageDir": "artifacts/schedule-sandbox/closed-20261005-r2fix/package",
+  "whitelist": [
+    "index.js",
+    "gate.js",
+    "collection-map.js",
+    "project-guard.js",
+    "package.json",
+    "vendor/service.js",
+    "vendor/schedule-service.js",
+    "vendor/MANIFEST.json"
+  ],
+  "excludedPatterns": [
+    "node_modules",
+    ".env",
+    "project.private.config.json",
+    ".log",
+    "logs",
+    "docs/证据",
+    ".tmp"
+  ],
+  "entryState": {
+    "enabled": false,
+    "dynamicValuesEmpty": true,
+    "allowedUserIdsEmpty": true,
+    "note": "仅静态解析源入口源码；实际部署后仍须回读服务端状态，不得凭本字段认定已关闭。"
+  },
+  "baseline": {
+    "checked": true,
+    "skipped": false,
+    "fileCount": 110,
+    "matched": 8
+  },
+  "resourceCandidate": {
+    "checked": true,
+    "skipped": false,
+    "collections": 11,
+    "indexes": 13,
+    "status": "候选清单，未创建，平台适配未验证"
+  },
+  "packageVerification": {
+    "perFileReadBack": true,
+    "byteIdenticalToSource": true,
+    "extraFiles": [],
+    "manifestSelfHash": "omitted-by-design"
+  },
+  "limitations": [
+    "本包只是本地候选制品：运行时、依赖安装方式与平台部署配置尚未审查或回读。",
+    "本地文件哈希不是云端编译后包的哈希。",
+    "prepare / execute 将来生成时须各自重新记录哈希，不用关闭包哈希代替。",
+    "服务器实际关闭状态须部署后回读，不得凭包名或本 manifest 认定。",
+    "合成依赖下的关闭态验证不等于实际 wx-server-sdk 或平台事务已验证。",
+    "写入阶段若发生真实 I/O 故障，包可能只写入部分文件即中止；此时以 manifest 是否存在判断完整性。"
+  ],
+  "files": [
+    {
+      "path": "index.js",
+      "bytes": 7752,
+      "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/index.js"
+    },
+    {
+      "path": "gate.js",
+      "bytes": 11484,
+      "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/gate.js"
+    },
+    {
+      "path": "collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js"
+    },
+    {
+      "path": "project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/project-guard.js"
+    },
+    {
+      "path": "package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/package.json"
+    },
+    {
+      "path": "vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js"
+    },
+    {
+      "path": "vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js"
+    },
+    {
+      "path": "vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json"
+    }
+  ]
+}

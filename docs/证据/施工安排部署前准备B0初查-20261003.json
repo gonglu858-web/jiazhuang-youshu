@@ -1,0 +1,771 @@
+{
+  "schemaVersion": 1,
+  "observedOn": "2026-10-03",
+  "observationClosedAt": "2026-10-03T14:46:09Z",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "appId": "wxfb4db1615ac15531",
+  "status": "PARTIAL_OBSERVATION",
+  "complete": false,
+  "cloudWritesPerformed": false,
+  "functionInvocationsPerformed": false,
+  "cloudPackage": {
+    "functionName": "memberAccess",
+    "remoteReportedCodeSha256": "af337224c177c8c5ea9327e437c22d14fea4e81d4f0cc1b3b2ee8a15442f5163",
+    "requestId": "accf4e62-8c18-4b51-b80d-663c4430fa0f",
+    "source": "queryFunctions.getFunctionDownloadUrl: 平台返回的 CodeSha256；本轮未重新下载 ZIP，未存签名下载链接",
+    "matchesPreviouslyRecordedBackupSha256": true
+  },
+  "functionDetail": {
+    "runtime": "Nodejs16.13",
+    "timeoutSeconds": 3,
+    "memoryMB": 256,
+    "modTime": "2026-09-25 21:40:10",
+    "namespace": "cloud1-d8gcq5ag39d847723",
+    "requestId": "07327669-f266-4c10-a22e-5adf87b2a944"
+  },
+  "collections": {
+    "success": true,
+    "requestId": "faa4f253-f696-4e97-b0a1-44aed5cfb2f6",
+    "collections": [
+      {
+        "TableName": "app_admins",
+        "Count": 1,
+        "Size": 546,
+        "IndexCount": 2,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "audit_events",
+        "Count": 53,
+        "Size": 20085,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "invitations",
+        "Count": 8,
+        "Size": 4739,
+        "IndexCount": 4,
+        "IndexSize": 147456
+      },
+      {
+        "TableName": "project_members",
+        "Count": 8,
+        "Size": 2244,
+        "IndexCount": 4,
+        "IndexSize": 147456
+      },
+      {
+        "TableName": "projects",
+        "Count": 3,
+        "Size": 889,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "relation_data_depart",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 6,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "sys_department",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      },
+      {
+        "TableName": "sys_user",
+        "Count": 1,
+        "Size": 394,
+        "IndexCount": 2,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "users",
+        "Count": 4,
+        "Size": 1293,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "yf_diag_visibility",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      }
+    ],
+    "pager": {
+      "Offset": 0,
+      "Limit": 100,
+      "Total": 10
+    },
+    "message": "获取 NoSQL 数据库集合列表成功"
+  },
+  "indexes": {
+    "projects": {
+      "success": true,
+      "requestId": "180db4a8-eaef-49c2-b624-55eec0b5b3ff",
+      "indexNum": 3,
+      "indexes": [
+        {
+          "Name": "_openid_1",
+          "Accesses": {
+            "Ops": 0,
+            "Since": "2026-09-24T23:42:56.371+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "scope_1_status_1",
+          "Accesses": {
+            "Ops": 28,
+            "Since": "2026-09-25T16:22:52.258+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "scope",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_id_",
+          "Accesses": {
+            "Ops": 524,
+            "Since": "2026-09-24T23:42:56.365+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        }
+      ],
+      "message": "获取索引列表成功",
+      "collection": "projects",
+      "collectionName": "projects"
+    },
+    "project_members": {
+      "success": true,
+      "requestId": "59e4aa42-f922-43d3-9b8d-29ab9cbaba48",
+      "indexNum": 4,
+      "indexes": [
+        {
+          "Name": "projectId_1_status_1",
+          "Accesses": {
+            "Ops": 139,
+            "Since": "2026-09-25T16:24:43.16+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_openid_1",
+          "Accesses": {
+            "Ops": 0,
+            "Since": "2026-09-24T23:43:13.66+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_id_",
+          "Accesses": {
+            "Ops": 306,
+            "Since": "2026-09-24T23:43:13.656+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "userId_1_status_1",
+          "Accesses": {
+            "Ops": 247,
+            "Since": "2026-09-25T16:24:43.149+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "userId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        }
+      ],
+      "message": "获取索引列表成功",
+      "collection": "project_members",
+      "collectionName": "project_members"
+    },
+    "users": {
+      "success": true,
+      "requestId": "441682a8-582f-4a97-b668-cf9ecea4c36a",
+      "indexNum": 3,
+      "indexes": [
+        {
+          "Name": "_id_",
+          "Accesses": {
+            "Ops": 714,
+            "Since": "2026-09-24T23:41:58.37+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "bindingCodeHash_1",
+          "Accesses": {
+            "Ops": 24,
+            "Since": "2026-09-25T16:18:11.842+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "bindingCodeHash",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_openid_1",
+          "Accesses": {
+            "Ops": 0,
+            "Since": "2026-09-24T23:41:58.375+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        }
+      ],
+      "message": "获取索引列表成功",
+      "collection": "users",
+      "collectionName": "users"
+    },
+    "app_admins": {
+      "success": true,
+      "requestId": "0656cfa5-7e81-4bf9-8074-73e3419f4015",
+      "indexNum": 2,
+      "indexes": [
+        {
+          "Name": "_openid_1",
+          "Accesses": {
+            "Ops": 0,
+            "Since": "2026-09-24T23:42:38.082+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "Size": 24576,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_id_",
+          "Accesses": {
+            "Ops": 711,
+            "Since": "2026-09-24T23:42:38.077+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "Size": 20480,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        }
+      ],
+      "message": "获取索引列表成功",
+      "collection": "app_admins",
+      "collectionName": "app_admins"
+    },
+    "invitations": {
+      "success": true,
+      "requestId": "13b9f81f-0c30-4c8a-8685-4988444693e9",
+      "indexNum": 4,
+      "indexes": [
+        {
+          "Name": "_openid_1",
+          "Accesses": {
+            "Ops": 0,
+            "Since": "2026-09-24T23:43:28.875+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_id_",
+          "Accesses": {
+            "Ops": 41,
+            "Since": "2026-09-24T23:43:28.871+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "tokenHash_1",
+          "Accesses": {
+            "Ops": 9,
+            "Since": "2026-09-25T16:27:00.073+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "tokenHash",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": true,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "projectId_1_status_1",
+          "Accesses": {
+            "Ops": 73,
+            "Since": "2026-09-25T16:27:00.084+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        }
+      ],
+      "message": "获取索引列表成功",
+      "collection": "invitations",
+      "collectionName": "invitations"
+    },
+    "audit_events": {
+      "success": true,
+      "requestId": "bee3bb5a-efb4-415a-8c8c-0b12f3bedf75",
+      "indexNum": 3,
+      "indexes": [
+        {
+          "Name": "projectId_1_createdAt_-1",
+          "Accesses": {
+            "Ops": 4,
+            "Since": "2026-09-25T16:28:15.219+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "createdAt",
+              "Direction": "-1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_openid_1",
+          "Accesses": {
+            "Ops": 0,
+            "Since": "2026-09-24T23:43:55.269+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        },
+        {
+          "Name": "_id_",
+          "Accesses": {
+            "Ops": 41,
+            "Since": "2026-09-24T23:43:55.264+08:00"
+          },
+          "Keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "Size": 36864,
+          "Unique": false,
+          "Sparse": false,
+          "PartialFilterExpression": ""
+        }
+      ],
+      "message": "获取索引列表成功",
+      "collection": "audit_events",
+      "collectionName": "audit_events"
+    }
+  },
+  "functions": {
+    "action": "listFunctions",
+    "functions": [
+      {
+        "AddTime": "2026-09-25 16:30:54",
+        "AsyncRunEnable": "FALSE",
+        "DeployMode": "code",
+        "Description": "",
+        "FunctionId": "lam-be9v0rsd",
+        "FunctionName": "memberAccess",
+        "ModTime": "2026-09-25 21:40:10",
+        "Namespace": "cloud1-d8gcq5ag39d847723",
+        "ProtocolType": "",
+        "ReservedConcurrencyMem": 0,
+        "Runtime": "Nodejs16.13",
+        "Status": "Active",
+        "StatusDesc": "",
+        "StatusReasons": null,
+        "Tags": null,
+        "TotalProvisionedConcurrencyMem": 0,
+        "TraceEnable": "FALSE",
+        "Type": "Event",
+        "Versions": null
+      },
+      {
+        "AddTime": "2026-09-23 18:43:57",
+        "AsyncRunEnable": "FALSE",
+        "DeployMode": "code",
+        "Description": "",
+        "FunctionId": "lam-5vqh4wa3",
+        "FunctionName": "connectionCheck",
+        "ModTime": "2026-09-23 18:49:23",
+        "Namespace": "cloud1-d8gcq5ag39d847723",
+        "ProtocolType": "",
+        "ReservedConcurrencyMem": 0,
+        "Runtime": "Nodejs16.13",
+        "Status": "Active",
+        "StatusDesc": "",
+        "StatusReasons": null,
+        "Tags": null,
+        "TotalProvisionedConcurrencyMem": 0,
+        "TraceEnable": "FALSE",
+        "Type": "Event",
+        "Versions": null
+      }
+    ],
+    "totalCount": 2,
+    "requestId": "2f4edb23-0d43-41c1-871e-8661a6b8d5eb",
+    "raw": {
+      "Functions": [
+        {
+          "AddTime": "2026-09-25 16:30:54",
+          "AsyncRunEnable": "FALSE",
+          "DeployMode": "code",
+          "Description": "",
+          "FunctionId": "lam-be9v0rsd",
+          "FunctionName": "memberAccess",
+          "ModTime": "2026-09-25 21:40:10",
+          "Namespace": "cloud1-d8gcq5ag39d847723",
+          "ProtocolType": "",
+          "ReservedConcurrencyMem": 0,
+          "Runtime": "Nodejs16.13",
+          "Status": "Active",
+          "StatusDesc": "",
+          "StatusReasons": null,
+          "Tags": null,
+          "TotalProvisionedConcurrencyMem": 0,
+          "TraceEnable": "FALSE",
+          "Type": "Event",
+          "Versions": null
+        },
+        {
+          "AddTime": "2026-09-23 18:43:57",
+          "AsyncRunEnable": "FALSE",
+          "DeployMode": "code",
+          "Description": "",
+          "FunctionId": "lam-5vqh4wa3",
+          "FunctionName": "connectionCheck",
+          "ModTime": "2026-09-23 18:49:23",
+          "Namespace": "cloud1-d8gcq5ag39d847723",
+          "ProtocolType": "",
+          "ReservedConcurrencyMem": 0,
+          "Runtime": "Nodejs16.13",
+          "Status": "Active",
+          "StatusDesc": "",
+          "StatusReasons": null,
+          "Tags": null,
+          "TotalProvisionedConcurrencyMem": 0,
+          "TraceEnable": "FALSE",
+          "Type": "Event",
+          "Versions": null
+        }
+      ],
+      "RequestId": "2f4edb23-0d43-41c1-871e-8661a6b8d5eb",
+      "TotalCount": 2
+    }
+  },
+  "versions": {
+    "action": "listVersionByFunction",
+    "functionName": "memberAccess",
+    "functionVersions": [
+      "$LATEST"
+    ],
+    "versions": [
+      {
+        "Version": "$LATEST",
+        "Description": "",
+        "AddTime": "2026-09-25 16:30:54",
+        "ModTime": "2026-09-25 21:40:10",
+        "Status": "Active"
+      }
+    ],
+    "totalCount": 1,
+    "requestId": "e63ed5cb-bb1f-4f98-8a83-0c3b4d887be2",
+    "raw": {
+      "Versions": [
+        {
+          "Version": "$LATEST",
+          "Description": "",
+          "AddTime": "2026-09-25 16:30:54",
+          "ModTime": "2026-09-25 21:40:10",
+          "Status": "Active"
+        }
+      ],
+      "FunctionVersion": [
+        "$LATEST"
+      ],
+      "TotalCount": 1,
+      "RequestId": "e63ed5cb-bb1f-4f98-8a83-0c3b4d887be2"
+    }
+  },
+  "alias": {
+    "action": "getFunctionAlias",
+    "functionName": "memberAccess",
+    "aliasName": "$DEFAULT",
+    "functionVersion": "$LATEST",
+    "routingConfig": {
+      "AdditionalVersionWeights": [],
+      "AddtionVersionMatchs": [],
+      "AdditionVersionMatches": []
+    },
+    "description": "",
+    "addTime": "2026-09-25 16:30:54",
+    "modTime": "2026-09-25 16:30:54",
+    "requestId": "9d7fd2f5-d4fd-42e2-b441-3f9058460353",
+    "raw": {
+      "ModTime": "2026-09-25 16:30:54",
+      "AddTime": "2026-09-25 16:30:54",
+      "Name": "$DEFAULT",
+      "Description": "",
+      "FunctionVersion": "$LATEST",
+      "RoutingConfig": {
+        "AdditionalVersionWeights": [],
+        "AddtionVersionMatchs": [],
+        "AdditionVersionMatches": []
+      },
+      "RequestId": "9d7fd2f5-d4fd-42e2-b441-3f9058460353"
+    }
+  },
+  "permissions": {
+    "action": "listResourcePermissions",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "resourceType": "noSqlDatabase",
+    "permissions": [
+      {
+        "Resource": "projects",
+        "Permission": "ADMINONLY",
+        "ResourceType": "collection",
+        "SecurityRule": ""
+      },
+      {
+        "Resource": "project_members",
+        "Permission": "ADMINONLY",
+        "ResourceType": "collection",
+        "SecurityRule": ""
+      },
+      {
+        "Resource": "users",
+        "Permission": "ADMINONLY",
+        "ResourceType": "collection",
+        "SecurityRule": ""
+      },
+      {
+        "Resource": "app_admins",
+        "Permission": "ADMINONLY",
+        "ResourceType": "collection",
+        "SecurityRule": ""
+      },
+      {
+        "Resource": "invitations",
+        "Permission": "ADMINONLY",
+        "ResourceType": "collection",
+        "SecurityRule": ""
+      },
+      {
+        "Resource": "audit_events",
+        "Permission": "ADMINONLY",
+        "ResourceType": "collection",
+        "SecurityRule": ""
+      }
+    ],
+    "resourceHints": [],
+    "total": 6,
+    "raw": {
+      "RequestId": "e1e0c483-9498-4484-aedf-aae6b6d41670",
+      "Data": {
+        "TotalCount": 6,
+        "PermissionList": [
+          {
+            "Resource": "projects",
+            "Permission": "ADMINONLY",
+            "ResourceType": "collection",
+            "SecurityRule": ""
+          },
+          {
+            "Resource": "project_members",
+            "Permission": "ADMINONLY",
+            "ResourceType": "collection",
+            "SecurityRule": ""
+          },
+          {
+            "Resource": "users",
+            "Permission": "ADMINONLY",
+            "ResourceType": "collection",
+            "SecurityRule": ""
+          },
+          {
+            "Resource": "app_admins",
+            "Permission": "ADMINONLY",
+            "ResourceType": "collection",
+            "SecurityRule": ""
+          },
+          {
+            "Resource": "invitations",
+            "Permission": "ADMINONLY",
+            "ResourceType": "collection",
+            "SecurityRule": ""
+          },
+          {
+            "Resource": "audit_events",
+            "Permission": "ADMINONLY",
+            "ResourceType": "collection",
+            "SecurityRule": ""
+          }
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "仅元数据/索引/权限/代码指纹观测，未读取 A/B/C 项目及成员记录。",
+    "集合列表完整：Offset 0 / Limit 100 / Total 10；安排相关集合未列出。缺集合不得伪装成查询成功的 EMPTY。",
+    "记录总数为平台元数据，非项目级一致快照，不证明历史从未有数据。",
+    "尚未完成最终查询形状逐条与索引映射，不能宣称不需新增索引。",
+    "尚未证实外部管理端/其它写入者不存在；ADMINONLY 不限制所有管理端写入。",
+    "真实平台事务/SDK 形状/耗时和大小限制未验证。",
+    "本地后续只读命令被自动审批服务额度不足阻断；未绕过，未重新核验本轮源码指纹或重跑测试。"
+  ],
+  "next": "补齐只读记录级核对与写入者清单后，再形成具体干跑变更包。"
+}

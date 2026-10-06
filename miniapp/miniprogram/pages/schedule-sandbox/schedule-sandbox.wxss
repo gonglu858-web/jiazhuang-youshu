@@ -1,0 +1,6 @@
+/* pages/schedule-sandbox/schedule-sandbox.wxss */
+/* 本页样式沿用全局 app.wxss 的 page/card/field/btn 定义，此处仅补独立测试标识。 */
+.sandbox-banner {
+  border-left: 4px solid #b26a00;
+  padding-left: 8px;
+}

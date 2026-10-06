@@ -1,0 +1,7 @@
+.number { color: #245bc7; font-size: 38rpx; font-weight: 600; letter-spacing: 2rpx; }
+.member-row { border-top: 1rpx solid #e9edf3; padding: 18rpx 0; }
+.project-select-button { text-align: left; height: auto; line-height: 1.4; }
+.project-select-name { display: block; }
+.project-select-id { margin-top: 6rpx; }
+.project-id { display: block; }
+.id-text { word-break: break-all; font-family: ui-monospace, monospace; font-size: 22rpx; color: #5e6c80; }

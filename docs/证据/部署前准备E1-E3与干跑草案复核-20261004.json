@@ -1,0 +1,45 @@
+{
+  "recordedAt": "2026-10-04T02:26:20.2992526Z",
+  "source": "docs/WorkBuddy方案-施工安排部署前准备-20261003.md",
+  "sourceSha256": "c2f0be6fda723507b3d7670fa4a691c360299789c9ad8522313dc319c5f773c5",
+  "sourceLinesGetContent": 1047,
+  "comparedBaseline": "docs/证据/施工安排事务兼容V1-V3验收-20261003.json",
+  "comparedFileCount": 87,
+  "mismatches": [],
+  "designCases": 53,
+  "designCasesExecuted": false,
+  "checklistCounts": {
+    "B0": 9,
+    "S": 7,
+    "R": 12
+  },
+  "testsRerun": false,
+  "cloudOperationsPerformed": false,
+  "diffCheckPassed": true,
+  "verdict": "E1_E2_E3_closed_section14_draft_requires_F1_F2_F3",
+  "entry": {
+    "enabled": false,
+    "frozenStructureVerified": "unchanged baseline hash and source inspection",
+    "allowedProjectIds": []
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "section": "14.2",
+      "priority": 1,
+      "issue": "Schema backfill incorrectly requires all three fields still missing after maintenance entry"
+    },
+    {
+      "id": "F2",
+      "section": "14.2",
+      "priority": 1,
+      "issue": "Missing negation in historical generation condition; use real anchor field names"
+    },
+    {
+      "id": "F3",
+      "section": "14.3",
+      "priority": 2,
+      "issue": "Shared deployment impact overstates blocked routes and requires unproven simultaneous migration/no rollback"
+    }
+  ]
+}

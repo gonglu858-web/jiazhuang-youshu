@@ -1,0 +1,148 @@
+{
+  "observedAtUtc": "2026-10-06T02:58:51.243Z",
+  "scope": "SDK inventory and environment billing read-only preparation; no initialization/install/deployment",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "appId": "wxfb4db1615ac15531",
+  "region": "ap-shanghai",
+  "backend": {
+    "postgresql": false,
+    "nosql": true,
+    "mysql": false
+  },
+  "billing": {
+    "source": "queryEnv info",
+    "requestId": "982e1e01-3371-46ca-9e60-3d267f0ae331",
+    "packageId": "baas_personal",
+    "packageName": "个人版",
+    "payMode": "PREPAYMENT",
+    "expireTimeAsReturned": "2027-04-04 23:59:59",
+    "isAutoRenew": true,
+    "enableOverrun": false,
+    "usageStatus": "normal"
+  },
+  "usage": {
+    "source": "queryEnv usage",
+    "start": "2026-10-04",
+    "end": "2026-11-04",
+    "accountCircle": {
+      "StartTime": "2026-10-04 20:33:33",
+      "EndTime": "2026-11-04 23:59:59",
+      "HistoryTime": [],
+      "RequestId": "14ba4332-bda5-41b3-90b2-5c93b763fc47"
+    },
+    "modules": [
+      {
+        "module": "FLEXDB",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "TDSQL",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "SCF",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "EKS",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "COS",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "AI",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "HOSTING",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "Auth",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "APIInvocation",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "HTTPInvocation",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "VM",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "Workflow",
+        "credits": 0,
+        "report": 0
+      },
+      {
+        "module": "Other",
+        "credits": 0,
+        "report": 0
+      }
+    ],
+    "remainingQuotaConfirmed": false,
+    "note": "Resource credits response cannot establish remaining quota for the user's quota-style personal plan."
+  },
+  "localInventory": {
+    "sdkRoot": "C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules",
+    "packages": {
+      "wx-server-sdk": "3.0.1",
+      "@cloudbase/node-sdk": "2.10.0",
+      "@cloudbase/database": "1.4.1"
+    },
+    "managerNodeFoundInSearchedRoots": false,
+    "jsSdkFoundInSearchedRoots": false,
+    "searchScope": [
+      "workspace root/miniapp node_modules",
+      "known deployed SDK directory",
+      "four AppData/Local/npm-cache/_npx directories",
+      "agent-reach Node runtime node_modules"
+    ],
+    "cliOnPath": {
+      "node": true,
+      "npm": true,
+      "tcb": false,
+      "cloudbase": false
+    },
+    "credentialRead": false,
+    "realSdkNetworkCalled": false
+  },
+  "offlineShape": {
+    "script": "docs/证据/Codex首次初始化SDK离线形状核对-20261006.cjs",
+    "observedAt": "2026-10-06T02:58:13.199Z",
+    "passed": 8,
+    "networkAttempts": 0,
+    "transport": "synthetic Db.reqClass; real installed SDK parameter and return conversion only",
+    "findings": [
+      "actual loaded transaction implementation is transaction/index.js, not sibling legacy transaction.js",
+      "transaction get success-empty -> data:null; ordinary get success-empty -> data:[]",
+      "set rejects _id before transport; use bare fields without data wrapper",
+      "get may return code-bearing errors; must not interpret absent data as missing document",
+      "commit errors throw; rollback uses abortTransaction"
+    ],
+    "platformAtomicityVerified": false
+  },
+  "remaining": [
+    "Production credential provider and verified management caller not connected",
+    "Approved target identity and sandbox user record not established by this turn",
+    "Current remaining quota and bill values unavailable from queried usage endpoint",
+    "No platform transaction/latency/SDK signature verification"
+  ]
+}

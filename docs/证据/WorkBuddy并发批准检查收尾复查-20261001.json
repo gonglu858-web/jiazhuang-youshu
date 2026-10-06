@@ -1,0 +1,112 @@
+{
+  "recordedAt": "2026-10-01T05:30:38.070189+00:00",
+  "status": "passed",
+  "scope": "WorkBuddy并发批准配置本地收尾",
+  "configuration": {
+    "file": "miniapp/miniprogram/config/valid-concurrent-approval-proof.js",
+    "sha256": "1fa6a52731da4b9184dd87ee125ca7efb9cb9aa6e784df6a7627d45b34b656eb",
+    "enabled": false,
+    "executionCredentialStringsEmpty": true,
+    "tradesEmpty": true,
+    "frozenRootBindingAndTrades": true,
+    "retainedConstants": {
+      "role": "师傅",
+      "status": "requested"
+    },
+    "note": "上述两项为固定校验值；并非所有字符串字面量均为空。禁用且标识、摘要、时限等执行凭据为空，符合关闭目的，无须为此返工。"
+  },
+  "independentTests": {
+    "command": "node --test miniapp/tests/concurrent-approval-probe.test.cjs miniapp/tests/access-page-probe.test.cjs",
+    "total": 39,
+    "passed": 39,
+    "failed": 0,
+    "skipped": 0
+  },
+  "gitDiffCheckPassed": true,
+  "fileComparisons": [
+    {
+      "file": "miniapp/miniprogram/utils/concurrent-approval-probe.js",
+      "baseline": "WorkBuddy并发批准检查复审通过-20261001.json",
+      "sha256": "8d1d776bc5d438e2e71ca38f71c4722ab302e889311dd55c12615a38a92588f3",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/tests/concurrent-approval-probe.test.cjs",
+      "baseline": "WorkBuddy并发批准检查复审通过-20261001.json",
+      "sha256": "adcafc52b8bb320f7afbe62610719bb345eb71cec6befdd40ae5a0a7a06c9018",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/tests/access-page-probe.test.cjs",
+      "baseline": "WorkBuddy并发批准检查复审通过-20261001.json",
+      "sha256": "c86c5bfbc192ee76885fd07e0b89e6e5b4c5c77af787a861414e9959bafa9121",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/access/access.js",
+      "baseline": "WorkBuddy并发批准检查复审通过-20261001.json",
+      "sha256": "17b47bc5f7be6949f8b086b185b7930b0dcb48c215ca60aa8dd96cbec60a807b",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/access/access.wxml",
+      "baseline": "WorkBuddy并发批准检查复审通过-20261001.json",
+      "sha256": "d6f44e2a0e621330bddc9c12ab762cd31e7df284e201138e73c768aa524ac165",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/utils/concurrent-approval-probe.js",
+      "baseline": "并发批准配置及执行前复核-20261001.json",
+      "sha256": "8d1d776bc5d438e2e71ca38f71c4722ab302e889311dd55c12615a38a92588f3",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/access/access.js",
+      "baseline": "并发批准配置及执行前复核-20261001.json",
+      "sha256": "17b47bc5f7be6949f8b086b185b7930b0dcb48c215ca60aa8dd96cbec60a807b",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/access/access.wxml",
+      "baseline": "并发批准配置及执行前复核-20261001.json",
+      "sha256": "d6f44e2a0e621330bddc9c12ab762cd31e7df284e201138e73c768aa524ac165",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/config/valid-binding-proof.js",
+      "baseline": "并发批准配置及执行前复核-20261001.json",
+      "sha256": "015dbeb914977390f3b2ba24c9286709aa0bcdf42cea4ea045c0378ebb4e6910",
+      "unchanged": true
+    },
+    {
+      "file": "miniapp/miniprogram/config/valid-approval-proof.js",
+      "baseline": "并发批准配置及执行前复核-20261001.json",
+      "sha256": "ea3438f32aa32a8f028b1df027488c8be818c208deaeeca32d6bb3ccae53aab9",
+      "unchanged": true
+    }
+  ],
+  "historicalPhoneReportHashUnchanged": true,
+  "phoneAndCloudEvidencePreserved": true,
+  "cloudCallsByCodexThisReview": 0,
+  "codeChangesByCodex": false,
+  "workBuddyReported": {
+    "js": 23,
+    "json": 8,
+    "wxml": 7,
+    "wxss": 8,
+    "compiled": true,
+    "noCloudWrites": true,
+    "phoneStorageUntouched": true
+  },
+  "limitations": [
+    "指纹核对范围为列明的探针、页面、两组测试和两份旧配置；未有上一轮整仓指纹，不能据此证明仓库任意其他文件均未变。",
+    "无法从本地文件确认手机缓存状态；未删除缓存和未调用云端为WorkBuddy交付声明，本次不要求手机重做。",
+    "本轮没有重新查询云端，沿用已存档的并发事后证据；没有重新编译未修改的模板。"
+  ],
+  "remainingAcceptance": [
+    "纯家庭成员独立微信真机",
+    "不同主业主申请真实并发唯一性",
+    "临时测试入口统一版本隔离"
+  ],
+  "nextTask": "../WorkBuddy任务-临时测试入口版本隔离-20261001.md"
+}

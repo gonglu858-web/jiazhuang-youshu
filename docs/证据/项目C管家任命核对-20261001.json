@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-01",
+  "source": "用户报告C项目管家已指定；Codex管理端只读核对",
+  "appId": "wxfb4db1615ac15531",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+  "projectRequestId": "3eb35ebd-385b-4677-bedf-27c76b8388f3",
+  "membersRequestId": "fce83edb-353a-45e0-af5f-e01e558b1d13",
+  "invitationsRequestId": "be4db56b-38df-459b-9d02-025f1d38c8b4",
+  "invitationCount": 0,
+  "project": {"name":"虚构测试 · 装修项目","status":"active","scope":"identity-test","version":1,"primaryOwnerUserId":null},
+  "members": [
+    {"id":"m_c05c3e21ed3870ebae794754e43fe93e55283371","userId":"u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4","roles":["负责人"],"trades":[],"status":"active","version":1,"joinedAt":"2026-10-01T11:47:01.448Z"},
+    {"id":"m_dc1be40cda2f9519cf9ca25cb1df74e443c903da","userId":"u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d","roles":["管家"],"trades":[],"status":"active","version":1,"joinedAt":"2026-10-01T12:07:51.480Z"}
+  ],
+  "cloudWritesByCodex": 0,
+  "limitation": "仅确认准备阶段成员与项目状态，非完整执行基线；尚未核对候选编号或全量审计",
+  "next": "管家在C创建两份不同主业主邀请，989a74/f182f4分别申请，均待核对即停；不普通批准，之后才取新绑定编号"
+}

@@ -1,0 +1,328 @@
+{
+  "observedAtUtc": "2026-10-05 03:56:48 UTC",
+  "clientDate": "2026-10-05",
+  "scope": "read-only metadata; no business calls or data writes",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "appId": "wxfb4db1615ac15531",
+  "region": "ap-shanghai",
+  "backend": {
+    "postgresql": false,
+    "nosql": true,
+    "mysql": false
+  },
+  "billing": {
+    "source": "queryEnv info",
+    "requestId": "bc43e060-e26f-4c23-b008-a7d404af125e",
+    "packageId": "baas_personal",
+    "packageName": "个人版",
+    "payMode": "PREPAYMENT",
+    "isAutoRenew": true,
+    "enableOverrun": false,
+    "isAlwaysFree": false,
+    "expireTimeAsReturned": "2027-04-04 23:59:59",
+    "updatedAtAsReturned": "2026-10-04 20:33:33",
+    "pointsTimeAsReturned": "0000-00-00 00:00:00",
+    "freeQuotaAsReturned": "",
+    "billingModeConfirmed": false,
+    "remainingQuotaConfirmed": false,
+    "actualPaymentConfirmed": false
+  },
+  "usage": {
+    "source": "queryEnv usage",
+    "accountCircle": {
+      "StartTime": "2026-10-04 20:33:33",
+      "EndTime": "2026-11-04 23:59:59",
+      "HistoryTime": [],
+      "RequestId": "f80d92a0-73ac-4143-8149-91fd5ae0999a"
+    },
+    "modules": [
+      {
+        "module": "FLEXDB",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "TDSQL",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "SCF",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "EKS",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "COS",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "AI",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "HOSTING",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "Auth",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "APIInvocation",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "HTTPInvocation",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "VM",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "Workflow",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      },
+      {
+        "module": "Other",
+        "credits": 0,
+        "deduct": 0,
+        "report": 0
+      }
+    ],
+    "caution": "Returned zero values are not proof of unused quota or zero future cost."
+  },
+  "functions": {
+    "action": "listFunctions",
+    "functions": [
+      {
+        "AddTime": "2026-09-25 16:30:54",
+        "AsyncRunEnable": "FALSE",
+        "DeployMode": "code",
+        "Description": "",
+        "FunctionId": "lam-be9v0rsd",
+        "FunctionName": "memberAccess",
+        "ModTime": "2026-10-04 20:33:35",
+        "Namespace": "cloud1-d8gcq5ag39d847723",
+        "ProtocolType": "",
+        "ReservedConcurrencyMem": 0,
+        "Runtime": "Nodejs16.13",
+        "Status": "Active",
+        "StatusDesc": "",
+        "StatusReasons": null,
+        "Tags": null,
+        "TotalProvisionedConcurrencyMem": 0,
+        "TraceEnable": "FALSE",
+        "Type": "Event",
+        "Versions": null
+      },
+      {
+        "AddTime": "2026-09-23 18:43:57",
+        "AsyncRunEnable": "FALSE",
+        "DeployMode": "code",
+        "Description": "",
+        "FunctionId": "lam-5vqh4wa3",
+        "FunctionName": "connectionCheck",
+        "ModTime": "2026-10-04 20:33:35",
+        "Namespace": "cloud1-d8gcq5ag39d847723",
+        "ProtocolType": "",
+        "ReservedConcurrencyMem": 0,
+        "Runtime": "Nodejs16.13",
+        "Status": "Active",
+        "StatusDesc": "",
+        "StatusReasons": null,
+        "Tags": null,
+        "TotalProvisionedConcurrencyMem": 0,
+        "TraceEnable": "FALSE",
+        "Type": "Event",
+        "Versions": null
+      }
+    ],
+    "totalCount": 2,
+    "requestId": "6246b451-d8a8-4b0d-bb6a-4de9bfddf43a",
+    "raw": {
+      "Functions": [
+        {
+          "AddTime": "2026-09-25 16:30:54",
+          "AsyncRunEnable": "FALSE",
+          "DeployMode": "code",
+          "Description": "",
+          "FunctionId": "lam-be9v0rsd",
+          "FunctionName": "memberAccess",
+          "ModTime": "2026-10-04 20:33:35",
+          "Namespace": "cloud1-d8gcq5ag39d847723",
+          "ProtocolType": "",
+          "ReservedConcurrencyMem": 0,
+          "Runtime": "Nodejs16.13",
+          "Status": "Active",
+          "StatusDesc": "",
+          "StatusReasons": null,
+          "Tags": null,
+          "TotalProvisionedConcurrencyMem": 0,
+          "TraceEnable": "FALSE",
+          "Type": "Event",
+          "Versions": null
+        },
+        {
+          "AddTime": "2026-09-23 18:43:57",
+          "AsyncRunEnable": "FALSE",
+          "DeployMode": "code",
+          "Description": "",
+          "FunctionId": "lam-5vqh4wa3",
+          "FunctionName": "connectionCheck",
+          "ModTime": "2026-10-04 20:33:35",
+          "Namespace": "cloud1-d8gcq5ag39d847723",
+          "ProtocolType": "",
+          "ReservedConcurrencyMem": 0,
+          "Runtime": "Nodejs16.13",
+          "Status": "Active",
+          "StatusDesc": "",
+          "StatusReasons": null,
+          "Tags": null,
+          "TotalProvisionedConcurrencyMem": 0,
+          "TraceEnable": "FALSE",
+          "Type": "Event",
+          "Versions": null
+        }
+      ],
+      "RequestId": "6246b451-d8a8-4b0d-bb6a-4de9bfddf43a",
+      "TotalCount": 2
+    }
+  },
+  "collections": {
+    "success": true,
+    "requestId": "ea56002e-09f7-40c5-84e9-bb9154246db1",
+    "collections": [
+      {
+        "TableName": "app_admins",
+        "Count": 1,
+        "Size": 546,
+        "IndexCount": 2,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "audit_events",
+        "Count": 53,
+        "Size": 20085,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "invitations",
+        "Count": 8,
+        "Size": 4739,
+        "IndexCount": 4,
+        "IndexSize": 147456
+      },
+      {
+        "TableName": "project_members",
+        "Count": 8,
+        "Size": 2244,
+        "IndexCount": 4,
+        "IndexSize": 147456
+      },
+      {
+        "TableName": "projects",
+        "Count": 3,
+        "Size": 889,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "relation_data_depart",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 6,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "sys_department",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      },
+      {
+        "TableName": "sys_user",
+        "Count": 1,
+        "Size": 394,
+        "IndexCount": 2,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "users",
+        "Count": 4,
+        "Size": 1293,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "yf_diag_visibility",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      }
+    ],
+    "pager": {
+      "Offset": 0,
+      "Limit": 100,
+      "Total": 10
+    },
+    "message": "获取 NoSQL 数据库集合列表成功"
+  },
+  "existingMemberAccess": {
+    "source": "getFunctionDetail",
+    "requestId": "b64a6424-755f-4159-bffb-cfd3cf70e2b5",
+    "FunctionName": "memberAccess",
+    "Namespace": "cloud1-d8gcq5ag39d847723",
+    "Runtime": "Nodejs16.13",
+    "Timeout": 3,
+    "MemorySize": 256,
+    "Handler": "index.main",
+    "Status": "Active",
+    "ModTime": "2026-10-04 20:33:35",
+    "FunctionVersion": "$LATEST",
+    "InstallDependency": "TRUE",
+    "triggers": [],
+    "codePackageHashRefreshed": false
+  },
+  "sourceUrls": [
+    "https://cloud.tencent.com/document/product/876/127357",
+    "https://docs.cloudbase.net/database/transaction",
+    "https://docs.cloudbase.net/database/data-index",
+    "https://docs.cloudbase.net/cli-v1/functions/configs"
+  ],
+  "limitations": [
+    "No records of projects A/B/C read or changed this turn",
+    "No new function deployment or collection/index creation",
+    "Not a byte-comparison of deployed old package",
+    "Billing mode and actual remaining entitlement still need account-specific confirmation",
+    "Full pricing page fetch timed out; official indexed price-table excerpts used conditionally"
+  ]
+}

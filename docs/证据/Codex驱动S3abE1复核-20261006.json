@@ -1,0 +1,268 @@
+{
+  "executedAt": "2026-10-06T01:59:39.960Z",
+  "scope": "local actual modules; synthetic failures; no cloud",
+  "reruns": {
+    "previous34": {
+      "total": 34,
+      "sealed": 34,
+      "unsealed": 0,
+      "harnessErrors": 0
+    },
+    "previous18": {
+      "total": 18,
+      "sealed": 18,
+      "unsealed": 0,
+      "harnessErrors": 0
+    },
+    "current8": {
+      "total": 8,
+      "sealed": 8,
+      "harnessErrors": 0
+    },
+    "eightResults": [
+      {
+        "id": "S3-a-all-sync-throw-V06-a",
+        "requirement": "V06 两笔均同步抛错 → 能收尾、stopped、释放占用",
+        "sealed": true,
+        "harnessError": null,
+        "completed": true,
+        "invoked": 2,
+        "businessRequests": 2,
+        "persistedState": "stopped",
+        "persistedOutcomes": [
+          "sync-throw",
+          "sync-throw"
+        ],
+        "runtimeHeld": false
+      },
+      {
+        "id": "S3-a-all-sync-throw-V07-B",
+        "requirement": "V07 唯一移出调用同步抛错 → 能收尾、stopped、释放占用",
+        "sealed": true,
+        "harnessError": null,
+        "completed": true,
+        "invoked": 1,
+        "businessRequests": 1,
+        "persistedState": "stopped",
+        "persistedOutcomes": [
+          "sync-throw"
+        ],
+        "runtimeHeld": false
+      },
+      {
+        "id": "S3-a-mixed-sync-throw-and-async",
+        "requirement": "单笔同步抛错 + 另一笔异步成功 → 正常收尾",
+        "sealed": true,
+        "harnessError": null,
+        "completed": true,
+        "persistedOutcomes": [
+          "responded",
+          "sync-throw"
+        ],
+        "runtimeHeld": false
+      },
+      {
+        "id": "S3-b-late-success-after-timeout",
+        "requirement": "晚到成功 → 补存净化证据、保留 timeout/停止、不回写状态",
+        "sealed": true,
+        "harnessError": null,
+        "storageChanged": true,
+        "stateBefore": "stopped",
+        "stateAfter": "stopped",
+        "mainOutcomes": [
+          "responded",
+          "timeout"
+        ],
+        "lateCount": 1,
+        "lateOutcome": [
+          "responded"
+        ],
+        "lateContent": [
+          "LATE_ARRIVED_CONTENT"
+        ],
+        "lateMarked": true
+      },
+      {
+        "id": "S3-b-late-rejection-after-timeout",
+        "requirement": "晚到拒绝 → 补存 network-error、保留原判定",
+        "sealed": true,
+        "harnessError": null,
+        "stateAfter": "stopped",
+        "mainOutcomes": [
+          "responded",
+          "timeout"
+        ],
+        "lateOutcomes": [
+          "network-error"
+        ],
+        "lateMarked": true
+      },
+      {
+        "id": "S3-b-late-persist-failure-stays-stopped",
+        "requirement": "补存失败 → 原停止判定与原 timeout 证据均不被破坏",
+        "sealed": true,
+        "harnessError": null,
+        "stateAfter": "stopped",
+        "mainOutcomes": [
+          "responded",
+          "timeout"
+        ]
+      },
+      {
+        "id": "S3-b-same-request-id-slots-distinguished",
+        "requirement": "相同 requestId 的两笔按各自槽位区分晚到证据",
+        "sealed": true,
+        "harnessError": null,
+        "state": "stopped",
+        "requestIds": [
+          "same-id",
+          "same-id"
+        ],
+        "mainOutcomes": [
+          "responded",
+          "timeout"
+        ],
+        "lateCount": 1,
+        "lateContent": [
+          "FIRST_LATE_OK"
+        ]
+      },
+      {
+        "id": "S3-b-no-resend-no-unlock",
+        "requirement": "晚到补存不得补发、不得解锁下一例",
+        "sealed": true,
+        "harnessError": null,
+        "sendsBeforeLate": 2,
+        "sendsAfterLate": 2,
+        "blockingAfterLate": [
+          "V06-a=stopped"
+        ],
+        "nextCaseStarted": false
+      }
+    ]
+  },
+  "historyChecked": 152,
+  "historyDrift": [],
+  "results": [
+    {
+      "id": "same-id-two-timeouts-second-slot-late",
+      "stateBefore": "stopped",
+      "stateAfter": "stopped",
+      "verdict": "stopped",
+      "responses": [
+        {
+          "sentAtIso": "2026-10-06T01:59:39.936Z",
+          "requestId": "r-a-1",
+          "outcome": "timeout",
+          "invoked": true,
+          "resultUnknown": true,
+          "arrivedAtIso": "2026-10-06T01:59:39.936Z"
+        },
+        {
+          "sentAtIso": "2026-10-06T01:59:39.936Z",
+          "requestId": "r-a-1",
+          "outcome": "timeout",
+          "invoked": true,
+          "resultUnknown": true,
+          "arrivedAtIso": "2026-10-06T01:59:39.937Z"
+        }
+      ],
+      "lateArrivals": [
+        {
+          "sentAtIso": "2026-10-06T01:59:39.936Z",
+          "late": true,
+          "requestId": "r-a-1",
+          "outcome": "responded",
+          "invoked": true,
+          "resultUnknown": false,
+          "result": {
+            "ok": true,
+            "id": "s_review01",
+            "projectId": "p_sbx_fixed_target",
+            "stage": "拆改",
+            "trade": "拆改",
+            "workerUserId": "u_89abcdef0123456789abcdef0123456789abcdef",
+            "startDate": "2026-11-02",
+            "endDate": "2026-11-03",
+            "expectedDate": "2026-11-03",
+            "restDays": [],
+            "content": "SECOND_SLOT_LATE",
+            "status": "active",
+            "version": 1
+          },
+          "arrivedAtIso": "2026-10-06T01:59:39.938Z"
+        }
+      ],
+      "lateHasSlotIdentifier": false,
+      "stateRegressed": false
+    },
+    {
+      "id": "late-first-read-fails-once",
+      "stateBefore": "stopped",
+      "stateAfter": "inFlight",
+      "verdict": "stopped",
+      "responses": [
+        {
+          "sentAtIso": "2026-10-06T01:59:39.940Z",
+          "requestId": "r-a-1",
+          "outcome": "timeout",
+          "invoked": true,
+          "resultUnknown": true,
+          "arrivedAtIso": "2026-10-06T01:59:39.941Z"
+        },
+        {
+          "sentAtIso": "2026-10-06T01:59:39.940Z",
+          "requestId": "r-a-1",
+          "outcome": "timeout",
+          "invoked": true,
+          "resultUnknown": true,
+          "arrivedAtIso": "2026-10-06T01:59:39.941Z"
+        }
+      ],
+      "lateArrivals": [
+        {
+          "sentAtIso": "2026-10-06T01:59:39.940Z",
+          "late": true,
+          "requestId": "r-a-1",
+          "outcome": "responded",
+          "invoked": true,
+          "resultUnknown": false,
+          "result": {
+            "ok": true,
+            "id": "s_review01",
+            "projectId": "p_sbx_fixed_target",
+            "stage": "拆改",
+            "trade": "拆改",
+            "workerUserId": "u_89abcdef0123456789abcdef0123456789abcdef",
+            "startDate": "2026-11-02",
+            "endDate": "2026-11-03",
+            "expectedDate": "2026-11-03",
+            "restDays": [],
+            "content": "SECOND_SLOT_LATE",
+            "status": "active",
+            "version": 1
+          },
+          "arrivedAtIso": "2026-10-06T01:59:39.942Z"
+        }
+      ],
+      "lateHasSlotIdentifier": false,
+      "stateRegressed": true
+    },
+    {
+      "id": "e1-ETIMEDOUT",
+      "syntheticExecutionsStarted": 2,
+      "actualTaskCompleted": false,
+      "claimedReran": true,
+      "claimedAwaited": true,
+      "executionMode": "in-process-isolated(fallback)"
+    },
+    {
+      "id": "e1-EBUSY",
+      "syntheticExecutionsStarted": 1,
+      "actualTaskCompleted": false,
+      "claimedReran": true,
+      "claimedAwaited": true,
+      "executionMode": "in-process-isolated(fallback)"
+    }
+  ]
+}

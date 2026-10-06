@@ -1,0 +1,652 @@
+{
+  "executedAt": "2026-10-06T01:59:39.315Z",
+  "scope": "local S1–S5 repair verification against Codex counterexamples; real modules, synthetic API/storage/transaction adapters; no platform execution",
+  "originalEvidencePreserved": [
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.cjs",
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.json",
+    "docs/证据/Codex驱动R1R5返修全量测试-20261005.txt",
+    "docs/证据/Codex重跑WorkBuddyR1R5-20261005.json"
+  ],
+  "summary": {
+    "total": 18,
+    "sealed": 18,
+    "unsealed": 0,
+    "harnessErrors": 0
+  },
+  "previousR1R5Rerun": {
+    "reran": true,
+    "awaited": true,
+    "summary": {
+      "total": 34,
+      "sealed": 34,
+      "unsealed": 0,
+      "harnessErrors": 0
+    },
+    "executionMode": "reviewer separately awaited current run",
+    "output": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\Codex本次S3ab前轮34-20261006.json"
+  },
+  "baseline": {
+    "count": 110,
+    "missing": [],
+    "differences": [
+      "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+      "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "miniapp/miniprogram/utils/schedule-sandbox-client.js",
+      "miniapp/tests/schedule-sandbox-frontend.test.cjs"
+    ]
+  },
+  "retainedHashes": {
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb928f9f01839a90c21bec6bbd85762891d8692e1327e476ab",
+    "miniapp/cloudbase/schedule-sandbox-resources.candidate.json": "7a0284d5098375f6910c459fb0ddea3af179fe40876d98cd2807b5cd93a1620b",
+    "artifacts/schedule-sandbox/closed-20261005/manifest.json": "2692351f26e10e9b88a631746c4d06ce400b9309fe7955e3039def6469425b3f",
+    "artifacts/schedule-sandbox/closed-20261005-r2fix/manifest.json": "8821a459b2f32be1c8d507ec3add0e8306162f84e41b796a875c6f0176ba0277",
+    "miniapp/cloudfunctions/scheduleSandbox/index.js": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+    "miniapp/cloudfunctions/scheduleSandbox/gate.js": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.cjs": "942e1fb77cb1addfe3566afcc52a725b95afd24ce93293e08c67de4f4ca78e46",
+    "docs/证据/Codex驱动R1R5剩余复现-20261005.json": "3dea0512d6ce785917c9da2c9266d2a307ba6ba2fc4e9f0a065c1e87b594303a"
+  },
+  "configs": {
+    "sandbox-test-driver-proof": {
+      "value": {
+        "enabled": false,
+        "appId": "wxfb4db1615ac15531",
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "functionName": "scheduleSandbox",
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "cachePrefix": "schtest_v1:driver:",
+        "roundId": "",
+        "projectId": "",
+        "actorUserId": "",
+        "expiresAt": "",
+        "evidenceId": "",
+        "actorHint": "64193d",
+        "v07TargetHint": "f182f4",
+        "protectedProjectIds": [
+          "p_38507fc9b43c4e23a7fbd996415637bb",
+          "p_a328c08992f7414c812047935bc3c31e",
+          "p_4e53f8437dab4ddcb62971d58455acaa"
+        ],
+        "scheduleFormKeys": [
+          "stage",
+          "trade",
+          "workerUserId",
+          "startDate",
+          "endDate",
+          "expectedDate",
+          "restDays",
+          "content"
+        ],
+        "v06Cases": [
+          {
+            "testCaseId": "V06-a",
+            "label": "并发幂等：两次新增，相同请求号与相同载荷",
+            "pair": "createSchedule",
+            "sameRequestId": true,
+            "expect": {
+              "bothOk": true,
+              "identicalResult": true,
+              "compareFields": [
+                "id",
+                "version",
+                "status"
+              ]
+            },
+            "cloudCheck": "一份新安排且版本为 1；一条对应 revision/审计/回执；目录与占用只增加一次"
+          },
+          {
+            "testCaseId": "V06-b",
+            "label": "占用冲突：两次新增，不同请求号、相同工种与实际施工日",
+            "pair": "createSchedule",
+            "sameRequestId": false,
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "SCHEDULE_CONFLICT",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "仅胜方的安排/回执/历史/审计与对应占用落地；失败方无残留"
+          },
+          {
+            "testCaseId": "V06-c",
+            "label": "版本冲突：同一安排的两次调整，同一期望版本、不同内容",
+            "pair": "updateSchedule",
+            "sameRequestId": false,
+            "dependsOn": "V06-a",
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "VERSION_MISMATCH",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "版本只 +1；内容等于胜方；历史/审计/回执仅新增一份；无败方残留"
+          }
+        ],
+        "v07Cases": [
+          {
+            "testCaseId": "V07-A",
+            "label": "有未完成安排时移出：应被明确拒绝",
+            "precondition": "hasActiveSchedule",
+            "expect": {
+              "rejected": true,
+              "code": "WORKER_HAS_ACTIVE_SCHEDULES"
+            },
+            "cloudCheck": "成员仍在；安排、目录、月桶不变；失败不新增成功移出审计",
+            "idempotent": false
+          },
+          {
+            "testCaseId": "V07-B",
+            "label": "任务清空后移出：应成功退出",
+            "precondition": "noActiveSchedule",
+            "expect": {
+              "removed": true,
+              "requireResultFields": [
+                "userId",
+                "status"
+              ],
+              "requireStatus": "left"
+            },
+            "cloudCheck": "成员退出；目录/代际正常；旧安排与历史保留；管家仍可查历史；乙本人之后 NO_ACCESS",
+            "idempotent": false
+          }
+        ],
+        "testCases": [
+          {
+            "testCaseId": "V06-a",
+            "label": "并发幂等：两次新增，相同请求号与相同载荷",
+            "pair": "createSchedule",
+            "sameRequestId": true,
+            "expect": {
+              "bothOk": true,
+              "identicalResult": true,
+              "compareFields": [
+                "id",
+                "version",
+                "status"
+              ]
+            },
+            "cloudCheck": "一份新安排且版本为 1；一条对应 revision/审计/回执；目录与占用只增加一次"
+          },
+          {
+            "testCaseId": "V06-b",
+            "label": "占用冲突：两次新增，不同请求号、相同工种与实际施工日",
+            "pair": "createSchedule",
+            "sameRequestId": false,
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "SCHEDULE_CONFLICT",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "仅胜方的安排/回执/历史/审计与对应占用落地；失败方无残留"
+          },
+          {
+            "testCaseId": "V06-c",
+            "label": "版本冲突：同一安排的两次调整，同一期望版本、不同内容",
+            "pair": "updateSchedule",
+            "sameRequestId": false,
+            "dependsOn": "V06-a",
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "VERSION_MISMATCH",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "版本只 +1；内容等于胜方；历史/审计/回执仅新增一份；无败方残留"
+          },
+          {
+            "testCaseId": "V07-A",
+            "label": "有未完成安排时移出：应被明确拒绝",
+            "precondition": "hasActiveSchedule",
+            "expect": {
+              "rejected": true,
+              "code": "WORKER_HAS_ACTIVE_SCHEDULES"
+            },
+            "cloudCheck": "成员仍在；安排、目录、月桶不变；失败不新增成功移出审计",
+            "idempotent": false
+          },
+          {
+            "testCaseId": "V07-B",
+            "label": "任务清空后移出：应成功退出",
+            "precondition": "noActiveSchedule",
+            "expect": {
+              "removed": true,
+              "requireResultFields": [
+                "userId",
+                "status"
+              ],
+              "requireStatus": "left"
+            },
+            "cloudCheck": "成员退出；目录/代际正常；旧安排与历史保留；管家仍可查历史；乙本人之后 NO_ACCESS",
+            "idempotent": false
+          }
+        ],
+        "caseStates": [
+          "ready",
+          "preflight",
+          "armed",
+          "inFlight",
+          "candidate",
+          "stopped",
+          "reviewed"
+        ],
+        "reviewableStates": [
+          "candidate"
+        ],
+        "v07TargetUserId": "",
+        "uiTimeoutSeconds": 30,
+        "description": "独立副本专用测试驱动配置（V06 三对并发 + V07 两次移出）。默认关闭，动态值为空；需与旧 sandbox proof 同时启用才可发送。"
+      },
+      "deepFrozen": true
+    },
+    "schedule-sandbox-proof": {
+      "value": {
+        "enabled": false,
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "appId": "wxfb4db1615ac15531",
+        "functionName": "scheduleSandbox",
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "sandboxProjectId": "",
+        "roundId": "",
+        "cachePrefix": "schtest_v1:",
+        "description": "施工安排独立测试副本专用入口（本地配置，未启用）。"
+      },
+      "deepFrozen": true
+    },
+    "schedule-entry-proof": {
+      "value": {
+        "enabled": false,
+        "appId": "wxfb4db1615ac15531",
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "allowedProjectIds": [],
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "description": "施工安排新增、调整、改派、取消、只读查看及版本历史入口。"
+      },
+      "deepFrozen": true
+    }
+  },
+  "results": [
+    {
+      "id": "S1-official-account-info-shape-blocked",
+      "requirement": "官方 MiniProgram 形状（无 envId）必须能正常运行，不得要求虚构 envId",
+      "sealed": true,
+      "harnessError": null,
+      "code": "TEST_DRIVER_CANDIDATE",
+      "gateReasons": null,
+      "calls": 4,
+      "businessRequests": 2,
+      "verdict": "candidate"
+    },
+    {
+      "id": "S1-config-env-pinned-per-call",
+      "requirement": "云环境改由固定 proof + 每次 callFunction.config.env 保证",
+      "sealed": true,
+      "harnessError": null,
+      "callsChecked": 4,
+      "allCallsPinned": true,
+      "mismatchedEnvRejected": true,
+      "mismatchedEnvRequests": 0
+    },
+    {
+      "id": "S2-malformed-batch-cases-silently-reset",
+      "requirement": "cases 是数组（可解析但非字典）必须失败关闭，且不得重置原记录",
+      "sealed": true,
+      "harnessError": null,
+      "verdict": "stopped",
+      "businessRequests": 0,
+      "recordUntouched": true
+    },
+    {
+      "id": "S2-batch-structure-variants-fail-closed",
+      "requirement": "kind / envId / roundId / 未知状态 / 键值不符 / 绑定不符 / 缺摘要 一律失败关闭",
+      "sealed": true,
+      "harnessError": null,
+      "cases": {
+        "wrong-kind": {
+          "ok": false,
+          "writes": 0
+        },
+        "wrong-env": {
+          "ok": false,
+          "writes": 0
+        },
+        "wrong-round": {
+          "ok": false,
+          "writes": 0
+        },
+        "unknown-state": {
+          "ok": false,
+          "writes": 0
+        },
+        "key-id-mismatch": {
+          "ok": false,
+          "writes": 0
+        },
+        "record-not-object": {
+          "ok": false,
+          "writes": 0
+        },
+        "binding-mismatch": {
+          "ok": false,
+          "writes": 0
+        },
+        "no-digest": {
+          "ok": false,
+          "writes": 0
+        }
+      }
+    },
+    {
+      "id": "S2-legacy-stopped-case-hidden",
+      "requirement": "上一轮 case/1 旧键必须保守阻断且原样保留（不写迁移器、不删除）",
+      "sealed": true,
+      "harnessError": null,
+      "oldKey": "schtest_v1:driver:legacy-batch:cloud1-d8gcq5ag39d847723:round-test-1:u_0123456789abcdef0123456789abcdef01234567:case:V06-a",
+      "verdict": "stopped",
+      "businessRequests": 0,
+      "legacyPreserved": true
+    },
+    {
+      "id": "S2-legacy-batch-pending-hidden",
+      "requirement": "旧按人批次键里的未完成用例也必须保守阻断",
+      "sealed": true,
+      "harnessError": null,
+      "verdict": "stopped",
+      "businessRequests": 0
+    },
+    {
+      "id": "S2-forged-internal-owner-bypasses-runtime-hold",
+      "requirement": "任意伪造 internalOwner 都不得绕过运行时占用",
+      "sealed": true,
+      "harnessError": null,
+      "holdAcquired": true,
+      "attempts": [
+        {
+          "forged": "{}",
+          "status": "unknown"
+        },
+        {
+          "forged": "{\"token\":\"x\"}",
+          "status": "unknown"
+        },
+        {
+          "forged": "{\"token\":\"x\",\"owner\":\"ordinary\"}",
+          "status": "unknown"
+        },
+        {
+          "forged": "\"truthy\"",
+          "status": "unknown"
+        },
+        {
+          "forged": "1",
+          "status": "unknown"
+        },
+        {
+          "forged": "[]",
+          "status": "unknown"
+        }
+      ],
+      "callsDuringForgedAttempts": 0,
+      "holdStillHeld": true
+    },
+    {
+      "id": "S2-legit-ordinary-owner-does-not-self-lock",
+      "requirement": "合法 ordinary 凭证的内部重入不得自锁",
+      "sealed": true,
+      "harnessError": null,
+      "code": "SANDBOX_ACCOUNT_UNBOUND",
+      "holdLeftBehind": false
+    },
+    {
+      "id": "S3-second-response-not-persisted-until-first",
+      "requirement": "第二笔先成功必须先到先留证，不等第一笔",
+      "sealed": true,
+      "harnessError": null,
+      "secondResolved": true,
+      "rowsSavedBeforeFirst": 1,
+      "finalVerdict": "candidate",
+      "finalResponseCount": 2
+    },
+    {
+      "id": "S3-each-request-timer-starts-at-send",
+      "requirement": "每笔超时起点是各自发送时刻；先拒绝的那笔先留证",
+      "sealed": true,
+      "harnessError": null,
+      "rowsSavedBeforeFirstFinished": 1,
+      "firstArrivedOutcome": "network-error",
+      "finalOutcomes": [
+        "network-error",
+        "timeout"
+      ],
+      "verdict": "stopped"
+    },
+    {
+      "id": "S3-candidate-readback-lost-responses-accepted",
+      "requirement": "回读丢失 responses 不得显示 candidate",
+      "sealed": true,
+      "harnessError": null,
+      "injected": true,
+      "verdict": "stopped",
+      "stoppedReason": "TEST_DRIVER_STORAGE_UNAVAILABLE"
+    },
+    {
+      "id": "S3-readback-binding-and-old-content-tampering",
+      "requirement": "回读被改 binding 或回退旧内容一律保守停止",
+      "sealed": true,
+      "harnessError": null,
+      "cases": {
+        "binding": {
+          "injected": true,
+          "verdict": "stopped"
+        },
+        "old-content": {
+          "injected": true,
+          "verdict": "stopped"
+        }
+      }
+    },
+    {
+      "id": "S4-current-expected-date-overwritten",
+      "requirement": "c 必须采用当前 expectedDate；与 endDate 不等时明确停止、零 update",
+      "sealed": true,
+      "harnessError": null,
+      "currentExpectedDate": "2026-11-05",
+      "currentEndDate": "2026-11-03",
+      "sentExpectedDates": [],
+      "verdict": "stopped",
+      "stoppedReason": "TEST_DRIVER_CURRENT_DATES_NOT_EQUAL"
+    },
+    {
+      "id": "S4-current-schedule-missing-fields",
+      "requirement": "当前安排缺 expectedDate 或 restDays 非法 → 停止、零 update",
+      "sealed": true,
+      "harnessError": null,
+      "cases": {
+        "no-expected": {
+          "code": "TEST_DRIVER_CURRENT_SCHEDULE_UNKNOWN",
+          "writes": 0
+        },
+        "restDays-not-array": {
+          "code": "TEST_DRIVER_CURRENT_SCHEDULE_UNKNOWN",
+          "writes": 0
+        },
+        "restDays-bad-item": {
+          "code": "TEST_DRIVER_CURRENT_SCHEDULE_UNKNOWN",
+          "writes": 0
+        }
+      }
+    },
+    {
+      "id": "S4-invalid-pagination-treated-as-empty",
+      "requirement": "listSchedules 不可信（ok=false / 缺 hasMore / 坏行 / 游标循环）→ 前提未知、零移出",
+      "sealed": true,
+      "harnessError": null,
+      "cases": {
+        "ok-false": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "hasMore-missing": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "hasMore-not-boolean": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "pagination-missing": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "bad-row-no-id": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "bad-row-unexpected-shape": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "bad-row-wrong-project": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "bad-row-not-active": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "bad-row-version-zero": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "bad-row-content-object": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        },
+        "cursor-loop": {
+          "code": "TEST_DRIVER_V07_PRECONDITION_UNKNOWN",
+          "writes": 0
+        }
+      }
+    },
+    {
+      "id": "S4-unvalidated-nested-field-persists",
+      "requirement": "嵌套/非法类型的成功字段不得进入报告或持久存储",
+      "sealed": true,
+      "harnessError": null,
+      "cases": {
+        "content-object": {
+          "verdict": "stopped",
+          "markerInStorage": false,
+          "markerInReport": false
+        },
+        "content-array": {
+          "verdict": "stopped",
+          "markerInStorage": false,
+          "markerInReport": false
+        },
+        "restDays-objects": {
+          "verdict": "stopped",
+          "markerInStorage": false,
+          "markerInReport": false
+        },
+        "version-string": {
+          "verdict": "stopped",
+          "markerInStorage": false,
+          "markerInReport": false
+        }
+      },
+      "positiveStillPasses": "candidate"
+    },
+    {
+      "id": "S5-disabled-primary-observed-as-consistent",
+      "requirement": "停用 / 缺 status / 目标错 / 关联不符 → inconsistent；读取失败仍 unconfirmed",
+      "sealed": true,
+      "harnessError": null,
+      "cases": {
+        "disabled": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "missing-status": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "wrong-target": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "wrong-primary-key": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "audit-wrong-round": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "audit-wrong-env": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "audit-wrong-evidence": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "audit-wrong-digest": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "audit-wrong-action": {
+          "state": "inconsistent",
+          "writeAuthorized": false
+        },
+        "read-failure": {
+          "state": "unconfirmed",
+          "writeAuthorized": false
+        },
+        "positive": {
+          "state": "present",
+          "writeAuthorized": false,
+          "primaryStatus": "active"
+        }
+      }
+    },
+    {
+      "id": "S5-observe-only-reads-two-records",
+      "requirement": "只读观察只查 primary 与本计划确定性审计，且不产生第二次授予",
+      "sealed": true,
+      "harnessError": null,
+      "state": "present",
+      "commitsBefore": 1,
+      "commitsAfter": 1,
+      "reads": [
+        "schtest_v1_app_admins:primary",
+        "schtest_v1_audit_events:sbx-init-primary:8df31fb79fee11799c2b233af753f788"
+      ],
+      "writeAuthorized": false
+    }
+  ],
+  "notVerified": [
+    "真机未验证：全部使用合成 wx 与内存存储。",
+    "真实管理 SDK 未核实：P4 仅本地原子核心，primary 未在生产初始化。",
+    "真实 wcc/wcsc 编译未执行；WXML 只做静态标签配平与关键串检查。",
+    "互斥为同一设备/运行时操作互斥，不是跨设备锁。",
+    "平台索引就绪、3 秒超时、100 操作、32 KiB、真实并发与费用均未实测。",
+    "S1：云环境的实际生效仍取决于平台是否按 config.env 路由，本地只验证了调用参数被显式限定。"
+  ],
+  "boundaries": {
+    "installed": false,
+    "cloudCalled": false,
+    "resourcesCreated": false,
+    "deployed": false,
+    "entryEnabled": false,
+    "cacheCleared": false,
+    "sdkAdapterConnected": false,
+    "abcProcessed": false
+  }
+}

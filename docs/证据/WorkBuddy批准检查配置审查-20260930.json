@@ -1,0 +1,64 @@
+{
+  "capturedAt": "2026-09-30T14:17:52.154117+00:00",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "review": "WorkBuddy 配置更新审查通过，待手机及事后核验",
+  "configurationMatchesEvidence": true,
+  "oldAssignManagerProofRemainsExpired": true,
+  "probeAndPageMatchPriorReviewedHashes": true,
+  "relatedTestCommand": "node --test --test-reporter=dot miniapp/tests/valid-approval-probe.test.cjs miniapp/tests/valid-binding-probe.test.cjs miniapp/tests/access-page-probe.test.cjs",
+  "relatedTestsExitCode": 0,
+  "compile": {
+    "routes": 7,
+    "wxml": 7,
+    "wxss": 8,
+    "exitCode": 0
+  },
+  "preflight": {
+    "users": {
+      "requestId": "b9179094-0b47-4a64-b51b-f1a818dd4843",
+      "total": 1,
+      "data": [
+        {
+          "_id": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "bindingCodeExpiresAt": "2026-10-01T13:49:09.810Z",
+          "status": "active"
+        }
+      ]
+    },
+    "targetInvitation": {
+      "requestId": "52b6c065-de6f-42a5-8012-0a101abab506",
+      "total": 1,
+      "data": [
+        {
+          "_id": "i_0e0483488efb40ada6825d259ebc1736",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "expiresAt": "2026-10-07T12:20:14.221Z",
+          "issuedAt": "2026-09-30T12:20:14.528Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-30T12:21:56.286Z",
+          "role": "师傅",
+          "status": "requested",
+          "trades": [
+            "拆改"
+          ],
+          "version": 2
+        }
+      ]
+    }
+  },
+  "baseline": "有效待批准申请新编号核验及基线-20260930.json",
+  "cloudWriteExecuted": false,
+  "limitations": [
+    "本轮邀请列表查询socket hang up；精确查询目标申请一次补核成功",
+    "仅重新读取目标申请和用户，其他集合沿用新编号核验基线；非跨集合原子快照",
+    "实际手机结果与事后核验尚缺"
+  ],
+  "sha256": {
+    "miniapp/miniprogram/config/valid-approval-proof.js": "ea3438f32aa32a8f028b1df027488c8be818c208deaeeca32d6bb3ccae53aab9",
+    "miniapp/miniprogram/config/valid-binding-proof.js": "015dbeb914977390f3b2ba24c9286709aa0bcdf42cea4ea045c0378ebb4e6910",
+    "miniapp/miniprogram/utils/valid-approval-probe.js": "d135f46a6802f0ecef1c652d03c9c36a2096481e8a79dbc45bce10602f21b27a",
+    "miniapp/miniprogram/pages/access/access.js": "9f41076845721a7a8f95aebc009401d72f13d6c882e0494c61feb51369bad16a",
+    "miniapp/miniprogram/pages/access/access.wxml": "a23cf189559240dcb07a61d777f93f39e6c2fc3803385f6d64f9a6cff85302fb"
+  }
+}

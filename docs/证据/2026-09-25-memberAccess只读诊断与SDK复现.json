@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-25",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "function": "memberAccess",
+  "scope": "Read-only cloud inspection and local SDK reproduction; no function invocation or cloud mutation in this diagnostic turn.",
+  "detail": {
+    "Status": "Active",
+    "AvailableStatus": "Available",
+    "CodeResult": "success",
+    "CodeError": "",
+    "ClsLogsetId": "",
+    "ClsTopicId": "",
+    "ModTime": "2026-09-25 16:31:32",
+    "CodeSize": 4884231,
+    "RequestId": "da62feae-9aaf-455d-9a3a-ce2774393509"
+  },
+  "detailRequestId": "da62feae-9aaf-455d-9a3a-ce2774393509",
+  "deploymentTask": {
+    "taskId": "confirmation_cloud_fn_deploy_e69eaba5-8b32-4e7f-add6-aa0019368185",
+    "observedStatus": "pending",
+    "createdAt": 1790325085351,
+    "updatedAt": 1790325085351,
+    "finalStateObtained": false
+  },
+  "deployedZip": {
+    "sha256": "54f25b6186629cc424f833b68b0f00332561977702f66f38b6801791215e46b5",
+    "bytes": 4884231,
+    "sourceComparison": "index.js, service.js, package.json match local source after CRLF normalization",
+    "wxServerSdk": "3.0.1"
+  },
+  "localReproduction": {
+    "kind": "local-only-real-deployed-sdk-with-stubbed-transport",
+    "sdk": "3.0.1",
+    "results": [
+      {
+        "config": {},
+        "error": "document.get:fail document with _id primary does not exist",
+        "reads": 1
+      },
+      {
+        "config": {
+          "throwOnNotFound": false
+        },
+        "outcome": {
+          "transactionReady": true
+        },
+        "reads": 1
+      },
+      {
+        "config": {
+          "throwOnNotFound": false
+        },
+        "error": "document.get:fail LOCAL_FIXTURE_PERMISSION_DENIED",
+        "reads": 1
+      },
+      {
+        "config": {
+          "throwOnNotFound": false
+        },
+        "error": "document.get:fail LOCAL_FIXTURE_NETWORK_FAILURE",
+        "reads": 1
+      }
+    ],
+    "networkAttempts": 0
+  },
+  "limitations": [
+    "16:36 cloud raw error not retrieved",
+    "Browser inventory failed once: nodeRepl.fetch request failed; no retry",
+    "Cloud function legacy logs API previously reported deprecated",
+    "CLS logset/topic fields empty, which does not prove historical logs do not exist",
+    "Real environment transaction check remains unpassed"
+  ],
+  "proposedFix": {
+    "status": "proposal only; no business source modification",
+    "file": "miniapp/cloudfunctions/memberAccess/index.js",
+    "change": "cloud.database() -> cloud.database({ throwOnNotFound: false })",
+    "validation": "missing document returns null; permission and transport errors continue to throw; real target read-only transaction test required"
+  }
+}

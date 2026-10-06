@@ -1,0 +1,132 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "phase": "before-active-worker-designer",
+  "complete": false,
+  "collections": {
+    "projects": {
+      "success": false,
+      "error": "QueryRecords: socket hang up"
+    },
+    "project_members": {
+      "success": true,
+      "requestId": "4527a462-21c9-41a9-97aa-f07d93d255ac",
+      "total": 5,
+      "data": [
+        {
+          "_id": "m_133e881e1131e4d9891ebc566884d599ac1cc60f",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "管家"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "version": 1
+        },
+        {
+          "_id": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+          "leftAt": null,
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "师傅",
+            "设计师"
+          ],
+          "status": "active",
+          "trades": [
+            "拆改"
+          ],
+          "userId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "version": 4
+        },
+        {
+          "_id": "m_45fd5794f0aa51559c2b57e8aecb07fc6e3902b1",
+          "projectId": "p_a328c08992f7414c812047935bc3c31e",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_e5eaf02fd6e0db8565f523431ec9019dc19e54ac",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_f5b098e6c02df1b0b7bbe7624627f2b637d46ff9",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "主业主"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "version": 1
+        }
+      ]
+    },
+    "invitations": {
+      "success": true,
+      "requestId": "52901933-3e6f-470c-a4cd-a4c5bc82cc1e",
+      "total": 4,
+      "data": [
+        {
+          "_id": "i_176841d33c0d40eca2fb23e92fe5b024",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_5d088d16872444479c775d3474d5852d",
+          "applicantUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "主业主",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_7f201930411243dd823798545263e236",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "设计师",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_de9287cb806e4098846161e2734d30db",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        }
+      ]
+    },
+    "audit_events": {
+      "success": false,
+      "error": "QueryRecords: socket hang up"
+    }
+  }
+}

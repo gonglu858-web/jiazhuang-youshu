@@ -5,13 +5,23 @@
     <view class="muted gap">{{today}} · 先选项目，再查看今天的施工</view>
   </view>
   <view class="notice">云连接测试已通过模拟器与用户手机；以下示例项目资料仅保存在本机，尚未实现微信身份、云端业务保存或跨设备同步。请勿录入真实客户资料。</view>
-  <view class="card connection-card">
+  <view wx:if="{{testEntryAllowed}}" class="card connection-card">
     <view class="subtitle">开发环境连接测试</view>
     <view class="small muted gap">可再次点击，检查小程序是否能收到 cloud1 测试函数回应。</view>
     <button class="check-button" bindtap="checkConnection" loading="{{checking}}" disabled="{{checking}}">{{checking ? '正在测试' : '测试云连接'}}</button>
     <view class="connection-status {{connectionState}}">{{connectionMessage}}</view>
     <view wx:if="{{serverTime}}" class="server-time">服务器时间（UTC）：{{serverTime}}</view>
     <view class="small muted gap">此测试只验证连接；项目成员和现场记录仍是本机虚构示例。</view>
+    <button class="secondary" bindtap="openPermissionCheck">开发权限核验</button>
+  </view>
+  <view wx:if="{{testEntryAllowed}}" class="card">
+    <view class="subtitle">微信身份与项目成员测试</view>
+    <view class="small muted gap">这一入口使用本人微信和云端虚构测试项目。云端权限核对、集合与函数部署完成前会显示“尚未准备好”；不会把下方本地试用身份当作真实身份。</view>
+    <button class="secondary" bindtap="openCloudAccess">进入微信身份测试</button>
+  </view>
+  <view wx:if="{{!testEntryAllowed && testEntryMessage}}" class="card">
+    <view class="subtitle">测试入口不可用</view>
+    <view class="small muted gap">{{testEntryMessage}}</view>
   </view>
   <view class="card">
     <view class="subtitle">试用身份</view>

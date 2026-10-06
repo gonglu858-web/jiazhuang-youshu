@@ -1,0 +1,3954 @@
+TAP version 13
+# Subtest: 有效成员页面只允许目标开发版本，跨页面重进也不重发检查
+ok 1 - 有效成员页面只允许目标开发版本，跨页面重进也不重发检查
+  ---
+  duration_ms: 35.8502
+  type: 'test'
+  ...
+# Subtest: 有效待申请页面仅发送一次固定批准请求，清除编号并跨页面防重
+ok 2 - 有效待申请页面仅发送一次固定批准请求，清除编号并跨页面防重
+  ---
+  duration_ms: 5.0572
+  type: 'test'
+  ...
+# Subtest: 有效待申请页面遇到正式版、错AppID、错身份、过期和存储失败时不调用云端
+ok 3 - 有效待申请页面遇到正式版、错AppID、错身份、过期和存储失败时不调用云端
+  ---
+  duration_ms: 5.7072
+  type: 'test'
+  ...
+# Subtest: 正式版、错误AppID、非主业主或存储不可用不执行有效成员检查
+ok 4 - 正式版、错误AppID、非主业主或存储不可用不执行有效成员检查
+  ---
+  duration_ms: 3.3921
+  type: 'test'
+  ...
+# Subtest: 有效编号页面清除输入、不缓存原始编号，重进页面不重复请求
+ok 5 - 有效编号页面清除输入、不缓存原始编号，重进页面不重复请求
+  ---
+  duration_ms: 3.1267
+  type: 'test'
+  ...
+# Subtest: 有效编号页面未就绪、正式版、存储失败或输入错误时没有云端请求
+ok 6 - 有效编号页面未就绪、正式版、存储失败或输入错误时没有云端请求
+  ---
+  duration_ms: 4.7999
+  type: 'test'
+  ...
+# Subtest: 退出账号探针直接读取两个项目，四项明确拒绝；不发送写操作或保存成员内容
+ok 7 - 退出账号探针直接读取两个项目，四项明确拒绝；不发送写操作或保存成员内容
+  ---
+  duration_ms: 1.6776
+  type: 'test'
+  ...
+# Subtest: 错误不会冒充权限拒绝，遇到网络、登录、服务端或无效响应时停止
+ok 8 - 错误不会冒充权限拒绝，遇到网络、登录、服务端或无效响应时停止
+  ---
+  duration_ms: 4.1315
+  type: 'test'
+  ...
+# Subtest: 允许访问如实显示，丢弃响应资料；未识别或执行中不重复请求
+ok 9 - 允许访问如实显示，丢弃响应资料；未识别或执行中不重复请求
+  ---
+  duration_ms: 1.2493
+  type: 'test'
+  ...
+# Subtest: 写检查页面禁止负责人、未就绪及重复执行，输出完整报告
+ok 10 - 写检查页面禁止负责人、未就绪及重复执行，输出完整报告
+  ---
+  duration_ms: 2.1137
+  type: 'test'
+  ...
+# Subtest: 项目内师傅按钮选择正确模式，报告含成员允许和管家列表拒绝预检
+ok 11 - 项目内师傅按钮选择正确模式，报告含成员允许和管家列表拒绝预检
+  ---
+  duration_ms: 1.4986
+  type: 'test'
+  ...
+# Subtest: 项目内主业主按钮选择正确模式，报告含成员允许和管家列表拒绝预检
+ok 12 - 项目内主业主按钮选择正确模式，报告含成员允许和管家列表拒绝预检
+  ---
+  duration_ms: 1.2468
+  type: 'test'
+  ...
+# Subtest: 项目内设计师,师傅按钮选择正确模式，报告含成员允许和管家列表拒绝预检
+ok 13 - 项目内设计师,师傅按钮选择正确模式，报告含成员允许和管家列表拒绝预检
+  ---
+  duration_ms: 1.5429
+  type: 'test'
+  ...
+# Subtest: 并发批准卡片默认禁用，管家账号也不发送请求
+ok 14 - 并发批准卡片默认禁用，管家账号也不发送请求
+  ---
+  duration_ms: 1.0452
+  type: 'test'
+  ...
+# Subtest: 并发批准卡片启用后仅管家账号可发两次请求，清除编号并跨页面防重
+ok 15 - 并发批准卡片启用后仅管家账号可发两次请求，清除编号并跨页面防重
+  ---
+  duration_ms: 3.2109
+  type: 'test'
+  ...
+# Subtest: 并发批准卡片在正式版、错AppID、错身份、存储失败时不调用云端
+ok 16 - 并发批准卡片在正式版、错AppID、错身份、存储失败时不调用云端
+  ---
+  duration_ms: 4.2193
+  type: 'test'
+  ...
+# Subtest: 并发批准卡片持久化报告不泄露编号或任意错误内容
+ok 17 - 并发批准卡片持久化报告不泄露编号或任意错误内容
+  ---
+  duration_ms: 2.5119
+  type: 'test'
+  ...
+# Subtest: 并发批准卡片遇到无效响应不计为成功且不保存报告
+ok 18 - 并发批准卡片遇到无效响应不计为成功且不保存报告
+  ---
+  duration_ms: 2.3661
+  type: 'test'
+  ...
+# Subtest: 并发批准卡片后置读取未知码及重复编号不泄露到存储
+ok 19 - 并发批准卡片后置读取未知码及重复编号不泄露到存储
+  ---
+  duration_ms: 2.321
+  type: 'test'
+  ...
+# Subtest: 公共 call 出口在 release、未知版本、错 AppID、账号信息失败时零请求
+ok 20 - 公共 call 出口在 release、未知版本、错 AppID、账号信息失败时零请求
+  ---
+  duration_ms: 4.2795
+  type: 'test'
+  ...
+# Subtest: 页面由允许变为不允许后事件调用仍零请求
+ok 21 - 页面由允许变为不允许后事件调用仍零请求
+  ---
+  duration_ms: 0.9567
+  type: 'test'
+  ...
+# Subtest: WXML gates all interactive test content behind testEntryAllowed
+ok 22 - WXML gates all interactive test content behind testEntryAllowed
+  ---
+  duration_ms: 0.5247
+  type: 'test'
+  ...
+# Subtest: release entry hides all test actions while preserving reports and anti-replay marks
+ok 23 - release entry hides all test actions while preserving reports and anti-replay marks
+  ---
+  duration_ms: 1.0553
+  type: 'test'
+  ...
+# Subtest: onShow refresh keeps state and reports when switching back to allowed
+ok 24 - onShow refresh keeps state and reports when switching back to allowed
+  ---
+  duration_ms: 1.0683
+  type: 'test'
+  ...
+# Subtest: 主业主并发唯一性卡片默认禁用，管家账号也不发送请求
+ok 25 - 主业主并发唯一性卡片默认禁用，管家账号也不发送请求
+  ---
+  duration_ms: 1.1491
+  type: 'test'
+  ...
+# Subtest: 主业主并发唯一性卡片启用后仅管家账号发送两次请求，清除编号并跨页面防重
+ok 26 - 主业主并发唯一性卡片启用后仅管家账号发送两次请求，清除编号并跨页面防重
+  ---
+  duration_ms: 9.1462
+  type: 'test'
+  ...
+# Subtest: 主业主并发唯一性卡片启用后事后读取失败不标记完成
+ok 27 - 主业主并发唯一性卡片启用后事后读取失败不标记完成
+  ---
+  duration_ms: 6.9314
+  type: 'test'
+  ...
+# Subtest: 主业主并发唯一性卡片在正式版、错AppID、错身份、存储失败时不调用云端
+ok 28 - 主业主并发唯一性卡片在正式版、错AppID、错身份、存储失败时不调用云端
+  ---
+  duration_ms: 5.9448
+  type: 'test'
+  ...
+# Subtest: access.wxml 在项目列表、已选项目和指定管家区域显示完整项目ID
+ok 29 - access.wxml 在项目列表、已选项目和指定管家区域显示完整项目ID
+  ---
+  duration_ms: 0.346
+  type: 'test'
+  ...
+# Subtest: 本地示例可见项目随账号变化，未加入及已退出账号被拦截
+ok 30 - 本地示例可见项目随账号变化，未加入及已退出账号被拦截
+  ---
+  duration_ms: 4.7355
+  type: 'test'
+  ...
+# Subtest: 日期含首尾，支持同日两工种，休息及未来工种不产生待更新
+ok 31 - 日期含首尾，支持同日两工种，休息及未来工种不产生待更新
+  ---
+  duration_ms: 0.2514
+  type: 'test'
+  ...
+# Subtest: 同工种补充记录计入当日已更新，管家巡检不计入
+ok 32 - 同工种补充记录计入当日已更新，管家巡检不计入
+  ---
+  duration_ms: 0.7819
+  type: 'test'
+  ...
+# Subtest: 只有管家可新增、修改安排；角色兼任合并功能
+ok 33 - 只有管家可新增、修改安排；角色兼任合并功能
+  ---
+  duration_ms: 0.5723
+  type: 'test'
+  ...
+# Subtest: 安排拒绝倒置日期、不合法日期、跨范围休息日和错误工种责任人
+ok 34 - 安排拒绝倒置日期、不合法日期、跨范围休息日和错误工种责任人
+  ---
+  duration_ms: 0.3914
+  type: 'test'
+  ...
+# Subtest: 调班保留旧安排与记录快照，旧版表单不能覆盖新安排
+ok 35 - 调班保留旧安排与记录快照，旧版表单不能覆盖新安排
+  ---
+  duration_ms: 0.9029
+  type: 'test'
+  ...
+# Subtest: 媒体门槛：三照或一视频；九照上限，60 秒边界与非法来源
+ok 36 - 媒体门槛：三照或一视频；九照上限，60 秒边界与非法来源
+  ---
+  duration_ms: 0.369
+  type: 'test'
+  ...
+# Subtest: 工种和项目从安排派生，不能用提交参数篡改
+ok 37 - 工种和项目从安排派生，不能用提交参数篡改
+  ---
+  duration_ms: 0.3362
+  type: 'test'
+  ...
+# Subtest: 同日可多条；请求重试只生成一条；记录可供同项目成员读取
+ok 38 - 同日可多条；请求重试只生成一条；记录可供同项目成员读取
+  ---
+  duration_ms: 0.4882
+  type: 'test'
+  ...
+# Subtest: 本机相机文件未全部保存时不能生成记录，空位置和说明拒绝
+ok 39 - 本机相机文件未全部保存时不能生成记录，空位置和说明拒绝
+  ---
+  duration_ms: 0.5133
+  type: 'test'
+  ...
+# Subtest: 默认禁用或凭据不完整时不发送任何请求
+ok 40 - 默认禁用或凭据不完整时不发送任何请求
+  ---
+  duration_ms: 1.8155
+  type: 'test'
+  ...
+# Subtest: 错编号、错身份归属、错成员或邀请、过期及未来核验不发送请求
+ok 41 - 错编号、错身份归属、错成员或邀请、过期及未来核验不发送请求
+  ---
+  duration_ms: 1.9699
+  type: 'test'
+  ...
+# Subtest: 非管家账号、项目角色不符、成员工种变化及目标邀请不符均不发送批准请求
+ok 42 - 非管家账号、项目角色不符、成员工种变化及目标邀请不符均不发送批准请求
+  ---
+  duration_ms: 1.472
+  type: 'test'
+  ...
+# Subtest: 一次执行同时发送两个参数相同的 approveInvitation
+ok 43 - 一次执行同时发送两个参数相同的 approveInvitation
+  ---
+  duration_ms: 19.8964
+  type: 'test'
+  ...
+# Subtest: 一次成功、一次 CODE_INVALID 后目标消失，输出候选和事后观察
+ok 44 - 一次成功、一次 CODE_INVALID 后目标消失，输出候选和事后观察
+  ---
+  duration_ms: 0.6843
+  type: 'test'
+  ...
+# Subtest: 零成功、超时或未知异常停止，不将 inconclusive 计为已拒绝
+ok 45 - 零成功、超时或未知异常停止，不将 inconclusive 计为已拒绝
+  ---
+  duration_ms: 1.1968
+  type: 'test'
+  ...
+# Subtest: 无效批准响应不计为成功：undefined、空对象、错ID、错status
+ok 46 - 无效批准响应不计为成功：undefined、空对象、错ID、错status
+  ---
+  duration_ms: 1.3858
+  type: 'test'
+  ...
+# Subtest: 单成功配未知结果时不产生候选且 complete 为 false
+ok 47 - 单成功配未知结果时不产生候选且 complete 为 false
+  ---
+  duration_ms: 0.3418
+  type: 'test'
+  ...
+# Subtest: 两条结果顺序互换仍识别一次成功一次业务拒绝
+ok 48 - 两条结果顺序互换仍识别一次成功一次业务拒绝
+  ---
+  duration_ms: 0.478
+  type: 'test'
+  ...
+# Subtest: 存储读取失败或已有标记时不发送批准请求
+ok 49 - 存储读取失败或已有标记时不发送批准请求
+  ---
+  duration_ms: 0.5506
+  type: 'test'
+  ...
+# Subtest: 存储失败时不发送批准请求
+ok 50 - 存储失败时不发送批准请求
+  ---
+  duration_ms: 0.2691
+  type: 'test'
+  ...
+# Subtest: 同一探针实例先后调用只发送一次并发对
+ok 51 - 同一探针实例先后调用只发送一次并发对
+  ---
+  duration_ms: 0.3566
+  type: 'test'
+  ...
+# Subtest: 同实例重入和跨存储标记均不追加请求
+ok 52 - 同实例重入和跨存储标记均不追加请求
+  ---
+  duration_ms: 0.381
+  type: 'test'
+  ...
+# Subtest: 后置只读观察失败不重发写入请求且错误不含编号，未知码置空
+ok 53 - 后置只读观察失败不重发写入请求且错误不含编号，未知码置空
+  ---
+  duration_ms: 0.3364
+  type: 'test'
+  ...
+# Subtest: 后置 listInvitations 缺少 invitations 字段不视为申请消失
+ok 54 - 后置 listInvitations 缺少 invitations 字段不视为申请消失
+  ---
+  duration_ms: 0.3089
+  type: 'test'
+  ...
+# Subtest: 一成功一拒绝后只剩其他合法待申请仍完整输出候选
+ok 55 - 一成功一拒绝后只剩其他合法待申请仍完整输出候选
+  ---
+  duration_ms: 0.2963
+  type: 'test'
+  ...
+# Subtest: 一成功一拒绝后目标仍在待核对列表则标记矛盾并停止
+ok 56 - 一成功一拒绝后目标仍在待核对列表则标记矛盾并停止
+  ---
+  duration_ms: 0.2494
+  type: 'test'
+  ...
+# Subtest: 后置 listInvitations 返回非数组时停止且不视为消失
+ok 57 - 后置 listInvitations 返回非数组时停止且不视为消失
+  ---
+  duration_ms: 0.2719
+  type: 'test'
+  ...
+# Subtest: 后置读取未知错误码及重复合成编号不泄露到报告
+ok 58 - 后置读取未知错误码及重复合成编号不泄露到报告
+  ---
+  duration_ms: 0.2993
+  type: 'test'
+  ...
+# Subtest: 报告和错误摘要不泄露原始编号或任意请求内容
+ok 59 - 报告和错误摘要不泄露原始编号或任意请求内容
+  ---
+  duration_ms: 0.2727
+  type: 'test'
+  ...
+# Subtest: allowed only for target appId and develop/trial
+ok 60 - allowed only for target appId and develop/trial
+  ---
+  duration_ms: 0.7041
+  type: 'test'
+  ...
+# Subtest: release is denied
+ok 61 - release is denied
+  ---
+  duration_ms: 0.1134
+  type: 'test'
+  ...
+# Subtest: unknown or missing envVersion is denied
+ok 62 - unknown or missing envVersion is denied
+  ---
+  duration_ms: 0.144
+  type: 'test'
+  ...
+# Subtest: missing or malformed account info is denied
+ok 63 - missing or malformed account info is denied
+  ---
+  duration_ms: 0.1191
+  type: 'test'
+  ...
+# Subtest: wrong appId or wrong env is denied
+ok 64 - wrong appId or wrong env is denied
+  ---
+  duration_ms: 0.1372
+  type: 'test'
+  ...
+# Subtest: service route maps schedule business errors
+ok 65 - service route maps schedule business errors
+  ---
+  duration_ms: 9.1514
+  type: 'test'
+  ...
+# Subtest: service route returns VERSION_MISMATCH not SERVER_ERROR
+ok 66 - service route returns VERSION_MISMATCH not SERVER_ERROR
+  ---
+  duration_ms: 5.9138
+  type: 'test'
+  ...
+# Subtest: removeMember blocks when worker has active schedule
+ok 67 - removeMember blocks when worker has active schedule
+  ---
+  duration_ms: 4.2335
+  type: 'test'
+  ...
+# Subtest: removeMember allows after reassign
+ok 68 - removeMember allows after reassign
+  ---
+  duration_ms: 6.2046
+  type: 'test'
+  ...
+# Subtest: removeMember allows after cancel
+ok 69 - removeMember allows after cancel
+  ---
+  duration_ms: 4.403
+  type: 'test'
+  ...
+# Subtest: removeMember blocks when guard missing but schedule active
+ok 70 - removeMember blocks when guard missing but schedule active
+  ---
+  duration_ms: 2.6311
+  type: 'test'
+  ...
+# Subtest: removeMember then create for removed worker fails
+ok 71 - removeMember then create for removed worker fails
+  ---
+  duration_ms: 1.9797
+  type: 'test'
+  ...
+# Subtest: reassign then removeMember old worker: old worker can be removed
+ok 72 - reassign then removeMember old worker: old worker can be removed
+  ---
+  duration_ms: 4.0419
+  type: 'test'
+  ...
+# Subtest: removeMember then reassign to removed worker fails
+ok 73 - removeMember then reassign to removed worker fails
+  ---
+  duration_ms: 3.2158
+  type: 'test'
+  ...
+# Subtest: schedule service returns AppError from schedule-service
+ok 74 - schedule service returns AppError from schedule-service
+  ---
+  duration_ms: 0.4211
+  type: 'test'
+  ...
+# Subtest: listSchedules route returns flat schedules and pagination
+ok 75 - listSchedules route returns flat schedules and pagination
+  ---
+  duration_ms: 2.013
+  type: 'test'
+  ...
+# Subtest: listScheduleRevisions route returns flat revisions and pagination
+ok 76 - listScheduleRevisions route returns flat revisions and pagination
+  ---
+  duration_ms: 2.347
+  type: 'test'
+  ...
+# Subtest: receipt replay rejects when actor permission revoked before retry
+ok 77 - receipt replay rejects when actor permission revoked before retry
+  ---
+  duration_ms: 1.3795
+  type: 'test'
+  ...
+# Subtest: 实际 SDK：入口允许空负责人记录，仍拒绝权限和网络错误，全程无业务写入
+ok 78 - 实际 SDK：入口允许空负责人记录，仍拒绝权限和网络错误，全程无业务写入 # SKIP 未指定已取得的 wx-server-sdk 路径
+  ---
+  duration_ms: 0.6891
+  type: 'test'
+  ...
+# Subtest: 微信服务端身份才可信；首登仅创建普通用户，编号不能自行提权
+ok 79 - 微信服务端身份才可信；首登仅创建普通用户，编号不能自行提权
+  ---
+  duration_ms: 5.0483
+  type: 'test'
+  ...
+# Subtest: 只读事务检查先核实微信身份，且不登记账号或写入审计
+ok 80 - 只读事务检查先核实微信身份，且不登记账号或写入审计
+  ---
+  duration_ms: 0.8902
+  type: 'test'
+  ...
+# Subtest: 负责人受控绑定后建虚构项目，管家按本人编号加入；普通账号不能指定管家
+ok 81 - 负责人受控绑定后建虚构项目，管家按本人编号加入；普通账号不能指定管家
+  ---
+  duration_ms: 2.1704
+  type: 'test'
+  ...
+# Subtest: 邀请申请未批准时不可读；管家批准后可读，移出立即失权且历史保留
+ok 82 - 邀请申请未批准时不可读；管家批准后可读，移出立即失权且历史保留
+  ---
+  duration_ms: 5.5034
+  type: 'test'
+  ...
+# Subtest: 写入探针与真实服务逻辑集成：退出师傅及跨项目管家的前置鉴权拒绝且数据库无变化
+ok 83 - 写入探针与真实服务逻辑集成：退出师傅及跨项目管家的前置鉴权拒绝且数据库无变化
+  ---
+  duration_ms: 5.82
+  type: 'test'
+  ...
+# Subtest: 同项目只有一位主业主，重复审批与越权、真实名称都被拒绝
+ok 84 - 同项目只有一位主业主，重复审批与越权、真实名称都被拒绝
+  ---
+  duration_ms: 3.3268
+  type: 'test'
+  ...
+# Subtest: active-primary-owner探针通过真实服务逻辑校验四项管理拒绝，所有数据库记录不变
+ok 85 - active-primary-owner探针通过真实服务逻辑校验四项管理拒绝，所有数据库记录不变
+  ---
+  duration_ms: 2.9898
+  type: 'test'
+  ...
+# Subtest: active-worker-designer探针通过真实服务逻辑校验四项管理拒绝，所有数据库记录不变
+ok 86 - active-worker-designer探针通过真实服务逻辑校验四项管理拒绝，所有数据库记录不变
+  ---
+  duration_ms: 2.5723
+  type: 'test'
+  ...
+# Subtest: 主业主对真实有效师傅目标的移出被拒绝且数据不变，管家同请求可成功
+ok 87 - 主业主对真实有效师傅目标的移出被拒绝且数据不变，管家同请求可成功
+  ---
+  duration_ms: 5.2899
+  type: 'test'
+  ...
+# Subtest: 主业主持有效目标编号不能指定管家且编号未消费，负责人同请求可成功
+ok 88 - 主业主持有效目标编号不能指定管家且编号未消费，负责人同请求可成功
+  ---
+  duration_ms: 1.9045
+  type: 'test'
+  ...
+# Subtest: 家庭成员本地生命周期：批准前隔离、批准后只读、有效管理目标仍拒绝、退出后失权
+ok 89 - 家庭成员本地生命周期：批准前隔离、批准后只读、有效管理目标仍拒绝、退出后失权
+  ---
+  duration_ms: 4.5502
+  type: 'test'
+  ...
+# Subtest: 伪造账号与角色不改变申请人、授权来源或审计身份；有效凭据也不能越权批准
+ok 90 - 伪造账号与角色不改变申请人、授权来源或审计身份；有效凭据也不能越权批准
+  ---
+  duration_ms: 1.7658
+  type: 'test'
+  ...
+# Subtest: 批准主业主时审计写入失败，成员、项目、邀请和绑定编号整体回滚
+ok 91 - 批准主业主时审计写入失败，成员、项目、邀请和绑定编号整体回滚
+  ---
+  duration_ms: 2.7902
+  type: 'test'
+  ...
+# Subtest: 批准前主业主已被占用，事务内重读阻止第二次授权且不消费申请人编号
+ok 92 - 批准前主业主已被占用，事务内重读阻止第二次授权且不消费申请人编号
+  ---
+  duration_ms: 1.622
+  type: 'test'
+  ...
+# Subtest: 同账号可合并已授权角色，但管家不能批准自己的申请
+ok 93 - 同账号可合并已授权角色，但管家不能批准自己的申请
+  ---
+  duration_ms: 2.349
+  type: 'test'
+  ...
+# Subtest: 有效待批准申请：主业主不能批准，管家可用同一申请与编号合法批准（仅内存）
+ok 94 - 有效待批准申请：主业主不能批准，管家可用同一申请与编号合法批准（仅内存）
+  ---
+  duration_ms: 3.6645
+  type: 'test'
+  ...
+# Subtest: 负责人资格在事务开始前被撤销时，不能继续创建项目或指定管家
+ok 95 - 负责人资格在事务开始前被撤销时，不能继续创建项目或指定管家
+  ---
+  duration_ms: 0.5761
+  type: 'test'
+  ...
+# Subtest: 管家跳过所属项目，只检测隔离项目；负责人不发起写检查
+ok 96 - 管家跳过所属项目，只检测隔离项目；负责人不发起写检查
+  ---
+  duration_ms: 3.6272
+  type: 'test'
+  ...
+# Subtest: 预检读取成功或网络失败时，不发送任何写请求
+ok 97 - 预检读取成功或网络失败时，不发送任何写请求
+  ---
+  duration_ms: 0.3738
+  type: 'test'
+  ...
+# Subtest: 后置校验拒绝和网络失败均不是前置鉴权通过证据，停止后续请求
+ok 98 - 后置校验拒绝和网络失败均不是前置鉴权通过证据，停止后续请求
+  ---
+  duration_ms: 0.3372
+  type: 'test'
+  ...
+# Subtest: 意外成功立即停止，不复制邀请码，只保留资源 ID
+ok 99 - 意外成功立即停止，不复制邀请码，只保留资源 ID
+  ---
+  duration_ms: 0.3942
+  type: 'test'
+  ...
+# Subtest: 师傅模式排除管家兼任角色及未加入项目
+ok 100 - 师傅模式排除管家兼任角色及未加入项目
+  ---
+  duration_ms: 0.2435
+  type: 'test'
+  ...
+# Subtest: 师傅读取预检角色变化、非成员拒绝或管家列表意外允许均停止写请求
+ok 101 - 师傅读取预检角色变化、非成员拒绝或管家列表意外允许均停止写请求
+  ---
+  duration_ms: 0.351
+  type: 'test'
+  ...
+# Subtest: 师傅模式只接受角色级拒绝，非成员拒绝不能冒充项目内角色验证通过
+ok 102 - 师傅模式只接受角色级拒绝，非成员拒绝不能冒充项目内角色验证通过
+  ---
+  duration_ms: 0.265
+  type: 'test'
+  ...
+# Subtest: 主业主模式排除管家兼任角色及未加入项目
+ok 103 - 主业主模式排除管家兼任角色及未加入项目
+  ---
+  duration_ms: 0.11
+  type: 'test'
+  ...
+# Subtest: 主业主读取预检角色变化、非成员拒绝或管家列表意外允许均停止写请求
+ok 104 - 主业主读取预检角色变化、非成员拒绝或管家列表意外允许均停止写请求
+  ---
+  duration_ms: 0.2712
+  type: 'test'
+  ...
+# Subtest: 主业主模式只接受角色级拒绝，非成员拒绝不能冒充项目内角色验证通过
+ok 105 - 主业主模式只接受角色级拒绝，非成员拒绝不能冒充项目内角色验证通过
+  ---
+  duration_ms: 0.3942
+  type: 'test'
+  ...
+# Subtest: 师傅＋设计师模式排除管家兼任角色及未加入项目
+ok 106 - 师傅＋设计师模式排除管家兼任角色及未加入项目
+  ---
+  duration_ms: 0.9519
+  type: 'test'
+  ...
+# Subtest: 师傅＋设计师读取预检角色变化、非成员拒绝或管家列表意外允许均停止写请求
+ok 107 - 师傅＋设计师读取预检角色变化、非成员拒绝或管家列表意外允许均停止写请求
+  ---
+  duration_ms: 0.3213
+  type: 'test'
+  ...
+# Subtest: 师傅＋设计师模式只接受角色级拒绝，非成员拒绝不能冒充项目内角色验证通过
+ok 108 - 师傅＋设计师模式只接受角色级拒绝，非成员拒绝不能冒充项目内角色验证通过
+  ---
+  duration_ms: 0.162
+  type: 'test'
+  ...
+# Subtest: 页面流程：管家调整→师傅两照拒绝、三照发布→业主查看→重新加载
+ok 109 - 页面流程：管家调整→师傅两照拒绝、三照发布→业主查看→重新加载
+  ---
+  duration_ms: 79.9086
+  type: 'test'
+  ...
+# Subtest: 新增安排按示例工种预选对应阶段，管家仍可手动改选
+ok 110 - 新增安排按示例工种预选对应阶段，管家仍可手动改选
+  ---
+  duration_ms: 5.5831
+  type: 'test'
+  ...
+# Subtest: 页面流程：位置多选与自由文字共存，移除照片后仍可用单视频发布
+ok 111 - 页面流程：位置多选与自由文字共存，移除照片后仍可用单视频发布
+  ---
+  duration_ms: 5.5084
+  type: 'test'
+  ...
+# Subtest: 页面流程：本机保存失败保留表单和影像，重试不重复生成记录
+ok 112 - 页面流程：本机保存失败保留表单和影像，重试不重复生成记录
+  ---
+  duration_ms: 8.0566
+  type: 'test'
+  ...
+# Subtest: 文件保存失败后重试复用成功文件，全部完成才可发布
+ok 113 - 文件保存失败后重试复用成功文件，全部完成才可发布
+  ---
+  duration_ms: 1.1864
+  type: 'test'
+  ...
+# Subtest: 只读角色不能进入编辑或发布页；越项目路由无数据；成员页不含退出成员
+ok 114 - 只读角色不能进入编辑或发布页；越项目路由无数据；成员页不含退出成员
+  ---
+  duration_ms: 31.5676
+  type: 'test'
+  ...
+# Subtest: 相机调用只请求 camera；取消保留文本，超时视频拒绝，九照上限
+ok 115 - 相机调用只请求 camera；取消保留文本，超时视频拒绝，九照上限
+  ---
+  duration_ms: 5.8082
+  type: 'test'
+  ...
+# Subtest: 合并后的首页同时保留示例项目和云连接测试；模拟响应校验成功
+ok 116 - 合并后的首页同时保留示例项目和云连接测试；模拟响应校验成功
+  ---
+  duration_ms: 4.1973
+  type: 'test'
+  ...
+# Subtest: 云 SDK 未就绪时首页不显示连接成功，示例项目仍可试用
+ok 117 - 云 SDK 未就绪时首页不显示连接成功，示例项目仍可试用
+  ---
+  duration_ms: 4.1673
+  type: 'test'
+  ...
+# Subtest: 正式版、未知版本和账号信息失败时首页测试入口隐藏且不发起云连接
+ok 118 - 正式版、未知版本和账号信息失败时首页测试入口隐藏且不发起云连接
+  ---
+  duration_ms: 12.2013
+  type: 'test'
+  ...
+# Subtest: 错 AppID 时首页测试入口不可用且零云请求
+ok 119 - 错 AppID 时首页测试入口不可用且零云请求
+  ---
+  duration_ms: 3.3929
+  type: 'test'
+  ...
+# Subtest: develop 版本首页仍可发起云连接测试，但隐藏后再次进入变为不可用仍停止请求
+ok 120 - develop 版本首页仍可发起云连接测试，但隐藏后再次进入变为不可用仍停止请求
+  ---
+  duration_ms: 3.8991
+  type: 'test'
+  ...
+# Subtest: 首页导航按钮点击时重新校验环境，release 下零跳转、develop 下正常跳转
+ok 121 - 首页导航按钮点击时重新校验环境，release 下零跳转、develop 下正常跳转
+  ---
+  duration_ms: 4.3391
+  type: 'test'
+  ...
+# Subtest: release, unknown version, wrong appId and missing account info hide entry and issue no requests
+ok 122 - release, unknown version, wrong appId and missing account info hide entry and issue no requests
+  ---
+  duration_ms: 9.4284
+  type: 'test'
+  ...
+# Subtest: develop version can still run read, write and business checks
+ok 123 - develop version can still run read, write and business checks
+  ---
+  duration_ms: 3.3304
+  type: 'test'
+  ...
+# Subtest: page becomes unavailable after switching to release still issues no requests
+ok 124 - page becomes unavailable after switching to release still issues no requests
+  ---
+  duration_ms: 0.905
+  type: 'test'
+  ...
+# Subtest: WXML gates all interactive test content behind testEntryAllowed
+ok 125 - WXML gates all interactive test content behind testEntryAllowed
+  ---
+  duration_ms: 0.5548
+  type: 'test'
+  ...
+# Subtest: onShow refreshes gate without recreating probe or resetting attempt flags
+ok 126 - onShow refreshes gate without recreating probe or resetting attempt flags
+  ---
+  duration_ms: 1.4481
+  type: 'test'
+  ...
+# Subtest: resuming from release to develop keeps reports and marks but re-enables actions
+ok 127 - resuming from release to develop keeps reports and marks but re-enables actions
+  ---
+  duration_ms: 1.4279
+  type: 'test'
+  ...
+# Subtest: only explicit database permission denial counts; network/login/generic errors do not
+ok 128 - only explicit database permission denial counts; network/login/generic errors do not
+  ---
+  duration_ms: 1.0576
+  type: 'test'
+  ...
+# Subtest: actual SDK error from user screenshot unlocks create check and both denials pass
+ok 129 - actual SDK error from user screenshot unlocks create check and both denials pass
+  ---
+  duration_ms: 2.9605
+  type: 'test'
+  ...
+# Subtest: wrong account, wrong environment, release, unknown or missing version issue no database requests
+ok 130 - wrong account, wrong environment, release, unknown or missing version issue no database requests
+  ---
+  duration_ms: 1.2599
+  type: 'test'
+  ...
+# Subtest: getAccountInfoSync failure is treated as inconclusive with zero requests
+ok 131 - getAccountInfoSync failure is treated as inconclusive with zero requests
+  ---
+  duration_ms: 0.2548
+  type: 'test'
+  ...
+# Subtest: unexpected successful read blocks writing and does not expose document data
+ok 132 - unexpected successful read blocks writing and does not expose document data
+  ---
+  duration_ms: 0.268
+  type: 'test'
+  ...
+# Subtest: network failure is inconclusive and never enables writing
+ok 133 - network failure is inconclusive and never enables writing
+  ---
+  duration_ms: 0.2067
+  type: 'test'
+  ...
+# Subtest: read and create deny as expected; duplicate calls cannot issue another request
+ok 134 - read and create deny as expected; duplicate calls cannot issue another request
+  ---
+  duration_ms: 0.2374
+  type: 'test'
+  ...
+# Subtest: unexpected creation is reported with marker for investigation, without deletion or retry
+ok 135 - unexpected creation is reported with marker for investigation, without deletion or retry
+  ---
+  duration_ms: 0.3788
+  type: 'test'
+  ...
+# Subtest: a write timeout is unknown and cannot be retried by this probe
+ok 136 - a write timeout is unknown and cannot be retried by this probe
+  ---
+  duration_ms: 41.9028
+  type: 'test'
+  ...
+# Subtest: each approved business collection can be checked; arbitrary collections cannot be queried
+ok 137 - each approved business collection can be checked; arbitrary collections cannot be queried
+  ---
+  duration_ms: 0.9606
+  type: 'test'
+  ...
+# Subtest: 默认禁用或凭据不完整时不发送任何请求
+ok 138 - 默认禁用或凭据不完整时不发送任何请求
+  ---
+  duration_ms: 2.7565
+  type: 'test'
+  ...
+# Subtest: 旧项目A/B、错执行人、同申请人/同邀请、两编号对调、过期或未来核验不发送请求
+ok 139 - 旧项目A/B、错执行人、同申请人/同邀请、两编号对调、过期或未来核验不发送请求
+  ---
+  duration_ms: 4.146
+  type: 'test'
+  ...
+# Subtest: 非管家账号、项目角色不符、项目已有主业主、成员或邀请预检异常均不发送请求
+ok 140 - 非管家账号、项目角色不符、项目已有主业主、成员或邀请预检异常均不发送请求
+  ---
+  duration_ms: 4.6237
+  type: 'test'
+  ...
+# Subtest: 配置校验拒绝错误AppID/env/版本/基线/成员/候选
+ok 141 - 配置校验拒绝错误AppID/env/版本/基线/成员/候选
+  ---
+  duration_ms: 4.2741
+  type: 'test'
+  ...
+# Subtest: 两次请求同时在途，参数分别对应正确候选
+ok 142 - 两次请求同时在途，参数分别对应正确候选
+  ---
+  duration_ms: 22.9635
+  type: 'test'
+  ...
+# Subtest: 甲成功、乙OWNER_EXISTS，且胜方成为唯一主业主，败方申请仍待核对
+ok 143 - 甲成功、乙OWNER_EXISTS，且胜方成为唯一主业主，败方申请仍待核对
+  ---
+  duration_ms: 1.3856
+  type: 'test'
+  ...
+# Subtest: 乙成功、甲OWNER_EXISTS，结果顺序交换仍识别候选
+ok 144 - 乙成功、甲OWNER_EXISTS，结果顺序交换仍识别候选
+  ---
+  duration_ms: 1.2585
+  type: 'test'
+  ...
+# Subtest: 双成功、零成功、超时或未知错误停止且不重发
+ok 145 - 双成功、零成功、超时或未知错误停止且不重发
+  ---
+  duration_ms: 3.046
+  type: 'test'
+  ...
+# Subtest: 仅OWNER_EXISTS组合可通过，CODE_INVALID/NO_ACCESS/未知错误不通过
+ok 146 - 仅OWNER_EXISTS组合可通过，CODE_INVALID/NO_ACCESS/未知错误不通过
+  ---
+  duration_ms: 2.5919
+  type: 'test'
+  ...
+# Subtest: 一成功配非OWNER_EXISTS业务拒绝不通过
+ok 147 - 一成功配非OWNER_EXISTS业务拒绝不通过
+  ---
+  duration_ms: 1.0907
+  type: 'test'
+  ...
+# Subtest: 无效成功响应不计为成功
+ok 148 - 无效成功响应不计为成功
+  ---
+  duration_ms: 2.8205
+  type: 'test'
+  ...
+# Subtest: 存储失败、已有标记或同实例重入不发送请求
+ok 149 - 存储失败、已有标记或同实例重入不发送请求
+  ---
+  duration_ms: 0.8326
+  type: 'test'
+  ...
+# Subtest: 事后状态矛盾停止、保留结果且不计完成
+ok 150 - 事后状态矛盾停止、保留结果且不计完成
+  ---
+  duration_ms: 0.795
+  type: 'test'
+  ...
+# Subtest: 候选人已是项目成员时预检停止且不发送请求
+ok 151 - 候选人已是项目成员时预检停止且不发送请求
+  ---
+  duration_ms: 0.2387
+  type: 'test'
+  ...
+# Subtest: 事后读取失败保留候选并隐藏原始编号，且不标记完成
+ok 152 - 事后读取失败保留候选并隐藏原始编号，且不标记完成
+  ---
+  duration_ms: 0.7742
+  type: 'test'
+  ...
+# Subtest: 报告和错误摘要不泄露原始编号
+ok 153 - 报告和错误摘要不泄露原始编号
+  ---
+  duration_ms: 0.429
+  type: 'test'
+  ...
+# Subtest: 严格采用service公开投影结构的正向路径通过
+ok 154 - 严格采用service公开投影结构的正向路径通过
+  ---
+  duration_ms: 0.4333
+  type: 'test'
+  ...
+# Subtest: 预检额外成员/第三份申请/项目名称变化/缺字段均不发送请求
+ok 155 - 预检额外成员/第三份申请/项目名称变化/缺字段均不发送请求
+  ---
+  duration_ms: 0.6335
+  type: 'test'
+  ...
+# Subtest: 事后原成员角色改变/胜方角色工种错误/败方仍在/待申请字段错误均不计完成
+ok 156 - 事后原成员角色改变/胜方角色工种错误/败方仍在/待申请字段错误均不计完成
+  ---
+  duration_ms: 1.3518
+  type: 'test'
+  ...
+# Subtest: 预检成员 trades 缺失或非数组不发送请求
+ok 157 - 预检成员 trades 缺失或非数组不发送请求
+  ---
+  duration_ms: 0.5698
+  type: 'test'
+  ...
+# Subtest: 预检邀请 trades 缺失或非数组、requestedAt 缺失或无效不发送请求
+ok 158 - 预检邀请 trades 缺失或非数组、requestedAt 缺失或无效不发送请求
+  ---
+  duration_ms: 0.7502
+  type: 'test'
+  ...
+# Subtest: 事后成员或胜方 trades 缺失或非数组不计完成
+ok 159 - 事后成员或胜方 trades 缺失或非数组不计完成
+  ---
+  duration_ms: 1.9304
+  type: 'test'
+  ...
+# Subtest: 事后败方邀请 requestedAt 改变、缺失或无效不计完成
+ok 160 - 事后败方邀请 requestedAt 改变、缺失或无效不计完成
+  ---
+  duration_ms: 1.3768
+  type: 'test'
+  ...
+# Subtest: 候选数组含 null、undefined、稀疏数组或非对象元素时安全停止
+ok 161 - 候选数组含 null、undefined、稀疏数组或非对象元素时安全停止
+  ---
+  duration_ms: 0.1815
+  type: 'test'
+  ...
+# Subtest: R3.1 未变异的真实候选清单通过校验：11 集合 / 13 索引、不可执行
+ok 162 - R3.1 未变异的真实候选清单通过校验：11 集合 / 13 索引、不可执行
+  ---
+  duration_ms: 3.5383
+  type: 'test'
+  ...
+# Subtest: R3.2 索引变异全部被拒：字段顺序、方向、unique、编号、增删字段
+ok 163 - R3.2 索引变异全部被拒：字段顺序、方向、unique、编号、增删字段
+  ---
+  duration_ms: 9.7082
+  type: 'test'
+  ...
+# Subtest: R3.3 候选规格与就绪标记被删或改动 → 拒绝
+ok 164 - R3.3 候选规格与就绪标记被删或改动 → 拒绝
+  ---
+  duration_ms: 12.0014
+  type: 'test'
+  ...
+# Subtest: R3.4 既有集合/函数/触发器防护仍生效（旧资源、额外函数、HTTP、权限、TTL）
+ok 165 - R3.4 既有集合/函数/触发器防护仍生效（旧资源、额外函数、HTTP、权限、TTL）
+  ---
+  duration_ms: 14.9908
+  type: 'test'
+  ...
+# Subtest: R3.5 候选清单与 collection-map 固定表逐项一致，全部 ADMINONLY / 无 TTL / 未创建
+ok 166 - R3.5 候选清单与 collection-map 固定表逐项一致，全部 ADMINONLY / 无 TTL / 未创建
+  ---
+  duration_ms: 0.9934
+  type: 'test'
+  ...
+# Subtest: R1.1 manifest 非法 JSON → check 与生成都拒绝
+ok 167 - R1.1 manifest 非法 JSON → check 与生成都拒绝
+  ---
+  duration_ms: 321.9728
+  type: 'test'
+  ...
+# Subtest: R1.2 manifest 文件条目哈希错 / 字节数错 → 拒绝
+ok 168 - R1.2 manifest 文件条目哈希错 / 字节数错 → 拒绝
+  ---
+  duration_ms: 321.143
+  type: 'test'
+  ...
+# Subtest: R1.3 manifest 漏项 / 重复项 / 白名单外路径 / 就绪标记被改 → 拒绝
+ok 169 - R1.3 manifest 漏项 / 重复项 / 白名单外路径 / 就绪标记被改 → 拒绝
+  ---
+  duration_ms: 1012.393
+  type: 'test'
+  ...
+# Subtest: R1.4 基线缺失 / 坏 JSON / 字段不完整 → 停止且零产物
+ok 170 - R1.4 基线缺失 / 坏 JSON / 字段不完整 → 停止且零产物
+  ---
+  duration_ms: 228.471
+  type: 'test'
+  ...
+# Subtest: R1.5 基线与源不一致 → 停止，不自行修复
+ok 171 - R1.5 基线与源不一致 → 停止，不自行修复
+  ---
+  duration_ms: 139.2649
+  type: 'test'
+  ...
+# Subtest: R1.6 生成前存在额外文件 → 生成与 check 都拒绝，且零新增文件
+ok 172 - R1.6 生成前存在额外文件 → 生成与 check 都拒绝，且零新增文件
+  ---
+  duration_ms: 148.9986
+  type: 'test'
+  ...
+# Subtest: R1.7 晚序文件冲突在预检阶段被发现 → 拒绝且文件数不变
+ok 173 - R1.7 晚序文件冲突在预检阶段被发现 → 拒绝且文件数不变
+  ---
+  duration_ms: 147.3626
+  type: 'test'
+  ...
+# Subtest: S1.1 半成品（无 manifest、缺 index.js、gate.js 内容不同）→ 预检拒绝且零写
+ok 174 - S1.1 半成品（无 manifest、缺 index.js、gate.js 内容不同）→ 预检拒绝且零写
+  ---
+  duration_ms: 67.0712
+  type: 'test'
+  ...
+# Subtest: S1.2 半成品同长度内容篡改（hash 冲突）→ 预检拒绝且零写
+ok 175 - S1.2 半成品同长度内容篡改（hash 冲突）→ 预检拒绝且零写
+  ---
+  duration_ms: 64.6871
+  type: 'test'
+  ...
+# Subtest: S1.3 manifest 来源字段（sourceDir / packageDir / sourceKey）被篡改 → 拒绝
+ok 176 - S1.3 manifest 来源字段（sourceDir / packageDir / sourceKey）被篡改 → 拒绝
+  ---
+  duration_ms: 897.8838
+  type: 'test'
+  ...
+# Subtest: S1.4 未篡改的 manifest 来源字段与实际计算值一致（正向确认）
+ok 177 - S1.4 未篡改的 manifest 来源字段与实际计算值一致（正向确认）
+  ---
+  duration_ms: 175.6554
+  type: 'test'
+  ...
+# Subtest: S2.1 包体读点统一判链接：白名单文件为链接时 check 与生成都拒绝
+ok 178 - S2.1 包体读点统一判链接：白名单文件为链接时 check 与生成都拒绝
+  ---
+  duration_ms: 185.6056
+  type: 'test'
+  ...
+# 本机无法创建真实文件符号链接（EPERM）：真实链接分支未验证，改用合成标记测试
+# Subtest: S2.2 白名单子目录被 junction 替换 → 拒绝（真实 junction 实测）
+ok 179 - S2.2 白名单子目录被 junction 替换 → 拒绝（真实 junction 实测） # SKIP 本机无法创建 junction（EPERM）：该分支未验证
+  ---
+  duration_ms: 81.6135
+  type: 'test'
+  ...
+# Subtest: S2.3 safeReadPackageFile：普通文件/字节差异/缺失/目录（非普通文件）
+ok 180 - S2.3 safeReadPackageFile：普通文件/字节差异/缺失/目录（非普通文件）
+  ---
+  duration_ms: 10.6469
+  type: 'test'
+  ...
+# Subtest: S1R.1 有 manifest 但包体缺文件 → 生成与检查均拒绝，且零写
+ok 181 - S1R.1 有 manifest 但包体缺文件 → 生成与检查均拒绝，且零写
+  ---
+  duration_ms: 212.2854
+  type: 'test'
+  ...
+# Subtest: S1R.2 有 manifest 缺文件 + manifest 文本冲突 → 仍预检拒绝且零写
+ok 182 - S1R.2 有 manifest 缺文件 + manifest 文本冲突 → 仍预检拒绝且零写
+  ---
+  duration_ms: 146.9328
+  type: 'test'
+  ...
+# Subtest: S1R.3 无 manifest 的合法半成品（内容正确的 gate.js）→ 仍可续建
+ok 183 - S1R.3 无 manifest 的合法半成品（内容正确的 gate.js）→ 仍可续建
+  ---
+  duration_ms: 186.1126
+  type: 'test'
+  ...
+# Subtest: S1R.4 缺文件清单来源：facts.missing 由实际读取结果填充
+ok 184 - S1R.4 缺文件清单来源：facts.missing 由实际读取结果填充
+  ---
+  duration_ms: 162.9018
+  type: 'test'
+  ...
+# Subtest: S3.1 依赖版本与来源被改或删除 → 拒绝
+ok 185 - S3.1 依赖版本与来源被改或删除 → 拒绝
+  ---
+  duration_ms: 5.5314
+  type: 'test'
+  ...
+# Subtest: S3.2 集合 created / ttlEnabled 必须显式为 false（缺失或改值都拒绝）
+ok 186 - S3.2 集合 created / ttlEnabled 必须显式为 false（缺失或改值都拒绝）
+  ---
+  duration_ms: 5.0015
+  type: 'test'
+  ...
+# Subtest: S3.3 依赖锁定与副本 package.json 实际版本一致（正向确认）
+ok 187 - S3.3 依赖锁定与副本 package.json 实际版本一致（正向确认）
+  ---
+  duration_ms: 0.4279
+  type: 'test'
+  ...
+# Subtest: R1.8 候选清单错误在打包之前被发现 → 零新增文件
+ok 188 - R1.8 候选清单错误在打包之前被发现 → 零新增文件
+  ---
+  duration_ms: 61.5045
+  type: 'test'
+  ...
+# Subtest: R1.9 真实源目录当前与 110 文件基线完全一致（8 个白名单文件）
+ok 189 - R1.9 真实源目录当前与 110 文件基线完全一致（8 个白名单文件）
+  ---
+  duration_ms: 67.164
+  type: 'test'
+  ...
+# Subtest: R2.1 受信根检查：输出根 / package 根 / 祖先为 junction → 拒绝且未写入
+ok 190 - R2.1 受信根检查：输出根 / package 根 / 祖先为 junction → 拒绝且未写入 # SKIP 本机无法创建 junction：EPERM
+  ---
+  duration_ms: 8.2502
+  type: 'test'
+  ...
+# Subtest: R2.2 输出根边界：与源重叠 / 仓库根 / 制品目录之外 → 拒绝
+ok 191 - R2.2 输出根边界：与源重叠 / 仓库根 / 制品目录之外 → 拒绝
+  ---
+  duration_ms: 12.2969
+  type: 'test'
+  ...
+# Subtest: R2.3 assertTrustedRoot 直接校验根与祖先
+ok 192 - R2.3 assertTrustedRoot 直接校验根与祖先 # SKIP 本机无法创建 junction：EPERM
+  ---
+  duration_ms: 3.1222
+  type: 'test'
+  ...
+# Subtest: R2.4 相对路径字符串过滤仍然生效（绝对路径 / .. / 盘符 / 反斜杠）
+ok 193 - R2.4 相对路径字符串过滤仍然生效（绝对路径 / .. / 盘符 / 反斜杠）
+  ---
+  duration_ms: 0.3253
+  type: 'test'
+  ...
+# Subtest: PKG.1 生成关闭包：8 文件逐字节一致、manifest 无自身哈希、重复运行复用
+ok 194 - PKG.1 生成关闭包：8 文件逐字节一致、manifest 无自身哈希、重复运行复用
+  ---
+  duration_ms: 253.1149
+  type: 'test'
+  ...
+# Subtest: PKG.2 白名单固定 8 项，不含 node_modules / 凭据 / 日志 / 历史证据
+ok 195 - PKG.2 白名单固定 8 项，不含 node_modules / 凭据 / 日志 / 历史证据
+  ---
+  duration_ms: 1.0717
+  type: 'test'
+  ...
+# Subtest: PKG.3 关闭包内入口在关闭态拒绝且零数据库访问（合成依赖，非实际 SDK）
+ok 196 - PKG.3 关闭包内入口在关闭态拒绝且零数据库访问（合成依赖，非实际 SDK）
+  ---
+  duration_ms: 72.8565
+  type: 'test'
+  ...
+# Subtest: PKG.4 入口被开启或填入动态值 → 拒绝生成关闭包
+ok 197 - PKG.4 入口被开启或填入动态值 → 拒绝生成关闭包
+  ---
+  duration_ms: 111.2284
+  type: 'test'
+  ...
+# Subtest: PKG.5 入口结构变化到无法定位配置块 → 拒绝，不猜测
+ok 198 - PKG.5 入口结构变化到无法定位配置块 → 拒绝，不猜测
+  ---
+  duration_ms: 0.1879
+  type: 'test'
+  ...
+# Subtest: R4.1 Page 的动作列表不含 removeMember：picker 不可选，仅客户端方法可承载
+ok 199 - R4.1 Page 的动作列表不含 removeMember：picker 不可选，仅客户端方法可承载
+  ---
+  duration_ms: 0.8565
+  type: 'test'
+  ...
+# Subtest: R4.2 getScheduleContext 公开返回不含 activeScheduleIds 等 guard 字段
+ok 200 - R4.2 getScheduleContext 公开返回不含 activeScheduleIds 等 guard 字段
+  ---
+  duration_ms: 0.7994
+  type: 'test'
+  ...
+# Subtest: R4.3 resolvePendingAfterExternalCheck 保留 envelope 并标记 writeLocked（不是解锁工具）
+ok 201 - R4.3 resolvePendingAfterExternalCheck 保留 envelope 并标记 writeLocked（不是解锁工具）
+  ---
+  duration_ms: 0.4446
+  type: 'test'
+  ...
+# Subtest: R5.1 操作稿：P4 前置不含「项目 ID 已登记」，并发/移出按不可达与未验证表述
+ok 202 - R5.1 操作稿：P4 前置不含「项目 ID 已登记」，并发/移出按不可达与未验证表述
+  ---
+  duration_ms: 1.0327
+  type: 'test'
+  ...
+# Subtest: R5-1 缺受控批准上下文 → 拒绝且零写入（尾号提示不是授权）
+ok 203 - R5-1 缺受控批准上下文 → 拒绝且零写入（尾号提示不是授权）
+  ---
+  duration_ms: 2.0017
+  type: 'test'
+  ...
+# Subtest: R5-2 批准上下文不合法 → 拒绝
+ok 204 - R5-2 批准上下文不合法 → 拒绝
+  ---
+  duration_ms: 0.3692
+  type: 'test'
+  ...
+# Subtest: R5-3 目标不在受控批准名单 → 拒绝且零写入
+ok 205 - R5-3 目标不在受控批准名单 → 拒绝且零写入
+  ---
+  duration_ms: 0.6551
+  type: 'test'
+  ...
+# Subtest: R5-4 尾号提示与受审名单无关：名单换成别人后原目标被拒
+ok 206 - R5-4 尾号提示与受审名单无关：名单换成别人后原目标被拒
+  ---
+  duration_ms: 0.2545
+  type: 'test'
+  ...
+# Subtest: R5-5 调用方与计划同时改成同一错误环境 → 仍拒绝
+ok 207 - R5-5 调用方与计划同时改成同一错误环境 → 仍拒绝
+  ---
+  duration_ms: 0.2679
+  type: 'test'
+  ...
+# Subtest: R5-6 调用者回执环境与固定环境不符 → 拒绝
+ok 208 - R5-6 调用者回执环境与固定环境不符 → 拒绝
+  ---
+  duration_ms: 0.5369
+  type: 'test'
+  ...
+# Subtest: R5-7 不传时钟 + 已过期计划 → 拒绝且零写入
+ok 209 - R5-7 不传时钟 + 已过期计划 → 拒绝且零写入
+  ---
+  duration_ms: 0.2906
+  type: 'test'
+  ...
+# Subtest: R5-8 不传时钟 + 有效计划 → 按当前时间通过（证明默认用当前时钟）
+ok 210 - R5-8 不传时钟 + 有效计划 → 按当前时间通过（证明默认用当前时钟）
+  ---
+  duration_ms: 2.1787
+  type: 'test'
+  ...
+# Subtest: R5-9 注入时钟必须是有效有限值
+ok 211 - R5-9 注入时钟必须是有效有限值
+  ---
+  duration_ms: 0.6611
+  type: 'test'
+  ...
+# Subtest: R5-10 预检期间窗口过期 → 首写之前停止，零写入
+ok 212 - R5-10 预检期间窗口过期 → 首写之前停止，零写入
+  ---
+  duration_ms: 0.7187
+  type: 'test'
+  ...
+# Subtest: R5-11 用户记录缺身份字段 → 拒绝且零写入
+ok 213 - R5-11 用户记录缺身份字段 → 拒绝且零写入
+  ---
+  duration_ms: 0.351
+  type: 'test'
+  ...
+# Subtest: R5-12 用户记录 _id 与查询键不一致 → 拒绝且零写入
+ok 214 - R5-12 用户记录 _id 与查询键不一致 → 拒绝且零写入
+  ---
+  duration_ms: 0.2115
+  type: 'test'
+  ...
+# Subtest: R5-13 身份派生值与 _id 不一致（openid 错配）→ 拒绝且零写入
+ok 215 - R5-13 身份派生值与 _id 不一致（openid 错配）→ 拒绝且零写入
+  ---
+  duration_ms: 0.1737
+  type: 'test'
+  ...
+# Subtest: R5-14 错误记录不含 openid 明文
+ok 216 - R5-14 错误记录不含 openid 明文
+  ---
+  duration_ms: 0.1835
+  type: 'test'
+  ...
+# Subtest: R5-15 合法一致身份 → 正向授予（一次提交）
+ok 217 - R5-15 合法一致身份 → 正向授予（一次提交）
+  ---
+  duration_ms: 1.0937
+  type: 'test'
+  ...
+# Subtest: R5-16 非 active → 拒绝且零写入
+ok 218 - R5-16 非 active → 拒绝且零写入
+  ---
+  duration_ms: 0.2587
+  type: 'test'
+  ...
+# Subtest: R5-17 deriveUserId 与已验收 service 契约一致
+ok 219 - R5-17 deriveUserId 与已验收 service 契约一致
+  ---
+  duration_ms: 0.1251
+  type: 'test'
+  ...
+# Subtest: P1 非法计划 → 拒绝且零数据库操作
+ok 220 - P1 非法计划 → 拒绝且零数据库操作
+  ---
+  duration_ms: 0.5558
+  type: 'test'
+  ...
+# Subtest: P2 计划合法 → 冻结返回，无 projectId 前置
+ok 221 - P2 计划合法 → 冻结返回，无 projectId 前置
+  ---
+  duration_ms: 0.0905
+  type: 'test'
+  ...
+# Subtest: P3 计划过期 → 拒绝
+ok 222 - P3 计划过期 → 拒绝
+  ---
+  duration_ms: 0.083
+  type: 'test'
+  ...
+# Subtest: P7 任一步写失败 → 整体回滚，快照不变
+ok 223 - P7 任一步写失败 → 整体回滚，快照不变
+  ---
+  duration_ms: 0.5073
+  type: 'test'
+  ...
+# Subtest: P8 回滚失败 → 如实报告，不吞掉
+ok 224 - P8 回滚失败 → 如实报告，不吞掉
+  ---
+  duration_ms: 0.2253
+  type: 'test'
+  ...
+# Subtest: P9 已有相同 primary → 零写停止，不算本次新授权成功
+ok 225 - P9 已有相同 primary → 零写停止，不算本次新授权成功
+  ---
+  duration_ms: 0.1538
+  type: 'test'
+  ...
+# Subtest: P10 已有不同 primary → 零写停止并报告冲突
+ok 226 - P10 已有不同 primary → 零写停止并报告冲突
+  ---
+  duration_ms: 0.353
+  type: 'test'
+  ...
+# Subtest: P11 孤立审计（primary 缺失但审计在）→ 冲突停止，不补写不删除
+ok 227 - P11 孤立审计（primary 缺失但审计在）→ 冲突停止，不补写不删除
+  ---
+  duration_ms: 0.3975
+  type: 'test'
+  ...
+# Subtest: P12 两实例同时争夺空 primary（同一 target）→ 仅一笔提交
+ok 228 - P12 两实例同时争夺空 primary（同一 target）→ 仅一笔提交
+  ---
+  duration_ms: 0.4592
+  type: 'test'
+  ...
+# Subtest: P13 两实例争夺（不同 target）→ 失败方不得覆盖 primary
+ok 229 - P13 两实例争夺（不同 target）→ 失败方不得覆盖 primary
+  ---
+  duration_ms: 0.6772
+  type: 'test'
+  ...
+# Subtest: P14 集合白名单越界 → 拒绝
+ok 230 - P14 集合白名单越界 → 拒绝
+  ---
+  duration_ms: 0.1298
+  type: 'test'
+  ...
+# Subtest: P15 适配器缺方法 → 拒绝
+ok 231 - P15 适配器缺方法 → 拒绝
+  ---
+  duration_ms: 0.1061
+  type: 'test'
+  ...
+# Subtest: P16 trusted 标记默认不接受（只能作测试数据）
+ok 232 - P16 trusted 标记默认不接受（只能作测试数据）
+  ---
+  duration_ms: 0.1546
+  type: 'test'
+  ...
+# Subtest: P17 调用者核验失败 → 零写
+ok 233 - P17 调用者核验失败 → 零写
+  ---
+  duration_ms: 0.1852
+  type: 'test'
+  ...
+# Subtest: R5-18 observePrimary 四态：present / absent / inconsistent / unconfirmed
+ok 234 - R5-18 observePrimary 四态：present / absent / inconsistent / unconfirmed
+  ---
+  duration_ms: 0.6653
+  type: 'test'
+  ...
+# Subtest: R5-19 observePrimary 另一轮次 → 不可确认一致（不误报为通过）
+ok 235 - R5-19 observePrimary 另一轮次 → 不可确认一致（不误报为通过）
+  ---
+  duration_ms: 0.3703
+  type: 'test'
+  ...
+# Subtest: P19 CLI 默认只做本地计划检查：无网络、无写入
+ok 236 - P19 CLI 默认只做本地计划检查：无网络、无写入
+  ---
+  duration_ms: 89.6776
+  type: 'test'
+  ...
+# Subtest: P20 CLI --execute 一律拒绝，零网络
+ok 237 - P20 CLI --execute 一律拒绝，零网络
+  ---
+  duration_ms: 85.6272
+  type: 'test'
+  ...
+# Subtest: P21 CLI 不接受绕过参数
+ok 238 - P21 CLI 不接受绕过参数
+  ---
+  duration_ms: 388.0582
+  type: 'test'
+  ...
+# Subtest: P22 CLI 缺批准上下文 → 拒绝并说明
+ok 239 - P22 CLI 缺批准上下文 → 拒绝并说明
+  ---
+  duration_ms: 68.4355
+  type: 'test'
+  ...
+# Subtest: P23 CLI --facts 只列声明事实，不打印凭据
+ok 240 - P23 CLI --facts 只列声明事实，不打印凭据
+  ---
+  duration_ms: 66.1329
+  type: 'test'
+  ...
+# Subtest: P24 CLI 源码不含自动加载 SDK / 联网 / 密钥读取
+ok 241 - P24 CLI 源码不含自动加载 SDK / 联网 / 密钥读取
+  ---
+  duration_ms: 0.5585
+  type: 'test'
+  ...
+# Subtest: S5-1 停用（disabled）的 primary → inconsistent，不得判 present
+ok 242 - S5-1 停用（disabled）的 primary → inconsistent，不得判 present
+  ---
+  duration_ms: 0.3473
+  type: 'test'
+  ...
+# Subtest: S5-2 primary 缺 status / 目标错 / 主键错 → inconsistent
+ok 243 - S5-2 primary 缺 status / 目标错 / 主键错 → inconsistent
+  ---
+  duration_ms: 0.65
+  type: 'test'
+  ...
+# Subtest: S5-3 审计关联不符（轮次/环境/证据/摘要/action）→ inconsistent
+ok 244 - S5-3 审计关联不符（轮次/环境/证据/摘要/action）→ inconsistent
+  ---
+  duration_ms: 0.9125
+  type: 'test'
+  ...
+# Subtest: S5-4 正常初始化后仍为 present（四态正向不被收紧误伤）
+ok 245 - S5-4 正常初始化后仍为 present（四态正向不被收紧误伤）
+  ---
+  duration_ms: 0.2448
+  type: 'test'
+  ...
+# Subtest: S5-5 读取失败仍为 unconfirmed（不放宽成 inconsistent）
+ok 246 - S5-5 读取失败仍为 unconfirmed（不放宽成 inconsistent）
+  ---
+  duration_ms: 0.1924
+  type: 'test'
+  ...
+# Subtest: S5-6 只读观察不产生第二次授予，且只查两条记录
+ok 247 - S5-6 只读观察不产生第二次授予，且只查两条记录
+  ---
+  duration_ms: 0.3267
+  type: 'test'
+  ...
+# Subtest: D1 配置默认关闭、动态值全空、嵌套冻结
+ok 248 - D1 配置默认关闭、动态值全空、嵌套冻结
+  ---
+  duration_ms: 1.3766
+  type: 'test'
+  ...
+# Subtest: D2 固定用例齐备且不含预填真实值
+ok 249 - D2 固定用例齐备且不含预填真实值
+  ---
+  duration_ms: 0.2045
+  type: 'test'
+  ...
+# Subtest: D3 尾号只作提示，不作授权判断依据
+ok 250 - D3 尾号只作提示，不作授权判断依据
+  ---
+  duration_ms: 0.1516
+  type: 'test'
+  ...
+# Subtest: D4 门控：驱动未启用 → 零请求
+ok 251 - D4 门控：驱动未启用 → 零请求
+  ---
+  duration_ms: 1.6838
+  type: 'test'
+  ...
+# Subtest: D5 门控：副本入口未启用 → 零请求（双开关必须同时成立）
+ok 252 - D5 门控：副本入口未启用 → 零请求（双开关必须同时成立）
+  ---
+  duration_ms: 1.3759
+  type: 'test'
+  ...
+# Subtest: D6 门控：release / 未知版本 / 空版本 → 零请求
+ok 253 - D6 门控：release / 未知版本 / 空版本 → 零请求
+  ---
+  duration_ms: 0.5974
+  type: 'test'
+  ...
+# Subtest: D7 门控：受保护 A/B/C 项目 → 零请求
+ok 254 - D7 门控：受保护 A/B/C 项目 → 零请求
+  ---
+  duration_ms: 4.3543
+  type: 'test'
+  ...
+# Subtest: D8 门控：窗口过期 → 零请求
+ok 255 - D8 门控：窗口过期 → 零请求
+  ---
+  duration_ms: 0.6593
+  type: 'test'
+  ...
+# Subtest: D9 门控：缺 v07TargetUserId → 零请求（R2 不得靠空值跳过）
+ok 256 - D9 门控：缺 v07TargetUserId → 零请求（R2 不得靠空值跳过）
+  ---
+  duration_ms: 1.2778
+  type: 'test'
+  ...
+# Subtest: R2-1 实际运行 AppID 与固定值不符 → 零请求
+ok 257 - R2-1 实际运行 AppID 与固定值不符 → 零请求
+  ---
+  duration_ms: 0.8503
+  type: 'test'
+  ...
+# Subtest: R2-2 运行环境未返回 AppID → 零请求（空值不得跳过比较）
+ok 258 - R2-2 运行环境未返回 AppID → 零请求（空值不得跳过比较）
+  ---
+  duration_ms: 0.5554
+  type: 'test'
+  ...
+# Subtest: R2-3 配置环境不符固定值 → 零请求（S1：云环境由 proof + config.env 保证）
+ok 259 - R2-3 配置环境不符固定值 → 零请求（S1：云环境由 proof + config.env 保证）
+  ---
+  duration_ms: 0.6444
+  type: 'test'
+  ...
+# Subtest: R2-3b 运行时若额外声明了不一致的 envId → 零请求
+ok 260 - R2-3b 运行时若额外声明了不一致的 envId → 零请求
+  ---
+  duration_ms: 0.5875
+  type: 'test'
+  ...
+# Subtest: R2-4 输入项目与固定目标不符（含受保护 A/B/C）→ 首次请求前拒绝
+ok 261 - R2-4 输入项目与固定目标不符（含受保护 A/B/C）→ 首次请求前拒绝
+  ---
+  duration_ms: 2.4944
+  type: 'test'
+  ...
+# Subtest: R2-5 V07 目标与固定目标不符 → 零发送
+ok 262 - R2-5 V07 目标与固定目标不符 → 零发送
+  ---
+  duration_ms: 2.1507
+  type: 'test'
+  ...
+# Subtest: R2-6 V07 目标是执行人本人 → 零发送
+ok 263 - R2-6 V07 目标是执行人本人 → 零发送
+  ---
+  duration_ms: 1.0531
+  type: 'test'
+  ...
+# Subtest: R2-7 V07 目标是受保护角色（管家/负责人/主业主）→ 零发送
+ok 264 - R2-7 V07 目标是受保护角色（管家/负责人/主业主）→ 零发送
+  ---
+  duration_ms: 3.2447
+  type: 'test'
+  ...
+# Subtest: R2-8 V07 目标不在公开成员列表 → 零发送
+ok 265 - R2-8 V07 目标不在公开成员列表 → 零发送
+  ---
+  duration_ms: 1.2179
+  type: 'test'
+  ...
+# Subtest: R2-9 V07 目标角色不是师傅 → 零发送
+ok 266 - R2-9 V07 目标角色不是师傅 → 零发送
+  ---
+  duration_ms: 0.8661
+  type: 'test'
+  ...
+# Subtest: R3-1 日期确认不被自动授予：expectedDate ≠ endDate → 零业务发送
+ok 267 - R3-1 日期确认不被自动授予：expectedDate ≠ endDate → 零业务发送
+  ---
+  duration_ms: 0.7251
+  type: 'test'
+  ...
+# Subtest: R3-2 V06-b 两个请求号相同 → 零发送
+ok 268 - R3-2 V06-b 两个请求号相同 → 零发送
+  ---
+  duration_ms: 0.9581
+  type: 'test'
+  ...
+# Subtest: R3-3 非标成功形状（缺 id / 版本非正整数 / 对象型字段参与比较 / 非标状态）→ stopped
+ok 269 - R3-3 非标成功形状（缺 id / 版本非正整数 / 对象型字段参与比较 / 非标状态）→ stopped
+  ---
+  duration_ms: 1.3997
+  type: 'test'
+  ...
+# Subtest: R3-4 V06-a 两份成功但版本不是 1 → stopped
+ok 270 - R3-4 V06-a 两份成功但版本不是 1 → stopped
+  ---
+  duration_ms: 2.4943
+  type: 'test'
+  ...
+# Subtest: R3-5 成功响应的目标不符（projectId / workerUserId / status）→ stopped
+ok 271 - R3-5 成功响应的目标不符（projectId / workerUserId / status）→ stopped
+  ---
+  duration_ms: 5.4778
+  type: 'test'
+  ...
+# Subtest: R3-6 V06-c 未完成 a 的人工接续 → 零请求
+ok 272 - R3-6 V06-c 未完成 a 的人工接续 → 零请求
+  ---
+  duration_ms: 1.1416
+  type: 'test'
+  ...
+# Subtest: R3-7 a 已 reviewed 后，V06-c 真实调用 getSchedule 并用当前 form
+ok 273 - R3-7 a 已 reviewed 后，V06-c 真实调用 getSchedule 并用当前 form
+  ---
+  duration_ms: 4.8348
+  type: 'test'
+  ...
+# Subtest: R3-8 V06-c 的 getSchedule 失败 / 目标不符 / 版本非法 → 零业务发送
+ok 274 - R3-8 V06-c 的 getSchedule 失败 / 目标不符 / 版本非法 → 零业务发送
+  ---
+  duration_ms: 14.6007
+  type: 'test'
+  ...
+# Subtest: R3-9 V06-c 缺字段 / 内容相同 → 零业务发送
+ok 275 - R3-9 V06-c 缺字段 / 内容相同 → 零业务发送
+  ---
+  duration_ms: 11.5804
+  type: 'test'
+  ...
+# Subtest: R3-9b V06-c 当前安排的版本不是正整数 → 零业务发送
+ok 276 - R3-9b V06-c 当前安排的版本不是正整数 → 零业务发送
+  ---
+  duration_ms: 2.1739
+  type: 'test'
+  ...
+# Subtest: R3-10 V07-A 前提：完整分页确认存在 active 安排
+ok 277 - R3-10 V07-A 前提：完整分页确认存在 active 安排
+  ---
+  duration_ms: 1.7131
+  type: 'test'
+  ...
+# Subtest: R3-11 V07-A 前提不成立（无 active 安排）→ 零发送
+ok 278 - R3-11 V07-A 前提不成立（无 active 安排）→ 零发送
+  ---
+  duration_ms: 1.2191
+  type: 'test'
+  ...
+# Subtest: R3-12 V07-B 前提不成立（仍有 active 安排）→ 零发送
+ok 279 - R3-12 V07-B 前提不成立（仍有 active 安排）→ 零发送
+  ---
+  duration_ms: 0.9847
+  type: 'test'
+  ...
+# Subtest: R3-13 V07 前提查询不可确认（分页未读完 / 形状非法）→ 零发送
+ok 280 - R3-13 V07 前提查询不可确认（分页未读完 / 形状非法）→ 零发送
+  ---
+  duration_ms: 3.7418
+  type: 'test'
+  ...
+# Subtest: R3-14 V07-B 成功形状不符（userId / status）→ stopped
+ok 281 - R3-14 V07-B 成功形状不符（userId / status）→ stopped
+  ---
+  duration_ms: 2.3931
+  type: 'test'
+  ...
+# Subtest: R1-1 普通身份刷新在途时驱动不得并行发送
+ok 282 - R1-1 普通身份刷新在途时驱动不得并行发送
+  ---
+  duration_ms: 4.721
+  type: 'test'
+  ...
+# Subtest: R1-2 candidate 未接续时下一例不得启动（换用例、换页面都不行）
+ok 283 - R1-2 candidate 未接续时下一例不得启动（换用例、换页面都不行）
+  ---
+  duration_ms: 3.2752
+  type: 'test'
+  ...
+# Subtest: R1-3 candidate 接续后才放开下一例
+ok 284 - R1-3 candidate 接续后才放开下一例
+  ---
+  duration_ms: 4.4683
+  type: 'test'
+  ...
+# Subtest: R1-4 stopped 状态在页面重建后仍阻断下一例，且接续不能解锁
+ok 285 - R1-4 stopped 状态在页面重建后仍阻断下一例，且接续不能解锁
+  ---
+  duration_ms: 2.634
+  type: 'test'
+  ...
+# Subtest: R1-5 换账号不能隐藏同轮次未完成批次
+ok 286 - R1-5 换账号不能隐藏同轮次未完成批次
+  ---
+  duration_ms: 2.2164
+  type: 'test'
+  ...
+# Subtest: R1-6 存储枚举不可用或读取异常 → 失败关闭
+ok 287 - R1-6 存储枚举不可用或读取异常 → 失败关闭
+  ---
+  duration_ms: 1.3826
+  type: 'test'
+  ...
+# Subtest: R1-7 运行时占用必须出示本方 token 才能释放
+ok 288 - R1-7 运行时占用必须出示本方 token 才能释放
+  ---
+  duration_ms: 0.1151
+  type: 'test'
+  ...
+# Subtest: R1-8 驱动占用期间普通三入口均零请求
+ok 289 - R1-8 驱动占用期间普通三入口均零请求
+  ---
+  duration_ms: 0.2874
+  type: 'test'
+  ...
+# Subtest: R1-9 公开 API 上不存在绕过锁的开关
+ok 290 - R1-9 公开 API 上不存在绕过锁的开关
+  ---
+  duration_ms: 0.7683
+  type: 'test'
+  ...
+# Subtest: R1-10 持久批次损坏 → 失败关闭（不得视为无未完成批次）
+ok 291 - R1-10 持久批次损坏 → 失败关闭（不得视为无未完成批次）
+  ---
+  duration_ms: 1.1313
+  type: 'test'
+  ...
+# Subtest: R4-1 前置期间窗口过期 → 零业务发送
+ok 292 - R4-1 前置期间窗口过期 → 零业务发送
+  ---
+  duration_ms: 1.7404
+  type: 'test'
+  ...
+# Subtest: R4-2 第二次发送同步抛错 → 已调用证据保留、不补发、状态落 stopped
+ok 293 - R4-2 第二次发送同步抛错 → 已调用证据保留、不补发、状态落 stopped
+  ---
+  duration_ms: 2.002
+  type: 'test'
+  ...
+# Subtest: R4-3 第一笔响应后第二笔挂起 → 超时停止且晚响应不改判
+ok 294 - R4-3 第一笔响应后第二笔挂起 → 超时停止且晚响应不改判
+  ---
+  duration_ms: 72.1666
+  type: 'test'
+  ...
+# Subtest: R4-4 状态写失败 → 不显示 candidate
+ok 295 - R4-4 状态写失败 → 不显示 candidate
+  ---
+  duration_ms: 4.3577
+  type: 'test'
+  ...
+# Subtest: R4-5 回读时重算摘要：只改内容保留旧 digest 会被状态写入发现
+ok 296 - R4-5 回读时重算摘要：只改内容保留旧 digest 会被状态写入发现
+  ---
+  duration_ms: 0.3888
+  type: 'test'
+  ...
+# Subtest: R4-6 报告区分模拟来源与运行期真实发送
+ok 297 - R4-6 报告区分模拟来源与运行期真实发送
+  ---
+  duration_ms: 2.4877
+  type: 'test'
+  ...
+# Subtest: R4-7 快照覆盖全部非敏感语义字段
+ok 298 - R4-7 快照覆盖全部非敏感语义字段
+  ---
+  duration_ms: 3.6067
+  type: 'test'
+  ...
+# Subtest: D10 V06-a 两笔相同请求号与相同载荷 → 双成功且版本 1 → candidate
+ok 299 - D10 V06-a 两笔相同请求号与相同载荷 → 双成功且版本 1 → candidate
+  ---
+  duration_ms: 2.6595
+  type: 'test'
+  ...
+# Subtest: D11 V06-b 不同请求号、一成功一 SCHEDULE_CONFLICT → candidate（两种顺序）
+ok 300 - D11 V06-b 不同请求号、一成功一 SCHEDULE_CONFLICT → candidate（两种顺序）
+  ---
+  duration_ms: 5.7281
+  type: 'test'
+  ...
+# Subtest: D12 拒绝组合：双成功(b/c)、双拒绝、未知业务码、SERVER_ERROR、坏形状 → stopped
+ok 301 - D12 拒绝组合：双成功(b/c)、双拒绝、未知业务码、SERVER_ERROR、坏形状 → stopped
+  ---
+  duration_ms: 7.0037
+  type: 'test'
+  ...
+# Subtest: D13 网络失败 → stopped/UNKNOWN_RESULT，不补发不发第三笔
+ok 302 - D13 网络失败 → stopped/UNKNOWN_RESULT，不补发不发第三笔
+  ---
+  duration_ms: 1.4115
+  type: 'test'
+  ...
+# Subtest: D14 identify / getMembers 异常 → 零业务发送并留停止证据
+ok 303 - D14 identify / getMembers 异常 → 零业务发送并留停止证据
+  ---
+  duration_ms: 1.5637
+  type: 'test'
+  ...
+# Subtest: D15 身份门槛：非可信账号 / 账号不一致 / 非管家 → 零测试写请求
+ok 304 - D15 身份门槛：非可信账号 / 账号不一致 / 非管家 → 零测试写请求
+  ---
+  duration_ms: 3.8855
+  type: 'test'
+  ...
+# Subtest: D16 启动快照持久化失败 → 零业务发送
+ok 305 - D16 启动快照持久化失败 → 零业务发送
+  ---
+  duration_ms: 1.5813
+  type: 'test'
+  ...
+# Subtest: D17 同 tick 两个入口：业务写请求恒为两笔，至多一个成功
+ok 306 - D17 同 tick 两个入口：业务写请求恒为两笔，至多一个成功
+  ---
+  duration_ms: 2.8629
+  type: 'test'
+  ...
+# Subtest: D18 两个驱动实例共享同一占用表：业务写请求恒为两笔
+ok 307 - D18 两个驱动实例共享同一占用表：业务写请求恒为两笔
+  ---
+  duration_ms: 3.2074
+  type: 'test'
+  ...
+# Subtest: D19 普通未决存在（当前格式 / unbound / 旧格式 / 损坏）→ 驱动拒绝启动
+ok 308 - D19 普通未决存在（当前格式 / unbound / 旧格式 / 损坏）→ 驱动拒绝启动
+  ---
+  duration_ms: 4.2686
+  type: 'test'
+  ...
+# Subtest: D20 脱敏：非白名单码折叠为 UNKNOWN_CODE，不透出底层对象
+ok 309 - D20 脱敏：非白名单码折叠为 UNKNOWN_CODE，不透出底层对象
+  ---
+  duration_ms: 2.6421
+  type: 'test'
+  ...
+# Subtest: D21 三个模块可独立 require，且不含 wx 引用
+ok 310 - D21 三个模块可独立 require，且不含 wx 引用
+  ---
+  duration_ms: 7.1141
+  type: 'test'
+  ...
+# Subtest: P1 真实 Page：c 无已核对 a → stopped 且零业务发送
+ok 311 - P1 真实 Page：c 无已核对 a → stopped 且零业务发送
+  ---
+  duration_ms: 1.5654
+  type: 'test'
+  ...
+# Subtest: P2 真实 Page：a candidate → 人工接续 → c 真实 getSchedule
+ok 312 - P2 真实 Page：a candidate → 人工接续 → c 真实 getSchedule
+  ---
+  duration_ms: 4.511
+  type: 'test'
+  ...
+# Subtest: P3 真实 Page：getSchedule 目标变化 / 失败 / 版本非法 → stopped 且零业务发送
+ok 313 - P3 真实 Page：getSchedule 目标变化 / 失败 / 版本非法 → stopped 且零业务发送
+  ---
+  duration_ms: 9.5745
+  type: 'test'
+  ...
+# Subtest: P4 真实 Page：日期不一致 → stopped 且零请求（不自动确认）
+ok 314 - P4 真实 Page：日期不一致 → stopped 且零请求（不自动确认）
+  ---
+  duration_ms: 1.1227
+  type: 'test'
+  ...
+# Subtest: P5 真实 Page：驱动抛错 → finally 结束 busy 且给出停止报告
+ok 315 - P5 真实 Page：驱动抛错 → finally 结束 busy 且给出停止报告
+  ---
+  duration_ms: 1.23
+  type: 'test'
+  ...
+# Subtest: P6 真实 Page：V07 目标只来自配置，不做表单兜底
+ok 316 - P6 真实 Page：V07 目标只来自配置，不做表单兜底
+  ---
+  duration_ms: 3.226
+  type: 'test'
+  ...
+# Subtest: S1-1 官方 MiniProgram 形状（appId/envVersion/version，无 envId）→ 可正常发送
+ok 317 - S1-1 官方 MiniProgram 形状（appId/envVersion/version，无 envId）→ 可正常发送
+  ---
+  duration_ms: 1.9889
+  type: 'test'
+  ...
+# Subtest: S1-2 每次调用都显式钉死固定云环境与函数名
+ok 318 - S1-2 每次调用都显式钉死固定云环境与函数名
+  ---
+  duration_ms: 2.0323
+  type: 'test'
+  ...
+# Subtest: S1-3 配置环境偏离固定值时 sendFixed 直接抛错（不发请求）
+ok 319 - S1-3 配置环境偏离固定值时 sendFixed 直接抛错（不发请求）
+  ---
+  duration_ms: 0.8016
+  type: 'test'
+  ...
+# Subtest: S2-1 cases 是 JSON 数组（可解析但非字典）→ 失败关闭、零发送
+ok 320 - S2-1 cases 是 JSON 数组（可解析但非字典）→ 失败关闭、零发送
+  ---
+  duration_ms: 0.5903
+  type: 'test'
+  ...
+# Subtest: S2-2 批次 kind / envId / roundId / 状态 / 绑定 不符 → 失败关闭
+ok 321 - S2-2 批次 kind / envId / roundId / 状态 / 绑定 不符 → 失败关闭
+  ---
+  duration_ms: 3.1757
+  type: 'test'
+  ...
+# Subtest: S2-3 上一轮 case/1 旧键（stopped）→ 保守阻断且保留记录
+ok 322 - S2-3 上一轮 case/1 旧键（stopped）→ 保守阻断且保留记录
+  ---
+  duration_ms: 0.9783
+  type: 'test'
+  ...
+# Subtest: S2-4 旧按人批次键里的未完成用例 → 保守阻断
+ok 323 - S2-4 旧按人批次键里的未完成用例 → 保守阻断
+  ---
+  duration_ms: 1.4789
+  type: 'test'
+  ...
+# Subtest: S2-5 伪造/无效 internalOwner 不得绕过运行时占用
+ok 324 - S2-5 伪造/无效 internalOwner 不得绕过运行时占用
+  ---
+  duration_ms: 2.6716
+  type: 'test'
+  ...
+# Subtest: S2-6 合法 ordinary 凭证可内部重入且不自锁
+ok 325 - S2-6 合法 ordinary 凭证可内部重入且不自锁
+  ---
+  duration_ms: 1.5135
+  type: 'test'
+  ...
+# Subtest: S3-1 第二笔先成功 → 先到先留证（不必等第一笔）
+ok 326 - S3-1 第二笔先成功 → 先到先留证（不必等第一笔）
+  ---
+  duration_ms: 7.7528
+  type: 'test'
+  ...
+# Subtest: S3-2 第一笔永久等待、第二笔先拒绝 → 各自计时、均落证据
+ok 327 - S3-2 第一笔永久等待、第二笔先拒绝 → 各自计时、均落证据
+  ---
+  duration_ms: 25.298
+  type: 'test'
+  ...
+# Subtest: S3-3 回读丢失 responses → 不得显示 candidate
+ok 328 - S3-3 回读丢失 responses → 不得显示 candidate
+  ---
+  duration_ms: 3.2182
+  type: 'test'
+  ...
+# Subtest: S3-4 回读被改 binding / 回退旧内容 → 保守停止
+ok 329 - S3-4 回读被改 binding / 回退旧内容 → 保守停止
+  ---
+  duration_ms: 5.5553
+  type: 'test'
+  ...
+# Subtest: S4-1 当前 expectedDate ≠ endDate → 明确停止、零 update
+ok 330 - S4-1 当前 expectedDate ≠ endDate → 明确停止、零 update
+  ---
+  duration_ms: 3.8867
+  type: 'test'
+  ...
+# Subtest: S4-2 当前安排缺 expectedDate / restDays 非法 → 停止
+ok 331 - S4-2 当前安排缺 expectedDate / restDays 非法 → 停止
+  ---
+  duration_ms: 10.2743
+  type: 'test'
+  ...
+# Subtest: S4-3 listSchedules 结果不可信 → 前提未知、零移出
+ok 332 - S4-3 listSchedules 结果不可信 → 前提未知、零移出
+  ---
+  duration_ms: 8.0434
+  type: 'test'
+  ...
+# Subtest: S4-4 成功响应的嵌套/非法字段不得进入报告或持久存储
+ok 333 - S4-4 成功响应的嵌套/非法字段不得进入报告或持久存储
+  ---
+  duration_ms: 8.6774
+  type: 'test'
+  ...
+# Subtest: S4-5 正常公开成功响应仍可通过（不因收紧而误拒）
+ok 334 - S4-5 正常公开成功响应仍可通过（不因收紧而误拒）
+  ---
+  duration_ms: 1.5646
+  type: 'test'
+  ...
+# Subtest: entry disabled by default
+ok 335 - entry disabled by default
+  ---
+  duration_ms: 9.9766
+  type: 'test'
+  ...
+# Subtest: entry denied for release or unknown env
+ok 336 - entry denied for release or unknown env
+  ---
+  duration_ms: 5.5528
+  type: 'test'
+  ...
+# Subtest: entry denied for wrong appId
+ok 337 - entry denied for wrong appId
+  ---
+  duration_ms: 4.1292
+  type: 'test'
+  ...
+# Subtest: cloud calls throw entry error when disabled
+ok 338 - cloud calls throw entry error when disabled
+  ---
+  duration_ms: 5.8702
+  type: 'test'
+  ...
+# Subtest: filters whitelist ignores action or projectId overrides
+ok 339 - filters whitelist ignores action or projectId overrides
+  ---
+  duration_ms: 6.9004
+  type: 'test'
+  ...
+# Subtest: write methods reuse stable requestId
+ok 340 - write methods reuse stable requestId
+  ---
+  duration_ms: 7.0729
+  type: 'test'
+  ...
+# Subtest: uid returns distinct request ids
+ok 341 - uid returns distinct request ids
+  ---
+  duration_ms: 6.698
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: TIMEOUT code
+ok 342 - call classifies transport failure as unknown: TIMEOUT code
+  ---
+  duration_ms: 4.8592
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: NETWORK_ERROR code
+ok 343 - call classifies transport failure as unknown: NETWORK_ERROR code
+  ---
+  duration_ms: 4.0466
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: REQUEST_FAIL code
+ok 344 - call classifies transport failure as unknown: REQUEST_FAIL code
+  ---
+  duration_ms: 6.5563
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: ECONNRESET code
+ok 345 - call classifies transport failure as unknown: ECONNRESET code
+  ---
+  duration_ms: 6.7859
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: no code but 网络 message
+ok 346 - call classifies transport failure as unknown: no code but 网络 message
+  ---
+  duration_ms: 4.0545
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: no code but 超时 message
+ok 347 - call classifies transport failure as unknown: no code but 超时 message
+  ---
+  duration_ms: 4.3975
+  type: 'test'
+  ...
+# Subtest: call classifies transport failure as unknown: no code and no network hint
+ok 348 - call classifies transport failure as unknown: no code and no network hint
+  ---
+  duration_ms: 3.893
+  type: 'test'
+  ...
+# Subtest: classifyError keeps explicit entry and validation kinds
+ok 349 - classifyError keeps explicit entry and validation kinds
+  ---
+  duration_ms: 6.3742
+  type: 'test'
+  ...
+# Subtest: call reports explicit business rejection with code as business
+ok 350 - call reports explicit business rejection with code as business
+  ---
+  duration_ms: 6.3018
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: result missing
+ok 351 - call rejects malformed response as unknown: result missing
+  ---
+  duration_ms: 4.4034
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: result is not object
+ok 352 - call rejects malformed response as unknown: result is not object
+  ---
+  duration_ms: 8.7251
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: result is null
+ok 353 - call rejects malformed response as unknown: result is null
+  ---
+  duration_ms: 7.3181
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: result is array
+ok 354 - call rejects malformed response as unknown: result is array
+  ---
+  duration_ms: 6.1318
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok:false without code
+ok 355 - call rejects malformed response as unknown: ok:false without code
+  ---
+  duration_ms: 6.1592
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok is string yes
+ok 356 - call rejects malformed response as unknown: ok is string yes
+  ---
+  duration_ms: 6.3082
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok is 1
+ok 357 - call rejects malformed response as unknown: ok is 1
+  ---
+  duration_ms: 6.2661
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok:true but missing version
+ok 358 - call rejects malformed response as unknown: ok:true but missing version
+  ---
+  duration_ms: 5.194
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok:true but version not number
+ok 359 - call rejects malformed response as unknown: ok:true but version not number
+  ---
+  duration_ms: 5.5785
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok:true but missing status
+ok 360 - call rejects malformed response as unknown: ok:true but missing status
+  ---
+  duration_ms: 8.2608
+  type: 'test'
+  ...
+# Subtest: call rejects malformed response as unknown: ok:true but scheduleId not string
+ok 361 - call rejects malformed response as unknown: ok:true but scheduleId not string
+  ---
+  duration_ms: 7.7658
+  type: 'test'
+  ...
+# Subtest: call rejects malformed listSchedules response missing pagination
+ok 362 - call rejects malformed listSchedules response missing pagination
+  ---
+  duration_ms: 8.5932
+  type: 'test'
+  ...
+# Subtest: call rejects malformed getSchedule response without schedule object
+ok 363 - call rejects malformed getSchedule response without schedule object
+  ---
+  duration_ms: 5.0541
+  type: 'test'
+  ...
+# Subtest: retry after a lost response reuses the same requestId and yields one schedule
+ok 364 - retry after a lost response reuses the same requestId and yields one schedule
+  ---
+  duration_ms: 6.7447
+  type: 'test'
+  ...
+# Subtest: client maps TASK_DIR_CAPACITY_EXCEEDED as recoverable business error
+ok 365 - client maps TASK_DIR_CAPACITY_EXCEEDED as recoverable business error
+  ---
+  duration_ms: 7.1486
+  type: 'test'
+  ...
+# Subtest: client maps TASK_DIR_INCONSISTENT as recoverable business error
+ok 366 - client maps TASK_DIR_INCONSISTENT as recoverable business error
+  ---
+  duration_ms: 7.1116
+  type: 'test'
+  ...
+# Subtest: client maps PROJECT_NOT_WRITABLE as recoverable business error
+ok 367 - client maps PROJECT_NOT_WRITABLE as recoverable business error
+  ---
+  duration_ms: 7.6518
+  type: 'test'
+  ...
+# Subtest: client maps STALE_SCAN as recoverable business error
+ok 368 - client maps STALE_SCAN as recoverable business error
+  ---
+  duration_ms: 5.8291
+  type: 'test'
+  ...
+# Subtest: client maps OCCUPANCY_INCONSISTENT as recoverable business error
+ok 369 - client maps OCCUPANCY_INCONSISTENT as recoverable business error
+  ---
+  duration_ms: 7.2134
+  type: 'test'
+  ...
+# Subtest: client maps SCHEDULE_OPERATION_BUDGET_EXCEEDED as recoverable business error
+ok 370 - client maps SCHEDULE_OPERATION_BUDGET_EXCEEDED as recoverable business error
+  ---
+  duration_ms: 4.6854
+  type: 'test'
+  ...
+# Subtest: client maps BAD_INPUT as recoverable business error
+ok 371 - client maps BAD_INPUT as recoverable business error
+  ---
+  duration_ms: 6.268
+  type: 'test'
+  ...
+# Subtest: client maps WORKER_INVALID as recoverable business error
+ok 372 - client maps WORKER_INVALID as recoverable business error
+  ---
+  duration_ms: 6.1288
+  type: 'test'
+  ...
+# Subtest: client maps SCHEDULE_CONFLICT as recoverable business error
+ok 373 - client maps SCHEDULE_CONFLICT as recoverable business error
+  ---
+  duration_ms: 7.66
+  type: 'test'
+  ...
+# Subtest: client maps WORKER_HAS_ACTIVE_SCHEDULES as recoverable business error
+ok 374 - client maps WORKER_HAS_ACTIVE_SCHEDULES as recoverable business error
+  ---
+  duration_ms: 7.6342
+  type: 'test'
+  ...
+# Subtest: client maps VERSION_MISMATCH as recoverable business error
+ok 375 - client maps VERSION_MISMATCH as recoverable business error
+  ---
+  duration_ms: 5.035
+  type: 'test'
+  ...
+# Subtest: client maps TASK_DIR_NOT_READY as blocking entry error
+ok 376 - client maps TASK_DIR_NOT_READY as blocking entry error
+  ---
+  duration_ms: 5.6785
+  type: 'test'
+  ...
+# Subtest: client maps NO_ACCESS as blocking entry error
+ok 377 - client maps NO_ACCESS as blocking entry error
+  ---
+  duration_ms: 5.8221
+  type: 'test'
+  ...
+# Subtest: client maps IDENTITY_DISABLED as blocking entry error
+ok 378 - client maps IDENTITY_DISABLED as blocking entry error
+  ---
+  duration_ms: 6.1125
+  type: 'test'
+  ...
+# Subtest: client maps SERVER_ERROR as blocking entry error
+ok 379 - client maps SERVER_ERROR as blocking entry error
+  ---
+  duration_ms: 4.2407
+  type: 'test'
+  ...
+# Subtest: client treats unknown business code as blocking rather than recoverable
+ok 380 - client treats unknown business code as blocking rather than recoverable
+  ---
+  duration_ms: 5.8699
+  type: 'test'
+  ...
+# Subtest: client still treats unknown transport failure as blocking unknown
+ok 381 - client still treats unknown transport failure as blocking unknown
+  ---
+  duration_ms: 6.7717
+  type: 'test'
+  ...
+# Subtest: schedule page initializes local form for manager
+ok 382 - schedule page initializes local form for manager
+  ---
+  duration_ms: 8.6376
+  type: 'test'
+  ...
+# Subtest: schedule page rejects non-manager
+ok 383 - schedule page rejects non-manager
+  ---
+  duration_ms: 2.1896
+  type: 'test'
+  ...
+# Subtest: schedule page saves local schedule
+ok 384 - schedule page saves local schedule
+  ---
+  duration_ms: 3.3183
+  type: 'test'
+  ...
+# Subtest: schedule page cloud path does not fall back to local when entry disabled
+ok 385 - schedule page cloud path does not fall back to local when entry disabled
+  ---
+  duration_ms: 2.3335
+  type: 'test'
+  ...
+# Subtest: schedule page cloud create uses cloud save and stable mode
+ok 386 - schedule page cloud create uses cloud save and stable mode
+  ---
+  duration_ms: 22.7774
+  type: 'test'
+  ...
+# Subtest: schedule page requires expectedDate confirmation when different from end
+ok 387 - schedule page requires expectedDate confirmation when different from end
+  ---
+  duration_ms: 3.7091
+  type: 'test'
+  ...
+# Subtest: schedule-detail page shows local schedule and history
+ok 388 - schedule-detail page shows local schedule and history
+  ---
+  duration_ms: 2.8972
+  type: 'test'
+  ...
+# Subtest: schedule-detail page shows cancel button for active manager
+ok 389 - schedule-detail page shows cancel button for active manager
+  ---
+  duration_ms: 1.7093
+  type: 'test'
+  ...
+# Subtest: schedule-detail page clears stale data on cloud load error
+ok 390 - schedule-detail page clears stale data on cloud load error
+  ---
+  duration_ms: 22.5386
+  type: 'test'
+  ...
+# Subtest: project page add plan navigates to schedule form
+ok 391 - project page add plan navigates to schedule form
+  ---
+  duration_ms: 3.0452
+  type: 'test'
+  ...
+# Subtest: project page cloud list shows cancelled schedule by date
+ok 392 - project page cloud list shows cancelled schedule by date
+  ---
+  duration_ms: 12.4761
+  type: 'test'
+  ...
+# Subtest: project page edit plan navigates to schedule detail
+ok 393 - project page edit plan navigates to schedule detail
+  ---
+  duration_ms: 2.304
+  type: 'test'
+  ...
+# Subtest: cloud schedule page rejects non-manager
+ok 394 - cloud schedule page rejects non-manager
+  ---
+  duration_ms: 13.1363
+  type: 'test'
+  ...
+# Subtest: cloud schedule save retries same requestId when result unknown, blocks edit and prevents duplicate
+ok 395 - cloud schedule save retries same requestId when result unknown, blocks edit and prevents duplicate
+  ---
+  duration_ms: 62.8178
+  type: 'test'
+  ...
+# Subtest: schedule-detail page loads more revisions with cursor
+ok 396 - schedule-detail page loads more revisions with cursor
+  ---
+  duration_ms: 31.1083
+  type: 'test'
+  ...
+# Subtest: cloud schedule page recovers from business error after correcting form
+ok 397 - cloud schedule page recovers from business error after correcting form
+  ---
+  duration_ms: 45.8638
+  type: 'test'
+  ...
+# Subtest: local schedule-detail shows edit but hides cancel for active manager
+ok 398 - local schedule-detail shows edit but hides cancel for active manager
+  ---
+  duration_ms: 15.8801
+  type: 'test'
+  ...
+# Subtest: schedule-detail cancel retries reuse snapshot requestId without prompting again
+ok 399 - schedule-detail cancel retries reuse snapshot requestId without prompting again
+  ---
+  duration_ms: 93.9595
+  type: 'test'
+  ...
+# Subtest: real client: cloud create that times out after server success becomes blocking unknown and retry reuses one requestId
+ok 400 - real client: cloud create that times out after server success becomes blocking unknown and retry reuses one requestId
+  ---
+  duration_ms: 125.1229
+  type: 'test'
+  ...
+# Subtest: real client: malformed ok:false without code becomes blocking unknown instead of recoverable business error
+ok 401 - real client: malformed ok:false without code becomes blocking unknown instead of recoverable business error
+  ---
+  duration_ms: 62.1516
+  type: 'test'
+  ...
+# Subtest: real client: explicit business rejection stays recoverable and allows corrected resubmit
+ok 402 - real client: explicit business rejection stays recoverable and allows corrected resubmit
+  ---
+  duration_ms: 93.9053
+  type: 'test'
+  ...
+# Subtest: real client: empty cancel reason is recoverable and correcting it cancels successfully
+ok 403 - real client: empty cancel reason is recoverable and correcting it cancels successfully
+  ---
+  duration_ms: 155.3234
+  type: 'test'
+  ...
+# Subtest: real client: empty local schedule content is recoverable and correcting it saves locally
+ok 404 - real client: empty local schedule content is recoverable and correcting it saves locally
+  ---
+  duration_ms: 6.9148
+  type: 'test'
+  ...
+# Subtest: real client: cancel retry after lost response reuses full snapshot and ignores live page state
+ok 405 - real client: cancel retry after lost response reuses full snapshot and ignores live page state
+  ---
+  duration_ms: 133.0694
+  type: 'test'
+  ...
+# Subtest: T1.1 无幂等保障的写动作结果未知时不得重发，保留证据并锁写
+ok 406 - T1.1 无幂等保障的写动作结果未知时不得重发，保留证据并锁写
+  ---
+  duration_ms: 27.3288
+  type: 'test'
+  ...
+# Subtest: T1.2 有回执保障的写动作结果未知时可用同一编号重试
+ok 407 - T1.2 有回执保障的写动作结果未知时可用同一编号重试
+  ---
+  duration_ms: 4.0854
+  type: 'test'
+  ...
+# Subtest: T1.3 只读动作结果未知可安全重发
+ok 408 - T1.3 只读动作结果未知可安全重发
+  ---
+  duration_ms: 2.0611
+  type: 'test'
+  ...
+# Subtest: T1.4 没有直接清锁重发的路径：解除必须显式确认且解除后仍锁写
+ok 409 - T1.4 没有直接清锁重发的路径：解除必须显式确认且解除后仍锁写
+  ---
+  duration_ms: 2.5696
+  type: 'test'
+  ...
+# Subtest: T1.5 未知之后收到窗口/权限拒绝，不得当作原请求未提交
+ok 410 - T1.5 未知之后收到窗口/权限拒绝，不得当作原请求未提交
+  ---
+  duration_ms: 2.9075
+  type: 'test'
+  ...
+# Subtest: T1.6 首次请求的已知业务拒绝码正确分类为可修正
+ok 411 - T1.6 首次请求的已知业务拒绝码正确分类为可修正
+  ---
+  duration_ms: 12.3179
+  type: 'test'
+  ...
+# Subtest: T1.7 动作分类与 vendor 实际幂等能力一致
+ok 412 - T1.7 动作分类与 vendor 实际幂等能力一致
+  ---
+  duration_ms: 2.1909
+  type: 'test'
+  ...
+# Subtest: T2.1 未决记录与快照是单一 envelope，一个键即可完整表达
+ok 413 - T2.1 未决记录与快照是单一 envelope，一个键即可完整表达
+  ---
+  duration_ms: 2.1677
+  type: 'test'
+  ...
+# Subtest: T2.2 存储半写/半清理都拼不出合法请求，读取即阻断
+ok 414 - T2.2 存储半写/半清理都拼不出合法请求，读取即阻断
+  ---
+  duration_ms: 7.0629
+  type: 'test'
+  ...
+# Subtest: T2.3 同轮次换目标：恢复时停止，不覆盖原目标
+ok 415 - T2.3 同轮次换目标：恢复时停止，不覆盖原目标
+  ---
+  duration_ms: 7.7273
+  type: 'test'
+  ...
+# Subtest: T2.4 可信账号隔离：换账号不得恢复他人未决记录，且不信任表单 actorId
+ok 416 - T2.4 可信账号隔离：换账号不得恢复他人未决记录，且不信任表单 actorId
+  ---
+  duration_ms: 6.8688
+  type: 'test'
+  ...
+# Subtest: T2.5 读取失败不得当作"没有未决"
+ok 417 - T2.5 读取失败不得当作"没有未决"
+  ---
+  duration_ms: 2.4944
+  type: 'test'
+  ...
+# Subtest: T2.6 旧格式残留只阻断不删除（不清用户缓存）
+ok 418 - T2.6 旧格式残留只阻断不删除（不清用户缓存）
+  ---
+  duration_ms: 4.0027
+  type: 'test'
+  ...
+# Subtest: T2.7 普通提交不静默恢复：同号也不重发，必须走显式恢复接口
+ok 419 - T2.7 普通提交不静默恢复：同号也不重发，必须走显式恢复接口
+  ---
+  duration_ms: 2.4659
+  type: 'test'
+  ...
+# Subtest: T4.1 未决期间只允许补录该请求所需凭据，业务字段仍锁定
+ok 420 - T4.1 未决期间只允许补录该请求所需凭据，业务字段仍锁定
+  ---
+  duration_ms: 7.892
+  type: 'test'
+  ...
+# Subtest: T4.2 凭据摘要不匹配时拒绝发送
+ok 421 - T4.2 凭据摘要不匹配时拒绝发送
+  ---
+  duration_ms: 8.6804
+  type: 'test'
+  ...
+# Subtest: T4.3 凭据正确时按该动作的恢复策略处理（无幂等保障则停止重发）
+ok 422 - T4.3 凭据正确时按该动作的恢复策略处理（无幂等保障则停止重发）
+  ---
+  duration_ms: 5.5574
+  type: 'test'
+  ...
+# Subtest: T4.4 restDays 与常用字段正确回填到展示字段
+ok 423 - T4.4 restDays 与常用字段正确回填到展示字段
+  ---
+  duration_ms: 5.1476
+  type: 'test'
+  ...
+# Subtest: T4.5 预计完成日与结束日不一致时必须显式确认，不默认填 true
+ok 424 - T4.5 预计完成日与结束日不一致时必须显式确认，不默认填 true
+  ---
+  duration_ms: 2.8609
+  type: 'test'
+  ...
+# Subtest: T4.6 日期一致时不要求额外确认
+ok 425 - T4.6 日期一致时不要求额外确认
+  ---
+  duration_ms: 2.3528
+  type: 'test'
+  ...
+# Subtest: T4.7 拒绝环境下不展示可操作控件
+ok 426 - T4.7 拒绝环境下不展示可操作控件
+  ---
+  duration_ms: 1.987
+  type: 'test'
+  ...
+# Subtest: T4.8 页面不再提供"放弃未决标记后新发"的路径
+ok 427 - T4.8 页面不再提供"放弃未决标记后新发"的路径
+  ---
+  duration_ms: 0.6704
+  type: 'test'
+  ...
+# Subtest: U1.1 重试遇业务码前置拒绝不清除原 envelope（不假定业务码都在回执之后）
+ok 428 - U1.1 重试遇业务码前置拒绝不清除原 envelope（不假定业务码都在回执之后）
+  ---
+  duration_ms: 2.775
+  type: 'test'
+  ...
+# Subtest: U1.2 失权/停用类前置拒绝同样保留原记录
+ok 429 - U1.2 失权/停用类前置拒绝同样保留原记录
+  ---
+  duration_ms: 9.1055
+  type: 'test'
+  ...
+# Subtest: U1.3 恢复期间不放开新写
+ok 430 - U1.3 恢复期间不放开新写
+  ---
+  duration_ms: 1.7815
+  type: 'test'
+  ...
+# Subtest: U1.4 首次请求的确定业务拒绝仍可修正（不被 U1 波及）
+ok 431 - U1.4 首次请求的确定业务拒绝仍可修正（不被 U1 波及）
+  ---
+  duration_ms: 1.8824
+  type: 'test'
+  ...
+# Subtest: U2.1 传输层返回不同身份时恢复零业务发送，且不覆盖原记录
+ok 432 - U2.1 传输层返回不同身份时恢复零业务发送，且不覆盖原记录
+  ---
+  duration_ms: 4.9839
+  type: 'test'
+  ...
+# Subtest: U2.2 同一身份重进可正常恢复
+ok 433 - U2.2 同一身份重进可正常恢复
+  ---
+  duration_ms: 4.0789
+  type: 'test'
+  ...
+# Subtest: U2.3 身份请求失败保留原记录且零业务发送
+ok 434 - U2.3 身份请求失败保留原记录且零业务发送
+  ---
+  duration_ms: 7.5819
+  type: 'test'
+  ...
+# Subtest: U2.4 身份刷新独立完成：不被旧未决记录锁死，也不覆盖任何未决记录
+ok 435 - U2.4 身份刷新独立完成：不被旧未决记录锁死，也不覆盖任何未决记录
+  ---
+  duration_ms: 3.4751
+  type: 'test'
+  ...
+# Subtest: U2.5 身份绑定存储失败时不得混用旧身份
+ok 436 - U2.5 身份绑定存储失败时不得混用旧身份
+  ---
+  duration_ms: 5.5934
+  type: 'test'
+  ...
+# Subtest: U2.6 identify 零写说明已更正为实际行为
+ok 437 - U2.6 identify 零写说明已更正为实际行为
+  ---
+  duration_ms: 1.1897
+  type: 'test'
+  ...
+# Subtest: U3.1 当前登记目标为空时恢复零请求
+ok 438 - U3.1 当前登记目标为空时恢复零请求
+  ---
+  duration_ms: 4.7981
+  type: 'test'
+  ...
+# Subtest: U3.2 envelope 顶层动作与快照动作不一致时停止
+ok 439 - U3.2 envelope 顶层动作与快照动作不一致时停止
+  ---
+  duration_ms: 3.1684
+  type: 'test'
+  ...
+# Subtest: U3.3 envelope 顶层项目与快照项目不一致时停止
+ok 440 - U3.3 envelope 顶层项目与快照项目不一致时停止
+  ---
+  duration_ms: 3.12
+  type: 'test'
+  ...
+# Subtest: U3.4 envelope 账号与所在存储键不一致时停止
+ok 441 - U3.4 envelope 账号与所在存储键不一致时停止
+  ---
+  duration_ms: 3.3731
+  type: 'test'
+  ...
+# Subtest: U3.5 项目类动作缺目标、无项目动作多目标均判损坏
+ok 442 - U3.5 项目类动作缺目标、无项目动作多目标均判损坏
+  ---
+  duration_ms: 3.274
+  type: 'test'
+  ...
+# Subtest: U3.6 无项目动作不把当前目标补进原本无目标的提交
+ok 443 - U3.6 无项目动作不把当前目标补进原本无目标的提交
+  ---
+  duration_ms: 4.0151
+  type: 'test'
+  ...
+# Subtest: U3.7 写后读回核对完整关键绑定（顶层字段未真正落盘即视为失败）
+ok 444 - U3.7 写后读回核对完整关键绑定（顶层字段未真正落盘即视为失败）
+  ---
+  duration_ms: 2.0204
+  type: 'test'
+  ...
+# Subtest: U3.8 实际 Page 组包：无项目动作不自动加项目目标
+ok 445 - U3.8 实际 Page 组包：无项目动作不自动加项目目标
+  ---
+  duration_ms: 3.9834
+  type: 'test'
+  ...
+# Subtest: U3.9 实际 Page 走无项目动作响应丢失后经真实恢复可用（不注入配置目标）
+ok 446 - U3.9 实际 Page 走无项目动作响应丢失后经真实恢复可用（不注入配置目标）
+  ---
+  duration_ms: 7.9238
+  type: 'test'
+  ...
+# Subtest: U3.10 客户端直接收到违约目标参数按无项目组包契约处理，不发送后才判坏
+ok 447 - U3.10 客户端直接收到违约目标参数按无项目组包契约处理，不发送后才判坏
+  ---
+  duration_ms: 4.1586
+  type: 'test'
+  ...
+# Subtest: U5.1 确认后修改相关日期必须重新确认
+ok 448 - U5.1 确认后修改相关日期必须重新确认
+  ---
+  duration_ms: 3.1115
+  type: 'test'
+  ...
+# Subtest: U5.2 改结束日同样使确认失效
+ok 449 - U5.2 改结束日同样使确认失效
+  ---
+  duration_ms: 2.2973
+  type: 'test'
+  ...
+# Subtest: U5.3 重进与切动作不沿用不相关的旧确认
+ok 450 - U5.3 重进与切动作不沿用不相关的旧确认
+  ---
+  duration_ms: 4.0058
+  type: 'test'
+  ...
+# Subtest: U5.4 取消勾选与非法事件值都按未确认处理（checkbox-group 数组事件）
+ok 451 - U5.4 取消勾选与非法事件值都按未确认处理（checkbox-group 数组事件）
+  ---
+  duration_ms: 1.768
+  type: 'test'
+  ...
+# Subtest: U5.5 日期一致时不额外阻断
+ok 452 - U5.5 日期一致时不额外阻断
+  ---
+  duration_ms: 2.5929
+  type: 'test'
+  ...
+# Subtest: U5.6 模板控件事件绑定与真实事件契约一致（checkbox-group 数组事件）
+ok 453 - U5.6 模板控件事件绑定与真实事件契约一致（checkbox-group 数组事件）
+  ---
+  duration_ms: 0.6433
+  type: 'test'
+  ...
+# Subtest: S1.1 从零经真实 main 走完准备链（不使用 vendor 直接写成员）
+ok 454 - S1.1 从零经真实 main 走完准备链（不使用 vendor 直接写成员）
+  ---
+  duration_ms: 31.433
+  type: 'test'
+  ...
+# Subtest: S1.2 准备期不放行施工写动作；切换 execute 后施工四写与查询可用
+ok 455 - S1.2 准备期不放行施工写动作；切换 execute 后施工四写与查询可用
+  ---
+  duration_ms: 33.5835
+  type: 'test'
+  ...
+# Subtest: S1.3 准备期不接受外部指定项目（范围控制而非全盘拒绝）
+ok 456 - S1.3 准备期不接受外部指定项目（范围控制而非全盘拒绝）
+  ---
+  duration_ms: 2.1228
+  type: 'test'
+  ...
+# Subtest: S1.4 未知阶段与未知动作仍被拒绝，零写入
+ok 457 - S1.4 未知阶段与未知动作仍被拒绝，零写入
+  ---
+  duration_ms: 5.3413
+  type: 'test'
+  ...
+# Subtest: S2.1 真实回执写故障注入：不留半套状态，重试取得原结果
+ok 458 - S2.1 真实回执写故障注入：不留半套状态，重试取得原结果
+  ---
+  duration_ms: 3.1059
+  type: 'test'
+  ...
+# Subtest: S2.2 同号并发取得同一原结果且不重复落库（不接受 SERVER_ERROR）
+ok 459 - S2.2 同号并发取得同一原结果且不重复落库（不接受 SERVER_ERROR）
+  ---
+  duration_ms: 4.4285
+  type: 'test'
+  ...
+# Subtest: S2.3 不同号并发同样只产生一个项目
+ok 460 - S2.3 不同号并发同样只产生一个项目
+  ---
+  duration_ms: 4.7281
+  type: 'test'
+  ...
+# Subtest: S2.4 一个轮次只允许一个项目：primary 改绑后也不得新建
+ok 461 - S2.4 一个轮次只允许一个项目：primary 改绑后也不得新建
+  ---
+  duration_ms: 2.2581
+  type: 'test'
+  ...
+# Subtest: S2.5 同载荷不同 requestId 走回放；不同载荷明确拒绝
+ok 462 - S2.5 同载荷不同 requestId 走回放；不同载荷明确拒绝
+  ---
+  duration_ms: 3.5253
+  type: 'test'
+  ...
+# Subtest: S2.6 回放先重验当前权限：失权与停用均拒绝
+ok 463 - S2.6 回放先重验当前权限：失权与停用均拒绝
+  ---
+  duration_ms: 4.9154
+  type: 'test'
+  ...
+# Subtest: S2.7 唯一记录缺失但项目存在时停止（损坏检测，不是正常恢复）
+ok 464 - S2.7 唯一记录缺失但项目存在时停止（损坏检测，不是正常恢复）
+  ---
+  duration_ms: 2.8063
+  type: 'test'
+  ...
+# Subtest: S3.1 跨项目邀请码：带允许ID、不带ID、带错ID均被拒且零写入
+ok 465 - S3.1 跨项目邀请码：带允许ID、不带ID、带错ID均被拒且零写入
+  ---
+  duration_ms: 10.6117
+  type: 'test'
+  ...
+# Subtest: S3.2 邀请码大小写与空格变体按 vendor 规范化后同样被拒
+ok 466 - S3.2 邀请码大小写与空格变体按 vendor 规范化后同样被拒
+  ---
+  duration_ms: 4.1655
+  type: 'test'
+  ...
+# Subtest: S3.3 listMyProjects 只返回本轮项目（实测列表接口）
+ok 467 - S3.3 listMyProjects 只返回本轮项目（实测列表接口）
+  ---
+  duration_ms: 5.326
+  type: 'test'
+  ...
+# Subtest: S3.4 原 A/B/C 项目 ID 在两阶段与误配下均被硬拒绝
+ok 468 - S3.4 原 A/B/C 项目 ID 在两阶段与误配下均被硬拒绝
+  ---
+  duration_ms: 7.245
+  type: 'test'
+  ...
+# Subtest: R1.1 经实际 main 完成身份登记（可信身份字段契约）
+ok 469 - R1.1 经实际 main 完成身份登记（可信身份字段契约）
+  ---
+  duration_ms: 2.3603
+  type: 'test'
+  ...
+# Subtest: R1.2 缺失身份与错环境在最早阶段拒绝，零数据库访问
+ok 470 - R1.2 缺失身份与错环境在最早阶段拒绝，零数据库访问
+  ---
+  duration_ms: 4.8703
+  type: 'test'
+  ...
+# Subtest: R6.1 原型名与未登记名在事务内外均零下层调用
+ok 471 - R6.1 原型名与未登记名在事务内外均零下层调用
+  ---
+  duration_ms: 0.7378
+  type: 'test'
+  ...
+# Subtest: R6.2 句柄不可被 set / defineProperty / delete / setPrototypeOf 改写
+ok 472 - R6.2 句柄不可被 set / defineProperty / delete / setPrototypeOf 改写
+  ---
+  duration_ms: 0.9871
+  type: 'test'
+  ...
+# Subtest: R6.3 正常 SDK 方法与事务仍可用（未被过度拦截）
+ok 473 - R6.3 正常 SDK 方法与事务仍可用（未被过度拦截）
+  ---
+  duration_ms: 1.3028
+  type: 'test'
+  ...
+# Subtest: R6.4 替身对无前缀集合立即报错；映射表无原型
+ok 474 - R6.4 替身对无前缀集合立即报错；映射表无原型
+  ---
+  duration_ms: 0.2182
+  type: 'test'
+  ...
+# Subtest: S6.1 事务提交有冲突检测，失败时只撤销本次写入并保留他事务提交
+ok 475 - S6.1 事务提交有冲突检测，失败时只撤销本次写入并保留他事务提交
+  ---
+  duration_ms: 0.2567
+  type: 'test'
+  ...
+# Subtest: S6.2 替身拒绝重复主键
+ok 476 - S6.2 替身拒绝重复主键
+  ---
+  duration_ms: 0.1189
+  type: 'test'
+  ...
+# Subtest: S6.3 重入由模拟 SDK 在同一次 runTransaction 内重调回调
+ok 477 - S6.3 重入由模拟 SDK 在同一次 runTransaction 内重调回调
+  ---
+  duration_ms: 0.1931
+  type: 'test'
+  ...
+# Subtest: S6.4 变异实际适配器后同一业务路径必须失败
+ok 478 - S6.4 变异实际适配器后同一业务路径必须失败
+  ---
+  duration_ms: 1.7054
+  type: 'test'
+  ...
+# Subtest: T3.1 回执在但项目已删除：停止而非宣称成功
+ok 479 - T3.1 回执在但项目已删除：停止而非宣称成功
+  ---
+  duration_ms: 1.3811
+  type: 'test'
+  ...
+# Subtest: T3.2 并发回放同样重验当前权限：primary 已改绑则拒绝
+ok 480 - T3.2 并发回放同样重验当前权限：primary 已改绑则拒绝
+  ---
+  duration_ms: 2.583
+  type: 'test'
+  ...
+# Subtest: T3.3 提交后回执读取失败：不得声称已整体回滚，同号可取回原结果
+ok 481 - T3.3 提交后回执读取失败：不得声称已整体回滚，同号可取回原结果
+  ---
+  duration_ms: 2.0243
+  type: 'test'
+  ...
+# Subtest: T3.4 轮次记录字段/确定性 ID 不一致一律停止
+ok 482 - T3.4 轮次记录字段/确定性 ID 不一致一律停止
+  ---
+  duration_ms: 7.0355
+  type: 'test'
+  ...
+# Subtest: T3.5 正常已提交回放、失败后再试、同轮次换执行人唯一性
+ok 483 - T3.5 正常已提交回放、失败后再试、同轮次换执行人唯一性
+  ---
+  duration_ms: 7.6832
+  type: 'test'
+  ...
+# Subtest: T3.6 范围解析与创建回放共享同一状态核验（currentRoundProjectId）
+ok 484 - T3.6 范围解析与创建回放共享同一状态核验（currentRoundProjectId）
+  ---
+  duration_ms: 2.7243
+  type: 'test'
+  ...
+# Subtest: T5.1 事务未提交的写入对事务外与其他事务不可见
+ok 485 - T5.1 事务未提交的写入对事务外与其他事务不可见
+  ---
+  duration_ms: 0.3527
+  type: 'test'
+  ...
+# Subtest: T5.2 一事务回滚不会让另一请求假成功（交错失败后他事务数据保留）
+ok 486 - T5.2 一事务回滚不会让另一请求假成功（交错失败后他事务数据保留）
+  ---
+  duration_ms: 3.9734
+  type: 'test'
+  ...
+# Subtest: T5.3 事务失败只丢弃本 attempt 写集，不回滚他事务数据与写日志
+ok 487 - T5.3 事务失败只丢弃本 attempt 写集，不回滚他事务数据与写日志
+  ---
+  duration_ms: 0.4437
+  type: 'test'
+  ...
+# Subtest: T5.4 并发成功必须看到已提交回执；双方都先看到无回执再竞争
+ok 488 - T5.4 并发成功必须看到已提交回执；双方都先看到无回执再竞争
+  ---
+  duration_ms: 2.7547
+  type: 'test'
+  ...
+# Subtest: T5.5 SDK 冲突重入后 enlist 写入仍与业务同事务提交
+ok 489 - T5.5 SDK 冲突重入后 enlist 写入仍与业务同事务提交
+  ---
+  duration_ms: 56.8081
+  type: 'test'
+  ...
+# Subtest: U4.1 提交确认响应丢失：不得断言未提交，同号可取回已提交结果
+ok 490 - U4.1 提交确认响应丢失：不得断言未提交，同号可取回已提交结果
+  ---
+  duration_ms: 2.3417
+  type: 'test'
+  ...
+# Subtest: U4.2 事务内明确失败：说明事实且不谎称已提交
+ok 491 - U4.2 事务内明确失败：说明事实且不谎称已提交
+  ---
+  duration_ms: 2.6869
+  type: 'test'
+  ...
+# Subtest: U4.3 提交后读失败仍正确说明"已收到成功返回"
+ok 492 - U4.3 提交后读失败仍正确说明"已收到成功返回"
+  ---
+  duration_ms: 1.552
+  type: 'test'
+  ...
+# Subtest: U4.4 三种情形分别说明事实，均不出现"未提交/已整体回滚"的断言
+ok 493 - U4.4 三种情形分别说明事实，均不出现"未提交/已整体回滚"的断言
+  ---
+  duration_ms: 5.3243
+  type: 'test'
+  ...
+# Subtest: U4.5 响应丢失不触发重复创建，也不改动创建协议
+ok 494 - U4.5 响应丢失不触发重复创建，也不改动创建协议
+  ---
+  duration_ms: 5.2046
+  type: 'test'
+  ...
+#   create 首用 1桶             peak= 20  limit=80
+#   create 已初始化 1桶           peak= 19  limit=80
+#   create 13桶               peak= 44  limit=80
+#   reassign                 peak= 23  limit=80
+#   cancel 13桶               peak= 42  limit=80
+#   update 最坏 26桶            peak= 75  limit=80
+#   removeMember             peak= 13  limit=80
+# Subtest: createSchedule: success and idempotent retry
+ok 495 - createSchedule: success and idempotent retry
+  ---
+  duration_ms: 14.061
+  type: 'test'
+  ...
+# Subtest: createSchedule: public shape and date query
+ok 496 - createSchedule: public shape and date query
+  ---
+  duration_ms: 1.1783
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects missing worker role/trade
+ok 497 - createSchedule: rejects missing worker role/trade
+  ---
+  duration_ms: 0.8494
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects worker without required trade after directory initialized
+ok 498 - createSchedule: rejects worker without required trade after directory initialized
+  ---
+  duration_ms: 0.8835
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects disabled worker user
+ok 499 - createSchedule: rejects disabled worker user
+  ---
+  duration_ms: 1.0852
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects revoked worker trade
+ok 500 - createSchedule: rejects revoked worker trade
+  ---
+  duration_ms: 1.1379
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects same trade same working day conflict
+ok 501 - createSchedule: rejects same trade same working day conflict
+  ---
+  duration_ms: 3.2018
+  type: 'test'
+  ...
+# Subtest: createSchedule: allows different trades same day
+ok 502 - createSchedule: allows different trades same day
+  ---
+  duration_ms: 2.1021
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects no working day after rest days
+ok 503 - createSchedule: rejects no working day after rest days
+  ---
+  duration_ms: 0.8669
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects invalid or reversed dates
+ok 504 - createSchedule: rejects invalid or reversed dates
+  ---
+  duration_ms: 0.8717
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects expectedDate mismatch without confirmation
+ok 505 - createSchedule: rejects expectedDate mismatch without confirmation
+  ---
+  duration_ms: 1.3115
+  type: 'test'
+  ...
+# Subtest: updateSchedule: version and reason required, history kept
+ok 506 - updateSchedule: version and reason required, history kept
+  ---
+  duration_ms: 7.1717
+  type: 'test'
+  ...
+# Subtest: updateSchedule: rejects version mismatch and missing reason
+ok 507 - updateSchedule: rejects version mismatch and missing reason
+  ---
+  duration_ms: 1.3002
+  type: 'test'
+  ...
+# Subtest: updateSchedule: release old occupancy and occupy new dates atomically
+ok 508 - updateSchedule: release old occupancy and occupy new dates atomically
+  ---
+  duration_ms: 1.4149
+  type: 'test'
+  ...
+# Subtest: updateSchedule: rejects _id in update patch via mock sdk
+ok 509 - updateSchedule: rejects _id in update patch via mock sdk
+  ---
+  duration_ms: 1.1889
+  type: 'test'
+  ...
+# Subtest: reassignSchedule: changes worker and updates guard counts
+ok 510 - reassignSchedule: changes worker and updates guard counts
+  ---
+  duration_ms: 2.4564
+  type: 'test'
+  ...
+# Subtest: cancelSchedule: keeps record and releases occupancy and guard
+ok 511 - cancelSchedule: keeps record and releases occupancy and guard
+  ---
+  duration_ms: 3.1517
+  type: 'test'
+  ...
+# Subtest: cancelSchedule: full occupancy release over multiple pages
+ok 512 - cancelSchedule: full occupancy release over multiple pages
+  ---
+  duration_ms: 1.6631
+  type: 'test'
+  ...
+# Subtest: cancelSchedule: rejected for already cancelled
+ok 513 - cancelSchedule: rejected for already cancelled
+  ---
+  duration_ms: 1.1339
+  type: 'test'
+  ...
+# Subtest: hasActiveSchedules: missing guard falls back to schedules query
+ok 514 - hasActiveSchedules: missing guard falls back to schedules query
+  ---
+  duration_ms: 0.5738
+  type: 'test'
+  ...
+# Subtest: guard record validation rejects corrupted counts and schema
+ok 515 - guard record validation rejects corrupted counts and schema
+  ---
+  duration_ms: 0.3153
+  type: 'test'
+  ...
+# Subtest: request id reused with different payload rejected
+ok 516 - request id reused with different payload rejected
+  ---
+  duration_ms: 0.8788
+  type: 'test'
+  ...
+# Subtest: request id reused by different actor rejected
+ok 517 - request id reused by different actor rejected
+  ---
+  duration_ms: 0.8898
+  type: 'test'
+  ...
+# Subtest: date parsing handles year/month/day boundaries
+ok 518 - date parsing handles year/month/day boundaries
+  ---
+  duration_ms: 0.1491
+  type: 'test'
+  ...
+# Subtest: getScheduleContext returns isManager and workers
+ok 519 - getScheduleContext returns isManager and workers
+  ---
+  duration_ms: 0.4643
+  type: 'test'
+  ...
+# Subtest: listSchedules supports pagination
+ok 520 - listSchedules supports pagination
+  ---
+  duration_ms: 15.1871
+  type: 'test'
+  ...
+# Subtest: createSchedule: rejects null form or unknown fields do not crash
+ok 521 - createSchedule: rejects null form or unknown fields do not crash
+  ---
+  duration_ms: 0.9586
+  type: 'test'
+  ...
+# Subtest: rejects non-string restDays
+ok 522 - rejects non-string restDays
+  ---
+  duration_ms: 0.2874
+  type: 'test'
+  ...
+# Subtest: missing guard after initialization is rejected instead of rebuilt from schedules
+ok 523 - missing guard after initialization is rejected instead of rebuilt from schedules
+  ---
+  duration_ms: 1.5052
+  type: 'test'
+  ...
+# Subtest: listSchedules cursor pagination reaches beyond single DB page
+ok 524 - listSchedules cursor pagination reaches beyond single DB page
+  ---
+  duration_ms: 92.3506
+  type: 'test'
+  ...
+# Subtest: transaction rejects actor disabled after outer identity check
+ok 525 - transaction rejects actor disabled after outer identity check
+  ---
+  duration_ms: 0.3347
+  type: 'test'
+  ...
+# Subtest: transaction rejects actor removed from project after outer check
+ok 526 - transaction rejects actor removed from project after outer check
+  ---
+  duration_ms: 0.3909
+  type: 'test'
+  ...
+# Subtest: scanActiveSchedules is bounded and reads beyond a single DB page with sentinel
+ok 527 - scanActiveSchedules is bounded and reads beyond a single DB page with sentinel
+  ---
+  duration_ms: 2.2868
+  type: 'test'
+  ...
+# Subtest: listScheduleRevisions cursor reaches every change without skipping
+ok 528 - listScheduleRevisions cursor reaches every change without skipping
+  ---
+  duration_ms: 2.7048
+  type: 'test'
+  ...
+# Subtest: getScheduleContext returns all workers beyond single DB page
+ok 529 - getScheduleContext returns all workers beyond single DB page
+  ---
+  duration_ms: 4.6028
+  type: 'test'
+  ...
+# Subtest: listSchedules date filter includes cancelled schedules
+ok 530 - listSchedules date filter includes cancelled schedules
+  ---
+  duration_ms: 1.3742
+  type: 'test'
+  ...
+# Subtest: write rollback keeps state unchanged when any collection fails
+ok 531 - write rollback keeps state unchanged when any collection fails
+  ---
+  duration_ms: 0.9808
+  type: 'test'
+  ...
+# Subtest: hasActiveSchedules blocks removal while schedule active and allows after cancel
+ok 532 - hasActiveSchedules blocks removal while schedule active and allows after cancel
+  ---
+  duration_ms: 1.5502
+  type: 'test'
+  ...
+# Subtest: retry generates only one schedule for same requestId
+ok 533 - retry generates only one schedule for same requestId
+  ---
+  duration_ms: 0.9458
+  type: 'test'
+  ...
+# Subtest: stale expectedVersion fails and retry with fresh version produces exactly one new revision
+ok 534 - stale expectedVersion fails and retry with fresh version produces exactly one new revision
+  ---
+  duration_ms: 2.2352
+  type: 'test'
+  ...
+# Subtest: rollback on occupancy write failure leaves full snapshot unchanged
+ok 535 - rollback on occupancy write failure leaves full snapshot unchanged
+  ---
+  duration_ms: 1.7624
+  type: 'test'
+  ...
+# Subtest: rollback on guard write failure leaves full snapshot unchanged
+ok 536 - rollback on guard write failure leaves full snapshot unchanged
+  ---
+  duration_ms: 1.0117
+  type: 'test'
+  ...
+# Subtest: no active schedule remains after schedule is cancelled
+ok 537 - no active schedule remains after schedule is cancelled
+  ---
+  duration_ms: 0.9416
+  type: 'test'
+  ...
+# Subtest: self-consistent but wrong directory is rejected by actual scan
+ok 538 - self-consistent but wrong directory is rejected by actual scan
+  ---
+  duration_ms: 0.611
+  type: 'test'
+  ...
+# Subtest: self-consistent directory with wrong id is rejected by actual scan
+ok 539 - self-consistent directory with wrong id is rejected by actual scan
+  ---
+  duration_ms: 0.582
+  type: 'test'
+  ...
+# Subtest: empty directory while actual schedules exist is rejected
+ok 540 - empty directory while actual schedules exist is rejected
+  ---
+  duration_ms: 0.5484
+  type: 'test'
+  ...
+# Subtest: concurrent create and hasActiveSchedules: checker pauses at commit, create commits first, checker retries and sees active
+ok 541 - concurrent create and hasActiveSchedules: checker pauses at commit, create commits first, checker retries and sees active
+  ---
+  duration_ms: 5.8146
+  type: 'test'
+  ...
+# Subtest: concurrent reassign and hasActiveSchedules old worker: checker pauses at commit, reassign commits first, checker retries and sees inactive
+ok 542 - concurrent reassign and hasActiveSchedules old worker: checker pauses at commit, reassign commits first, checker retries and sees inactive
+  ---
+  duration_ms: 2.4749
+  type: 'test'
+  ...
+# Subtest: transaction conflict retry counted when second create commits first
+ok 543 - transaction conflict retry counted when second create commits first
+  ---
+  duration_ms: 1.6687
+  type: 'test'
+  ...
+# Subtest: rollback on schedule update failure leaves full snapshot unchanged
+ok 544 - rollback on schedule update failure leaves full snapshot unchanged
+  ---
+  duration_ms: 2.2727
+  type: 'test'
+  ...
+# Subtest: rollback on occupancy remove failure leaves full snapshot unchanged
+ok 545 - rollback on occupancy remove failure leaves full snapshot unchanged
+  ---
+  duration_ms: 1.1603
+  type: 'test'
+  ...
+# Subtest: rollback on revision add failure leaves full snapshot unchanged
+ok 546 - rollback on revision add failure leaves full snapshot unchanged
+  ---
+  duration_ms: 0.8999
+  type: 'test'
+  ...
+# Subtest: rollback on audit add failure leaves full snapshot unchanged including audit_events itself
+ok 547 - rollback on audit add failure leaves full snapshot unchanged including audit_events itself
+  ---
+  duration_ms: 0.5272
+  type: 'test'
+  ...
+# Subtest: rollback on receipt add failure leaves full snapshot unchanged including receipts itself
+ok 548 - rollback on receipt add failure leaves full snapshot unchanged including receipts itself
+  ---
+  duration_ms: 0.5214
+  type: 'test'
+  ...
+# Subtest: H3 order A: createSchedule and removeMember — remove pauses at commit, create commits first, remove retries and blocks
+ok 549 - H3 order A: createSchedule and removeMember — remove pauses at commit, create commits first, remove retries and blocks
+  ---
+  duration_ms: 3.3221
+  type: 'test'
+  ...
+# Subtest: H3 order B: createSchedule and removeMember — create pauses before commit, remove commits first, create retries and rejects WORKER_INVALID
+ok 550 - H3 order B: createSchedule and removeMember — create pauses before commit, remove commits first, create retries and rejects WORKER_INVALID
+  ---
+  duration_ms: 2.8606
+  type: 'test'
+  ...
+# Subtest: H3 order C: reassignSchedule to target and removeMember target — remove pauses at commit, reassign commits first, remove retries and blocks
+ok 551 - H3 order C: reassignSchedule to target and removeMember target — remove pauses at commit, reassign commits first, remove retries and blocks
+  ---
+  duration_ms: 3.8647
+  type: 'test'
+  ...
+# Subtest: H3 order D: reassignSchedule to idle target and removeMember target — reassign pauses before commit, remove commits first, reassign retries and rejects WORKER_INVALID
+ok 552 - H3 order D: reassignSchedule to idle target and removeMember target — reassign pauses before commit, remove commits first, reassign retries and rejects WORKER_INVALID
+  ---
+  duration_ms: 2.9832
+  type: 'test'
+  ...
+# Subtest: reassign away then removeMember old worker succeeds sequentially
+ok 553 - reassign away then removeMember old worker succeeds sequentially
+  ---
+  duration_ms: 2.9839
+  type: 'test'
+  ...
+# Subtest: rollback on source worker guard update during reassign leaves full snapshot unchanged
+ok 554 - rollback on source worker guard update during reassign leaves full snapshot unchanged
+  ---
+  duration_ms: 2.2562
+  type: 'test'
+  ...
+# Subtest: rollback on target worker guard add during reassign leaves full snapshot unchanged when target guard missing
+ok 555 - rollback on target worker guard add during reassign leaves full snapshot unchanged when target guard missing
+  ---
+  duration_ms: 1.7406
+  type: 'test'
+  ...
+# Subtest: rollback on target worker guard update during reassign leaves full snapshot unchanged when target guard exists
+ok 556 - rollback on target worker guard update during reassign leaves full snapshot unchanged when target guard exists
+  ---
+  duration_ms: 1.571
+  type: 'test'
+  ...
+# Subtest: rollback on lockGuard add during removeMember leaves full snapshot unchanged when guard missing
+ok 557 - rollback on lockGuard add during removeMember leaves full snapshot unchanged when guard missing
+  ---
+  duration_ms: 0.5478
+  type: 'test'
+  ...
+# Subtest: rollback on lockGuard update during removeMember leaves full snapshot unchanged when guard exists
+ok 558 - rollback on lockGuard update during removeMember leaves full snapshot unchanged when guard exists
+  ---
+  duration_ms: 2.5772
+  type: 'test'
+  ...
+# Subtest: audit event is unique per schedule change
+ok 559 - audit event is unique per schedule change
+  ---
+  duration_ms: 1.5383
+  type: 'test'
+  ...
+# Subtest: transaction conflict retry produces exactly one version change, revision, receipt and audit
+ok 560 - transaction conflict retry produces exactly one version change, revision, receipt and audit
+  ---
+  duration_ms: 2.8
+  type: 'test'
+  ...
+# Subtest: replaying a committed requestId produces exactly one version change, revision, receipt and audit
+ok 561 - replaying a committed requestId produces exactly one version change, revision, receipt and audit
+  ---
+  duration_ms: 2.1906
+  type: 'test'
+  ...
+# Subtest: cancel then replay same requestId is idempotent with exactly one audit
+ok 562 - cancel then replay same requestId is idempotent with exactly one audit
+  ---
+  duration_ms: 1.9628
+  type: 'test'
+  ...
+# Subtest: compat 1a: platform fixture runs create with zero in-transaction where and stays under 80 ops
+ok 563 - compat 1a: platform fixture runs create with zero in-transaction where and stays under 80 ops
+  ---
+  duration_ms: 2.8473
+  type: 'test'
+  ...
+# Subtest: compat 1b: in-transaction where is rejected immediately
+ok 564 - compat 1b: in-transaction where is rejected immediately
+  ---
+  duration_ms: 0.4206
+  type: 'test'
+  ...
+# Subtest: compat 1c: fixture rejects the 81st data operation before it happens
+ok 565 - compat 1c: fixture rejects the 81st data operation before it happens
+  ---
+  duration_ms: 0.5904
+  type: 'test'
+  ...
+# Subtest: compat 1d: operation counter resets per attempt
+ok 566 - compat 1d: operation counter resets per attempt
+  ---
+  duration_ms: 0.3464
+  type: 'test'
+  ...
+# Subtest: compat 1e: exact operation peaks per action stay within 80
+ok 567 - compat 1e: exact operation peaks per action stay within 80
+  ---
+  duration_ms: 3.4391
+  type: 'test'
+  ...
+# Subtest: compat 2a: snapshot covers eight collections including projects
+ok 568 - compat 2a: snapshot covers eight collections including projects
+  ---
+  duration_ms: 0.3393
+  type: 'test'
+  ...
+# Subtest: compat 2b: rollback on bucket write failure leaves all eight collections unchanged
+ok 569 - compat 2b: rollback on bucket write failure leaves all eight collections unchanged
+  ---
+  duration_ms: 1.676
+  type: 'test'
+  ...
+# Subtest: compat 3a: generation=0 first use builds guard and anchor atomically
+ok 570 - compat 3a: generation=0 first use builds guard and anchor atomically
+  ---
+  duration_ms: 0.6785
+  type: 'test'
+  ...
+# Subtest: compat 3b: guard deleted while generation>=1 is rejected not rebuilt
+ok 571 - compat 3b: guard deleted while generation>=1 is rejected not rebuilt
+  ---
+  duration_ms: 0.9007
+  type: 'test'
+  ...
+# Subtest: compat 3c: wrong generation guard is rejected even when self-consistent
+ok 572 - compat 3c: wrong generation guard is rejected even when self-consistent
+  ---
+  duration_ms: 0.7807
+  type: 'test'
+  ...
+# Subtest: compat 3d: duplicate ids in directory are rejected
+ok 573 - compat 3d: duplicate ids in directory are rejected
+  ---
+  duration_ms: 0.8492
+  type: 'test'
+  ...
+# Subtest: compat 3e: rejoin keeps existing generation and directory
+ok 574 - compat 3e: rejoin keeps existing generation and directory
+  ---
+  duration_ms: 0.6545
+  type: 'test'
+  ...
+# Subtest: compat 3f: member without anchor is rejected as not ready
+ok 575 - compat 3f: member without anchor is rejected as not ready
+  ---
+  duration_ms: 0.525
+  type: 'test'
+  ...
+# Subtest: compat 4a: scan-time epoch change triggers rescan and then succeeds
+ok 576 - compat 4a: scan-time epoch change triggers rescan and then succeeds
+  ---
+  duration_ms: 0.8902
+  type: 'test'
+  ...
+# Subtest: compat 4b: second round still stale returns STALE_SCAN business rejection
+ok 577 - compat 4b: second round still stale returns STALE_SCAN business rejection
+  ---
+  duration_ms: 1.1661
+  type: 'test'
+  ...
+# Subtest: compat 4c: rescan does not reuse stale scan result
+ok 578 - compat 4c: rescan does not reuse stale scan result
+  ---
+  duration_ms: 0.8153
+  type: 'test'
+  ...
+# Subtest: compat 5a: maintenance mode blocks writes including removeMember
+ok 579 - compat 5a: maintenance mode blocks writes including removeMember
+  ---
+  duration_ms: 0.5019
+  type: 'test'
+  ...
+# Subtest: compat 5b: project epoch increments on every successful write
+ok 580 - compat 5b: project epoch increments on every successful write
+  ---
+  duration_ms: 0.8873
+  type: 'test'
+  ...
+# Subtest: compat 5c: maintenance switch writes the same project document
+ok 581 - compat 5c: maintenance switch writes the same project document
+  ---
+  duration_ms: 0.438
+  type: 'test'
+  ...
+# Subtest: compat 5d: project not ready blocks removeMember with explicit semantics
+ok 582 - compat 5d: project not ready blocks removeMember with explicit semantics
+  ---
+  duration_ms: 0.4371
+  type: 'test'
+  ...
+# Subtest: compat 6a: same requestId replay returns original result after directory changed
+ok 583 - compat 6a: same requestId replay returns original result after directory changed
+  ---
+  duration_ms: 5.1825
+  type: 'test'
+  ...
+# Subtest: compat 6b: same requestId replay rejected after loss of permission
+ok 584 - compat 6b: same requestId replay rejected after loss of permission
+  ---
+  duration_ms: 0.7678
+  type: 'test'
+  ...
+# Subtest: compat 6c: replay does not consume capacity again
+ok 585 - compat 6c: replay does not consume capacity again
+  ---
+  duration_ms: 0.8879
+  type: 'test'
+  ...
+# Subtest: compat 7a: 365-day schedule spans 13 monthly buckets within budget
+ok 586 - compat 7a: 365-day schedule spans 13 monthly buckets within budget
+  ---
+  duration_ms: 1.5541
+  type: 'test'
+  ...
+# Subtest: compat 7b: worst-case 26-bucket update either pre-rejects with no write or stays within 80
+ok 587 - compat 7b: worst-case 26-bucket update either pre-rejects with no write or stays within 80
+  ---
+  duration_ms: 3.5595
+  type: 'test'
+  ...
+# Subtest: compat 7c: same month different days allowed, same day conflicts, merged into one bucket
+ok 588 - compat 7c: same month different days allowed, same day conflicts, merged into one bucket
+  ---
+  duration_ms: 2.7502
+  type: 'test'
+  ...
+# Subtest: compat 7d: foreign occupancy in bucket is reported not silently overwritten
+ok 589 - compat 7d: foreign occupancy in bucket is reported not silently overwritten
+  ---
+  duration_ms: 1.0472
+  type: 'test'
+  ...
+# Subtest: compat 7e: missing bucket key is also an inconsistency
+ok 590 - compat 7e: missing bucket key is also an inconsistency
+  ---
+  duration_ms: 1.3101
+  type: 'test'
+  ...
+# Subtest: compat 7f: old per-day record cannot mix with monthly bucket
+ok 591 - compat 7f: old per-day record cannot mix with monthly bucket
+  ---
+  duration_ms: 1.4113
+  type: 'test'
+  ...
+# Subtest: compat 7g: leap year and month boundaries produce correct buckets
+ok 592 - compat 7g: leap year and month boundaries produce correct buckets
+  ---
+  duration_ms: 0.7445
+  type: 'test'
+  ...
+# Subtest: compat 7h: rest days excluded from bucket days
+ok 593 - compat 7h: rest days excluded from bucket days
+  ---
+  duration_ms: 0.5303
+  type: 'test'
+  ...
+# Subtest: compat 8a: 201st entry rejected by sentinel with capacity error
+ok 594 - compat 8a: 201st entry rejected by sentinel with capacity error
+  ---
+  duration_ms: 6.2347
+  type: 'test'
+  ...
+# Subtest: compat 8b: at capacity non-increasing actions still work
+ok 595 - compat 8b: at capacity non-increasing actions still work
+  ---
+  duration_ms: 6.9884
+  type: 'test'
+  ...
+# Subtest: compat 8c: 32KiB byte guard rejects oversized directory and accepts 200 normal ids
+ok 596 - compat 8c: 32KiB byte guard rejects oversized directory and accepts 200 normal ids
+  ---
+  duration_ms: 0.2693
+  type: 'test'
+  ...
+# Subtest: compat 8d: capacity message asks to contact admin not to cancel needed work
+ok 597 - compat 8d: capacity message asks to contact admin not to cancel needed work
+  ---
+  duration_ms: 3.8418
+  type: 'test'
+  ...
+# Subtest: compat 8e: scan page boundaries 0/100/101/199/200/201 are handled
+ok 598 - compat 8e: scan page boundaries 0/100/101/199/200/201 are handled
+  ---
+  duration_ms: 11.6506
+  type: 'test'
+  ...
+# Subtest: T1a: generation=0 with existing active schedule blocks removal and leaves eight collections unchanged
+ok 599 - T1a: generation=0 with existing active schedule blocks removal and leaves eight collections unchanged
+  ---
+  duration_ms: 0.5545
+  type: 'test'
+  ...
+# Subtest: T1b: create on generation=0 with existing active schedule is rejected without creating directory
+ok 600 - T1b: create on generation=0 with existing active schedule is rejected without creating directory
+  ---
+  duration_ms: 0.6825
+  type: 'test'
+  ...
+# Subtest: T2a: same-trade update across disjoint months succeeds and keeps both months consistent
+ok 601 - T2a: same-trade update across disjoint months succeeds and keeps both months consistent
+  ---
+  duration_ms: 1.0094
+  type: 'test'
+  ...
+# Subtest: T2b: cross-trade update reads old-trade and new-trade bucket keys separately
+ok 602 - T2b: cross-trade update reads old-trade and new-trade bucket keys separately
+  ---
+  duration_ms: 1.0708
+  type: 'test'
+  ...
+# Subtest: T2c: cross-year update reads both year buckets
+ok 603 - T2c: cross-year update reads both year buckets
+  ---
+  duration_ms: 1.0771
+  type: 'test'
+  ...
+# Subtest: T3a: 26-bucket worst-case update is supported and stays within 80 with exact peak
+ok 604 - T3a: 26-bucket worst-case update is supported and stays within 80 with exact peak
+  ---
+  duration_ms: 4.2597
+  type: 'test'
+  ...
+# Subtest: T3b: product budget constants match the documented limits (boundary itself covered by U3a)
+ok 605 - T3b: product budget constants match the documented limits (boundary itself covered by U3a)
+  ---
+  duration_ms: 0.3641
+  type: 'test'
+  ...
+# Subtest: T3c: exact operation counts per action recorded for documentation
+ok 606 - T3c: exact operation counts per action recorded for documentation
+  ---
+  duration_ms: 2.1742
+  type: 'test'
+  ...
+# Subtest: T4a: maintenance mode blocks approveInvitation and does not advance epoch
+ok 607 - T4a: maintenance mode blocks approveInvitation and does not advance epoch
+  ---
+  duration_ms: 0.6712
+  type: 'test'
+  ...
+# Subtest: T4b: maintenance mode blocks assignManager and does not advance epoch
+ok 608 - T4b: maintenance mode blocks assignManager and does not advance epoch
+  ---
+  duration_ms: 0.514
+  type: 'test'
+  ...
+# Subtest: T4c: removeMember is rejected when maintenance state is committed while it is in flight
+ok 609 - T4c: removeMember is rejected when maintenance state is committed while it is in flight
+  ---
+  duration_ms: 0.6106
+  type: 'test'
+  ...
+# Subtest: T5a: directory created during collect leads to rescan instead of corruption
+ok 610 - T5a: directory created during collect leads to rescan instead of corruption
+  ---
+  duration_ms: 0.8195
+  type: 'test'
+  ...
+# Subtest: T5b: persistent corruption during collect is still rejected not swallowed
+ok 611 - T5b: persistent corruption during collect is still rejected not swallowed
+  ---
+  duration_ms: 0.6379
+  type: 'test'
+  ...
+# Subtest: T6a: committed receipt replays successfully even after directory is deleted
+ok 612 - T6a: committed receipt replays successfully even after directory is deleted
+  ---
+  duration_ms: 0.8553
+  type: 'test'
+  ...
+# Subtest: T6b: committed receipt replay is blocked when project switched to maintenance
+ok 613 - T6b: committed receipt replay is blocked when project switched to maintenance
+  ---
+  duration_ms: 2.0245
+  type: 'test'
+  ...
+# Subtest: T6c: receipt replay rejected after actor loses permission
+ok 614 - T6c: receipt replay rejected after actor loses permission
+  ---
+  duration_ms: 0.6625
+  type: 'test'
+  ...
+# Subtest: T6d: same requestId with different payload is still rejected on replay path
+ok 615 - T6d: same requestId with different payload is still rejected on replay path
+  ---
+  duration_ms: 0.6399
+  type: 'test'
+  ...
+# Subtest: T7a: in-transaction where is rejected even as the very first operation
+ok 616 - T7a: in-transaction where is rejected even as the very first operation
+  ---
+  duration_ms: 0.1404
+  type: 'test'
+  ...
+# Subtest: T3d: report measured peak operation counts per action against pre-check upper bound
+ok 617 - T3d: report measured peak operation counts per action against pre-check upper bound
+  ---
+  duration_ms: 10.2265
+  type: 'test'
+  ...
+# Subtest: U1a: concurrent createSchedule with same requestId both return the identical original success
+ok 618 - U1a: concurrent createSchedule with same requestId both return the identical original success
+  ---
+  duration_ms: 21.8167
+  type: 'test'
+  ...
+# Subtest: U1b: concurrent updateSchedule with same requestId both return the identical original success
+ok 619 - U1b: concurrent updateSchedule with same requestId both return the identical original success
+  ---
+  duration_ms: 2.1937
+  type: 'test'
+  ...
+# Subtest: U1c: concurrent reassignSchedule with same requestId both return the identical original success
+ok 620 - U1c: concurrent reassignSchedule with same requestId both return the identical original success
+  ---
+  duration_ms: 2.2818
+  type: 'test'
+  ...
+# Subtest: U1d: concurrent cancelSchedule with same requestId both return the identical original success
+ok 621 - U1d: concurrent cancelSchedule with same requestId both return the identical original success
+  ---
+  duration_ms: 2.6871
+  type: 'test'
+  ...
+# Subtest: U1e: same requestId with different payload is rejected with explicit business code under concurrency
+ok 622 - U1e: same requestId with different payload is rejected with explicit business code under concurrency
+  ---
+  duration_ms: 1.9474
+  type: 'test'
+  ...
+# Subtest: U1f: first-use concurrent initialization with different requestIds both succeed with one directory
+ok 623 - U1f: first-use concurrent initialization with different requestIds both succeed with one directory
+  ---
+  duration_ms: 1.4272
+  type: 'test'
+  ...
+# Subtest: U2a: maintenance switch re-verifies account status inside the transaction
+ok 624 - U2a: maintenance switch re-verifies account status inside the transaction
+  ---
+  duration_ms: 0.3936
+  type: 'test'
+  ...
+# Subtest: U2b: maintenance switch re-verifies manager role inside the transaction
+ok 625 - U2b: maintenance switch re-verifies manager role inside the transaction
+  ---
+  duration_ms: 0.3527
+  type: 'test'
+  ...
+# Subtest: U2c: restoring ready through the ordinary interface is blocked and project stays in maintenance
+ok 626 - U2c: restoring ready through the ordinary interface is blocked and project stays in maintenance
+  ---
+  duration_ms: 0.3051
+  type: 'test'
+  ...
+# Subtest: U2d: removeMember conflicts with maintenance switch on the same project document (both orders)
+ok 627 - U2d: removeMember conflicts with maintenance switch on the same project document (both orders)
+  ---
+  duration_ms: 1.4968
+  type: 'test'
+  ...
+# Subtest: U2e: approveInvitation is blocked when maintenance switch commits first
+ok 628 - U2e: approveInvitation is blocked when maintenance switch commits first
+  ---
+  duration_ms: 0.9367
+  type: 'test'
+  ...
+# Subtest: U2f: assignManager is blocked when maintenance switch commits first
+ok 629 - U2f: assignManager is blocked when maintenance switch commits first
+  ---
+  duration_ms: 0.8021
+  type: 'test'
+  ...
+# Subtest: V1: U1a-U1d fail when the in-transaction receipt recheck is removed (fault sensitivity)
+ok 630 - V1: U1a-U1d fail when the in-transaction receipt recheck is removed (fault sensitivity)
+  ---
+  duration_ms: 28.8554
+  type: 'test'
+  ...
+# Subtest: V2a: approveInvitation commits first, real maintenance switch retries and succeeds
+ok 631 - V2a: approveInvitation commits first, real maintenance switch retries and succeeds
+  ---
+  duration_ms: 1.2478
+  type: 'test'
+  ...
+# Subtest: V2b: real maintenance switch commits first, approveInvitation retries then is rejected
+ok 632 - V2b: real maintenance switch commits first, approveInvitation retries then is rejected
+  ---
+  duration_ms: 0.6444
+  type: 'test'
+  ...
+# Subtest: V2c: assignManager commits first, real maintenance switch retries and succeeds
+ok 633 - V2c: assignManager commits first, real maintenance switch retries and succeeds
+  ---
+  duration_ms: 0.5748
+  type: 'test'
+  ...
+# Subtest: V2d: real maintenance switch commits first, assignManager retries then is rejected
+ok 634 - V2d: real maintenance switch commits first, assignManager retries then is rejected
+  ---
+  duration_ms: 0.5074
+  type: 'test'
+  ...
+# Subtest: U3a: product transaction wrapper allows exactly 80 ops and rejects the 81st before the SDK call
+ok 635 - U3a: product transaction wrapper allows exactly 80 ops and rejects the 81st before the SDK call
+  ---
+  duration_ms: 0.5613
+  type: 'test'
+  ...
+# Subtest: U3b: concurrent attempts on the same service instance count independently
+ok 636 - U3b: concurrent attempts on the same service instance count independently
+  ---
+  duration_ms: 0.4786
+  type: 'test'
+  ...
+# Subtest: U3c: SDK re-entry on conflict restarts counting from zero for the new attempt
+ok 637 - U3c: SDK re-entry on conflict restarts counting from zero for the new attempt
+  ---
+  duration_ms: 1.4843
+  type: 'test'
+  ...
+# Subtest: U3d: budget pre-check rejects before any write with zero writes and eight collections unchanged
+ok 638 - U3d: budget pre-check rejects before any write with zero writes and eight collections unchanged
+  ---
+  duration_ms: 5.1501
+  type: 'test'
+  ...
+# Subtest: U3e: pre-check value is an upper bound for every measured branch
+ok 639 - U3e: pre-check value is an upper bound for every measured branch
+  ---
+  duration_ms: 2.7303
+  type: 'test'
+  ...
+# Subtest: V3a: over-budget pre-check on the real createSchedule route writes nothing and leaves all collections unchanged
+ok 640 - V3a: over-budget pre-check on the real createSchedule route writes nothing and leaves all collections unchanged
+  ---
+  duration_ms: 3.8085
+  type: 'test'
+  ...
+# Subtest: V3b: normal create still succeeds after the same injection is absent (26-bucket worst case retained)
+ok 641 - V3b: normal create still succeeds after the same injection is absent (26-bucket worst case retained)
+  ---
+  duration_ms: 1.2258
+  type: 'test'
+  ...
+# Subtest: V3c: each SDK re-entry counts from zero — quantified per-attempt operation counts
+ok 642 - V3c: each SDK re-entry counts from zero — quantified per-attempt operation counts
+  ---
+  duration_ms: 0.7624
+  type: 'test'
+  ...
+# Subtest: 固定真实邀请与有效编号仅发一次批准请求，报告不包含编号或邀请码
+ok 643 - 固定真实邀请与有效编号仅发一次批准请求，报告不包含编号或邀请码
+  ---
+  duration_ms: 4.9888
+  type: 'test'
+  ...
+# Subtest: 错编号、错邀请或归属、过期及未来核验不发送任何云端请求
+ok 644 - 错编号、错邀请或归属、过期及未来核验不发送任何云端请求
+  ---
+  duration_ms: 0.9774
+  type: 'test'
+  ...
+# Subtest: 错微信、错项目角色、成员工种变化及预检期间过期均不发送批准请求
+ok 645 - 错微信、错项目角色、成员工种变化及预检期间过期均不发送批准请求
+  ---
+  duration_ms: 0.9988
+  type: 'test'
+  ...
+# Subtest: 网络不确定、不同拒绝或意外成功均停机且不泄露底层请求内容
+ok 646 - 网络不确定、不同拒绝或意外成功均停机且不泄露底层请求内容
+  ---
+  duration_ms: 1.5209
+  type: 'test'
+  ...
+# Subtest: 同一探针并发调用也只发送一次批准请求
+ok 647 - 同一探针并发调用也只发送一次批准请求
+  ---
+  duration_ms: 1.6067
+  type: 'test'
+  ...
+# Subtest: 固定格式摘要与 Node crypto 独立结果一致，拒绝非十位ASCII数字
+ok 648 - 固定格式摘要与 Node crypto 独立结果一致，拒绝非十位ASCII数字
+  ---
+  duration_ms: 7.7091
+  type: 'test'
+  ...
+# Subtest: 只用核验一致的有效编号发送一次请求，报告不包含原始编号
+ok 649 - 只用核验一致的有效编号发送一次请求，报告不包含原始编号
+  ---
+  duration_ms: 4.9643
+  type: 'test'
+  ...
+# Subtest: 不同编号、过期、未来或无效核验时间及错误归属不调用云函数
+ok 650 - 不同编号、过期、未来或无效核验时间及错误归属不调用云函数
+  ---
+  duration_ms: 8.7241
+  type: 'test'
+  ...
+# Subtest: 错误微信、变化的成员或预检期间过期不发指定请求
+ok 651 - 错误微信、变化的成员或预检期间过期不发指定请求
+  ---
+  duration_ms: 4.4984
+  type: 'test'
+  ...
+# Subtest: 成功、错误码和带编号的底层错误均停止且不泄露编号
+ok 652 - 成功、错误码和带编号的底层错误均停止且不泄露编号
+  ---
+  duration_ms: 4.085
+  type: 'test'
+  ...
+# Subtest: 有效目标探针只发一次固定移出请求；明确拒绝且成员仍可见才完成
+ok 653 - 有效目标探针只发一次固定移出请求；明确拒绝且成员仍可见才完成
+  ---
+  duration_ms: 4.4583
+  type: 'test'
+  ...
+# Subtest: 错误身份、角色、项目、目标缺失或工种变化时不发送移出请求
+ok 654 - 错误身份、角色、项目、目标缺失或工种变化时不发送移出请求
+  ---
+  duration_ms: 1.296
+  type: 'test'
+  ...
+# Subtest: 意外成功、网络失败、参数错误均停止，不再发送后续请求
+ok 655 - 意外成功、网络失败、参数错误均停止，不再发送后续请求
+  ---
+  duration_ms: 1.9083
+  type: 'test'
+  ...
+# Subtest: 明确拒绝后若目标消失，仍记为未完成
+ok 656 - 明确拒绝后若目标消失，仍记为未完成
+  ---
+  duration_ms: 0.4795
+  type: 'test'
+  ...
+1..656
+# tests 656
+# suites 0
+# pass 652
+# fail 0
+# cancelled 0
+# skipped 4
+# todo 0
+# duration_ms 6009.3153

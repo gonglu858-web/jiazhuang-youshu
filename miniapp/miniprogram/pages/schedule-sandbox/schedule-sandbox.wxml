@@ -1,0 +1,133 @@
+<view class="page">
+  <view class="notice">本页为「施工安排独立测试」专用入口，与原施工安排页面完全分离。请求只发往独立测试函数，不会回退旧后台或本机保存。</view>
+
+  <!-- 拒绝环境下不展示任何可操作测试控件 -->
+  <view wx:if="{{!entryAllowed}}" class="error">
+    {{entryReason || '当前环境或版本不可用，独立测试入口未开放。'}}
+  </view>
+
+  <block wx:else>
+    <view class="card section">
+      <view class="label">测试项目ID</view>
+      <view class="field">{{targetProjectId || '（准备期：先建立本轮测试项目）'}}</view>
+      <view class="small muted gap">固定目标由配置提供，无需手抄。</view>
+    </view>
+
+    <view wx:if="{{pendingRequestId}}" class="card section">
+      <view class="label">存在结果未知的请求</view>
+      <view class="small">请求编号：{{pendingRequestId}}</view>
+      <view class="small">动作：{{pendingAction}}</view>
+      <view class="small">项目：{{pendingProjectId}}</view>
+      <view class="small">类别：{{pendingActionClass}}</view>
+      <view class="small gap">已保存提交：{{pendingSummary}}</view>
+      <view class="small gap">{{pendingGuidance}}</view>
+      <view wx:if="{{pendingSensitiveKeys.length}}" class="small gap">
+        需重新提供：{{pendingSensitiveKeys.join('、')}}（不保存在本地存储，请在下方对应输入框补录）
+      </view>
+      <view wx:if="{{writeLocked}}" class="error">本轮已锁写：在管理端核对并由维护流程处理前，不接受新的写请求。</view>
+
+      <!-- 无幂等保障的动作不提供重发按钮（T1） -->
+      <view wx:if="{{pendingRetryAllowed}}" class="btn gap" bindtap="retryPending">按同一请求编号核对并重试</view>
+      <view wx:else class="small error gap">该操作没有服务端幂等保障，不提供重发。请到管理端核对该编号的结果。</view>
+
+      <!-- 解除必须先显式确认已在管理端核对；解除后仍保持锁写（T1） -->
+      <view class="small gap">已在管理端核对该请求结果</view>
+      <checkbox bindchange="resolvePending" checked="{{false}}" />
+      <view class="small muted gap">勾选后仅解除防重记录，本轮仍保持锁写，不会自动放开新写。</view>
+    </view>
+
+    <view wx:if="{{!pendingAvailable}}" class="error">本地存储不可用或未决记录不一致，已阻止发送以避免重复提交。</view>
+
+    <view class="card section">
+      <view class="label">选择动作</view>
+      <picker range="{{actions}}" range-key="label" value="{{actionIndex}}" bindchange="changeAction">
+        <view class="field">{{actions[actionIndex].label}} ▾</view>
+      </picker>
+      <view class="small muted gap">准备期：身份→取号→建项目→指定管家→邀请→申请→批准→核对成员。执行期：施工四写与查询。</view>
+    </view>
+
+    <view class="card section">
+      <view class="label">凭据类输入（只在本页内存，不写入本地存储）</view>
+      <input class="field" placeholder="绑定编号" data-field="bindingNumberInput" bindinput="inputField" value="{{bindingNumberInput}}" />
+      <input class="field gap" placeholder="邀请码" data-field="invitationCodeInput" bindinput="inputField" value="{{invitationCodeInput}}" />
+      <input class="field gap" placeholder="邀请编号" data-field="invitationIdInput" bindinput="inputField" value="{{invitationIdInput}}" />
+      <input class="field gap" placeholder="申请者编号" data-field="applicantNumberInput" bindinput="inputField" value="{{applicantNumberInput}}" />
+      <input class="field gap" placeholder="成员账号（移出用）" data-field="memberUserIdInput" bindinput="inputField" value="{{memberUserIdInput}}" />
+    </view>
+
+    <view wx:if="{{pendingRequestId}}" class="card section">
+      <view class="label">补录该未决请求所需的凭据</view>
+      <view class="small muted gap">未决期间只有这里可以输入；其他业务字段已锁定。摘要不匹配仍会拒绝发送。</view>
+      <input wx:if="{{pendingSensitiveKeys.indexOf('applicantNumber') >= 0}}" class="field" placeholder="申请者编号（本次恢复需要）" data-field="applicantNumberInput" bindinput="inputCredential" value="{{applicantNumberInput}}" />
+      <input wx:if="{{pendingSensitiveKeys.indexOf('bindingNumber') >= 0}}" class="field gap" placeholder="绑定编号（本次恢复需要）" data-field="bindingNumberInput" bindinput="inputCredential" value="{{bindingNumberInput}}" />
+      <input wx:if="{{pendingSensitiveKeys.indexOf('invitationCode') >= 0}}" class="field gap" placeholder="邀请码（本次恢复需要）" data-field="invitationCodeInput" bindinput="inputCredential" value="{{invitationCodeInput}}" />
+    </view>
+
+    <view class="card section">
+      <view class="label">施工安排字段</view>
+      <input class="field" placeholder="安排编号（调整/改派/取消/查询用）" data-field="scheduleIdInput" bindinput="inputField" value="{{scheduleIdInput}}" />
+      <input class="field gap" placeholder="期望版本" data-field="expectedVersionInput" bindinput="inputField" value="{{expectedVersionInput}}" />
+      <input class="field gap" placeholder="原因（调整/改派/取消必填）" data-field="reasonInput" bindinput="inputField" value="{{reasonInput}}" />
+      <input class="field gap" placeholder="工种" data-field="trade" bindinput="inputForm" value="{{form.trade}}" />
+      <input class="field gap" placeholder="阶段" data-field="stage" bindinput="inputForm" value="{{form.stage}}" />
+      <input class="field gap" placeholder="责任师傅账号" data-field="workerUserId" bindinput="inputForm" value="{{form.workerUserId}}" />
+      <input class="field gap" placeholder="开始日期 YYYY-MM-DD" data-field="startDate" bindinput="inputForm" value="{{form.startDate}}" />
+      <input class="field gap" placeholder="结束日期 YYYY-MM-DD" data-field="endDate" bindinput="inputForm" value="{{form.endDate}}" />
+      <input class="field gap" placeholder="预计完成日期" data-field="expectedDate" bindinput="inputForm" value="{{form.expectedDate}}" />
+      <input class="field gap" placeholder="休息日（逗号分隔）" data-field="restDaysText" bindinput="inputForm" value="{{form.restDaysText}}" />
+      <input class="field gap" placeholder="施工内容" data-field="content" bindinput="inputForm" value="{{form.content}}" />
+      <!-- U5：确认绑定到当前日期组合；相关日期变动后必须重新确认 -->
+      <view wx:if="{{dateMismatch}}" class="small gap">预计完成日与结束日不一致，需针对当前日期显式确认：</view>
+      <checkbox-group wx:if="{{dateMismatch}}" bindchange="toggleDateConfirm">
+        <checkbox value="date-confirm" checked="{{dateConfirmed}}" color="#1f6feb" />
+      </checkbox-group>
+      <view wx:if="{{dateMismatch && dateConfirmed}}" class="small gap">已确认：结束日 {{form.endDate}} / 预计完成日 {{form.expectedDate}}。修改任一日期需重新确认。</view>
+    </view>
+
+    <view class="card section">
+      <view class="label">邀请</view>
+      <input class="field" placeholder="角色" data-field="roleInput" bindinput="inputField" value="{{roleInput}}" />
+      <input class="field gap" placeholder="工种（逗号分隔）" data-field="tradesInput" bindinput="inputField" value="{{tradesInput}}" />
+    </view>
+
+    <view wx:if="{{!pendingRequestId && !writeLocked}}" class="btn gap" bindtap="runSelected">{{busy ? '提交中…' : '提交到独立测试副本'}}</view>
+  </block>
+
+  <view wx:if="{{lastError}}" class="error">{{lastError}}</view>
+  <view wx:if="{{lastResult}}" class="card section">
+    <view class="label">最近结果</view>
+    <view class="small">{{lastResult}}</view>
+  </view>
+
+  <!-- 专用测试驱动卡片：门控失败整块隐藏；不加新路由，不改普通动作选择器 -->
+  <block wx:if="{{testCardVisible}}">
+    <view class="card section">
+      <view class="label">专用测试（V06 并发 / V07 移出）</view>
+      <view class="small muted gap">本轮一次只运行一个固定用例；每例本轮只发一次，未知结果不重发。</view>
+      <view class="small muted gap">发送期间普通操作会被阻止，避免互相打断；本机占用不是跨设备锁。</view>
+      <view class="small muted gap">驱动与副本入口需同时启用；真实并发与移出结果仍需管理端事后核对。</view>
+
+      <view class="btn gap" wx:for="{{testCases}}" wx:key="id" data-case="{{item.id}}" bindtap="runTestCase">
+        {{testBusy ? '运行中…' : item.label}}
+      </view>
+
+      <view wx:if="{{testReport}}" class="small gap">
+        <view>用例：{{testReport.testCaseId}}</view>
+        <view>结论：{{testReport.verdict}}</view>
+        <view wx:if="{{testReport.stoppedReason}}">停止原因：{{testReport.stoppedReason}}</view>
+        <view wx:if="{{testReport.message}}">{{testReport.message}}</view>
+        <view>已发请求数：{{testReport.sent}}</view>
+        <view>云端基线已核对：{{testReport.verifiedByCloudBaseline}}</view>
+        <view wx:if="{{testReport.reviewResult}}">{{testReport.reviewResult}}</view>
+      </view>
+
+      <!-- 人工接续：仅 candidate 可用，必须填核对记录 ID；不是解锁按钮 -->
+      <block wx:if="{{testReport && testReport.verdict === 'candidate'}}">
+        <input class="field gap" placeholder="管理端核对记录 ID" data-field="testReviewIdInput" bindinput="inputField" value="{{testReviewIdInput}}" />
+        <view class="btn gap" bindtap="acceptTestCloudReview">已完成本例管理端核对</view>
+        <view class="small muted gap">仅记录人工声明，不会自动验真，也不会解开普通未决记录。</view>
+      </block>
+    </view>
+  </block>
+  <view wx:elif="{{testCardReason}}" class="small muted">专用测试未启用：{{testCardReason}}</view>
+</view>

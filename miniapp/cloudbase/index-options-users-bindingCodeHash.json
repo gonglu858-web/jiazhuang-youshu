@@ -1,0 +1,11 @@
+{
+  "CreateIndexes": [
+    {
+      "IndexName": "bindingCodeHash_1",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [{ "Name": "bindingCodeHash", "Direction": "1" }],
+        "MgoIsUnique": false
+      }
+    }
+  ]
+}

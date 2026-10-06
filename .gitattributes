@@ -1,0 +1,3 @@
+# Preserve exact working-file bytes, including reviewed evidence and hash baselines.
+# This repository records byte hashes; automatic LF/CRLF conversion would change them.
+* -text whitespace=cr-at-eol

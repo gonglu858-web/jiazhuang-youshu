@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-04",
+  "scope": "local synthetic verification of T1-T5 fixes; no network, no cloud, no install",
+  "supersedes": null,
+  "companionHistoricalEvidence": "docs/证据/独立测试副本S1-S6-Codex复核-20261004.cjs（断言返修前缺陷，保留不改写）",
+  "results": [
+    {
+      "id": "T1-a",
+      "title": "无幂等保障的邀请：提交成功→响应丢失后同号重试不产生第二份",
+      "passed": true,
+      "detail": {
+        "invitationsAfterRetry": 1,
+        "firstUnknown": true,
+        "retryCode": "SANDBOX_RETRY_UNSAFE",
+        "cloudCalls": 1,
+        "writeLocked": true
+      }
+    },
+    {
+      "id": "T1-b",
+      "title": "没有直接清锁重发路径：解除需显式核对且解除后仍锁写",
+      "passed": true,
+      "detail": {
+        "unknownCode": "SANDBOX_RESULT_UNKNOWN",
+        "retryAllowed": false,
+        "blindCode": "SANDBOX_VERIFICATION_REQUIRED",
+        "resolvedKeepsWriteLock": true,
+        "resendCode": "SANDBOX_PENDING_UNRESOLVED",
+        "cloudCalls": 1
+      }
+    },
+    {
+      "id": "T1-c",
+      "title": "取号未知即停止；施工回执重试不重复；首次日期冲突可修改",
+      "passed": true,
+      "detail": {
+        "bindingNumberRetryCode": "SANDBOX_RETRY_UNSAFE",
+        "bindingNumberCloudCalls": 1,
+        "conflictDefinite": true,
+        "pendingClearedAfterConflict": true,
+        "fixedRequestId": "sc-2"
+      }
+    },
+    {
+      "id": "T1-d",
+      "title": "未知之后的窗口/权限拒绝不被当作原提交未发生",
+      "passed": true,
+      "detail": {
+        "denialCode": "SANDBOX_EXPIRED",
+        "stillUnknown": true,
+        "pendingRetained": true,
+        "sameRequestId": "sch-1"
+      }
+    },
+    {
+      "id": "T2-a",
+      "title": "未决记录是单一 envelope：半写/半清理拼不出合法请求",
+      "passed": true,
+      "detail": {
+        "storageKeys": 2,
+        "envelopeFields": 9,
+        "halfCleanupResendCode": "SANDBOX_PENDING_UNRESOLVED",
+        "mixedRequestSent": false
+      }
+    },
+    {
+      "id": "T2-b",
+      "title": "同轮次换目标、账号切换、读失败与旧残留全部阻止错误发送",
+      "passed": true,
+      "detail": {
+        "retargetCode": "SANDBOX_TARGET_CHANGED",
+        "accountSwitchCode": "SANDBOX_NO_PENDING",
+        "readFailCode": "SANDBOX_STORAGE_UNAVAILABLE",
+        "legacyCode": "SANDBOX_STORAGE_UNAVAILABLE",
+        "legacyCachePreserved": true
+      }
+    },
+    {
+      "id": "T3-a",
+      "title": "回执在但项目已删除：停止而非宣称成功",
+      "passed": true,
+      "detail": {
+        "replayCode": "SANDBOX_PROJECT_STATE_CONFLICT",
+        "projects": 0,
+        "receipts": 1
+      }
+    },
+    {
+      "id": "T3-b",
+      "title": "并发回放重新核验当前 primary 权限",
+      "passed": true,
+      "detail": {
+        "loserCode": "SANDBOX_NOT_PRIMARY_ADMIN",
+        "primaryNow": true,
+        "projects": 1
+      }
+    },
+    {
+      "id": "T3-c",
+      "title": "提交后读失败不谎称已回滚，同号可取回原结果",
+      "passed": true,
+      "detail": {
+        "firstCode": "SANDBOX_PROJECT_CREATE_FAILED",
+        "rollbackClaim": false,
+        "message": "建立本轮测试项目时事务已提交，但随后处理失败：POST_COMMIT_READ_FAILED。结果待核对，请按同一请求编号重试取回原结果。",
+        "committedProjects": 1,
+        "committedReceipts": 1,
+        "replayRecovered": true,
+        "finalProjects": 1
+      }
+    },
+    {
+      "id": "T3-d",
+      "title": "轮次记录字段与确定性 ID 不一致一律停止",
+      "passed": true,
+      "detail": {
+        "mutations": 5,
+        "codes": [
+          "SANDBOX_PROJECT_STATE_CONFLICT",
+          "SANDBOX_PROJECT_STATE_CONFLICT",
+          "SANDBOX_PROJECT_STATE_CONFLICT",
+          "SANDBOX_PROJECT_STATE_CONFLICT",
+          "SANDBOX_PROJECT_STATE_CONFLICT"
+        ]
+      }
+    },
+    {
+      "id": "T4-a",
+      "title": "带凭据的恢复不再卡死；错误凭据拒绝；休息日与邀请编号回填",
+      "passed": true,
+      "detail": {
+        "credentialInputAccepted": true,
+        "businessFieldsLocked": true,
+        "rawCredentialStored": false,
+        "correctCredentialResend": 0,
+        "wrongCredentialResend": 0,
+        "restDaysText": "2026-01-02,2026-01-03"
+      }
+    },
+    {
+      "id": "T4-b",
+      "title": "日期不一致未确认则拒绝发送；确认后才发送 expectedConfirmed=true",
+      "passed": true,
+      "detail": {
+        "dateMismatchDetected": true,
+        "requestsWithoutConfirm": 0,
+        "requestsAfterConfirm": 1,
+        "expectedConfirmed": true
+      }
+    },
+    {
+      "id": "T5-a",
+      "title": "事务未提交写入对外与对其它事务均不可见",
+      "passed": true,
+      "detail": {
+        "visibleOutsideTransaction": false,
+        "visibleToOtherTransaction": false,
+        "writeLogBeforeCommit": false,
+        "visibleAfterCommit": true
+      }
+    },
+    {
+      "id": "T5-b",
+      "title": "一事务回滚不让另一请求假成功；交错失败后他事务数据保留",
+      "passed": true,
+      "detail": {
+        "firstFailed": true,
+        "secondReportedSuccess": true,
+        "secondReplayed": false,
+        "finalProjects": 1,
+        "finalReceipts": 1
+      }
+    },
+    {
+      "id": "T5-c",
+      "title": "并发成功必须看到已提交回执，双方先看到无回执再竞争",
+      "passed": true,
+      "detail": {
+        "bothSucceeded": true,
+        "sameProject": true,
+        "projects": 1,
+        "receipts": 1,
+        "exactlyOneReplayed": true
+      }
+    }
+  ],
+  "baseline": {
+    "files": 87,
+    "changed": [
+      "miniapp/miniprogram/app.json"
+    ]
+  },
+  "entry": {
+    "newEnabled": false,
+    "newSandboxProjectId": "",
+    "oldEnabled": false,
+    "oldAllowedProjectIds": [],
+    "newProofFrozen": true,
+    "oldProofFrozen": true
+  },
+  "cloudOperationsPerformed": false,
+  "resourcesCreated": false,
+  "installed": false,
+  "deployed": false,
+  "userCacheCleared": false,
+  "limitations": [
+    "合成数据库替身不是平台事务模型：T5 的隔离/冲突结论基于内存交错，未实测真实平台 runTransaction",
+    "页面仅结构解析通过，未在微信开发者工具或真机编译运行（本机未找到 wcc/wcsc）",
+    "真实 SDK 请求形状、3 秒超时、100 操作、32 KiB 限制未实测",
+    "并发结论基于 Promise 并发与替身冲突检测；真实平台并发未实测",
+    "11 个带前缀集合与索引尚未创建；新副本仍只是部署候选",
+    "费用未核实，不承诺 0 元"
+  ]
+}

@@ -1,0 +1,2 @@
+.title { margin-bottom: 24rpx; }
+text { display: block; margin-top: 24rpx; }

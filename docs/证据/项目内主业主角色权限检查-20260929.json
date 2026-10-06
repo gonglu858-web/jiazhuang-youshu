@@ -1,0 +1,75 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "version": 2,
+  "mode": "active-primary-owner",
+  "account": "本人账号 f182f4",
+  "complete": true,
+  "expectedCount": 4,
+  "preflight": [
+    {
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "action": "getMembers",
+      "status": "allowed",
+      "roles": [
+        "主业主"
+      ]
+    },
+    {
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "action": "listInvitations",
+      "status": "denied",
+      "code": "NO_ACCESS",
+      "message": "仅项目管家可管理成员。"
+    }
+  ],
+  "skippedProjects": [
+    "p_a328c08992f7414c812047935bc3c31e"
+  ],
+  "results": [
+    {
+      "key": "p_38507fc9b43c4e23a7fbd996415637bb:assignManager",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "label": "原师傅测试项目 · 指定管家",
+      "action": "assignManager",
+      "checkedAt": "2026-09-29T12:14:00.109Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "仅负责人可指定管家。"
+    },
+    {
+      "key": "p_38507fc9b43c4e23a7fbd996415637bb:approveInvitation",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "label": "原师傅测试项目 · 批准申请",
+      "action": "approveInvitation",
+      "checkedAt": "2026-09-29T12:14:01.652Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "仅项目管家可管理成员。"
+    },
+    {
+      "key": "p_38507fc9b43c4e23a7fbd996415637bb:removeMember",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "label": "原师傅测试项目 · 移出成员",
+      "action": "removeMember",
+      "checkedAt": "2026-09-29T12:14:02.268Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "仅项目管家可管理成员。"
+    },
+    {
+      "key": "p_38507fc9b43c4e23a7fbd996415637bb:createInvitation",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "label": "原师傅测试项目 · 生成邀请",
+      "action": "createInvitation",
+      "checkedAt": "2026-09-29T12:14:02.748Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "仅项目管家可管理成员。"
+    }
+  ],
+  "stoppedReason": ""
+}

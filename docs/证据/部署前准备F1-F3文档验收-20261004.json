@@ -1,0 +1,97 @@
+{
+  "recordedAt": "2026-10-04T02:35:04.5977908Z",
+  "source": "docs/WorkBuddy方案-施工安排部署前准备-20261003.md",
+  "inputSha256": "df7aada9e2b281d4fd7b116b6e39477f7adc8fcb75239752bb816c30848a1755",
+  "finalSha256": "e99ee419197619d5a2abb7b95378d91d700a9c841873b9120f790cc80c7514d5",
+  "comparedFileCount": 87,
+  "mismatches": [],
+  "designCases": 53,
+  "checklistIds": {
+    "PA": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "S": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "B0": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "R": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "PB": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "PC": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "chapters": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "designCasesExecuted": false,
+  "testsRerun": false,
+  "cloudOperationsPerformed": false,
+  "diffCheckPassed": true,
+  "verdict": "F1_F2_F3_document_closeout_accepted_execution_not_authorized",
+  "entry": {
+    "enabled": false,
+    "verification": "source inspection; unchanged baseline hash; top-level and array freezes retained",
+    "allowedProjectIds": []
+  },
+  "codexDocumentCorrections": [
+    "PA-3 target-member anchor/guard conditions",
+    "PC-2 stop-condition self-reference",
+    "full-ID wording"
+  ],
+  "historicalEvidenceModified": false
+}

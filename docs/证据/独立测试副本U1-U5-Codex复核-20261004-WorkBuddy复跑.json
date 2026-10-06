@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-04",
+  "scope": "local synthetic verification of U1-U5 fixes; no network, no cloud, no install",
+  "companionHistoricalEvidence": [
+    "docs/证据/独立测试副本T1-T5-Codex复核-20261004.cjs（断言返修前缺陷，保留不改写）",
+    "docs/证据/独立测试副本T1-T5返修复现-20261004.cjs（T1–T5 验证，本轮未改写其源码）"
+  ],
+  "results": [
+    {
+      "id": "U1-a",
+      "title": "真实 main：已提交响应丢失→转维护→重试被拒仍保留原未决状态",
+      "passed": true,
+      "detail": {
+        "firstUnknown": true,
+        "retryCode": "PROJECT_NOT_WRITABLE",
+        "pendingRetained": true,
+        "newWriteBlocked": true,
+        "recoveredBySameId": true,
+        "schedules": 1
+      }
+    },
+    {
+      "id": "U1-b",
+      "title": "首次确定的业务拒绝仍可修正（U1 不放宽首次请求）",
+      "passed": true,
+      "detail": {
+        "definite": true,
+        "pendingCleared": true
+      }
+    },
+    {
+      "id": "U2-a",
+      "title": "传输层返回不同身份时恢复零业务发送，原记录与绑定都不被覆盖",
+      "passed": true,
+      "detail": {
+        "identityChangedBusinessSends": 0,
+        "pendingPreserved": true,
+        "bindingPreserved": true,
+        "sameIdentityRecovered": true
+      }
+    },
+    {
+      "id": "U2-b",
+      "title": "身份请求失败保留原记录；身份刷新独立完成且不覆盖未决记录",
+      "passed": true,
+      "detail": {
+        "identityFailureCode": "SANDBOX_IDENTITY_UNCONFIRMED",
+        "businessSends": 0,
+        "pendingPreserved": true,
+        "refreshStatus": "same",
+        "refreshDidNotTouchPending": true
+      }
+    },
+    {
+      "id": "U2-c",
+      "title": "identify 零写说明已更正为 vendor 实际行为",
+      "passed": true,
+      "detail": {
+        "claimCorrected": true,
+        "vendorWritesUsers": true,
+        "vendorWritesAudit": true
+      }
+    },
+    {
+      "id": "U3-a",
+      "title": "当前登记目标为空时恢复零请求；同目标恢复正常",
+      "passed": true,
+      "detail": {
+        "clearedTargetCode": "SANDBOX_PROJECT_REQUIRED",
+        "requestsWhenCleared": 0,
+        "restoredOk": true
+      }
+    },
+    {
+      "id": "U3-b",
+      "title": "envelope 顶层与快照/存储键不一致一律停止且不修补",
+      "passed": true,
+      "detail": {
+        "mutations": 3,
+        "codes": {
+          "action": "SANDBOX_STORAGE_UNAVAILABLE",
+          "projectId": "SANDBOX_STORAGE_UNAVAILABLE",
+          "accountId": "SANDBOX_STORAGE_UNAVAILABLE"
+        },
+        "patchedSilently": false
+      }
+    },
+    {
+      "id": "U3-c",
+      "title": "无项目动作不把当前目标补进原本无目标的提交",
+      "passed": true,
+      "detail": {
+        "action": "listMyProjects",
+        "projectIdInjected": false
+      }
+    },
+    {
+      "id": "U4-a",
+      "title": "提交确认响应丢失：不得断言未提交，同号取回已提交结果且不重建",
+      "passed": true,
+      "detail": {
+        "result": {
+          "ok": false,
+          "code": "SANDBOX_PROJECT_CREATE_FAILED",
+          "message": "建立本轮测试项目失败：SDK_RESPONSE_LOST_AFTER_COMMIT。未收到事务成功返回，**提交结果未确认**（可能已提交但响应未送达，也可能在事务内被拒绝）；请按同一请求编号重试核对，系统不会重复创建。"
+        },
+        "committedProjects": 1,
+        "committedReceipts": 1,
+        "rollbackClaim": false,
+        "uncommittedClaim": false,
+        "replayRecovered": true,
+        "simulation": "SDK 提交成功后响应失败，不声称平台实测"
+      }
+    },
+    {
+      "id": "U4-b",
+      "title": "三种情形分别说明事实（提交后读失败 / 响应丢失 / 事务内失败）",
+      "passed": true,
+      "detail": {
+        "distinctMessages": true,
+        "postCommitRead": "已收到事务成功返回，但随后读取本轮唯一记录失败：POST_COMMIT_READ_FAILED。结果待核对，请按同一请求编号重试取回原结果。",
+        "ackLost": "建立本轮测试项目失败：SDK_RESPONSE_LOST_AFTER_COMMIT。未收到事务成功返回，**提交结果未确认**（可能已提交但响应未送达，也可能在事务内被拒绝）；请按同一请求编号重试核对，系统不会重复创建。"
+      }
+    },
+    {
+      "id": "U5-a",
+      "title": "确认后修改相关日期必须重新确认（真实 Page 事件）",
+      "passed": true,
+      "detail": {
+        "confirmedFor": "2026-10-09|2026-10-10",
+        "confirmationResetOnChange": true,
+        "requestsWithoutReconfirm": 0,
+        "submittedDate": "2026-10-15"
+      }
+    },
+    {
+      "id": "U5-b",
+      "title": "重进/切动作不沿用旧确认；日期一致不额外阻断；控件事件契约一致",
+      "passed": true,
+      "detail": {
+        "clearedOnActionSwitch": true,
+        "clearedOnReentry": true,
+        "nonBooleanRejected": true,
+        "sendsWhenDatesMatch": 1,
+        "templateUsesCheckboxBindchange": true,
+        "templateNotTap": true
+      }
+    }
+  ],
+  "baseline": {
+    "files": 87,
+    "changed": [
+      "miniapp/miniprogram/app.json"
+    ]
+  },
+  "entry": {
+    "newEnabled": false,
+    "newSandboxProjectId": "",
+    "newRoundId": "",
+    "oldEnabled": false,
+    "oldAllowedProjectIds": [],
+    "proofsFrozen": true
+  },
+  "historicalEvidencePresent": true,
+  "cloudOperationsPerformed": false,
+  "resourcesCreated": false,
+  "installed": false,
+  "deployed": false,
+  "userCacheCleared": false,
+  "limitations": [
+    "合成数据库替身不是平台事务模型：U1 的服务端拒绝顺序、U4 的提交响应丢失均为本地模拟",
+    "U2 只在内存中模拟共享存储与账号变化，不声称实测微信跨账号缓存行为；本副本仍只做本地模拟",
+    "未取得 wx-server-sdk 实际路径，原 SDK 离线用例本轮仍为跳过（未安装、未伪造通过）",
+    "页面仅结构解析与真实 Page 事件验证，未在微信开发者工具或真机编译运行（本机无 wcc/wcsc）",
+    "真实 SDK 请求形状、3 秒超时、100 操作、32 KiB 限制未实测",
+    "11 个带前缀集合与索引尚未创建；新副本仍只是部署候选",
+    "费用未核实，不承诺 0 元"
+  ]
+}

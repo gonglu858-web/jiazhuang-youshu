@@ -3,6 +3,7 @@ const store = require('../../utils/store');
 const business = require('../../utils/business');
 const { day } = require('../../utils/date');
 const { fail, go } = require('../../utils/ui');
+const { checkEnvGate } = require('../../utils/env-gate');
 
 Page({
   data: {
@@ -12,9 +13,19 @@ Page({
     serverTime: '',
     accounts: [],
     projects: [],
-    error: ''
+    error: '',
+    testEntryAllowed: false,
+    testEntryMessage: ''
   },
-  onShow() { this.refreshProjects(); },
+  onShow() {
+    this.refreshEnvGate();
+    this.refreshProjects();
+  },
+  refreshEnvGate() {
+    const gate = checkEnvGate(envId, wx);
+    this.setData({ testEntryAllowed: gate.allowed, testEntryMessage: gate.reason });
+    return gate;
+  },
   refreshProjects() {
     try {
       const state = store.read();
@@ -32,6 +43,22 @@ Page({
     try { store.switchAccount(this.data.accounts[Number(event.detail.value)].id); this.refreshProjects(); } catch (error) { fail(error); }
   },
   openProject(event) { go(`/pages/project/project?id=${event.currentTarget.dataset.id}`); },
+  openCloudAccess() {
+    const gate = this.refreshEnvGate();
+    if (!gate.allowed) {
+      this.setData({ error: gate.reason || '测试入口不可用。' });
+      return;
+    }
+    go('/pages/access/access');
+  },
+  openPermissionCheck() {
+    const gate = this.refreshEnvGate();
+    if (!gate.allowed) {
+      this.setData({ error: gate.reason || '测试入口不可用。' });
+      return;
+    }
+    go('/pages/permission-check/permission-check');
+  },
   resetDemo() {
     wx.showModal({ title: '重置本地虚构示例？', content: '本机试填的安排和记录会恢复为初始示例，并以今天生成日期。不会操作云端。此前测试拍摄的本机文件不会在这里删除。', success: result => {
       if (!result.confirm) return;
@@ -40,6 +67,15 @@ Page({
   },
   async checkConnection() {
     if (this.data.checking) return;
+    const gate = checkEnvGate(envId, wx);
+    if (!gate.allowed) {
+      this.setData({
+        connectionState: 'error',
+        connectionMessage: gate.reason,
+        serverTime: ''
+      });
+      return;
+    }
     const app = getApp();
     if (!app.globalData.cloudReady) {
       this.setData({

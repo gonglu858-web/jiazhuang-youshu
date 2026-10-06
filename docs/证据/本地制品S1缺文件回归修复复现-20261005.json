@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-05",
+  "scope": "S1 缺文件预检回归的定点复现 + 第 3 节夹具修正；仅本地，只写本次新临时目录与本证据",
+  "reviewReport": "docs/Codex复核-本地制品S1-S3收尾-20261005.md",
+  "companionHistoricalEvidence": [
+    "docs/证据/Codex本地制品S1S3复核-20261005.cjs / .json（Codex 复核，原样保留未改写）",
+    "docs/证据/本地制品S1S3收尾复现-20261005.cjs / .json（上一轮 S1–S3，原样保留未改写）"
+  ],
+  "script": "docs/证据/本地制品S1缺文件回归修复复现-20261005.cjs",
+  "fixSummary": {
+    "rootCause": "safeReadPackageFile 返回 exists:false 时直接 continue，未把路径记入 facts.missing，导致「有 manifest 声明了但包体缺失」的完整性分支永远收不到缺文件，生成模式先补文件、随后才可能因 manifest 冲突失败。",
+    "minimalFix": "缺文件时记录 facts.missing；有 manifest 时在任何写入前拒绝；无 manifest 的合法半成品仍允许续建。不扩成签名或迁移系统。",
+    "fixtureFix": "S2.2 的 vendor 备份从 package 内移到样本输出目录之外的专用临时根；错误断言只接受链接表述（vendor（符号链接/目录联接）），删除链接防线后该用例将不再抛错。",
+    "titleFix": "S2.3 标题收准确：实际测的是普通文件/字节差异/缺失/目录（非普通文件）；链接覆盖在 S2.1 与独立证据。"
+  },
+  "facts": {
+    "branch1IndexRecreated": false,
+    "branch1ManifestUnchanged": true,
+    "branch1PackageFileCountUnchanged": true,
+    "branch2IndexCreated": false,
+    "branch2ManifestUnchanged": true,
+    "branch2PackageFileCountUnchanged": true,
+    "branch3GateReused": true,
+    "branch3GateUnchanged": true,
+    "branch3ManifestCreated": true,
+    "branch3AllFilesPresent": true,
+    "branch3CheckPasses": true,
+    "fixtureBackupOutsideOut": true,
+    "junctionCreated": true,
+    "junctionDetected": true
+  },
+  "results": [
+    {
+      "verdict": "REJECTED",
+      "name": "分支1 check 模式：有 manifest 缺 index.js → 拒绝",
+      "detail": "既有关闭包与 manifest 不一致，已停止（可预知失败，未写入任何新文件）： manifest 声明了但包体缺失：index.js 如需重新生成，请人工确认后移走整个输出目录；本工具不递归删除、不静默覆盖。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "分支1 生成模式：有 manifest 缺 index.js → 预检拒绝（此前会重建文件）",
+      "detail": "既有关闭包与 manifest 不一致，已停止（可预知失败，未写入任何新文件）： manifest 声明了但包体缺失：index.js 如需重新生成，请人工确认后移走整个输出目录；本工具不递归删除、不静默覆盖。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "分支2 缺文件 + manifest 冲突 → 缺文件先报且零写",
+      "detail": "既有关闭包与 manifest 不一致，已停止（可预知失败，未写入任何新文件）： manifest 声明了但包体缺失：index.js 如需重新生成，请人工确认后移走整个输出目录；本工具不递归删除、不静默覆盖。"
+    },
+    {
+      "verdict": "RETURNED",
+      "name": "分支3 无 manifest 合法半成品 → 续建成功",
+      "detail": "mode=created gate.js=reused"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "junction 白名单子目录 → 断言命中链接表述（非备份残留）",
+      "detail": "产物 package 目录存在白名单外文件，已停止： vendor（符号链接/目录联接）"
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "rejected": 4,
+    "returned": 1,
+    "missed": 0
+  },
+  "beforeAfterComparison": {
+    "branch1Generate": "修复前 mode=created 且 index.js 被重建 → 修复后预检拒绝，index.js 不存在",
+    "branch2Conflict": "修复前先创建 index.js 再报 manifest 冲突 → 修复后缺文件先报、零写",
+    "branch3HalfProduct": "修复前后均允许续建（gate.js 被复用、8 文件齐备、--check 通过）"
+  },
+  "originalArtifactsUnchanged": {
+    "artifacts/schedule-sandbox/closed-20261005/manifest.json": "2692351f26e10e9b…（未改）",
+    "artifacts/schedule-sandbox/closed-20261005-r2fix/manifest.json": "8821a459b2f32be1…（未改）",
+    "miniapp/cloudbase/schedule-sandbox-resources.candidate.json": "7a0284d5098375f6…（未改）"
+  },
+  "notRedone": "S1a/S1b 原修复、S2/S3 实现、三处文案均未重做。",
+  "businessSourceChanged": false,
+  "baseline110": {
+    "fileCount": 110,
+    "missing": 0,
+    "changed": 0
+  },
+  "entryStillClosed": true,
+  "cloudOperationsPerformed": false,
+  "resourcesCreated": false,
+  "installed": false,
+  "deployed": false,
+  "userCacheCleared": false,
+  "limitations": [
+    "真实文件符号链接（type=file）在本机仍为 EPERM，未验证；S2 的链接覆盖依赖 S2.1 的合成标记与本次 junction 实测。",
+    "Windows junction 本机可创建并被识别，已实测；不据此泛化为其它环境的平台性质。",
+    "关闭态验证仍使用合成 wx-server-sdk 与内存替身，不等于实际 SDK 或平台事务已验证。",
+    "本轮未实现驱动或初始化程序，未安装、未操作云端、未部署、未启用入口。"
+  ]
+}

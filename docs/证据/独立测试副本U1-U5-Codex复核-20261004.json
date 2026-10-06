@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-04",
+  "scope": "local-only",
+  "results": [
+    {
+      "id": "U1-actual-main-denial-retains-and-replays",
+      "passed": true,
+      "cases": [
+        {
+          "kind": "maintenance",
+          "retryCode": "PROJECT_NOT_WRITABLE",
+          "pendingPreserved": true,
+          "schedules": 1,
+          "replaySucceeded": true
+        },
+        {
+          "kind": "membership-left",
+          "retryCode": "NO_ACCESS",
+          "pendingPreserved": true,
+          "schedules": 1,
+          "replaySucceeded": true
+        },
+        {
+          "kind": "identity-disabled",
+          "retryCode": "SANDBOX_IDENTITY_UNCONFIRMED",
+          "pendingPreserved": true,
+          "schedules": 1,
+          "replaySucceeded": true
+        }
+      ]
+    },
+    {
+      "id": "U2-current-session-changed-denies",
+      "passed": true,
+      "actions": [
+        "identify"
+      ],
+      "storedStateUnchanged": true,
+      "scope": "shared-storage simulation, not a WeChat account-switch experiment"
+    },
+    {
+      "id": "U3-cleared-target-blocked",
+      "passed": true,
+      "zeroRequests": true
+    },
+    {
+      "id": "U3-regression-page-generates-unresumable-optional-project-envelope",
+      "reproduced": true,
+      "classification": "introduced regression within U3",
+      "action": "listMyProjects",
+      "projectId": "p_sbx_target",
+      "reason": "未决记录的无项目动作却带有目标，已停止。",
+      "retryCode": "SANDBOX_STORAGE_UNAVAILABLE",
+      "implication": "Page builds target for every action; validateEnvelope rejects target on PROJECT_OPTIONAL actions"
+    },
+    {
+      "id": "U5-date-change-invalidates-confirmation",
+      "passed": true,
+      "limitation": "boolean handler injection verifies state logic only, not native checkbox event"
+    },
+    {
+      "id": "U5-checkbox-contract-still-incorrect",
+      "reproduced": true,
+      "classification": "U5 existing acceptance requirement unfinished",
+      "nativeContract": "checkbox-group change detail.value is string[]; boolean belongs to switch change",
+      "officialTypes": "https://raw.githubusercontent.com/wechat-miniprogram/api-typings/master/types/wx/lib.wx.event.d.ts",
+      "officialExample": "https://raw.githubusercontent.com/wechat-miniprogram/miniprogram-demo/master/miniprogram/packageComponent/pages/form/checkbox/checkbox.wxml",
+      "limitation": "source + official contract + handler injection, no simulator click or phone test"
+    }
+  ],
+  "workBuddyRerunCount": 12,
+  "historicalHashes": {
+    "docs\\证据\\独立测试副本U1-U5返修复现-20261004.cjs": "53570907768bab2852df9c375d1554982ee4ecad83f4d0406211af0e66341d91",
+    "docs\\证据\\独立测试副本U1-U5返修复现-20261004.json": "a632c611c7f396de9159acc9766c612844d71e9f77dea3719c4202641a7f16af",
+    "docs\\证据\\独立测试副本T1-T5返修复现-20261004.cjs": "67c149101296180e77f5c7d43b524e0a739731f5b393a7edaf0207ab0644de84",
+    "docs\\证据\\独立测试副本T1-T5返修复现-20261004.json": "73bb9f4e2dc184187133185f17aa4f55ce7ee30fadcbc82795a954c34d3f34ea",
+    "docs\\证据\\独立测试副本T1-T5-Codex复核-20261004.cjs": "532e97635bb3ac54caa9c04915061acb0381dd2530e83207930ffa41676f3d36",
+    "docs\\证据\\独立测试副本T1-T5-Codex复核-20261004.json": "e9cb70fc5fdf38a1d9243d970ab945ba0ba6f8f1917bee5c4ce30c5d42f45fe3",
+    "docs\\证据\\独立测试副本S1-S6-Codex复核-20261004.cjs": "e7f380f112b5fa3daa1b4cff6af92548dbc7cd5d79ddf0bcf499e004f6be3fc3",
+    "docs\\证据\\独立测试副本S1-S6-Codex复核-20261004.json": "a9d770331b7f47420819bf3f43986cfff231123fc6965eebc2c781e9867727d1"
+  },
+  "summary": "U1/U2/U4 closed locally; U3 regression and U5 native event contract remain; T5 stays closed",
+  "officialEvidenceNote": "Official component site unavailable; used official WeChat GitHub event typings and native checkbox example. No third-party claim used as authority.",
+  "limits": [
+    "No cloud, resource, deploy, preview or phone operations",
+    "Memory DB is not platform evidence"
+  ]
+}

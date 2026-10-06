@@ -1,0 +1,144 @@
+<view class="page">
+  <view class="title gap">微信身份与项目成员</view>
+  <view wx:if="{{!testEntryAllowed}}" class="card">
+    <view class="subtitle">测试入口不可用</view>
+    <view class="small muted gap">{{testEntryMessage}}</view>
+  </view>
+  <block wx:if="{{testEntryAllowed}}">
+    <view class="card">
+      <view class="badge">云端身份测试 · 仅虚构项目</view>
+      <view class="title gap">微信身份与项目成员</view>
+      <view class="small muted gap">此页使用当前微信账号。首页的“试用身份”只控制本地示例，不能改变这里的云端权限。</view>
+      <button class="secondary" bindtap="checkTransaction" loading="{{busy}}" disabled="{{busy || transactionReady}}">先检查云端事务（不登记账号）</button>
+      <button class="primary" bindtap="identify" loading="{{busy}}" disabled="{{busy || !transactionReady}}">读取本人微信身份</button>
+      <view wx:if="{{identified}}" class="gap">{{accountLabel}} · {{isAdmin ? '已授权负责人' : '普通账号'}}</view>
+      <button wx:if="{{identified}}" class="secondary" bindtap="requestNumber" disabled="{{busy}}">获取本人绑定编号</button>
+      <view wx:if="{{bindingNumber}}" class="readonly gap">绑定编号：<text class="number">{{bindingNumber}}</text><view class="small muted">有效期至 {{bindingExpiresAt}}（UTC）。请本人确认，编号不能自行开通负责人。</view></view>
+    </view>
+    <view wx:if="{{error}}" class="error">{{error}}</view>
+    <view wx:if="{{message}}" class="notice">{{message}}</view>
+    <view wx:if="{{identified}}" class="card">
+      <view class="subtitle">我能访问的虚构项目</view>
+      <view wx:if="{{!projects.length}}" class="small muted gap">目前没有可访问的测试项目。</view>
+      <button wx:for="{{projects}}" wx:key="id" class="secondary project-select-button" data-id="{{item.id}}" bindtap="selectProject">
+        <view class="project-select-name">{{item.name}} · {{item.roleText}}</view>
+        <view class="project-select-id id-text">{{item.id}}</view>
+      </button>
+      <button class="link" bindtap="loadProjects">刷新项目列表</button>
+    </view>
+    <view wx:if="{{identified && isAdmin}}" class="card">
+      <view class="subtitle">负责人：建立虚构测试项目</view>
+      <input class="field gap" value="{{projectName}}" data-field="projectName" bindinput="input" maxlength="60" placeholder="以虚构测试开头" />
+      <button class="primary" bindtap="createProject" disabled="{{busy || !projectName}}">创建虚构项目</button>
+    </view>
+    <view wx:if="{{identified}}" class="card">
+      <view class="subtitle">只读权限检查</view>
+      <view class="small muted gap">直接读取两个既有虚构项目的成员及待核对申请，不发送新增、批准或移出操作。请用已退出的师傅账号检查，四项都应显示“权限拒绝”。</view>
+      <button class="secondary" bindtap="checkProjectAccess" loading="{{busy}}" disabled="{{busy || !transactionReady}}">检查原项目和另一测试项目</button>
+      <view wx:for="{{accessChecks}}" wx:key="key" class="member-row">
+        <view>{{item.label}}：{{item.text}}</view>
+        <view wx:if="{{item.message}}" class="small muted">{{item.code}} {{item.message}}</view>
+      </view>
+      <button wx:if="{{accessCheckReport}}" class="secondary" bindtap="copyAccessChecks" disabled="{{busy}}">复制权限检查结果</button>
+    </view>
+    <view wx:if="{{identified && !isAdmin}}" class="card">
+      <view class="subtitle">写入权限检查 · 仅测试</view>
+      <view class="small muted gap">向无权访问的既有测试项目发送指定管家、批准申请、移出成员和生成邀请请求，预期都被拒绝。自动跳过能访问的项目；异常立即停止，请勿重复执行。</view>
+      <button class="secondary" bindtap="checkWriteAccess" loading="{{busy}}" disabled="{{busy || writeCheckStarted || !transactionReady}}">开始写入权限检查</button>
+      <view class="small muted gap">已重新加入项目的师傅用下面这个按钮：先确认成员可读、管家申请列表不可读，再检查四项管理操作。角色变化或异常会立即停止。</view>
+      <button class="primary" bindtap="checkWorkerRole" loading="{{busy}}" disabled="{{busy || writeCheckStarted || !transactionReady}}">检查项目内师傅权限</button>
+      <view class="small muted gap">已加入项目的主业主用下面这个按钮，检查自己不能指定管家、批准申请、移出成员或生成邀请。兼任其他角色时会停止。</view>
+      <button class="primary" bindtap="checkPrimaryOwnerRole" loading="{{busy}}" disabled="{{busy || writeCheckStarted || !transactionReady}}">检查项目内主业主权限</button>
+      <view class="small muted gap">同时担任师傅和设计师的账号用下面这个按钮。只检查这两个角色的组合，出现额外角色或异常会停止。</view>
+      <button class="primary" bindtap="checkWorkerDesignerRole" loading="{{busy}}" disabled="{{busy || writeCheckStarted || !transactionReady}}">检查师傅兼任设计师权限</button>
+      <view wx:if="{{writeCheckSummary}}" class="small gap">{{writeCheckSummary}}</view>
+      <view wx:for="{{writeChecks}}" wx:key="key" class="member-row">
+        <view>{{item.label}}：{{item.text}}</view>
+        <view wx:if="{{item.message}}" class="small muted">{{item.code}} {{item.message}}</view>
+      </view>
+      <button wx:if="{{writeCheckReport}}" class="secondary" bindtap="copyWriteChecks" disabled="{{busy}}">复制写入检查结果</button>
+    </view>
+    <view wx:if="{{identified && !isAdmin && accountLabel === '本人账号 f182f4'}}" class="card">
+      <view class="subtitle">有效成员权限检查 · 仅测试</view>
+      <view class="small muted gap">主业主 f182f4 尝试移出原测试项目的师傅 989a74，预期被拒绝。仅一次请求；异常后不要重新邀请或批准，请复制报告交给开发协作者。</view>
+      <button class="primary" bindtap="checkValidMember" loading="{{busy}}" disabled="{{busy || validMemberStarted || !transactionReady}}">检查主业主不能移出师傅</button>
+      <view wx:if="{{validMemberSummary}}" class="small gap">{{validMemberSummary}}</view>
+      <button wx:if="{{validMemberReport}}" class="secondary" bindtap="copyValidMember" disabled="{{busy}}">复制有效成员检查结果</button>
+    </view>
+    <view wx:if="{{identified && !isAdmin && accountLabel === '本人账号 f182f4'}}" class="card">
+      <view class="subtitle">有效编号权限检查 · 仅测试</view>
+      <view class="small muted gap">输入师傅 989a74 本轮已核验的编号。由主业主尝试指定该成员为管家，预期被拒绝。仅一次请求；检查完成前师傅不要重新获取编号。</view>
+      <input class="field gap" type="number" password="true" maxlength="10" value="{{validBindingNumber}}" data-field="validBindingNumber" bindinput="input" disabled="{{busy || validBindingStarted}}" placeholder="输入师傅本轮十位绑定编号" />
+      <button class="primary" bindtap="checkValidBinding" loading="{{busy}}" disabled="{{busy || validBindingStarted || !transactionReady}}">检查有效编号不能指定管家</button>
+      <view wx:if="{{validBindingSummary}}" class="small gap">{{validBindingSummary}}</view>
+      <button wx:if="{{validBindingReport}}" class="secondary" bindtap="copyValidBinding" disabled="{{busy}}">复制有效编号检查结果</button>
+    </view>
+    <view wx:if="{{identified && !isAdmin && accountLabel === '本人账号 f182f4'}}" class="card">
+      <view class="subtitle">待批准申请权限检查 · 仅测试</view>
+      <view class="small muted gap">仅针对原项目中师傅 989a74 的一条已核实待批准申请。主业主输入该师傅的有效绑定编号后，只尝试一次批准，预期被拒绝；异常或意外成功后不要重试。本检查不读取管家的申请列表。</view>
+      <input class="field gap" type="number" password="true" maxlength="10" value="{{validApprovalNumber}}" data-field="validApprovalNumber" bindinput="input" disabled="{{busy || validApprovalStarted || !approvalWindowOpen}}" placeholder="输入师傅本轮十位绑定编号" />
+      <button class="primary" bindtap="checkValidApproval" loading="{{busy}}" disabled="{{busy || validApprovalStarted || !transactionReady || !approvalWindowOpen}}">检查主业主不能批准此申请</button>
+      <view wx:if="{{!approvalWindowOpen}}" class="small muted gap">本轮编号核验窗口已结束，请等待重新核对后再试。</view>
+      <view wx:if="{{validApprovalSummary}}" class="small gap">{{validApprovalSummary}}</view>
+      <button wx:if="{{validApprovalReport}}" class="secondary" bindtap="copyValidApproval" disabled="{{busy}}">复制待申请检查结果</button>
+    </view>
+    <view wx:if="{{identified && !isAdmin && accountLabel === '本人账号 64193d'}}" class="card">
+      <view class="subtitle">同一申请并发批准检查 · 仅测试</view>
+      <view class="small muted gap">由管家对同一待核对申请同时发送两次 approveInvitation。默认禁用，启用前须经管理端审查并刷新凭据；异常、两成功或零成功均停止。</view>
+      <input class="field gap" type="number" password="true" maxlength="10" value="{{concurrentApprovalNumber}}" data-field="concurrentApprovalNumber" bindinput="input" disabled="{{busy || concurrentApprovalStarted || !concurrentApprovalWindowOpen}}" placeholder="输入师傅本轮十位绑定编号" />
+      <button class="primary" bindtap="checkConcurrentApproval" loading="{{busy}}" disabled="{{busy || concurrentApprovalStarted || !transactionReady || !concurrentApprovalWindowOpen}}">并发批准检查（发送2次）</button>
+      <view wx:if="{{!concurrentApprovalWindowOpen}}" class="small muted gap">并发批准检查默认禁用或本轮窗口未开启，须由管理端审查后再试。</view>
+      <view wx:if="{{concurrentApprovalSummary}}" class="small gap">{{concurrentApprovalSummary}}</view>
+      <button wx:if="{{concurrentApprovalReport}}" class="secondary" bindtap="copyConcurrentApproval" disabled="{{busy}}">复制并发检查结果</button>
+    </view>
+    <view wx:if="{{identified && !isAdmin && accountLabel === '本人账号 64193d'}}" class="card">
+      <view class="subtitle">不同主业主申请并发唯一性检查 · 仅测试</view>
+      <view class="small muted gap">由管家对两份不同主业主申请同时各发送一次 approveInvitation。默认禁用，启用前须经管理端审查并刷新凭据；仅一成功、另一OWNER_EXISTS为候选结果，其余情况均停止。</view>
+      <input class="field gap" type="number" password="true" maxlength="10" value="{{primaryOwnerConcurrencyNumberA}}" data-field="primaryOwnerConcurrencyNumberA" bindinput="input" disabled="{{busy || primaryOwnerConcurrencyStarted || !primaryOwnerConcurrencyWindowOpen}}" placeholder="输入候选甲本人十位绑定编号" />
+      <input class="field gap" type="number" password="true" maxlength="10" value="{{primaryOwnerConcurrencyNumberB}}" data-field="primaryOwnerConcurrencyNumberB" bindinput="input" disabled="{{busy || primaryOwnerConcurrencyStarted || !primaryOwnerConcurrencyWindowOpen}}" placeholder="输入候选乙本人十位绑定编号" />
+      <button class="primary" bindtap="checkPrimaryOwnerConcurrency" loading="{{busy}}" disabled="{{busy || primaryOwnerConcurrencyStarted || !transactionReady || !primaryOwnerConcurrencyWindowOpen}}">检查主业主唯一性（各发送1次）</button>
+      <view wx:if="{{!primaryOwnerConcurrencyWindowOpen}}" class="small muted gap">主业主并发唯一性检查默认禁用或本轮窗口未开启，须由管理端审查后再试。</view>
+      <view wx:if="{{primaryOwnerConcurrencySummary}}" class="small gap">{{primaryOwnerConcurrencySummary}}</view>
+      <button wx:if="{{primaryOwnerConcurrencyReport}}" class="secondary" bindtap="copyPrimaryOwnerConcurrency" disabled="{{busy}}">复制主业主并发检查结果</button>
+    </view>
+    <view wx:if="{{identified}}" class="card">
+      <view class="subtitle">申请加入测试项目</view>
+      <view class="small muted gap">管家提供一次性邀请码后，在此填写。申请后仍需管家核对并批准。</view>
+      <input class="field gap" value="{{invitationCode}}" data-field="invitationCode" bindinput="input" maxlength="18" placeholder="输入邀请码" />
+      <button class="secondary" bindtap="applyInvitation" disabled="{{busy}}">提交加入申请</button>
+    </view>
+    <view wx:if="{{selectedProject}}" class="card">
+      <view class="subtitle">{{selectedProject.name}} · 成员</view>
+      <view class="small muted project-id id-text gap">{{selectedProject.id}}</view>
+      <view wx:for="{{members}}" wx:key="id" class="member-row">
+        <view>{{item.label}} · {{item.roleText}}</view>
+        <view wx:if="{{item.tradeText}}" class="small muted">工种：{{item.tradeText}}</view>
+        <button wx:if="{{item.removable}}" class="link" data-id="{{item.userId}}" bindtap="removeMember">移出此成员</button>
+      </view>
+    </view>
+    <view wx:if="{{selectedProject && isAdmin}}" class="card">
+      <view class="subtitle">负责人：指定管家</view>
+      <view class="small muted project-id id-text gap">{{selectedProject.id}}</view>
+      <view class="small muted gap">请先核对对方本人微信显示的十位绑定编号。</view>
+      <input class="field gap" value="{{managerNumber}}" data-field="managerNumber" bindinput="input" maxlength="10" type="number" placeholder="管家本人绑定编号" />
+      <button class="primary" bindtap="assignManager" disabled="{{busy}}">指定为此项目管家</button>
+    </view>
+    <view wx:if="{{selectedProject && isManager}}" class="card">
+      <view class="subtitle">管家：邀请成员</view>
+      <picker range="{{roleOptions}}" value="{{roleIndex}}" bindchange="changeRole"><view class="field gap">角色：{{roleOptions[roleIndex]}} ▾</view></picker>
+      <picker wx:if="{{roleIndex === 0}}" range="{{tradeOptions}}" value="{{tradeIndex}}" bindchange="changeTrade"><view class="field gap">工种：{{tradeOptions[tradeIndex]}} ▾</view></picker>
+      <button class="primary" bindtap="createInvitation" disabled="{{busy}}">生成一次性邀请码</button>
+      <view wx:if="{{issuedCode}}" class="readonly gap">邀请码：<text class="number">{{issuedCode}}</text><view class="small muted">只显示这一次；请管家核对对方微信身份后再批准加入。</view></view>
+      <view class="divider"></view>
+      <view class="subtitle">待核对申请</view>
+      <view wx:if="{{!invitations.length}}" class="small muted gap">暂无待核对申请。</view>
+      <view wx:if="{{invitations.length}}" class="small muted gap">请申请人用本人微信获取十位绑定编号，核对后填入。每次只批准对应的一位申请人。</view>
+      <input wx:if="{{invitations.length}}" class="field gap" value="{{applicantNumber}}" data-field="applicantNumber" bindinput="input" maxlength="10" type="number" placeholder="该申请人的十位绑定编号" />
+      <view wx:for="{{invitations}}" wx:key="id" class="member-row">
+        <view>{{item.applicantLabel}} · {{item.role}}</view>
+        <view class="small muted">请线下核对申请人与本人微信编号。</view>
+        <button class="secondary" data-id="{{item.id}}" bindtap="approveInvitation" disabled="{{busy}}">核对后批准加入</button>
+      </view>
+    </view>
+  </block>
+</view>

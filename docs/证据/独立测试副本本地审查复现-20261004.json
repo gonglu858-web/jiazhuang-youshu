@@ -1,0 +1,180 @@
+{
+  "recordedAt": "2026-10-04T04:53:17.887Z",
+  "mode": "offline_no_cloud",
+  "productFilesModified": false,
+  "baseline": {
+    "count": 87,
+    "changed": []
+  },
+  "delivery": [
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js",
+      "sha256": "ae7d75470ea4ea60f26bcf04db230f23cb776ce5234032ba6b130c04add79d15"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/gate.js",
+      "sha256": "c90fc4ccf304cfbbb29c56b85daa408a64d2066586164fea8a4db429dcae8f3d"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/project-guard.js",
+      "sha256": "2d3f48146c6fab0699bf542bc5533d5be2efad9b2590684a8e5b922b418b50db"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/index.js",
+      "sha256": "cbf3fa5bcc8c0ec5670717dea4b0fd77c78e14b0fab537273be5cd08ca14ae8b"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/package.json",
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js",
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js",
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json",
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830"
+    },
+    {
+      "file": "miniapp/miniprogram/config/schedule-sandbox-proof.js",
+      "sha256": "71307f7ecd0ef6d47b38ac15512de1504e88b0c43be91d4ef315de211ab4a2e4"
+    },
+    {
+      "file": "miniapp/miniprogram/utils/schedule-sandbox-client.js",
+      "sha256": "c0f49cae4caf171e77566ed7d48c8615248619bbd6cf25f4824935a9a94b0108"
+    },
+    {
+      "file": "miniapp/scripts/build-sandbox.cjs",
+      "sha256": "457d82a097331ebad7bd536de25d0caf2da8e8c2c6dd9aa2a2bcb84e773a9a41"
+    },
+    {
+      "file": "miniapp/tests/helpers/sandbox-test-db.cjs",
+      "sha256": "829abe08a1053df3ecec5fac0334d674bfb26dd8c33aa54648d8e4839d1d4c1b"
+    },
+    {
+      "file": "miniapp/tests/schedule-sandbox-isolation.test.cjs",
+      "sha256": "167b2bdc359df17b8600856f8e0f15af02dce36912435ee1d7a5097f42efb7fe"
+    },
+    {
+      "file": "miniapp/tests/schedule-sandbox-frontend.test.cjs",
+      "sha256": "16026f91f86a42eb81cf079b0dd69cfc88097e5ef57801eb43b9645129880c8e"
+    }
+  ],
+  "syntax": {
+    "jsCount": 12,
+    "jsonCount": 2
+  },
+  "validation": {
+    "fullRegression": {
+      "total": 429,
+      "pass": 428,
+      "fail": 0,
+      "skip": 1
+    },
+    "separatelyRunExistingSdkOfflineTest": {
+      "total": 1,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    "buildCheck": "passed",
+    "gitDiffCheck": "passed; CRLF warnings only"
+  },
+  "results": [
+    {
+      "id": "C0",
+      "scope": "unmodified entry, default config",
+      "result": "SANDBOX_DISABLED",
+      "databaseCalls": 0
+    },
+    {
+      "id": "R1",
+      "scope": "actual main + actual vendor; only config enabled in memory",
+      "result": {
+        "ok": false,
+        "code": "IDENTITY_UNAVAILABLE",
+        "message": "无法确认当前小程序微信身份，请重新进入。"
+      },
+      "databaseCalls": 1,
+      "operations": 0
+    },
+    {
+      "id": "R2",
+      "scope": "actual client, enabled config in memory; fake transport",
+      "lost": [
+        {
+          "action": "createProject",
+          "lost": [
+            "name"
+          ]
+        },
+        {
+          "action": "createInvitation",
+          "lost": [
+            "role",
+            "trades"
+          ]
+        },
+        {
+          "action": "approveInvitation",
+          "lost": [
+            "invitationId",
+            "applicantNumber"
+          ]
+        },
+        {
+          "action": "createSchedule",
+          "lost": [
+            "form",
+            "expectedConfirmed"
+          ]
+        },
+        {
+          "action": "cancelSchedule",
+          "lost": [
+            "expectedVersion"
+          ]
+        }
+      ],
+      "blankProjectConfigurationStillSent": 5
+    },
+    {
+      "id": "R3",
+      "scope": "diagnostic only: trusted context normalized in memory; actual project wrapper/vendor",
+      "projectCount": 2,
+      "changedPayloadAccepted": true,
+      "disabledUserReplayAccepted": true
+    },
+    {
+      "id": "R4",
+      "scope": "gate + main; context normalization only for business diagnostics",
+      "unknownActionResult": "BAD_INPUT",
+      "unknownActionWrites": 2,
+      "invalidPhaseNormalized": "prepare",
+      "prepareAcceptsOldProject": true,
+      "executeMissingProjectReachedBusiness": true,
+      "crossProjectInvitationStatus": "requested",
+      "crossProjectWriteCount": 2
+    },
+    {
+      "id": "R6",
+      "scope": "actual mapping module, spy lower DB",
+      "prototypeNameSdkCalls": [
+        "function",
+        "object",
+        "function"
+      ],
+      "definePropertyMutationAllowed": true
+    },
+    {
+      "id": "R5",
+      "clientConsumers": 0,
+      "appRoutes": 8,
+      "note": "No page imports dedicated client; no persistent pending-request state in dedicated client."
+    }
+  ]
+}

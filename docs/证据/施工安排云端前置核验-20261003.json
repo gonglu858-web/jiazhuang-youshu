@@ -1,0 +1,138 @@
+{
+  "recordedAt": "2026-10-03T06:43:01.258Z",
+  "status": "predeploy_blocked_by_transaction_compatibility",
+  "userAuthorization": "用户已确认按施工安排第二单元云端测试方案执行；此授权保留，当前仅前置核验",
+  "environment": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "wxAppId": "wxfb4db1615ac15531",
+    "status": "NORMAL",
+    "region": "ap-shanghai",
+    "packageName": "个人版",
+    "billing": {
+      "expireTime": "2027-03-23 23:59:59",
+      "isAutoRenew": false,
+      "enableOverrun": false,
+      "envPaid": "no",
+      "envCharged": "no"
+    },
+    "usageCaveat": "资源点查询返回0，不能据此认定传统套餐实际使用为0或剩余配额已验证"
+  },
+  "function": {
+    "name": "memberAccess",
+    "namespace": "cloud1-d8gcq5ag39d847723",
+    "status": "Active",
+    "runtime": "Nodejs16.13",
+    "timeout": 3,
+    "memory": 256,
+    "handler": "index.main",
+    "modTime": "2026-09-25 21:40:10",
+    "requestId": "4033a8ec-f7f9-44de-a9b1-8898a71bcd73"
+  },
+  "backup": {
+    "path": "C:/Users/30591/AppData/Local/CodexBackups/schedule-predeploy-20261003/memberAccess-before-schedule.zip",
+    "sha256": "af337224c177c8c5ea9327e437c22d14fea4e81d4f0cc1b3b2ee8a15442f5163",
+    "bytes": 4884398,
+    "hashMatchesRemote": true,
+    "restoreDrillPerformed": false
+  },
+  "collections": [
+    {
+      "TableName": "app_admins",
+      "Count": 1,
+      "Size": 546,
+      "IndexCount": 2,
+      "IndexSize": 45056
+    },
+    {
+      "TableName": "audit_events",
+      "Count": 53,
+      "Size": 20085,
+      "IndexCount": 3,
+      "IndexSize": 110592
+    },
+    {
+      "TableName": "invitations",
+      "Count": 8,
+      "Size": 4739,
+      "IndexCount": 4,
+      "IndexSize": 147456
+    },
+    {
+      "TableName": "project_members",
+      "Count": 8,
+      "Size": 2244,
+      "IndexCount": 4,
+      "IndexSize": 147456
+    },
+    {
+      "TableName": "projects",
+      "Count": 3,
+      "Size": 889,
+      "IndexCount": 3,
+      "IndexSize": 110592
+    },
+    {
+      "TableName": "relation_data_depart",
+      "Count": 0,
+      "Size": 0,
+      "IndexCount": 6,
+      "IndexSize": 45056
+    },
+    {
+      "TableName": "sys_department",
+      "Count": 0,
+      "Size": 0,
+      "IndexCount": 2,
+      "IndexSize": 12288
+    },
+    {
+      "TableName": "sys_user",
+      "Count": 1,
+      "Size": 394,
+      "IndexCount": 2,
+      "IndexSize": 45056
+    },
+    {
+      "TableName": "users",
+      "Count": 4,
+      "Size": 1293,
+      "IndexCount": 3,
+      "IndexSize": 110592
+    },
+    {
+      "TableName": "yf_diag_visibility",
+      "Count": 0,
+      "Size": 0,
+      "IndexCount": 2,
+      "IndexSize": 12288
+    }
+  ],
+  "newCollectionsAbsent": [
+    "schedules",
+    "schedule_revisions",
+    "schedule_occupancy",
+    "member_task_guard",
+    "schedule_receipts"
+  ],
+  "blockers": [
+    {
+      "id": "P1",
+      "description": "官方数据库事务文档限制仅doc、不支持where；本地hasActiveSchedules及rebuildGuardCount通过tx分页where，部署兼容前提不成立",
+      "source": "https://docs.cloudbase.net/database/transaction",
+      "actualCloudFailureReproduced": false
+    },
+    {
+      "id": "P2",
+      "description": "365个实际施工日仅占用写入就超过官方单事务100个操作上限；调整释放/获取的总操作数也须计入",
+      "source": "https://docs.cloudbase.net/database/transaction"
+    }
+  ],
+  "pending": [
+    "当前函数权限和六集合规则/索引回读",
+    "A/B/C选定业务数据基线与导出",
+    "实际传统套餐剩余配额",
+    "事务兼容修复及函数3秒超时预算",
+    "D项目与手机步骤"
+  ],
+  "cloudWritesPerformed": false
+}

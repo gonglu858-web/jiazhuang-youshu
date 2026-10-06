@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-05",
+  "scope": "local only",
+  "tmp": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in",
+  "results": [
+    {
+      "name": "partial-without-manifest-late-conflict",
+      "rejected": false,
+      "result": {
+        "rejected": true,
+        "indexCreated": true,
+        "error": "产物已存在且与源不一致，拒绝覆盖：gate.js\n请人工确认差异来源后，移走整个输出目录再重新生成；本工具不递归删除、不静默覆盖。"
+      }
+    },
+    {
+      "name": "manifest-false-sourceKey",
+      "rejected": false,
+      "result": "check"
+    },
+    {
+      "name": "whitelisted-file-symbolic-link",
+      "rejected": true,
+      "error": "EPERM: operation not permitted, symlink 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in\\saved-index.js' -> 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in\\file-link\\package\\index.js'"
+    },
+    {
+      "name": "synthetic-whitelisted-link-check-branch",
+      "rejected": true,
+      "error": "Invalid or unexpected token"
+    },
+    {
+      "name": "dependency-version-changed",
+      "rejected": false,
+      "result": {
+        "filePath": "dependency-version-changed",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      }
+    },
+    {
+      "name": "collection-created-true",
+      "rejected": false,
+      "result": {
+        "filePath": "collection-created-true",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      }
+    },
+    {
+      "name": "collection-ttl-omitted",
+      "rejected": false,
+      "result": {
+        "filePath": "collection-ttl-omitted",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      }
+    },
+    {
+      "name": "index-reverse",
+      "rejected": true,
+      "error": "资源候选清单校验失败：\nindex-reverse#indexes.I04.keys 第 1 项字段名应为 projectId，实际 _id（字段顺序不可变更）。\nindex-reverse#indexes.I04.keys 第 3 项字段名应为 _id，实际 projectId（字段顺序不可变更）。"
+    }
+  ],
+  "baselineCount": 110,
+  "changed": [],
+  "wbReplayError": {
+    "code": "EPERM",
+    "message": "EPERM: operation not permitted, symlink 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in\\wb-replay\\.tmp-v8\\actual' -> 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in\\wb-replay\\.tmp-v8\\alias'"
+  },
+  "wbReplaySummary": [
+    "REPLAY INCOMPLETE: EPERM: operation not permitted, symlink 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in\\wb-replay\\.tmp-v8\\actual' -> 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-r1r5-4UI0in\\wb-replay\\.tmp-v8\\alias'"
+  ],
+  "files": [
+    {
+      "file": "miniapp/scripts/package-sandbox.cjs",
+      "sha256": "af1eff7200d92d1c8df98ddabd9dbb378ce8f37bf2670c402a3296fa97b447e6"
+    },
+    {
+      "file": "miniapp/tests/sandbox-package.test.cjs",
+      "sha256": "f23fd79dcc92314d80abf3362d7f3aa1d50914dcd0f77aee8760aeb2c489d155"
+    },
+    {
+      "file": "docs/独立副本有限测试操作稿-20261005.md",
+      "sha256": "699cdde9c7765df173ab7999d6a06bfc035c3d6fab93348956f9e377446fbb9a"
+    },
+    {
+      "file": "miniapp/cloudbase/schedule-sandbox-resources.candidate.json",
+      "sha256": "7a0284d5098375f6910c459fb0ddea3af179fe40876d98cd2807b5cd93a1620b"
+    },
+    {
+      "file": "artifacts/schedule-sandbox/closed-20261005/manifest.json",
+      "sha256": "2692351f26e10e9b88a631746c4d06ce400b9309fe7955e3039def6469425b3f"
+    },
+    {
+      "file": "artifacts/schedule-sandbox/closed-20261005-r2fix/manifest.json",
+      "sha256": "8821a459b2f32be1c8d507ec3add0e8306162f84e41b796a875c6f0176ba0277"
+    },
+    {
+      "file": "docs/证据/本地制品准备R1R5修复复现-20261005.cjs",
+      "sha256": "b4891dac68617939fa4279f44deb009b4fa81860fd9210b1491ff3d1a23197b4"
+    },
+    {
+      "file": "docs/证据/本地制品准备R1R5修复复现-20261005.json",
+      "sha256": "8e7354b484f708b7a7581e316ee6bdee97cb04950e742f7ace236094273cba32"
+    }
+  ]
+}

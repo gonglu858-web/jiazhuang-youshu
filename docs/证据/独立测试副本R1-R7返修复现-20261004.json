@@ -1,0 +1,93 @@
+{
+  "recordedAt": "2026-10-04T05:15:37.996Z",
+  "mode": "offline_no_cloud",
+  "productBusinessSourceModified": false,
+  "verdict": "R1-R7 fixed; previously failing reproductions now assert correct behavior",
+  "results": [
+    {
+      "id": "C0",
+      "scope": "未改动入口 + 默认配置",
+      "result": "SANDBOX_DISABLED",
+      "databaseCalls": 0
+    },
+    {
+      "id": "R1",
+      "scope": "实际 main + 实际 vendor；仅内存启用配置",
+      "result": "ok:true",
+      "databaseCalls": 1,
+      "operations": 2
+    },
+    {
+      "id": "R1b",
+      "scope": "缺 OPENID",
+      "code": "IDENTITY_UNAVAILABLE",
+      "databaseCreated": false
+    },
+    {
+      "id": "R2",
+      "scope": "实际客户端，内存启用配置；假传输",
+      "lost": [
+        {
+          "action": "createProject",
+          "lost": []
+        },
+        {
+          "action": "createInvitation",
+          "lost": []
+        },
+        {
+          "action": "approveInvitation",
+          "lost": []
+        },
+        {
+          "action": "createSchedule",
+          "lost": []
+        },
+        {
+          "action": "cancelSchedule",
+          "lost": []
+        }
+      ],
+      "fixedEnv": "cloud1-d8gcq5ag39d847723"
+    },
+    {
+      "id": "R3",
+      "scope": "实际项目包装层 + vendor",
+      "projectCount": 1,
+      "changedPayloadAccepted": false,
+      "disabledUserReplayAccepted": false
+    },
+    {
+      "id": "R4",
+      "scope": "gate + main",
+      "unknownActionResult": "SANDBOX_ACTION_NOT_ALLOWED_IN_PHASE",
+      "unknownActionWrites": 0,
+      "invalidPhaseNormalized": null,
+      "crossProjectInvitationStatus": "issued",
+      "crossProjectWriteCount": 0
+    },
+    {
+      "id": "R5",
+      "scope": "页面与路由",
+      "routes": 9,
+      "hasSandboxPage": true,
+      "importsNewClient": true
+    },
+    {
+      "id": "R6",
+      "scope": "实际映射模块 + spy 下层",
+      "prototypeNameSdkCalls": [
+        "string"
+      ],
+      "definePropertyMutationAllowed": false
+    },
+    {
+      "id": "baseline",
+      "scope": "V1–V3 87 文件基线",
+      "changed": [
+        "miniapp/miniprogram/app.json"
+      ],
+      "note": "app.json 因新增独立测试页路由而变化，属 R5 授权的最小本地接入"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "source": "用户在本对话粘贴的客户端检测结果；非助手自动执行客户端测试",
+  "normalization": "去除聊天 Markdown 对下划线的反斜杠转义，并将错误文案中的 Markdown 链接恢复为 URL；集合名、状态、错误码、操作、markerId、时间保持原值。",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "results": [
+    {
+      "collection": "users",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "read",
+      "checkedAt": "2026-09-25T08:06:43.852Z"
+    },
+    {
+      "collection": "users",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "create",
+      "markerId": "yf-permission-probe-users-1790323603854",
+      "checkedAt": "2026-09-25T08:06:44.294Z"
+    },
+    {
+      "collection": "app_admins",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "read",
+      "checkedAt": "2026-09-25T08:06:44.816Z"
+    },
+    {
+      "collection": "app_admins",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "create",
+      "markerId": "yf-permission-probe-app_admins-1790323604817",
+      "checkedAt": "2026-09-25T08:06:45.529Z"
+    },
+    {
+      "collection": "projects",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "read",
+      "checkedAt": "2026-09-25T08:06:46.062Z"
+    },
+    {
+      "collection": "projects",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "create",
+      "markerId": "yf-permission-probe-projects-1790323606063",
+      "checkedAt": "2026-09-25T08:06:46.541Z"
+    },
+    {
+      "collection": "project_members",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "read",
+      "checkedAt": "2026-09-25T08:06:47.098Z"
+    },
+    {
+      "collection": "project_members",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "create",
+      "markerId": "yf-permission-probe-project_members-1790323607100",
+      "checkedAt": "2026-09-25T08:06:47.582Z"
+    },
+    {
+      "collection": "invitations",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "read",
+      "checkedAt": "2026-09-25T08:06:48.130Z"
+    },
+    {
+      "collection": "invitations",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "create",
+      "markerId": "yf-permission-probe-invitations-1790323608131",
+      "checkedAt": "2026-09-25T08:06:48.602Z"
+    },
+    {
+      "collection": "audit_events",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "read",
+      "checkedAt": "2026-09-25T08:06:49.072Z"
+    },
+    {
+      "collection": "audit_events",
+      "status": "denied",
+      "code": -502003,
+      "message": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED",
+      "operation": "create",
+      "markerId": "yf-permission-probe-audit_events-1790323609074",
+      "checkedAt": "2026-09-25T08:06:49.543Z"
+    }
+  ]
+}

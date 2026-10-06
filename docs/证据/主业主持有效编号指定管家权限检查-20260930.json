@@ -1,0 +1,37 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "version": 4,
+  "mode": "valid-binding-assign-manager",
+  "account": "本人账号 f182f4",
+  "complete": true,
+  "expectedCount": 1,
+  "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+  "targetMemberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+  "preflight": [{
+    "memberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+    "roles": ["师傅", "设计师"],
+    "trades": ["拆改", "木工"]
+  }],
+  "results": [{
+    "action": "assignManager",
+    "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+    "targetMemberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+    "checkedAt": "2026-09-30T10:09:39.361Z",
+    "status": "denied",
+    "code": "NO_ACCESS",
+    "message": "仅负责人可指定管家。"
+  }],
+  "stoppedReason": "",
+  "credential": {
+    "digest": "e3141b77fab8909d3f265b3263f3c14e8e39db202da176a24adf6f05e1231099",
+    "evidenceId": "e7b26ec9-10fa-4135-9714-88e7b605c59f",
+    "expiresAt": "2026-09-30T13:38:20.502Z",
+    "checkBefore": "2026-09-30T13:38:20.502Z",
+    "validationSource": "管理端事前核验，事后须再核对编号仍有效且未消费"
+  },
+  "after": {
+    "memberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+    "roles": ["师傅", "设计师"],
+    "trades": ["拆改", "木工"]
+  }
+}

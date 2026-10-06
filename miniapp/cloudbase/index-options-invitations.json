@@ -1,0 +1,21 @@
+{
+  "CreateIndexes": [
+    {
+      "IndexName": "tokenHash_1",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [{ "Name": "tokenHash", "Direction": "1" }],
+        "MgoIsUnique": true
+      }
+    },
+    {
+      "IndexName": "projectId_1_status_1",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          { "Name": "projectId", "Direction": "1" },
+          { "Name": "status", "Direction": "1" }
+        ],
+        "MgoIsUnique": false
+      }
+    }
+  ]
+}

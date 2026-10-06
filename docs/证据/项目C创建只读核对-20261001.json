@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-01",
+  "purpose": "人工创建C后只读识别同名项目，不是并发执行基线",
+  "appId": "wxfb4db1615ac15531",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "source": "用户截图与Codex管理端只读cloud_db_read_doc",
+  "projectRequestIds": ["7bc76c06-d48a-4d3e-9b4f-e1f53cbeaf07", "be68df2d-f416-4ac7-8b17-0032a00549a2"],
+  "membersRequestId": "692508c3-7967-43a0-9497-831bdaba2b10",
+  "projectCount": 3,
+  "projectC": {
+    "_id": "p_4e53f8437dab4ddcb62971d58455acaa",
+    "name": "虚构测试 · 装修项目",
+    "createdAt": "2026-10-01T11:47:01.384Z",
+    "primaryOwnerUserId": null,
+    "scope": "identity-test",
+    "status": "active",
+    "version": 1
+  },
+  "members": [{
+    "_id": "m_c05c3e21ed3870ebae794754e43fe93e55283371",
+    "joinedAt": "2026-10-01T11:47:01.448Z",
+    "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+    "roles": ["负责人"],
+    "status": "active",
+    "trades": [],
+    "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+    "version": 1
+  }],
+  "limitations": ["没有核对邀请、编号或审计", "查询为分别读取，非原子快照", "截图不能将同名列表行对应到具体项目ID"],
+  "cloudWritesByCodex": 0,
+  "next": "WorkBuddy仅显示项目完整ID，审查后再按C的ID指定管家；不重复创建、不按第三项猜测、不启用并发配置"
+}

@@ -1,0 +1,206 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "mode": "valid-member-removal",
+  "source": "助手管理端只读复核；仅已选投影，非原子跨集合快照",
+  "collections": {
+    "projects": {
+      "success": true,
+      "requestId": "bf1639d2-e640-47b5-8947-3a77ef0ddddf",
+      "data": [
+        {
+          "_id": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "primaryOwnerUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "scope": "identity-test",
+          "status": "active",
+          "version": 2
+        },
+        {
+          "_id": "p_a328c08992f7414c812047935bc3c31e",
+          "primaryOwnerUserId": null,
+          "scope": "identity-test",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "total": 2,
+      "pager": {
+        "Offset": 0,
+        "Limit": 100,
+        "Total": 2
+      },
+      "message": "文档查询成功",
+      "collection": "projects",
+      "collectionName": "projects"
+    },
+    "project_members": {
+      "success": true,
+      "requestId": "8cc8e590-2549-4cf6-ace8-ececee53187d",
+      "data": [
+        {
+          "_id": "m_e5eaf02fd6e0db8565f523431ec9019dc19e54ac",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_45fd5794f0aa51559c2b57e8aecb07fc6e3902b1",
+          "projectId": "p_a328c08992f7414c812047935bc3c31e",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_133e881e1131e4d9891ebc566884d599ac1cc60f",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "管家"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "version": 1
+        },
+        {
+          "_id": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+          "leftAt": null,
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "师傅",
+            "设计师"
+          ],
+          "status": "active",
+          "trades": [
+            "拆改",
+            "木工"
+          ],
+          "userId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "version": 5
+        },
+        {
+          "_id": "m_f5b098e6c02df1b0b7bbe7624627f2b637d46ff9",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "主业主"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "version": 1
+        }
+      ],
+      "total": 5,
+      "pager": {
+        "Offset": 0,
+        "Limit": 100,
+        "Total": 5
+      },
+      "message": "文档查询成功",
+      "collection": "project_members",
+      "collectionName": "project_members"
+    },
+    "invitations": {
+      "success": true,
+      "requestId": "7dc2fac0-4a70-4fa9-a8b2-f4632b3d17f2",
+      "data": [
+        {
+          "_id": "i_de9287cb806e4098846161e2734d30db",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_176841d33c0d40eca2fb23e92fe5b024",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_5d088d16872444479c775d3474d5852d",
+          "applicantUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "主业主",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_7f201930411243dd823798545263e236",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "设计师",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_a360a5387ef549679eb1f2a370f23bab",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "木工"
+          ],
+          "version": 3
+        }
+      ],
+      "total": 5,
+      "pager": {
+        "Offset": 0,
+        "Limit": 100,
+        "Total": 5
+      },
+      "message": "文档查询成功",
+      "collection": "invitations",
+      "collectionName": "invitations"
+    },
+    "audit_events": {
+      "success": false,
+      "errorType": "MCP_TOOL_ERROR",
+      "message": "socket hang up"
+    }
+  },
+  "comparison": {
+    "projects": {
+      "equalSelectedFields": true,
+      "total": 2
+    },
+    "project_members": {
+      "equalSelectedFields": true,
+      "total": 5
+    },
+    "invitations": {
+      "equalSelectedFields": true,
+      "total": 5
+    },
+    "audit_events": {
+      "status": "unverified",
+      "reason": "before and after query unavailable"
+    }
+  },
+  "allCollectionsVerified": false
+}

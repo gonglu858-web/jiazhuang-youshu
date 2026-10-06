@@ -1,0 +1,113 @@
+{
+  "executedAt": "2026-10-06T04:07:08.062Z",
+  "scope": "R1–R5 返修后对照复现；真实适配层 + 真实 P4 核心；合成 db/传输；无云调用",
+  "originalEvidenceKept": "docs/证据/Codex管理员SDK适配M1M3复现-20261006.cjs/.json（原样保留，未改写）",
+  "summary": {
+    "total": 13,
+    "unsafeInits": 0,
+    "zeroWriteOnReject": 6,
+    "markerLeaks": 0,
+    "foreignRollbackInvoked": 0,
+    "coreMarkerLeak": false
+  },
+  "cases": [
+    {
+      "id": "R1-missing-data",
+      "outcome": null,
+      "granted": null,
+      "errorCode": "RESULT_UNKNOWN",
+      "begin": 1,
+      "write": 0,
+      "commit": 0,
+      "rollback": 1,
+      "detailCause": "[sdk-adapter] 事务读取的数据形状未核实，不予接受。"
+    },
+    {
+      "id": "R1-undefined-data",
+      "outcome": null,
+      "granted": null,
+      "errorCode": "RESULT_UNKNOWN",
+      "begin": 1,
+      "write": 0,
+      "commit": 0,
+      "rollback": 1,
+      "detailCause": "[sdk-adapter] 事务读取的数据形状未核实，不予接受。"
+    },
+    {
+      "id": "R2-false-updatedCount",
+      "outcome": null,
+      "granted": null,
+      "errorCode": "RESULT_UNKNOWN",
+      "begin": 1,
+      "write": 0,
+      "commit": 0,
+      "rollback": 1,
+      "detailCause": "[sdk-adapter] 事务读取的数据形状未核实，不予接受。"
+    },
+    {
+      "id": "R2-zero-no-upsert",
+      "outcome": null,
+      "granted": null,
+      "errorCode": "RESULT_UNKNOWN",
+      "begin": 1,
+      "write": 0,
+      "commit": 0,
+      "rollback": 1,
+      "detailCause": "[sdk-adapter] 事务读取的数据形状未核实，不予接受。"
+    },
+    {
+      "id": "R3-wrong-appId",
+      "outcome": null,
+      "granted": null,
+      "errorCode": "CALLER_VERIFY_FAILED",
+      "begin": 0,
+      "write": 0,
+      "commit": 0,
+      "rollback": 0,
+      "detailCause": null
+    },
+    {
+      "id": "R3-trusted-test-marker",
+      "outcome": null,
+      "granted": null,
+      "errorCode": "CALLER_VERIFY_FAILED",
+      "begin": 0,
+      "write": 0,
+      "commit": 0,
+      "rollback": 0,
+      "detailCause": null
+    },
+    {
+      "id": "R1-wrong-key-read",
+      "accepted": null
+    },
+    {
+      "id": "R4-cross-adapter-unknown",
+      "foreignRollbackInvoked": 0,
+      "aStillRollbackable": true
+    },
+    {
+      "id": "R4-own-unknown-rollback-once",
+      "ownRollbackInvoked": 1,
+      "ownSucceeded": true
+    },
+    {
+      "id": "R4-own-unknown-reuse-rejected",
+      "rollbackCount": 1
+    },
+    {
+      "id": "R4-forged-unknown",
+      "foreignCallbackInvoked": 0
+    },
+    {
+      "id": "R5-error-name",
+      "markerInFirst": false,
+      "markerInSecond": false
+    },
+    {
+      "id": "R5-adapter-error",
+      "coreMarkerLeaked": false,
+      "coreCode": "RESULT_UNKNOWN"
+    }
+  ]
+}

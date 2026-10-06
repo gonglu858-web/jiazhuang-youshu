@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-04",
+  "results": [
+    {
+      "name": "U1-committed-receipt-maintenance-denial-clears-pending",
+      "reproduced": true,
+      "firstCommittedSchedules": 1,
+      "retryCode": "PROJECT_NOT_WRITABLE",
+      "pendingIncorrectlyCleared": true
+    },
+    {
+      "name": "U2-current-identity-not-refreshed-before-resume",
+      "reproduced": true,
+      "sharedStorageScenario": true,
+      "identityWouldReturn": "u_B",
+      "actualActions": [
+        "createSchedule"
+      ],
+      "stalePayloadSent": true,
+      "limitation": "模拟共享存储与运行账号变化，不声称实测微信跨账号缓存行为；代码未核实当前会话身份"
+    },
+    {
+      "name": "U3-cleared-target-still-resumes-project-write",
+      "reproduced": true,
+      "currentTarget": "",
+      "sentTarget": "p_sbx_target"
+    },
+    {
+      "name": "U3-envelope-action-snapshot-not-cross-checked",
+      "reproduced": true,
+      "storedSnapshotAction": "createSchedule",
+      "sentAction": "cancelSchedule",
+      "corruptMetadataAccepted": true
+    },
+    {
+      "name": "U4-transaction-commit-ack-lost-falsely-declared-uncommitted",
+      "reproduced": true,
+      "result": {
+        "ok": false,
+        "code": "SANDBOX_PROJECT_CREATE_FAILED",
+        "message": "建立本轮测试项目失败：SDK_RESPONSE_LOST_AFTER_COMMIT（事务未提交，未留下半套状态）"
+      },
+      "committedProjects": 1,
+      "committedReceipts": 1,
+      "simulation": "SDK提交成功后响应失败，不声称平台实测"
+    },
+    {
+      "name": "U5-date-confirmation-survives-date-change",
+      "reproduced": true,
+      "confirmedDate": "2026-10-10",
+      "submittedChangedDate": "2026-10-15",
+      "confirmationNotReset": true
+    }
+  ],
+  "workBuddyRerun": {
+    "passed": 15,
+    "output": "独立测试副本T1-T5-Codex复核-20261004-WorkBuddy复跑.json",
+    "historicalEvidenceUnchanged": true
+  },
+  "claimedHashesMatched": 10,
+  "baseline": {
+    "files": 87,
+    "changed": [
+      "miniapp/miniprogram/app.json"
+    ]
+  },
+  "entry": {
+    "newEnabled": false,
+    "newSandboxProjectId": "",
+    "oldEnabled": false,
+    "oldAllowedProjectIds": [],
+    "newProofFrozen": true,
+    "oldProofFrozen": true
+  },
+  "validation": {
+    "tests": 452,
+    "passed": 452,
+    "skipped": 0,
+    "wxml": 9,
+    "wxss": 10,
+    "originalCheck": true
+  },
+  "cloudOperationsPerformed": false,
+  "productChangesByReviewer": false
+}

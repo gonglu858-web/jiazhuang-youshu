@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-05",
+  "scope": "local review only; synthetic temporary copies",
+  "tmp": "C:\\Users\\30591\\AppData\\Local\\Temp\\codex-package-review-rgYBg4",
+  "findings": [
+    {
+      "name": "manifest-invalid-json-is-accepted-by-check",
+      "returned": "check",
+      "threw": false
+    },
+    {
+      "name": "missing-baseline-is-accepted",
+      "returned": {
+        "mode": "created",
+        "baselineChecked": false
+      },
+      "threw": false
+    },
+    {
+      "name": "extra-file-is-accepted-in-generation",
+      "returned": {
+        "mode": "created",
+        "extraFiles": [
+          "unexpected.txt"
+        ]
+      },
+      "threw": false
+    },
+    {
+      "name": "later-conflict-leaves-earlier-new-file",
+      "returned": {
+        "rejected": true,
+        "indexCreatedBeforeRejection": true
+      },
+      "threw": false
+    },
+    {
+      "name": "index-field-order-reversed",
+      "returned": {
+        "filePath": "index-field-order-reversed",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      },
+      "threw": false
+    },
+    {
+      "name": "index-direction-changed",
+      "returned": {
+        "filePath": "index-direction-changed",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      },
+      "threw": false
+    },
+    {
+      "name": "token-unique-removed",
+      "returned": {
+        "filePath": "token-unique-removed",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      },
+      "threw": false
+    },
+    {
+      "name": "index-id-replaced",
+      "returned": {
+        "filePath": "index-id-replaced",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      },
+      "threw": false
+    },
+    {
+      "name": "runtime-removed",
+      "returned": {
+        "filePath": "runtime-removed",
+        "collections": 11,
+        "indexes": 13,
+        "status": "候选清单，未创建，平台适配未验证",
+        "executable": false
+      },
+      "threw": false
+    },
+    {
+      "name": "out-root-junction",
+      "returned": {
+        "linkVerified": true,
+        "mode": "created",
+        "wroteBehindLink": true
+      },
+      "threw": false
+    }
+  ],
+  "pageRemoveMemberSelectable": false,
+  "baselineFiles": 110,
+  "changed": [],
+  "reviewedFiles": [
+    {
+      "name": "miniapp/scripts/package-sandbox.cjs",
+      "sha256": "7803c78038255cadf6f26080fc35c68a639507e8f599ebb50be4ddbdc8da58ed"
+    },
+    {
+      "name": "miniapp/cloudbase/schedule-sandbox-resources.candidate.json",
+      "sha256": "7a0284d5098375f6910c459fb0ddea3af179fe40876d98cd2807b5cd93a1620b"
+    },
+    {
+      "name": "miniapp/tests/sandbox-package.test.cjs",
+      "sha256": "222cb1f2c0395e950abe713e98caad1d44656e1f211c2a54873617aa91652df7"
+    },
+    {
+      "name": "docs/独立副本有限测试操作稿-20261005.md",
+      "sha256": "8f1af4cc55c0febffbc15320cf88f8424085e75c1c3299aba3373c5f734d86d3"
+    },
+    {
+      "name": "artifacts/schedule-sandbox/closed-20261005/manifest.json",
+      "sha256": "2692351f26e10e9b88a631746c4d06ce400b9309fe7955e3039def6469425b3f"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-01T13:08:00.652Z",
+  "source": "用户本轮人工真机反馈：甲可见C，乙不可见C",
+  "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+  "candidateA": "989a74",
+  "candidateB": "f182f4",
+  "reported": {
+    "candidateACProjectVisible": true,
+    "candidateBCProjectVisible": false
+  },
+  "scope": "仅记录用户报告的项目列表可见性，不描述为Codex真机操作或新增接口拒绝测试。",
+  "cloudEvidence": "docs/证据/不同主业主并发事后核验-20261001.json",
+  "localCleanup": {
+    "completed": false,
+    "enabled": false,
+    "configSha256": "835ce52bf6aa43141654f95724fea161958e8595d3662cfee347789ccac2cb78"
+  },
+  "next": "WorkBuddy按既有收尾任务禁用配置、清空动态凭据，交Codex复查。"
+}

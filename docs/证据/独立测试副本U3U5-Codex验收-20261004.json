@@ -1,0 +1,174 @@
+{
+  "date": "2026-10-04",
+  "scope": "local",
+  "results": [
+    {
+      "id": "U3-all-optional-actions-no-outbound-target",
+      "passed": true,
+      "cases": [
+        {
+          "targetConfigured": false,
+          "action": "identify",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": false,
+          "action": "listMyProjects",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": false,
+          "action": "requestBindingNumber",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": false,
+          "action": "createProject",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": false,
+          "action": "applyInvitation",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": true,
+          "action": "identify",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": true,
+          "action": "listMyProjects",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": true,
+          "action": "requestBindingNumber",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": true,
+          "action": "createProject",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        },
+        {
+          "targetConfigured": true,
+          "action": "applyInvitation",
+          "pageOmitsTarget": true,
+          "clientOmitsTarget": true
+        }
+      ]
+    },
+    {
+      "id": "U3-real-page-unknown-and-retry-contract",
+      "passed": true,
+      "cases": [
+        {
+          "action": "listMyProjects",
+          "readablePending": true,
+          "behavior": "same-request-restored"
+        },
+        {
+          "action": "createProject",
+          "readablePending": true,
+          "behavior": "same-request-restored"
+        },
+        {
+          "action": "requestBindingNumber",
+          "readablePending": true,
+          "behavior": "unsafe-retry-denied"
+        },
+        {
+          "action": "applyInvitation",
+          "readablePending": true,
+          "behavior": "unsafe-retry-denied"
+        }
+      ]
+    },
+    {
+      "id": "U3-required-target-and-corruption-still-denied",
+      "passed": true
+    },
+    {
+      "id": "U5-array-event-confirmation-and-reset",
+      "passed": true,
+      "mixedArrayAccepted": true,
+      "note": "includes semantics; only the fixed checkbox exists in actual template. Claim rejecting every mixed array is too strong. No simulator clicks."
+    }
+  ],
+  "staticChecks": {
+    "vendor": {
+      "status": "passed",
+      "output": "build-sandbox --check 通过：2 个文件副本与已验收源一致。\n  service.js  sha256=c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55\n  schedule-service.js  sha256=da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+    },
+    "compile": {
+      "status": "passed",
+      "output": "JSON、JavaScript 语法和 9 个页面路由检查通过。\n9 个 .wxml 文件通过本机微信编译器检查。\n10 个 .wxss 文件通过本机微信编译器检查。"
+    },
+    "structure": {
+      "status": "passed",
+      "output": "路由数：9\nWXML 解析：9 个；WXSS 解析：9 个\n全部页面结构检查通过。"
+    }
+  },
+  "baseline": {
+    "count": 87,
+    "changed": [
+      "miniapp/miniprogram/app.json"
+    ]
+  },
+  "files": {
+    "miniapp/miniprogram/utils/schedule-sandbox-client.js": "b32eb2683e52b8cbaa0f3fbbaa3924947e3ff3f20bd6d80d193e16a1656be819",
+    "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.js": "b8b8a1124a0960223467e915b74ad4eb8580e74a17cc1c0eb79fd0a3e56ecb3a",
+    "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml": "b7e7157f69e9cf6b7edbc28aad151dc0e3824d7a0ce8109e2f56a36ff35412ab",
+    "miniapp/tests/schedule-sandbox-frontend.test.cjs": "b86cff16a05b3c4a5111aef72ca067897457317ab7898e3173427f4f6f9fb681"
+  },
+  "stableFull": {
+    "miniapp/cloudfunctions/scheduleSandbox/project-guard.js": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687",
+    "miniapp/tests/schedule-sandbox-isolation.test.cjs": "731d9a8e76c5af19657029c61c2bd61d50a16eff6eb4be4dc23704b404be610a"
+  },
+  "stablePrefixes": {
+    "collection-map.js": "09c5aa9b",
+    "gate.js": "712b6e92",
+    "index.js": "1bec56a3"
+  },
+  "historicalHashes": {
+    "docs\\证据\\独立测试副本U1-U5返修复现-20261004.cjs": "53570907768bab2852df9c375d1554982ee4ecad83f4d0406211af0e66341d91",
+    "docs\\证据\\独立测试副本U1-U5返修复现-20261004.json": "a632c611c7f396de9159acc9766c612844d71e9f77dea3719c4202641a7f16af",
+    "docs\\证据\\独立测试副本T1-T5返修复现-20261004.cjs": "67c149101296180e77f5c7d43b524e0a739731f5b393a7edaf0207ab0644de84",
+    "docs\\证据\\独立测试副本T1-T5返修复现-20261004.json": "73bb9f4e2dc184187133185f17aa4f55ce7ee30fadcbc82795a954c34d3f34ea",
+    "docs\\证据\\独立测试副本T1-T5-Codex复核-20261004.cjs": "532e97635bb3ac54caa9c04915061acb0381dd2530e83207930ffa41676f3d36",
+    "docs\\证据\\独立测试副本T1-T5-Codex复核-20261004.json": "e9cb70fc5fdf38a1d9243d970ab945ba0ba6f8f1917bee5c4ce30c5d42f45fe3",
+    "docs\\证据\\独立测试副本S1-S6-Codex复核-20261004.cjs": "e7f380f112b5fa3daa1b4cff6af92548dbc7cd5d79ddf0bcf499e004f6be3fc3",
+    "docs\\证据\\独立测试副本S1-S6-Codex复核-20261004.json": "a9d770331b7f47420819bf3f43986cfff231123fc6965eebc2c781e9867727d1",
+    "docs\\证据\\独立测试副本U3U5收尾-20261004.cjs": "ffc24fb3f6a475ed35e7e95a59e11f88a4212f2bfebe6411fe991bdb790a74bf",
+    "docs\\证据\\独立测试副本U3U5收尾-20261004.json": "538f8aae8fe0319feb6748a31dba47442329c57a5c8697a3a1fbe9a4c04bcb8e"
+  },
+  "entry": {
+    "newEnabled": false,
+    "newSandboxProjectId": "",
+    "newRoundId": "",
+    "oldEnabled": false,
+    "oldAllowedProjectIds": [],
+    "frozen": true
+  },
+  "workBuddyChecks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "verdict": "U3/U5 functional local acceptance passed; evidence wording corrections recorded separately",
+  "limits": [
+    "No cloud/deployment/device/installation actions",
+    "No complete pre-edit file snapshot: historical hashes and current source checked, not a full per-round line diff",
+    "WB hardcoded spawn fallback is not execution evidence; regex is not native compilation"
+  ]
+}

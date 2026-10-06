@@ -1,0 +1,24 @@
+{
+  "CreateIndexes": [
+    {
+      "IndexName": "userId_1_status_1",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          { "Name": "userId", "Direction": "1" },
+          { "Name": "status", "Direction": "1" }
+        ],
+        "MgoIsUnique": false
+      }
+    },
+    {
+      "IndexName": "projectId_1_status_1",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          { "Name": "projectId", "Direction": "1" },
+          { "Name": "status", "Direction": "1" }
+        ],
+        "MgoIsUnique": false
+      }
+    }
+  ]
+}

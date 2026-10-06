@@ -1,0 +1,48 @@
+{
+  "appid": "wxfb4db1615ac15531",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "indexes": [
+    {
+      "collection": "users",
+      "name": "bindingCodeHash_1",
+      "fields": [{ "name": "bindingCodeHash", "direction": "1" }],
+      "unique": false
+    },
+    {
+      "collection": "projects",
+      "name": "scope_1_status_1",
+      "fields": [{ "name": "scope", "direction": "1" }, { "name": "status", "direction": "1" }],
+      "unique": false
+    },
+    {
+      "collection": "project_members",
+      "name": "userId_1_status_1",
+      "fields": [{ "name": "userId", "direction": "1" }, { "name": "status", "direction": "1" }],
+      "unique": false
+    },
+    {
+      "collection": "project_members",
+      "name": "projectId_1_status_1",
+      "fields": [{ "name": "projectId", "direction": "1" }, { "name": "status", "direction": "1" }],
+      "unique": false
+    },
+    {
+      "collection": "invitations",
+      "name": "tokenHash_1",
+      "fields": [{ "name": "tokenHash", "direction": "1" }],
+      "unique": true
+    },
+    {
+      "collection": "invitations",
+      "name": "projectId_1_status_1",
+      "fields": [{ "name": "projectId", "direction": "1" }, { "name": "status", "direction": "1" }],
+      "unique": false
+    },
+    {
+      "collection": "audit_events",
+      "name": "projectId_1_createdAt_-1",
+      "fields": [{ "name": "projectId", "direction": "1" }, { "name": "createdAt", "direction": "-1" }],
+      "unique": false
+    }
+  ]
+}

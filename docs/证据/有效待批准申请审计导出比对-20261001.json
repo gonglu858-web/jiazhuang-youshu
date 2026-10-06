@@ -1,0 +1,425 @@
+{
+  "comparedAt": "2026-10-01T03:05:51.082421+00:00",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "source": {
+    "type": "user-provided-console-export",
+    "path": "D:\\database_export-07VuZiaZ7UHc.json",
+    "sha256": "62a01f8005624d368d3a00a12e60dbf1e73acefae884af6a0a0b0c1fdd96a838",
+    "format": "NDJSON",
+    "environmentProvenance": "用户依目标环境指引提供控制台截图及文件；导出内容不含环境元数据，未新增管理端查询RequestId"
+  },
+  "baseline": {
+    "path": "docs/证据/有效待批准申请新编号核验及基线-20260930.json",
+    "sha256": "54bc2a2341674ea1c5585e0aa72ff7aff72d6a72b8d63139c117fc50458e899b"
+  },
+  "comparison": {
+    "baselineCount": 42,
+    "exportCount": 42,
+    "uniqueIds": 42,
+    "comparedFields": [
+      "_id",
+      "action",
+      "actorRole",
+      "actorUserId",
+      "createdAt",
+      "projectId",
+      "subjectUserId"
+    ],
+    "addedIds": [],
+    "missingIds": [],
+    "changedRecords": [],
+    "allBaselineAuditFieldsEqual": true
+  },
+  "exportedAuditProjection": [
+    {
+      "_id": "a_064d9e302a4d40bc8ddba4f83b28c64c",
+      "action": "removeMember",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-27T12:08:58.231Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_10b73d33dbc44ed1bbe90a2223524966",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-25T14:52:25.068Z",
+      "projectId": null,
+      "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+    },
+    {
+      "_id": "a_17aeade19aa14648a24ad6127dcb7cdd",
+      "action": "createInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-27T12:44:18.965Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": null
+    },
+    {
+      "_id": "a_18f3651c344f474390d3ff91f66ad470",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+      "createdAt": "2026-09-27T13:46:52.336Z",
+      "projectId": null,
+      "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+    },
+    {
+      "_id": "a_1ea9287a9f66407fbd967563d3f87035",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-26T07:11:50.615Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_2032e1f9679e41889cf8ec1ea59b458d",
+      "action": "approveInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-29T13:12:00.449Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_31c0a91ddfd541cea40a8eafa2f6f13b",
+      "action": "applyInvitation",
+      "actorRole": "申请人",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-26T07:14:44.826Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_37818d4b58234f5c84b7662f41ad5c09",
+      "action": "approveInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-27T13:47:05.827Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+    },
+    {
+      "_id": "a_39f218eb5aef47a6b5cd78319fad58f1",
+      "action": "createInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-30T12:20:14.640Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": null
+    },
+    {
+      "_id": "a_468857c4f4a44513b939f26b1e83b976",
+      "action": "createInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-27T13:43:23.320Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": null
+    },
+    {
+      "_id": "a_4cd132d4fa444e8da19def916c63e02e",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-27T11:58:40.365Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_4f412d92e85247a1805ea6eb6ab0ec5c",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "createdAt": "2026-09-25T13:48:27.229Z",
+      "projectId": null,
+      "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    },
+    {
+      "_id": "a_53b8efad240449f7a8c947791782e05c",
+      "action": "registerIdentity",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-26T07:10:58.325Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_6b3b89808857431eb227d9d829bdd660",
+      "action": "applyInvitation",
+      "actorRole": "申请人",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-29T13:11:13.783Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_6caf9ea869114c0cac4a6b54f4fc241d",
+      "action": "approveInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-29T12:30:49.664Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_72313451720644b191be3b5dddcd9c3f",
+      "action": "applyInvitation",
+      "actorRole": "申请人",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-29T12:28:34.642Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_7279a5d2cece4528893275bfe2fe9341",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-26T07:11:02.300Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_7cc27bf12ce04fe2a1b6b7b9fbc365a7",
+      "action": "applyInvitation",
+      "actorRole": "申请人",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-27T12:45:50.354Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_7d1829ccb53c4e42ac6e839da420d758",
+      "action": "createProject",
+      "actorRole": "负责人",
+      "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "createdAt": "2026-09-25T14:00:04.528Z",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    },
+    {
+      "_id": "a_83507725b96c42b295bb508d14f45ddb",
+      "action": "createInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-29T13:09:32.753Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": null
+    },
+    {
+      "_id": "a_909da22b35454b20abfc181356c984db",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-27T12:47:27.291Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_90f8718d3eb3436f92e0a75e4167f30d",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-29T12:28:43.289Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_9a2336c9bafd48f8bb327e0e0f0c8ed0",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-26T07:12:18.104Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_9dd7da95e8254fb48505a7a4897ab9e4",
+      "action": "applyInvitation",
+      "actorRole": "申请人",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-30T12:21:56.345Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_9efb9f2c7f9c4156865849b50ba6548d",
+      "action": "registerIdentity",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-25T14:51:21.530Z",
+      "projectId": null,
+      "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+    },
+    {
+      "_id": "a_a3b0d95d0a1e472a9f0bf52ed78c8bba",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-26T07:11:24.375Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_ae4d70eba0a7406da8750fdb8159713d",
+      "action": "createInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-29T12:27:00.042Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": null
+    },
+    {
+      "_id": "a_b214598176db495abc8a4bed1d673d08",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-27T12:04:01.920Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_bae9844d706d4542abc97f046b717f10",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-29T13:38:20.600Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_bf9ec4e77c694fc898e76e97fb9c82df",
+      "action": "requestBindingNumber",
+      "actorRole": "负责人",
+      "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "createdAt": "2026-09-25T14:54:23.878Z",
+      "projectId": null,
+      "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    },
+    {
+      "_id": "a_c6c25a48958a4b5aa4639ed7a3365c5d",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-29T13:11:19.996Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_d77a3c64bb584fdeb234397811f37738",
+      "action": "registerIdentity",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+      "createdAt": "2026-09-27T13:39:46.776Z",
+      "projectId": null,
+      "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+    },
+    {
+      "_id": "a_df34cc334177434ca4c2b0cdb22c8385",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+      "createdAt": "2026-09-30T13:49:09.911Z",
+      "projectId": null,
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_e2ab9c83c64b4471b4c7476104e30816",
+      "action": "applyInvitation",
+      "actorRole": "申请人",
+      "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+      "createdAt": "2026-09-27T13:44:07.946Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+    },
+    {
+      "_id": "a_e6cbb302cdad4349aa99adbbaebf554e",
+      "action": "requestBindingNumber",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-26T07:03:43.757Z",
+      "projectId": null,
+      "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+    },
+    {
+      "_id": "a_e7d8bed768ec46de9b3e1fd8ccc5e1dd",
+      "action": "approveInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-27T12:04:49.142Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_e81057612d2a44ca9142be6e22c338c9",
+      "action": "assignManager",
+      "actorRole": "负责人",
+      "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "createdAt": "2026-09-25T14:56:12.704Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+    },
+    {
+      "_id": "a_f2b21482db464b4a8d0c03b7f137dbad",
+      "action": "approveInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-27T12:47:40.379Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+    },
+    {
+      "_id": "a_f31e9791ec5e44bd9aa877d001ee0e26",
+      "action": "createInvitation",
+      "actorRole": "管家",
+      "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+      "createdAt": "2026-09-26T07:04:07.240Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": null
+    },
+    {
+      "_id": "a_f75fd6cadab14443b4cdc24d2999c2e0",
+      "action": "registerIdentity",
+      "actorRole": "本人普通账号",
+      "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "createdAt": "2026-09-25T13:48:16.478Z",
+      "projectId": null,
+      "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    },
+    {
+      "_id": "a_fec49153ffed4a19ba86eb19a80e4cf2",
+      "action": "createProject",
+      "actorRole": "负责人",
+      "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "createdAt": "2026-09-25T13:59:55.797Z",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    },
+    {
+      "_id": "a_initial_admin_20260925",
+      "action": "bindInitialAdmin",
+      "actorRole": "授权开发协作者",
+      "actorUserId": "management:Codex",
+      "createdAt": "2026-09-25T13:52:08.304Z",
+      "projectId": null,
+      "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    }
+  ],
+  "conclusion": "本项审计缺口补齐；结合手机报告、此前用户/成员/项目及邀请事后复核，主业主有效待批准申请拒绝测试通过。",
+  "relatedEvidence": [
+    "主业主有效待批准申请权限检查-20260930.json",
+    "有效待批准申请事后复核-20260930.json",
+    "有效待批准申请人工确认与事后补核-20260930.json"
+  ],
+  "limitations": [
+    "基线只含列出的7项审计字段，before/after等额外字段无事前快照，不能声称这些字段也已逐项比对。",
+    "这是用户控制台导出与历史基线的离线比对，不是同一时刻跨集合快照；不证明当前绑定编号仍有效。",
+    "第一单元整体未验收；真实云端并发和纯家庭成员独立账号仍未验证。"
+  ],
+  "cloudWritesExecuted": false
+}

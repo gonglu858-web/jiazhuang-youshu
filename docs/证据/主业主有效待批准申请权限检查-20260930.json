@@ -1,0 +1,65 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "version": 1,
+  "mode": "valid-pending-approval-owner-denial",
+  "account": "本人账号 f182f4",
+  "complete": true,
+  "expectedCount": 1,
+  "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+  "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+  "targetMemberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+  "credential": {
+    "evidenceId": "valid-approval-renew-d24bf1f2-a57b-4ca1-9d8f-34f3e77e549e",
+    "bindingEvidenceId": "6bca2f6d-dbed-4d70-94d7-850c79eb45c3",
+    "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+    "invitationExpiresAt": "2026-10-07T12:20:14.221Z",
+    "bindingExpiresAt": "2026-10-01T13:49:09.810Z",
+    "checkBefore": "2026-10-01T13:49:09.810Z",
+    "validationSource": "管理端事前核实；事后仍须复核申请、编号、成员和审计"
+  },
+  "preflight": [
+    {
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "roles": [
+        "主业主"
+      ],
+      "memberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+      "memberRoles": [
+        "师傅",
+        "设计师"
+      ],
+      "memberTrades": [
+        "拆改",
+        "木工"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "action": "approveInvitation",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+      "targetMemberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+      "checkedAt": "2026-09-30T14:37:48.573Z",
+      "status": "denied",
+      "code": "NO_ACCESS",
+      "message": "仅项目管家可管理成员。"
+    }
+  ],
+  "stoppedReason": "",
+  "after": {
+    "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+    "roles": [
+      "主业主"
+    ],
+    "memberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+    "memberRoles": [
+      "师傅",
+      "设计师"
+    ],
+    "memberTrades": [
+      "拆改",
+      "木工"
+    ]
+  }
+}

@@ -1,28 +1,30 @@
 <view class="page">
   <view wx:if="{{error}}" class="error">{{error}}</view>
   <block wx:if="{{project}}">
-    <view class="notice">本地虚构示例 · {{account.name}} / {{roleText}}<view>切换身份请返回项目列表。权限只作本地交互演示。</view></view>
-    <view class="title">{{project.name}}</view><view class="muted gap">{{project.stage}}</view>
-    <view class="actions"><button class="secondary" bindtap="members">项目成员</button><button wx:if="{{isWorker}}" class="primary" disabled="{{!postOptions.length}}" bindtap="publish">发布今日现场记录</button></view>
-    <view wx:if="{{isWorker && !postOptions.length}}" class="small muted gap">今天未安排本人获授权工种施工，无需每日更新。</view>
-    <view class="tabs"><button class="{{tab === 'plans' ? 'active' : ''}}" data-tab="plans" bindtap="setTab">施工安排</button><button class="{{tab === 'records' ? 'active' : ''}}" data-tab="records" bindtap="setTab">现场记录</button></view>
+    <view wx:if="{{mode === 'local'}}" class="notice">本地虚构示例 · {{account.name}} / {{roleText}}<view>切换身份请返回项目列表。权限只作本地交互演示。</view></view>
+    <view wx:if="{{mode === 'cloud'}}" class="notice">云端项目 · {{roleText}}<view>数据来自云数据库，所有项目成员可见。</view></view>
+    <view class="title">{{project.name}}</view><view wx:if="{{mode === 'local'}}" class="muted gap">{{project.stage}}</view>
+    <view wx:if="{{mode === 'local'}}" class="actions"><button class="secondary" bindtap="members">项目成员</button><button wx:if="{{isWorker}}" class="primary" disabled="{{!postOptions.length}}" bindtap="publish">发布今日现场记录</button></view>
+    <view wx:if="{{mode === 'local' && isWorker && !postOptions.length}}" class="small muted gap">今天未安排本人获授权工种施工，无需每日更新。</view>
+    <view class="tabs"><button class="{{tab === 'plans' ? 'active' : ''}}" data-tab="plans" bindtap="setTab">施工安排</button><button wx:if="{{mode === 'local'}}" class="{{tab === 'records' ? 'active' : ''}}" data-tab="records" bindtap="setTab">现场记录</button></view>
     <block wx:if="{{tab === 'plans'}}">
       <view class="card">
         <view class="row"><view class="subtitle">按日期查看</view><button class="link" bindtap="returnToday">回到今天</button></view>
         <picker mode="date" value="{{selectedDate}}" bindchange="changeDate"><view class="field gap">{{selectedDate}} ▾</view></picker>
-        <view class="gap">施工 {{activeCount}} 个工种 · 已更新 {{updatedCount}} 个</view><view class="small muted">更新按工种计算；发布记录不代表施工完成或验收通过。</view>
-        <button wx:if="{{canManage}}" class="primary" bindtap="editPlan">新增施工安排</button>
+        <view wx:if="{{mode === 'local'}}" class="gap">施工 {{activeCount}} 个工种 · 已更新 {{updatedCount}} 个</view><view wx:if="{{mode === 'local'}}" class="small muted">更新按工种计算；发布记录不代表施工完成或验收通过。</view>
+        <button wx:if="{{canManage}}" class="primary" bindtap="addPlan">新增施工安排</button>
       </view>
-      <view wx:for="{{schedules}}" wx:key="id" class="card">
+      <view wx:for="{{schedules}}" wx:key="id" class="card" bindtap="editPlan" data-id="{{item.id}}">
         <view class="row"><view class="subtitle">{{item.trade}} · {{item.stage}}</view><view class="badge {{item.status.tone}}">{{item.status.text}}</view></view>
         <view class="gap">{{item.start}} 至 {{item.end}}</view><view class="small muted">主要上传责任人：{{item.workerName}}</view>
         <view class="label">本次施工内容</view><view class="prewrap">{{item.content}}</view><view class="gap">预计完成日期：{{item.expected}}</view>
-        <view wx:if="{{item.restText}}" class="small muted gap">休息／停工：{{item.restText}}</view><view class="small muted gap">第 {{item.version}} 版 · {{item.updatedBy}}维护</view>
-        <button wx:if="{{canManage}}" class="secondary" data-id="{{item.id}}" bindtap="editPlan">调整安排</button>
+        <view wx:if="{{item.restText}}" class="small muted gap">休息／停工：{{item.restText}}</view><view wx:if="{{mode === 'local'}}" class="small muted gap">第 {{item.version}} 版 · {{item.updatedBy}}维护</view>
+        <button wx:if="{{canManage && mode === 'local'}}" class="secondary" data-id="{{item.id}}" bindtap="editPlan">调整安排</button>
       </view>
+      <view wx:if="{{mode === 'cloud' && pagination.hasMore}}" class="card"><button class="secondary" loading="{{loading}}" disabled="{{loading}}" bindtap="loadMoreCloud">加载更多</button></view>
       <view wx:if="{{!schedules.length}}" class="card empty">暂无施工安排</view>
     </block>
-    <block wx:else>
+    <block wx:if="{{mode === 'local' && tab === 'records'}}">
       <view class="card"><view class="row"><view class="subtitle">现场记录 · {{records.length}} 条</view><button class="link" bindtap="allRecords">查看全部</button></view><picker mode="date" value="{{recordDate || today}}" bindchange="filterRecords"><view class="field gap">{{recordDate || '全部日期（点此按日期筛选）'}} ▾</view></picker><view class="small muted gap">本机发布后立即对同项目示例成员可见，无需管家逐条审核。</view></view>
       <view wx:for="{{records}}" wx:key="id" wx:for-item="record" class="card">
         <view class="row"><view class="subtitle">{{record.trade}} · {{record.location}}</view><view class="badge">{{record.simulated ? '含模拟影像' : '本机相机测试'}}</view></view>

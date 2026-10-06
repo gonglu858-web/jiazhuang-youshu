@@ -1,0 +1,84 @@
+{
+  "executedAt": "2026-10-05T15:43:02.239Z",
+  "scope": "local real-module review; synthetic API/storage/transaction data; no platform calls",
+  "summary": {
+    "total": 10,
+    "reproduced": 10,
+    "harnessErrors": 0
+  },
+  "results": [
+    {
+      "id": "S1-official-account-info-shape-blocked",
+      "code": "TEST_DRIVER_GATE_BLOCKED",
+      "reasons": [
+        "运行环境未返回环境 ID。"
+      ],
+      "calls": 0,
+      "defect": true
+    },
+    {
+      "id": "S2-malformed-batch-cases-silently-reset",
+      "verdict": "candidate",
+      "businessRequests": 2,
+      "defect": true
+    },
+    {
+      "id": "S2-legacy-stopped-case-hidden",
+      "oldKey": "schtest_v1:driver:legacy-batch:cloud1-d8gcq5ag39d847723:round-test-1:u_0123456789abcdef0123456789abcdef01234567:case:V06-a",
+      "verdict": "candidate",
+      "businessRequests": 2,
+      "legacyPreserved": true,
+      "defect": true
+    },
+    {
+      "id": "S2-forged-internal-owner-bypasses-runtime-hold",
+      "status": "bound",
+      "calls": 1,
+      "holdStillHeld": true,
+      "defect": true
+    },
+    {
+      "id": "S3-second-response-not-persisted-until-first",
+      "secondResolved": true,
+      "rowsSavedBeforeFirst": 0,
+      "finalVerdict": "candidate",
+      "defect": true
+    },
+    {
+      "id": "S3-candidate-readback-lost-responses-accepted",
+      "injected": true,
+      "verdict": "candidate",
+      "persistedResponseCount": 0,
+      "defect": true
+    },
+    {
+      "id": "S4-current-expected-date-overwritten",
+      "currentExpectedDate": "2026-11-05",
+      "currentEndDate": "2026-11-03",
+      "sentExpectedDates": [
+        "2026-11-03",
+        "2026-11-03"
+      ],
+      "verdict": "candidate",
+      "defect": true
+    },
+    {
+      "id": "S4-invalid-pagination-treated-as-empty",
+      "verdict": "candidate",
+      "businessRequests": 1,
+      "defect": true
+    },
+    {
+      "id": "S4-unvalidated-nested-field-persists",
+      "verdict": "candidate",
+      "markerInStorage": true,
+      "defect": true
+    },
+    {
+      "id": "S5-disabled-primary-observed-as-consistent",
+      "state": "present",
+      "primaryStatus": "disabled",
+      "defect": true
+    }
+  ]
+}

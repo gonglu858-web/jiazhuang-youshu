@@ -1,0 +1,6 @@
+{
+  "mode": "check",
+  "markedLstatCalls": 0,
+  "scope": "synthetic Dirent/lstat only; no real symlink; corrected hashbang loading",
+  "out": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.codex-link-branch-M6PmXJ"
+}

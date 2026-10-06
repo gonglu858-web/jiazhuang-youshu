@@ -2,7 +2,14 @@
 const { validDay } = require('./date');
 const { STAGES } = require('./seed');
 const clone = value => JSON.parse(JSON.stringify(value));
-const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const assert = (condition, message) => {
+  if (!condition) {
+    const error = new Error(message);
+    error.code = 'BAD_INPUT';
+    error.kind = 'validation';
+    throw error;
+  }
+};
 const account = state => state.accounts.find(item => item.id === state.currentUserId);
 const membership = (state, projectId) => state.members.find(item => item.projectId === projectId && item.userId === state.currentUserId && item.status === 'active');
 const canRead = (state, projectId) => !!(account(state) && (account(state).leader || membership(state, projectId)));

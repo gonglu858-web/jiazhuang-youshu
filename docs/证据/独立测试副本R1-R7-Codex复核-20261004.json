@@ -1,0 +1,193 @@
+{
+  "recordedAt": "2026-10-04T10:20:40.404Z",
+  "mode": "offline_synthetic_no_cloud",
+  "productModified": false,
+  "fullRegression": {
+    "total": 449,
+    "passed": 449,
+    "failed": 0,
+    "skipped": 0,
+    "existingSdkOfflineOnly": true
+  },
+  "compilation": {
+    "wcc": {
+      "files": 9,
+      "exit": 0
+    },
+    "wcsc": {
+      "files": 10,
+      "exit": 0
+    },
+    "originalCheckScript": {
+      "exit": 1,
+      "reason": "missing pages/schedule-sandbox/schedule-sandbox.json; not EBUSY"
+    },
+    "buildSandboxCheck": "passed",
+    "gitDiffCheck": "passed; CRLF warnings only"
+  },
+  "baseline": {
+    "files": 87,
+    "changed": [
+      "miniapp/miniprogram/app.json"
+    ]
+  },
+  "delivered": [
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js",
+      "sha256": "9cdffe652f6720c9f9929e1710f5c32d3edc9efaf3beb9371223279d53d9629b"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/gate.js",
+      "sha256": "8106da93398b1a61ef4b85b597e02ddf135350697facf602fcef37df4b344247"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/project-guard.js",
+      "sha256": "bd36312b29f102dcbfb74628fbd849a15607d1e304ef46f214bac4d4b1aacd27"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/index.js",
+      "sha256": "1b126e5cdb815cd24372e9bda3939b4b76b37b4faf24560b4fab84357e270dcb"
+    },
+    {
+      "file": "miniapp/miniprogram/config/schedule-sandbox-proof.js",
+      "sha256": "71307f7ecd0ef6d47b38ac15512de1504e88b0c43be91d4ef315de211ab4a2e4"
+    },
+    {
+      "file": "miniapp/miniprogram/utils/schedule-sandbox-client.js",
+      "sha256": "2d74e5308a65c7ca448113f38591707c540ea91cc4cfb33624f933efcf364fa5"
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+      "sha256": "887844bb60abc0a854d10155e416e7141c4afa8c0cd3fb3681fae57c2158a7b2"
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "sha256": "e62faf46d1a747ed0e66d5e0017f72df2b972c6cdb9a6e84571479f6c0759184"
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+      "sha256": "d30ca2ab51a2ff15179ace61f1b83a5c8d7a9e8514046262260dd923b25a1eb1"
+    },
+    {
+      "file": "miniapp/miniprogram/app.json",
+      "sha256": "7318ca539c191670b58297ba5008b5403fda5c6b91da99010c35a85434221f80"
+    },
+    {
+      "file": "miniapp/scripts/build-sandbox.cjs",
+      "sha256": "457d82a097331ebad7bd536de25d0caf2da8e8c2c6dd9aa2a2bcb84e773a9a41"
+    },
+    {
+      "file": "miniapp/scripts/check-pages.cjs",
+      "sha256": "0a9a9d4fc71fe2f3773895d3e03d3dc3ed7f8d8b7aff3b024028add8b439fbf0"
+    },
+    {
+      "file": "miniapp/tests/helpers/sandbox-test-db.cjs",
+      "sha256": "6bafe267d3fcd5f5985733c4ed6c7d82ce5a59eb91671712ca14d07e3978ab53"
+    },
+    {
+      "file": "miniapp/tests/helpers/sandbox-entry-loader.cjs",
+      "sha256": "f9eae7e58027b4104b41c4643ebe116784f73e595cadf7d59a3f8d6f9e8284e3"
+    },
+    {
+      "file": "miniapp/tests/schedule-sandbox-isolation.test.cjs",
+      "sha256": "7c86343c6317b9180be4611f1094ffee4151638c1ddd04c1273f5ee7c5842cac"
+    },
+    {
+      "file": "miniapp/tests/schedule-sandbox-frontend.test.cjs",
+      "sha256": "2f0b9f79a23128341bf0ae06cabc0c3b9a7aaebe531676c5b48793140f1e3f0a"
+    }
+  ],
+  "results": [
+    {
+      "id": "S1",
+      "create": true,
+      "number": true,
+      "prepareAssign": "SANDBOX_PROJECT_NOT_READY",
+      "executeAssign": "SANDBOX_ACTION_NOT_ALLOWED_IN_PHASE"
+    },
+    {
+      "id": "S2a",
+      "first": "SERVER_ERROR",
+      "retry": "SANDBOX_PROJECT_STATE_CONFLICT",
+      "projects": 1,
+      "members": 1,
+      "createAudits": 1,
+      "receipts": 0
+    },
+    {
+      "id": "S2b",
+      "results": [
+        {
+          "ok": true,
+          "code": ""
+        },
+        {
+          "ok": false,
+          "code": "SERVER_ERROR"
+        }
+      ],
+      "projects": 1,
+      "receipts": 1
+    },
+    {
+      "id": "S3a",
+      "forgedAllowedProjectAccepted": true,
+      "actualInvitationProject": "p_other",
+      "status": "requested",
+      "writes": 2
+    },
+    {
+      "id": "S3b",
+      "prepareForeignInvitationAccepted": true
+    },
+    {
+      "id": "S3c",
+      "listedProjectIds": [
+        "p_allowed",
+        "p_other"
+      ]
+    },
+    {
+      "id": "S4a",
+      "wrongProjectCloudCalls": 1
+    },
+    {
+      "id": "S4b",
+      "sameIdChangedActionSent": [
+        "createSchedule",
+        "cancelSchedule"
+      ]
+    },
+    {
+      "id": "S4c",
+      "businessDeniedPendingRetained": true,
+      "next": "SANDBOX_PENDING_UNRESOLVED",
+      "cloudCalls": 1
+    },
+    {
+      "id": "S4d",
+      "storageReadFailureStillSent": 1
+    },
+    {
+      "id": "S4e",
+      "credentialPersistedInSnapshot": true
+    },
+    {
+      "id": "S5",
+      "restoredRequestId": "restore",
+      "restoredProjectId": "",
+      "retryCalls": 0,
+      "error": "尚未确定测试项目ID，未发送任何请求。",
+      "availableActions": [
+        "identify",
+        "listMyProjects",
+        "requestBindingNumber",
+        "createProject",
+        "listSchedules",
+        "getSchedule",
+        "listScheduleRevisions"
+      ],
+      "snapshotHasProject": true
+    }
+  ]
+}

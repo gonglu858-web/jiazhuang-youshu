@@ -1,0 +1,5 @@
+R1-4 零产物: out=false out2=false out3=false
+R1-5 零新增: manifest=false index.js=false
+R1-6 文件数不变: 6 -> 6
+R1-7 零新增: out 存在=false
+REPLAY INCOMPLETE: EPERM: operation not permitted, symlink 'C:\Users\30591\Documents\ChatGPT\装修进度验收APP\artifacts\schedule-sandbox\.codex-r1r5-4UI0in\wb-replay\.tmp-v8\actual' -> 'C:\Users\30591\Documents\ChatGPT\装修进度验收APP\artifacts\schedule-sandbox\.codex-r1r5-4UI0in\wb-replay\.tmp-v8\alias'

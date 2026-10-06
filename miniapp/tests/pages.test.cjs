@@ -15,6 +15,7 @@ function setup(user = 'manager') {
     getStorageSync: () => copy(memory),
     setStorageSync: (_key, value) => { if (failWrite) throw new Error('模拟存储空间不足'); memory = copy(value); },
     showToast: () => {}, showModal: options => { modal = options; }, navigateBack: () => {}, navigateTo: () => {},
+    getAccountInfoSync: () => ({ miniProgram: { appId: 'wxfb4db1615ac15531', envVersion: 'develop' } }),
     env: { USER_DATA_PATH: 'test-user-data' }
   };
   global.getCurrentPages = () => stack;
@@ -185,4 +186,82 @@ test('云 SDK 未就绪时首页不显示连接成功，示例项目仍可试用
   assert.equal(index.data.connectionState, 'error');
   assert.equal(index.data.connectionMessage, '模拟初始化失败');
   assert.equal(index.data.projects.length, 1);
+});
+
+test('正式版、未知版本和账号信息失败时首页测试入口隐藏且不发起云连接', async () => {
+  for (const envVersion of ['release', undefined, 'unknown']) {
+    setup();
+    global.getApp = () => ({ globalData: { cloudReady: true, cloudError: '' } });
+    wx.getAccountInfoSync = () => {
+      if (envVersion === undefined) throw new Error('unavailable');
+      return { miniProgram: { appId: 'wxfb4db1615ac15531', envVersion } };
+    };
+    let calls = 0;
+    wx.cloud = { callFunction: () => { calls++; return Promise.resolve({ result: { ok: true } }); } };
+    const index = page('index');
+    assert.equal(index.data.testEntryAllowed, false);
+    assert.ok(index.data.testEntryMessage);
+    index.openCloudAccess();
+    index.openPermissionCheck();
+    await index.checkConnection();
+    assert.equal(calls, 0);
+    assert.equal(index.data.connectionState, 'error');
+  }
+});
+
+test('错 AppID 时首页测试入口不可用且零云请求', async () => {
+  setup();
+  global.getApp = () => ({ globalData: { cloudReady: true, cloudError: '' } });
+  wx.getAccountInfoSync = () => ({ miniProgram: { appId: 'wrong', envVersion: 'develop' } });
+  let calls = 0;
+  wx.cloud = { callFunction: () => { calls++; return Promise.resolve({ result: { ok: true } }); } };
+  const index = page('index');
+  assert.equal(index.data.testEntryAllowed, false);
+  index.openCloudAccess();
+  index.openPermissionCheck();
+  await index.checkConnection();
+  assert.equal(calls, 0);
+});
+
+test('develop 版本首页仍可发起云连接测试，但隐藏后再次进入变为不可用仍停止请求', async () => {
+  setup();
+  global.getApp = () => ({ globalData: { cloudReady: true, cloudError: '' } });
+  wx.getAccountInfoSync = () => ({ miniProgram: { appId: 'wxfb4db1615ac15531', envVersion: 'develop' } });
+  wx.cloud = { callFunction: options => {
+    assert.equal(options.name, 'connectionCheck');
+    return Promise.resolve({ result: { ok: true, service: 'renovation-connection-check', version: '1.0.0', serverTime: '2026-09-23T10:52:28.108Z' } });
+  } };
+  const index = page('index');
+  assert.equal(index.data.testEntryAllowed, true);
+  await index.checkConnection();
+  assert.equal(index.data.connectionState, 'success');
+  // 模拟切换为 release 后再次进入页面
+  wx.getAccountInfoSync = () => ({ miniProgram: { appId: 'wxfb4db1615ac15531', envVersion: 'release' } });
+  let callsAfter = 0;
+  wx.cloud = { callFunction: () => { callsAfter++; return Promise.resolve({ result: { ok: true } }); } };
+  index.onShow();
+  assert.equal(index.data.testEntryAllowed, false);
+  await index.checkConnection();
+  assert.equal(callsAfter, 0);
+});
+
+test('首页导航按钮点击时重新校验环境，release 下零跳转、develop 下正常跳转', () => {
+  setup();
+  global.getApp = () => ({ globalData: { cloudReady: true, cloudError: '' } });
+  wx.getAccountInfoSync = () => ({ miniProgram: { appId: 'wxfb4db1615ac15531', envVersion: 'develop' } });
+  const index = page('index');
+  const navigations = [];
+  wx.navigateTo = options => { navigations.push(options); };
+  wx.getAccountInfoSync = () => ({ miniProgram: { appId: 'wxfb4db1615ac15531', envVersion: 'release' } });
+  index.openCloudAccess();
+  index.openPermissionCheck();
+  assert.equal(navigations.length, 0);
+  assert.equal(index.data.testEntryAllowed, false);
+  assert.ok(index.data.error);
+  wx.getAccountInfoSync = () => ({ miniProgram: { appId: 'wxfb4db1615ac15531', envVersion: 'develop' } });
+  index.openCloudAccess();
+  index.openPermissionCheck();
+  assert.equal(navigations.length, 2);
+  assert.equal(navigations[0].url, '/pages/access/access');
+  assert.equal(navigations[1].url, '/pages/permission-check/permission-check');
 });

@@ -1,0 +1,100 @@
+{
+  "observedAt": "2026-10-06T03:35:49.983Z",
+  "scope": "synthetic local counterexamples only; no platform calls",
+  "cases": [
+    {
+      "id": "R1-missing-data",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R1-undefined-data",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R2-false-updatedCount",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R2-zero-no-upsert",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R3-wrong-appId",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R3-trusted-test-marker",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R1-wrong-key-read",
+      "accepted": {
+        "_id": "wrong-key",
+        "userId": "u_85b26ad903332982a5abe12c2ad44b26263ea55e",
+        "status": "active"
+      }
+    },
+    {
+      "id": "R4-cross-adapter-unknown",
+      "foreignRollbackInvoked": 1,
+      "ownRollbackInvoked": 0
+    },
+    {
+      "id": "R4-forged-unknown",
+      "foreignCallbackInvoked": 1
+    },
+    {
+      "id": "R5-error-name",
+      "markerLeaked": true
+    },
+    {
+      "id": "R5-adapter-error",
+      "directMarkerLeaked": false,
+      "coreMarkerLeaked": true,
+      "coreCode": "RESULT_UNKNOWN"
+    }
+  ],
+  "total": 11
+}

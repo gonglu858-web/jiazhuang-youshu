@@ -1,0 +1,55 @@
+{
+  "query": {
+    "tool": "cloud_db_read_struct",
+    "appid": "wxfb4db1615ac15531",
+    "env": "cloud1-d8gcq5ag39d847723",
+    "action": "listCollections",
+    "limit": 100,
+    "offset": 0
+  },
+  "response": {
+    "ok": true,
+    "tool": "cloud_db_read_struct",
+    "clientName": "Codex",
+    "result": {
+      "success": true,
+      "requestId": "809d1683-ec96-41fb-945b-45eee8cd1c83",
+      "collections": [
+        {
+          "TableName": "relation_data_depart",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 6,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "sys_department",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 2,
+          "IndexSize": 12288
+        },
+        {
+          "TableName": "sys_user",
+          "Count": 1,
+          "Size": 394,
+          "IndexCount": 2,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "yf_diag_visibility",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 2,
+          "IndexSize": 12288
+        }
+      ],
+      "pager": {
+        "Offset": 0,
+        "Limit": 100,
+        "Total": 4
+      },
+      "message": "获取 NoSQL 数据库集合列表成功"
+    }
+  }
+}

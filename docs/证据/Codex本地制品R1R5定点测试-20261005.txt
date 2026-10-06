@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: R3.1 未变异的真实候选清单通过校验：11 集合 / 13 索引、不可执行
+ok 1 - R3.1 未变异的真实候选清单通过校验：11 集合 / 13 索引、不可执行
+  ---
+  duration_ms: 4.3266
+  type: 'test'
+  ...
+# Subtest: R3.2 索引变异全部被拒：字段顺序、方向、unique、编号、增删字段
+ok 2 - R3.2 索引变异全部被拒：字段顺序、方向、unique、编号、增删字段
+  ---
+  duration_ms: 7.203
+  type: 'test'
+  ...
+# Subtest: R3.3 候选规格与就绪标记被删或改动 → 拒绝
+ok 3 - R3.3 候选规格与就绪标记被删或改动 → 拒绝
+  ---
+  duration_ms: 4.9892
+  type: 'test'
+  ...
+# Subtest: R3.4 既有集合/函数/触发器防护仍生效（旧资源、额外函数、HTTP、权限、TTL）
+ok 4 - R3.4 既有集合/函数/触发器防护仍生效（旧资源、额外函数、HTTP、权限、TTL）
+  ---
+  duration_ms: 5.7195
+  type: 'test'
+  ...
+# Subtest: R3.5 候选清单与 collection-map 固定表逐项一致，全部 ADMINONLY / 无 TTL / 未创建
+ok 5 - R3.5 候选清单与 collection-map 固定表逐项一致，全部 ADMINONLY / 无 TTL / 未创建
+  ---
+  duration_ms: 1.5688
+  type: 'test'
+  ...
+# Subtest: R1.1 manifest 非法 JSON → check 与生成都拒绝
+ok 6 - R1.1 manifest 非法 JSON → check 与生成都拒绝
+  ---
+  duration_ms: 51.0751
+  type: 'test'
+  ...
+# Subtest: R1.2 manifest 文件条目哈希错 / 字节数错 → 拒绝
+ok 7 - R1.2 manifest 文件条目哈希错 / 字节数错 → 拒绝
+  ---
+  duration_ms: 67.0657
+  type: 'test'
+  ...
+# Subtest: R1.3 manifest 漏项 / 重复项 / 白名单外路径 / 就绪标记被改 → 拒绝
+ok 8 - R1.3 manifest 漏项 / 重复项 / 白名单外路径 / 就绪标记被改 → 拒绝
+  ---
+  duration_ms: 264.9665
+  type: 'test'
+  ...
+# Subtest: R1.4 基线缺失 / 坏 JSON / 字段不完整 → 停止且零产物
+ok 9 - R1.4 基线缺失 / 坏 JSON / 字段不完整 → 停止且零产物
+  ---
+  duration_ms: 39.7833
+  type: 'test'
+  ...
+# Subtest: R1.5 基线与源不一致 → 停止，不自行修复
+ok 10 - R1.5 基线与源不一致 → 停止，不自行修复
+  ---
+  duration_ms: 33.4166
+  type: 'test'
+  ...
+# Subtest: R1.6 生成前存在额外文件 → 生成与 check 都拒绝，且零新增文件
+ok 11 - R1.6 生成前存在额外文件 → 生成与 check 都拒绝，且零新增文件
+  ---
+  duration_ms: 36.3538
+  type: 'test'
+  ...
+# Subtest: R1.7 晚序文件冲突在预检阶段被发现 → 拒绝且文件数不变
+ok 12 - R1.7 晚序文件冲突在预检阶段被发现 → 拒绝且文件数不变
+  ---
+  duration_ms: 32.0765
+  type: 'test'
+  ...
+# Subtest: R1.8 候选清单错误在打包之前被发现 → 零新增文件
+ok 13 - R1.8 候选清单错误在打包之前被发现 → 零新增文件
+  ---
+  duration_ms: 15.0785
+  type: 'test'
+  ...
+# Subtest: R1.9 真实源目录当前与 110 文件基线完全一致（8 个白名单文件）
+ok 14 - R1.9 真实源目录当前与 110 文件基线完全一致（8 个白名单文件）
+  ---
+  duration_ms: 13.7586
+  type: 'test'
+  ...
+# Subtest: R2.1 受信根检查：输出根 / package 根 / 祖先为 junction → 拒绝且未写入
+ok 15 - R2.1 受信根检查：输出根 / package 根 / 祖先为 junction → 拒绝且未写入
+  ---
+  duration_ms: 10.1412
+  type: 'test'
+  ...
+# Subtest: R2.2 输出根边界：与源重叠 / 仓库根 / 制品目录之外 → 拒绝
+ok 16 - R2.2 输出根边界：与源重叠 / 仓库根 / 制品目录之外 → 拒绝
+  ---
+  duration_ms: 6.3235
+  type: 'test'
+  ...
+# Subtest: R2.3 assertTrustedRoot 直接校验根与祖先
+ok 17 - R2.3 assertTrustedRoot 直接校验根与祖先
+  ---
+  duration_ms: 2.2054
+  type: 'test'
+  ...
+# Subtest: R2.4 相对路径字符串过滤仍然生效（绝对路径 / .. / 盘符 / 反斜杠）
+ok 18 - R2.4 相对路径字符串过滤仍然生效（绝对路径 / .. / 盘符 / 反斜杠）
+  ---
+  duration_ms: 0.4049
+  type: 'test'
+  ...
+# Subtest: PKG.1 生成关闭包：8 文件逐字节一致、manifest 无自身哈希、重复运行复用
+ok 19 - PKG.1 生成关闭包：8 文件逐字节一致、manifest 无自身哈希、重复运行复用
+  ---
+  duration_ms: 39.887
+  type: 'test'
+  ...
+# Subtest: PKG.2 白名单固定 8 项，不含 node_modules / 凭据 / 日志 / 历史证据
+ok 20 - PKG.2 白名单固定 8 项，不含 node_modules / 凭据 / 日志 / 历史证据
+  ---
+  duration_ms: 0.8568
+  type: 'test'
+  ...
+# Subtest: PKG.3 关闭包内入口在关闭态拒绝且零数据库访问（合成依赖，非实际 SDK）
+ok 21 - PKG.3 关闭包内入口在关闭态拒绝且零数据库访问（合成依赖，非实际 SDK）
+  ---
+  duration_ms: 19.5951
+  type: 'test'
+  ...
+# Subtest: PKG.4 入口被开启或填入动态值 → 拒绝生成关闭包
+ok 22 - PKG.4 入口被开启或填入动态值 → 拒绝生成关闭包
+  ---
+  duration_ms: 61.4433
+  type: 'test'
+  ...
+# Subtest: PKG.5 入口结构变化到无法定位配置块 → 拒绝，不猜测
+ok 23 - PKG.5 入口结构变化到无法定位配置块 → 拒绝，不猜测
+  ---
+  duration_ms: 0.2173
+  type: 'test'
+  ...
+# Subtest: R4.1 Page 的动作列表不含 removeMember：picker 不可选，仅客户端方法可承载
+ok 24 - R4.1 Page 的动作列表不含 removeMember：picker 不可选，仅客户端方法可承载
+  ---
+  duration_ms: 0.6636
+  type: 'test'
+  ...
+# Subtest: R4.2 getScheduleContext 公开返回不含 activeScheduleIds 等 guard 字段
+ok 25 - R4.2 getScheduleContext 公开返回不含 activeScheduleIds 等 guard 字段
+  ---
+  duration_ms: 0.4142
+  type: 'test'
+  ...
+# Subtest: R4.3 resolvePendingAfterExternalCheck 保留 envelope 并标记 writeLocked（不是解锁工具）
+ok 26 - R4.3 resolvePendingAfterExternalCheck 保留 envelope 并标记 writeLocked（不是解锁工具）
+  ---
+  duration_ms: 0.2972
+  type: 'test'
+  ...
+# Subtest: R5.1 操作稿：P4 前置不含「项目 ID 已登记」，并发/移出按不可达与未验证表述
+ok 27 - R5.1 操作稿：P4 前置不含「项目 ID 已登记」，并发/移出按不可达与未验证表述
+  ---
+  duration_ms: 1.8089
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 997.4503

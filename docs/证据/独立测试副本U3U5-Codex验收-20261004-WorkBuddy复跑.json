@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-04",
+  "scope": "local synthetic verification of U3/U5 remaining wrap-up; no network, no cloud, no install, no deploy, no cache clear",
+  "companionHistoricalEvidence": [
+    "docs/证据/独立测试副本U1-U5返修复现-20261004.cjs / .json（U1–U5 验证，保留不改写）",
+    "docs/证据/独立测试副本U1-U5-Codex复核-20261004.cjs（Codex 追加核对）"
+  ],
+  "results": [
+    {
+      "id": "U3-1",
+      "title": "实际 Page 五个无项目动作组包不自动加项目",
+      "passed": true,
+      "detail": {
+        "noProjectActionsChecked": 5,
+        "projectRequiredKeepsTarget": true
+      }
+    },
+    {
+      "id": "U3-2",
+      "title": "Page 无项目动作响应丢失后显式恢复可读原 envelope 且不注入目标",
+      "passed": true,
+      "detail": {
+        "recoverable": true,
+        "sameSnapshotNoInjectedTarget": true
+      }
+    },
+    {
+      "id": "U3-3",
+      "title": "取号/申请结果未知保留证据并按非幂等策略拒绝重发",
+      "passed": true,
+      "detail": {
+        "retained": true,
+        "resendRejected": "SANDBOX_RETRY_UNSAFE"
+      }
+    },
+    {
+      "id": "U3-4",
+      "title": "项目必需动作缺目标零请求且原记录保留",
+      "passed": true,
+      "detail": {
+        "code": "SANDBOX_PROJECT_REQUIRED",
+        "originalRetained": true
+      }
+    },
+    {
+      "id": "U3-5",
+      "title": "真正损坏记录保持拒绝不放宽",
+      "passed": true,
+      "detail": {
+        "rejected": true,
+        "businessSends": 0
+      }
+    },
+    {
+      "id": "U3-6",
+      "title": "客户端直接收到违约目标参数发送前归一处理",
+      "passed": true,
+      "detail": {
+        "projectIdNormalized": true
+      }
+    },
+    {
+      "id": "U5-1",
+      "title": "模板 group 绑定 + 固定 value + 处理器按数组判定",
+      "passed": true,
+      "detail": {
+        "groupBinding": true,
+        "fixedValue": true,
+        "arrayHandler": true
+      }
+    },
+    {
+      "id": "U5-2",
+      "title": "选中才能发送、取消即撤销、未知/错误类型不确认",
+      "passed": true,
+      "detail": {
+        "sendOnlyWhenConfirmed": true,
+        "cancelRevokes": true
+      }
+    },
+    {
+      "id": "U5-3",
+      "title": "改日期/重进/切动作旧确认失效",
+      "passed": true,
+      "detail": {
+        "resetOnDateChange": true,
+        "resetOnReentry": true,
+        "resetOnActionSwitch": true
+      }
+    },
+    {
+      "id": "U5-4",
+      "title": "日期一致不阻断且恢复用原快照",
+      "passed": true,
+      "detail": {
+        "noExtraBlockOnMatch": true,
+        "restoreUsesOriginalSnapshot": true
+      }
+    },
+    {
+      "id": "U5-5",
+      "title": "替换错误布尔断言与文档说法",
+      "passed": true,
+      "detail": {
+        "checkboxGroupAdopted": true,
+        "booleanClaimRemoved": true
+      }
+    },
+    {
+      "id": "U5-6",
+      "title": "模板编译结构有效且处理器为数组事件",
+      "passed": true,
+      "detail": {
+        "wxmlGroupCompiled": true,
+        "noRealDeviceVerification": true
+      }
+    }
+  ],
+  "staticChecks": {
+    "buildSandboxCheck": "build-sandbox --check 通过：2 个文件副本与已验收源一致。\n  service.js  sha256=c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55\n  schedule-service.js  sha256=da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+    "checkPages": "路由数：9\nWXML 解析：9 个；WXSS 解析：9 个\n全部页面结构检查通过。"
+  },
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "entry": {
+    "newEnabled": false,
+    "newSandboxProjectId": "",
+    "newRoundId": "",
+    "oldEnabled": false,
+    "oldAllowedProjectIds": [],
+    "proofsFrozen": true
+  },
+  "cloudOperationsPerformed": false,
+  "resourcesCreated": false,
+  "installed": false,
+  "deployed": false,
+  "userCacheCleared": false,
+  "limitations": [
+    "合成内存存储不是平台事务模型：U3 的契约冲突为本地复现，U5 为组件事件契约核对",
+    "U2 身份刷新与跨账号存储仅在内存模拟，不声称微信跨账号存储实测",
+    "页面仅结构解析与真实 Page 事件验证，未在微信开发者工具或真机点击运行（如实说明，不称为原生控件运行验证）",
+    "真实 SDK 请求形状、3 秒超时、100 操作、32 KiB 限制未实测",
+    "11 个带前缀集合与索引尚未创建；本副本仍为部署候选",
+    "费用未核实，不承诺 0 元"
+  ]
+}

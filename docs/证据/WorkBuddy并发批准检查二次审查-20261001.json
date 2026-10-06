@@ -1,0 +1,66 @@
+{
+  "reviewedAt": "2026-10-01T03:46:06.478100+00:00",
+  "status": "changes_requested",
+  "round": 2,
+  "cloudWritesExecuted": false,
+  "defaultDisabled": true,
+  "oldProofsAndOldApprovalProbeUnchanged": true,
+  "tests": {
+    "total": 107,
+    "passed": 107,
+    "failed": 0,
+    "skipped": 0,
+    "sdk": "existing offline wx-server-sdk regression"
+  },
+  "compile": {
+    "routes": 7,
+    "wxml": 7,
+    "wxss": 8,
+    "passed": true
+  },
+  "resolved": [
+    "批准响应核实准确邀请ID及approved状态",
+    "批准调用未知错误码不透传",
+    "两个可手动完成Promise验证同时在途",
+    "模块读取已有防重标记"
+  ],
+  "findings": [
+    {
+      "id": "R3",
+      "priority": "P1",
+      "file": "miniapp/miniprogram/utils/concurrent-approval-probe.js",
+      "line": 209,
+      "issue": "批准后复用checkedInvitation要求目标仍在requested列表；真实服务listInvitations仅返回requested，正常批准后空列表导致误报失败。",
+      "reproduction": {
+        "responses": [
+          "approved",
+          "CODE_INVALID"
+        ],
+        "afterInvitations": [],
+        "complete": false,
+        "after": null,
+        "writes": 2
+      }
+    },
+    {
+      "id": "R1-followup",
+      "priority": "P2",
+      "file": "miniapp/miniprogram/utils/concurrent-approval-probe.js",
+      "line": 128,
+      "issue": "safeAfterReadError仅检查code为string，没有错误码白名单；含合成编号的未知businessCode仍进入报告，页面会持久化。",
+      "reproduction": {
+        "syntheticOnly": true,
+        "unknownAfterCodeRetainsSyntheticNumber": true,
+        "writes": 2
+      }
+    }
+  ],
+  "documentationCorrection": "进展写页面调用run前已写标记，与实际不符：页面读取标记，探针在批准前写标记，页面结束后保存报告。",
+  "sha256": {
+    "miniapp/miniprogram/utils/concurrent-approval-probe.js": "e53dcac1db276a8f73a7b26d5067c022ae1f7b00c37248f1c76cc4c1ad2541fc",
+    "miniapp/miniprogram/config/valid-concurrent-approval-proof.js": "09fdab8197d13eef64322537c1e44f206a08e21e487f1c7d712251c2d673f10d",
+    "miniapp/tests/concurrent-approval-probe.test.cjs": "4649f72f71ab8e14169d331443e12eaf588a54c33f60eb472667051df711c51b",
+    "miniapp/tests/access-page-probe.test.cjs": "43c7d66fe753514bc8e7fe47d317dd83aafaa9fc4f8a07c25aed2c058bddfb56",
+    "miniapp/miniprogram/pages/access/access.js": "17b47bc5f7be6949f8b086b185b7930b0dcb48c215ca60aa8dd96cbec60a807b"
+  }
+}

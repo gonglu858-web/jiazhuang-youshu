@@ -1,0 +1,49 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "account": "本人账号 64193d",
+  "complete": true,
+  "results": [
+    {
+      "key": "p_38507fc9b43c4e23a7fbd996415637bb:getMembers",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "label": "原师傅测试项目 · 读取成员",
+      "action": "getMembers",
+      "checkedAt": "2026-09-27T12:18:52.986Z",
+      "status": "allowed",
+      "text": "允许访问",
+      "code": ""
+    },
+    {
+      "key": "p_38507fc9b43c4e23a7fbd996415637bb:listInvitations",
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "label": "原师傅测试项目 · 读取待核对申请",
+      "action": "listInvitations",
+      "checkedAt": "2026-09-27T12:18:53.519Z",
+      "status": "allowed",
+      "text": "允许访问",
+      "code": ""
+    },
+    {
+      "key": "p_a328c08992f7414c812047935bc3c31e:getMembers",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "label": "另一隔离测试项目 · 读取成员",
+      "action": "getMembers",
+      "checkedAt": "2026-09-27T12:18:54.083Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "当前微信账号不是该项目成员。"
+    },
+    {
+      "key": "p_a328c08992f7414c812047935bc3c31e:listInvitations",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "label": "另一隔离测试项目 · 读取待核对申请",
+      "action": "listInvitations",
+      "checkedAt": "2026-09-27T12:18:54.613Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "当前微信账号不是该项目成员。"
+    }
+  ]
+}

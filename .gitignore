@@ -17,3 +17,19 @@ Thumbs.db
 
 # WeChat Developer Tools local preferences
 /miniapp/project.private.config.json
+
+# Local assistant memory and disposable packaging-test directories
+/.workbuddy/
+/artifacts/schedule-sandbox/.*/
+
+# Credentials and raw database exports stay on this machine
+**/.aws/
+**/.ssh/
+**/.cloudbase/
+*.pem
+*.key
+*.p12
+*.pfx
+database_export*.json
+credentials.json
+secrets.json

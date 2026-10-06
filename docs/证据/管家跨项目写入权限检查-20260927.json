@@ -1,0 +1,64 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "version": 1,
+  "account": "本人账号 64193d",
+  "complete": true,
+  "expectedCount": 4,
+  "preflight": [
+    {
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "code": "NO_ACCESS",
+      "message": "当前微信账号不是该项目成员。"
+    }
+  ],
+  "skippedProjects": [
+    "p_38507fc9b43c4e23a7fbd996415637bb"
+  ],
+  "results": [
+    {
+      "key": "p_a328c08992f7414c812047935bc3c31e:assignManager",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "label": "另一隔离测试项目 · 指定管家",
+      "action": "assignManager",
+      "checkedAt": "2026-09-27T12:35:31.683Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "仅负责人可指定管家。"
+    },
+    {
+      "key": "p_a328c08992f7414c812047935bc3c31e:approveInvitation",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "label": "另一隔离测试项目 · 批准申请",
+      "action": "approveInvitation",
+      "checkedAt": "2026-09-27T12:35:32.083Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "当前微信账号不是该项目成员。"
+    },
+    {
+      "key": "p_a328c08992f7414c812047935bc3c31e:removeMember",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "label": "另一隔离测试项目 · 移出成员",
+      "action": "removeMember",
+      "checkedAt": "2026-09-27T12:35:32.597Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "当前微信账号不是该项目成员。"
+    },
+    {
+      "key": "p_a328c08992f7414c812047935bc3c31e:createInvitation",
+      "projectId": "p_a328c08992f7414c812047935bc3c31e",
+      "label": "另一隔离测试项目 · 生成邀请",
+      "action": "createInvitation",
+      "checkedAt": "2026-09-27T12:35:33.034Z",
+      "status": "denied",
+      "text": "权限拒绝",
+      "code": "NO_ACCESS",
+      "message": "当前微信账号不是该项目成员。"
+    }
+  ],
+  "stoppedReason": ""
+}

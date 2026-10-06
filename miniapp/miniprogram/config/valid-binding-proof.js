@@ -1,0 +1,9 @@
+// 临时开发检查凭据：只含散列和核验时间，不含原始编号。
+module.exports = Object.freeze({
+  "evidenceId": "e7b26ec9-10fa-4135-9714-88e7b605c59f",
+  "userId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+  "digest": "e3141b77fab8909d3f265b3263f3c14e8e39db202da176a24adf6f05e1231099",
+  "expiresAt": "2026-09-30T13:38:20.502Z",
+  "verifiedAt": "2026-09-30T10:04:34.012784+00:00",
+  "checkBefore": "2026-09-30T13:38:20.502Z"
+});

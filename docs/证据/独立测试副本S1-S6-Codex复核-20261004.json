@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-04",
+  "scope": "local synthetic reproduction only",
+  "results": [
+    {
+      "name": "01-page-sensitive-reentry-blocked",
+      "reproduced": true,
+      "detail": {
+        "inputAccepted": false,
+        "requestsAfterReentry": 0,
+        "error": "SANDBOX_SNAPSHOT_INVALID：恢复该请求需要重新提供「applicantNumber」，已阻止发送。",
+        "rawCredentialStored": false
+      }
+    },
+    {
+      "name": "02-page-discard-allows-new-request",
+      "reproduced": true,
+      "detail": {
+        "requests": 2,
+        "differentRequestId": true,
+        "firstOutcomeStillUnknown": true
+      }
+    },
+    {
+      "name": "03-real-main-invitation-commit-response-lost-retry",
+      "reproduced": true,
+      "detail": {
+        "sameRequestId": true,
+        "invitationsAfterRetry": 2,
+        "firstUnknown": true,
+        "secondOk": true
+      }
+    },
+    {
+      "name": "04-pending-retry-retargeted-by-new-config",
+      "reproduced": true,
+      "detail": {
+        "storedProject": "p_local_a",
+        "retriedProject": "p_local_b",
+        "sameRequestId": true
+      }
+    },
+    {
+      "name": "05-half-write-cross-pairs-new-id-old-snapshot",
+      "reproduced": true,
+      "detail": {
+        "initialSaveRejected": true,
+        "retrySentOldPayloadWithNewId": true,
+        "requests": 2
+      }
+    },
+    {
+      "name": "06-replay-returns-success-for-missing-project",
+      "reproduced": true,
+      "detail": {
+        "replay": {
+          "ok": true,
+          "sandbox": true,
+          "projectId": "p_sbx_9cb4bf89f62d1c8235b90ed6fb4ec2d6",
+          "replayed": true
+        },
+        "projects": 0,
+        "receipts": 1
+      }
+    },
+    {
+      "name": "07-concurrent-replay-skips-current-primary-permission",
+      "reproduced": true,
+      "detail": {
+        "oldPrimaryReplaySucceeded": true,
+        "result": {
+          "ok": true,
+          "sandbox": true,
+          "projectId": "p_sbx_9cb4bf89f62d1c8235b90ed6fb4ec2d6",
+          "replayed": true
+        },
+        "permissionRevokedBeforeReplay": true
+      }
+    },
+    {
+      "name": "08-post-commit-read-failure-falsely-claims-rollback",
+      "reproduced": true,
+      "detail": {
+        "result": {
+          "ok": false,
+          "code": "SANDBOX_PROJECT_CREATE_FAILED",
+          "message": "建立本轮测试项目失败：POST_COMMIT_READ_FAILED（已整体回滚，未留下半套状态）"
+        },
+        "projects": 1,
+        "receipts": 1,
+        "rollbackClaimFalse": true
+      }
+    },
+    {
+      "name": "09-db-fixture-uncommitted-receipt-phantom-success",
+      "reproduced": true,
+      "detail": {
+        "uncommittedReceiptVisible": true,
+        "secondReportedSuccess": true,
+        "firstFailed": true,
+        "finalProjects": 0,
+        "finalReceipts": 0
+      }
+    },
+    {
+      "name": "10-known-conflict-is-treated-as-unknown",
+      "reproduced": true,
+      "detail": {
+        "code": "SCHEDULE_CONFLICT",
+        "unknown": true,
+        "pendingRetained": true,
+        "transportStubOnly": true
+      }
+    }
+  ],
+  "deliveryHashes": [
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js",
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+      "matched": true
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/gate.js",
+      "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+      "matched": true
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/project-guard.js",
+      "sha256": "9670ad2e85daacf653fa5c3939bfe6e5ae1025fe1daedefc50fc893bb1c04551",
+      "matched": true
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/index.js",
+      "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/config/schedule-sandbox-proof.js",
+      "sha256": "724bc3c16ca8d03b84d3d8498b06e011b2ad621599167fc78649b2b378c0cf33",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/utils/schedule-sandbox-client.js",
+      "sha256": "4b51cec35ecfbe26d9717c38bc62a1304d16c2299a89e8ff7d9df6971a854ff1",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+      "sha256": "82ea23087125b8d4b0e3b1512b9d0e2c862dc2832c3540c190beb6f6f66a48b4",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "sha256": "cff304362b899d2065d693db785de309273bfc7e804f2afac3f16a6a3839cdba",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+      "sha256": "d30ca2ab51a2ff15179ace61f1b83a5c8d7a9e8514046262260dd923b25a1eb1",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+      "sha256": "7713a1f63aec15f626eef5e42809b1a1cbdae561351d77c54856894ca1cd1609",
+      "matched": true
+    },
+    {
+      "file": "miniapp/miniprogram/app.json",
+      "sha256": "7318ca539c191670b58297ba5008b5403fda5c6b91da99010c35a85434221f80",
+      "matched": true
+    },
+    {
+      "file": "miniapp/scripts/check-pages.cjs",
+      "sha256": "df046c12181ed5518412094384dc5dceb1777cf6e583dc1ca631a3a6094314aa",
+      "matched": true
+    },
+    {
+      "file": "miniapp/tests/helpers/sandbox-test-db.cjs",
+      "sha256": "5bc9b0af4cba19c0444d69191a8bf45c4ef571c73d4bbe883a42ea7094955a43",
+      "matched": true
+    },
+    {
+      "file": "miniapp/tests/schedule-sandbox-isolation.test.cjs",
+      "sha256": "394980b6505b12f00174e937bc5b78d752e7f8648704caf33b7b1494f037e71c",
+      "matched": true
+    },
+    {
+      "file": "miniapp/tests/schedule-sandbox-frontend.test.cjs",
+      "sha256": "5d012ee5b877c61197783775f0f92a674dcb6f3a85d494989b518f45090ce20d",
+      "matched": true
+    }
+  ],
+  "baseline": {
+    "files": 87,
+    "changed": [
+      "miniapp/miniprogram/app.json"
+    ]
+  },
+  "entry": {
+    "newEnabled": false,
+    "oldEnabled": false,
+    "oldAllowedProjectIds": []
+  },
+  "cloudOperationsPerformed": false,
+  "productFilesModifiedByReviewer": false,
+  "limitations": [
+    "合成数据库替身不是平台事务模型",
+    "不输出合成或真实原始绑定编号/邀请码",
+    "既有 SDK 离线测试不证明新副本平台兼容"
+  ]
+}

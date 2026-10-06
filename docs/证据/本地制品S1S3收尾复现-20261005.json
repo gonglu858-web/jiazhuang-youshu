@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-05",
+  "scope": "S1–S3 定点收尾的反例复现；仅本地，只写本次新临时目录与本证据",
+  "reviewReport": "docs/Codex复核-本地制品准备R1-R5收尾-20261005.md",
+  "companionHistoricalEvidence": [
+    "docs/证据/Codex本地制品R1R5复核-20261005.cjs / .json（Codex 复核，原样保留未改写）",
+    "docs/证据/Codex本地制品R2文件链接分支-20261005.json（原样保留未改写）",
+    "docs/证据/本地制品准备R1R5修复复现-20261005.cjs / .json（上一轮 R1–R5 修复，原样保留未改写）"
+  ],
+  "script": "docs/证据/本地制品S1S3收尾复现-20261005.cjs",
+  "facts": {
+    "s1aIndexCreated": false,
+    "s1aManifestCreated": false,
+    "s1aGatePreserved": true,
+    "s1aPackageFileCount": 1,
+    "s1aHashSameLength": true,
+    "s1aHashIndexCreated": false,
+    "s1bOriginalSourceDir": "artifacts/schedule-sandbox/.s13-s1b/src",
+    "s2RealFileSymlinkError": "EPERM",
+    "s2RealFileSymlinkCreated": false,
+    "s2JunctionCreated": true,
+    "s2JunctionDetected": true,
+    "s2MissingPathReturnsFalse": true,
+    "s3UnmutatedCandidateOk": "11/13"
+  },
+  "results": [
+    {
+      "verdict": "REJECTED",
+      "name": "S1a 半成品无 manifest 字节冲突 → 预检拒绝",
+      "detail": "既有产物包体与源不一致，已停止（可预知失败，未写入任何新文件）： | 包体字节数与源不符：gate.js | 请人工确认差异来源后，移走整个输出目录再重新生成；本工具不递归删除、不静默覆盖。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S1a 半成品同长度篡改 → 预检拒绝",
+      "detail": "既有产物包体与源不一致，已停止（可预知失败，未写入任何新文件）： | 包体内容与源不符：gate.js | 请人工确认差异来源后，移走整个输出目录再重新生成；本工具不递归删除、不静默覆盖。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S1b sourceDir/sourceKey 指向旧 memberAccess → 拒绝",
+      "detail": "manifest 校验失败，已停止： | manifest sourceDir 与实际来源不符：miniapp/cloudfunctions/memberAccess ≠ artifacts/schedule-sandbox/.s13-s1b/src | manifest sourceKey 与实际来源不符：index"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S1b packageDir 篡改 + 缺 sourceKey → 拒绝",
+      "detail": "manifest 校验失败，已停止： | manifest packageDir 与实际产物根不符：somewhere/else ≠ artifacts/schedule-sandbox/.s13-s1b-2/out/package | manifest 条目缺少 sourceKey：collection-map.js"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S2 合成标记（白名单文件为链接）check 模式 → 拒绝",
+      "detail": "产物 package 目录存在链接条目，已停止（白名单文件同样适用）： | index.js（符号链接/目录联接）"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S2 合成标记（白名单文件为链接）生成模式 → 拒绝",
+      "detail": "产物 package 目录存在链接条目，已停止（白名单文件同样适用）： | index.js（符号链接/目录联接）"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S2 白名单子目录被 junction 替换 check 模式 → 拒绝",
+      "detail": "产物 package 目录存在白名单外文件，已停止： | vendor（符号链接/目录联接） | vendor-real/MANIFEST.json"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S2 产物条目是目录而非普通文件 → 拒绝",
+      "detail": "打包条目不得含 . 或 .. 段：."
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 wxServerSdk 改 999.0.0",
+      "detail": "资源候选清单校验失败： | mutated#function.dependency.wxServerSdk 必须锁定为 3.0.1，实际 999.0.0。 | mutated#function.dependency.wxServerSdk 与副本 package.json 实际锁定版本不符：999.0.0 ≠ 3.0."
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 删除 wxServerSdk",
+      "detail": "资源候选清单校验失败： | mutated#function.dependency.wxServerSdk 必须锁定为 3.0.1，实际 undefined。 | mutated#function.dependency.wxServerSdk 与副本 package.json 实际锁定版本不符：undefined ≠ "
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 packageJson 指向旧 memberAccess",
+      "detail": "资源候选清单校验失败： | mutated#function.dependency.packageJson 必须指向当前副本 miniapp/cloudfunctions/scheduleSandbox/package.json，实际 miniapp/cloudfunctions/memberAccess/packag"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 collections[0].created=true",
+      "detail": "资源候选清单校验失败： | mutated#collections.schtest_v1_users.created 必须为 false，实际 true。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 删除 collections[0].created",
+      "detail": "资源候选清单校验失败： | mutated#collections.schtest_v1_users.created 缺失：必须显式为 false（本轮未创建）。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 删除 collections[0].ttlEnabled",
+      "detail": "资源候选清单校验失败： | mutated#collections.schtest_v1_users.ttlEnabled 缺失：必须显式为 false（禁止 TTL 自动清理）。"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "S3 collections[5].ttlEnabled=true",
+      "detail": "资源候选清单校验失败： | mutated#collections.schtest_v1_audit_events.ttlEnabled 必须为 false，实际 true。"
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "rejected": 15,
+    "missed": 0
+  },
+  "zeroWriteChecks": {
+    "s1a": "index.js 未创建，manifest 未创建，原 gate.js 保留，包体文件数仍为 1",
+    "s1aHash": "同长度篡改同样在预检被拒，index.js 未创建"
+  },
+  "sourceFieldChecks": {
+    "rule": "manifest.sourceDir / packageDir / 各 files[].sourceKey 必须与实际计算值精确一致；缺项也拒绝",
+    "s1b": "sourceDir 与 sourceKey 指向旧 memberAccess 被拒",
+    "s1b2": "packageDir 篡改 + 某条 sourceKey 缺失被拒"
+  },
+  "linkChecks": {
+    "rule": "包体每个读点统一 lstat 判链接、判普通文件后才读；白名单文件为链接同样拒绝",
+    "realFileSymlink": "本机创建失败（EPERM）：真实文件符号链接分支未验证",
+    "syntheticMarker": "仅改 Dirent/lstat 的链接判定、保留真实字节：check 与生成都拒绝；只证明控制流覆盖，不等于平台链接行为已验证",
+    "junction": "真实 junction 可创建并被 lstat 标记；白名单子目录被 junction 替换时 check 拒绝",
+    "nonFileEntry": "产物条目为目录时按「非普通文件」拒绝；不存在的路径返回 exists:false（尚未生成，不是拒绝）"
+  },
+  "dependencyChecks": {
+    "lockedSdk": "3.0.1（与副本 package.json 实际锁定版本交叉核对）",
+    "packageJsonSource": "miniapp/cloudfunctions/scheduleSandbox/package.json",
+    "collectionsExplicitFalse": "11 个集合的 created 与 ttlEnabled 必须显式为 false，缺失或改值均拒绝"
+  },
+  "docWordingChanges": [
+    "§1.3 V06-b：删去「解除锁的唯一路径是标记」；标记不解锁，并区分「真正并发不可达」与「一笔有确定结果后可再发串行请求」",
+    "§5.2 execute 阶段 createProject：改为真实入口首先返回 SANDBOX_ACTION_NOT_ALLOWED_IN_PHASE；SANDBOX_PHASE_LOCKED 是后续专用 guard 的保护码",
+    "§5.3 sandboxProjectId：改为两层作用（客户端 preflight 目标匹配与缺目标拒绝 + 服务端独立决定授权范围），不再写成「仅一致性展示」"
+  ],
+  "businessSourceChanged": false,
+  "baseline110": {
+    "fileCount": 110,
+    "missing": 0,
+    "changed": 0
+  },
+  "originalArtifactsUnchanged": {
+    "artifacts/schedule-sandbox/closed-20261005/manifest.json": "2692351f26e10e9b…（未改）",
+    "artifacts/schedule-sandbox/closed-20261005-r2fix/manifest.json": "8821a459b2f32be1…（未改）",
+    "miniapp/cloudbase/schedule-sandbox-resources.candidate.json": "7a0284d5098375f6…（未改）"
+  },
+  "entryStillClosed": true,
+  "cloudOperationsPerformed": false,
+  "resourcesCreated": false,
+  "installed": false,
+  "deployed": false,
+  "userCacheCleared": false,
+  "limitations": [
+    "真实文件符号链接（type=file）在本机创建返回 EPERM，该分支未验证，测试中明确 skip 并改用合成标记；合成标记只证明控制流覆盖。",
+    "Windows junction 本机可创建并被识别，已实测；不据此泛化为其它环境的平台性质。",
+    "关闭态验证仍使用合成 wx-server-sdk 与内存替身，不等于实际 SDK 或平台事务已验证。",
+    "S2 的「非普通文件」拒绝依赖 lstat 判定；不存在的路径按 exists:false 处理（尚未生成），不是拒绝。",
+    "本轮未实现驱动或初始化程序，未安装、未操作云端、未部署、未启用入口。"
+  ]
+}

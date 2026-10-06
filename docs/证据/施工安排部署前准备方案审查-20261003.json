@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-03T14:12:00.615Z",
+  "verdict": "design_changes_requested_S1_S5_B0_readonly_may_proceed",
+  "designSha256": "ba41df87084b5fa17334f7040d2ccd093609ad0005006bfe3be0248c61c15c07",
+  "baselineSha256": "6147da36b7663d14068a75162695bc564295055118f256b67c26e13a29ceca76",
+  "codeChanges": [],
+  "historicalChanges": [],
+  "tests": "not rerun; unchanged code/test fingerprints; previous independent 394 pass retained",
+  "backup": {
+    "source": "previously downloaded deployment archive, not current cloud recheck",
+    "sha256": "af337224c177c8c5ea9327e437c22d14fea4e81d4f0cc1b3b2ee8a15442f5163",
+    "serviceContainsScheduleWriteMode": false,
+    "containsApproveAssignRemove": true
+  },
+  "decisions": {
+    "anchor": "scan first; empty proven/no guard/no prior generation only",
+    "F3F4F6Repair": "defer implementation pending B0",
+    "restore": "trusted app admin and bounded readiness protocol required",
+    "newCloudFunction": "not authorized for deployment by this review",
+    "writeAuthorization": "concrete change package after B0/dryrun; no per-field repeated confirmation",
+    "permanentUnwritable": "rejected premise"
+  },
+  "cloudOperationsPerformed": false,
+  "productModified": false,
+  "report": "docs/Codex裁决-施工安排部署前准备方案-20261003.md"
+}

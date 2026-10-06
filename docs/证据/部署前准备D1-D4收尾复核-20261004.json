@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-04T02:11:52.9206012Z",
+  "source": "docs/WorkBuddy方案-施工安排部署前准备-20261003.md",
+  "sourceSha256": "05e43c51b549467cbf26c12464d61d611c0211c601439d719ec32f7c7afc9777",
+  "sourceLines": 875,
+  "comparedFileCount": 87,
+  "mismatches": [],
+  "designCases": 53,
+  "designCasesExecuted": false,
+  "testsRerun": false,
+  "cloudOperationsPerformed": false,
+  "verdict": "D1_D2_D4_core_closed_D3_requires_E1_E2_current_status_requires_E3",
+  "entry": {
+    "enabled": false,
+    "allowedProjectIds": [],
+    "frozenStructureVerifiedBy": "source inspection and unchanged baseline hash"
+  },
+  "findings": [
+    "E1 actual field projection and sensitive-data boundary",
+    "E2 per-query counts and per-member scan/first-use scope",
+    "E3 synchronize later record-level B0 evidence without upgrading incomplete status"
+  ],
+  "historicalEvidencePreserved": true
+}

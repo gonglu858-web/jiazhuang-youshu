@@ -1,0 +1,484 @@
+{
+  "executedAt": "2026-10-06T01:55:29.418Z",
+  "scope": "S3-a / S3-b counterexamples plus E1 safe-rerun entry; real modules, synthetic API/storage; no platform execution",
+  "summary": {
+    "total": 8,
+    "sealed": 8,
+    "unsealed": 0,
+    "harnessErrors": 0
+  },
+  "e1": {
+    "sealed": true,
+    "requirement": "不 require 自执行旧脚本、不覆盖历史 JSON、只跑一次并 await、输出落新文件、宿主不可用时如实标未重跑",
+    "reruns": [
+      {
+        "label": "前轮34条",
+        "sourceScript": "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs",
+        "isolatedScript": "docs/证据重跑/前轮34条__WorkBuddy返修R1R5复现-20261005.cjs",
+        "isolatedResult": "docs/证据重跑/前轮34条__WorkBuddy返修R1R5复现-20261005.json",
+        "historicalResult": "docs/证据/WorkBuddy返修R1R5复现-20261005.json",
+        "sourceSha256": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+        "requiredByE1": {
+          "noRequireOfSelfRunningScript": true,
+          "singleExecution": true,
+          "awaited": true,
+          "newOutputFile": true,
+          "historyReadOnly": true
+        },
+        "reran": true,
+        "awaited": true,
+        "summary": {
+          "total": 34,
+          "sealed": 34,
+          "unsealed": 0,
+          "harnessErrors": 0
+        },
+        "reason": null,
+        "historicalResultSha256Before": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+        "copiedSha256": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+        "executionMode": "subprocess",
+        "producedExecutedAt": "2026-10-06T01:54:58.136Z",
+        "producedSha256": "729aabfe32a31e01efe7846d114ec2c058b922892188a0d7cd4a32b8d0ccfbd0",
+        "producedMatchesHistory": false,
+        "historicalResultSha256After": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+        "historicalResultUntouched": true
+      },
+      {
+        "label": "本轮18条",
+        "sourceScript": "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs",
+        "isolatedScript": "docs/证据重跑/本轮18条__WorkBuddy返修S1S5复现-20261006.cjs",
+        "isolatedResult": "docs/证据重跑/本轮18条__WorkBuddy返修S1S5复现-20261006.json",
+        "historicalResult": "docs/证据/WorkBuddy返修S1S5复现-20261006.json",
+        "sourceSha256": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+        "requiredByE1": {
+          "noRequireOfSelfRunningScript": true,
+          "singleExecution": true,
+          "awaited": true,
+          "newOutputFile": true,
+          "historyReadOnly": true
+        },
+        "reran": true,
+        "awaited": true,
+        "summary": {
+          "total": 18,
+          "sealed": 18,
+          "unsealed": 0,
+          "harnessErrors": 0
+        },
+        "reason": null,
+        "historicalResultSha256Before": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57",
+        "copiedSha256": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+        "executionMode": "subprocess",
+        "producedExecutedAt": "2026-10-06T01:55:29.392Z",
+        "producedSha256": "8f95915ffa2ce76f074a354a5a7677af545834e78047c5979895270579edb058",
+        "producedMatchesHistory": false,
+        "historicalResultSha256After": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57",
+        "historicalResultUntouched": true
+      }
+    ],
+    "historyFileHashesBefore": {
+      "docs/证据/Codex驱动R1R5剩余复现-20261005.cjs": "942e1fb77cb1addfe3566afcc52a725b95afd24ce93293e08c67de4f4ca78e46",
+      "docs/证据/Codex驱动R1R5剩余复现-20261005.json": "3dea0512d6ce785917c9da2c9266d2a307ba6ba2fc4e9f0a065c1e87b594303a",
+      "docs/证据/Codex驱动S1S5复核-20261006.cjs": "db7f446f2cddc7271d5438cb9835911b13e9e9e712856ec7804007b329dff118",
+      "docs/证据/Codex驱动S1S5复核-20261006.json": "d39051303be22a216396bc7cc63e53c9af929c00fe66467a5674f7b7d6ef7cd7",
+      "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+      "docs/证据/WorkBuddy返修R1R5复现-20261005.json": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+      "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+      "docs/证据/WorkBuddy返修S1S5复现-20261006.json": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57"
+    },
+    "historyFileHashesAfter": {
+      "docs/证据/Codex驱动R1R5剩余复现-20261005.cjs": "942e1fb77cb1addfe3566afcc52a725b95afd24ce93293e08c67de4f4ca78e46",
+      "docs/证据/Codex驱动R1R5剩余复现-20261005.json": "3dea0512d6ce785917c9da2c9266d2a307ba6ba2fc4e9f0a065c1e87b594303a",
+      "docs/证据/Codex驱动S1S5复核-20261006.cjs": "db7f446f2cddc7271d5438cb9835911b13e9e9e712856ec7804007b329dff118",
+      "docs/证据/Codex驱动S1S5复核-20261006.json": "d39051303be22a216396bc7cc63e53c9af929c00fe66467a5674f7b7d6ef7cd7",
+      "docs/证据/WorkBuddy返修R1R5复现-20261005.cjs": "a2eea1abbe708fb0e9476ca2c5799ae593e228e7c019c5ce2a22f8d6317b3c33",
+      "docs/证据/WorkBuddy返修R1R5复现-20261005.json": "84b5c1c8d72d121771e2a93854ed8a4711210707267f43fcaa9d05ed7697ebc6",
+      "docs/证据/WorkBuddy返修S1S5复现-20261006.cjs": "09f23d6150de4a19dcbfc9484aa2c19220e1f70a9f81c4c2047968a62006ab8b",
+      "docs/证据/WorkBuddy返修S1S5复现-20261006.json": "a96f4c045b892a907f239b652ca79f926138219c42a862fe21d352f9edcc1c57"
+    },
+    "historyDrift": []
+  },
+  "baseline": {
+    "count": 110,
+    "missing": [],
+    "differences": [
+      "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+      "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "miniapp/miniprogram/utils/schedule-sandbox-client.js",
+      "miniapp/tests/schedule-sandbox-frontend.test.cjs"
+    ]
+  },
+  "retainedHashes": {
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb928f9f01839a90c21bec6bbd85762891d8692e1327e476ab",
+    "miniapp/cloudbase/schedule-sandbox-resources.candidate.json": "7a0284d5098375f6910c459fb0ddea3af179fe40876d98cd2807b5cd93a1620b",
+    "artifacts/schedule-sandbox/closed-20261005/manifest.json": "2692351f26e10e9b88a631746c4d06ce400b9309fe7955e3039def6469425b3f",
+    "artifacts/schedule-sandbox/closed-20261005-r2fix/manifest.json": "8821a459b2f32be1c8d507ec3add0e8306162f84e41b796a875c6f0176ba0277",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+  },
+  "configs": {
+    "sandbox-test-driver-proof": {
+      "value": {
+        "enabled": false,
+        "appId": "wxfb4db1615ac15531",
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "functionName": "scheduleSandbox",
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "cachePrefix": "schtest_v1:driver:",
+        "roundId": "",
+        "projectId": "",
+        "actorUserId": "",
+        "expiresAt": "",
+        "evidenceId": "",
+        "actorHint": "64193d",
+        "v07TargetHint": "f182f4",
+        "protectedProjectIds": [
+          "p_38507fc9b43c4e23a7fbd996415637bb",
+          "p_a328c08992f7414c812047935bc3c31e",
+          "p_4e53f8437dab4ddcb62971d58455acaa"
+        ],
+        "scheduleFormKeys": [
+          "stage",
+          "trade",
+          "workerUserId",
+          "startDate",
+          "endDate",
+          "expectedDate",
+          "restDays",
+          "content"
+        ],
+        "v06Cases": [
+          {
+            "testCaseId": "V06-a",
+            "label": "并发幂等：两次新增，相同请求号与相同载荷",
+            "pair": "createSchedule",
+            "sameRequestId": true,
+            "expect": {
+              "bothOk": true,
+              "identicalResult": true,
+              "compareFields": [
+                "id",
+                "version",
+                "status"
+              ]
+            },
+            "cloudCheck": "一份新安排且版本为 1；一条对应 revision/审计/回执；目录与占用只增加一次"
+          },
+          {
+            "testCaseId": "V06-b",
+            "label": "占用冲突：两次新增，不同请求号、相同工种与实际施工日",
+            "pair": "createSchedule",
+            "sameRequestId": false,
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "SCHEDULE_CONFLICT",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "仅胜方的安排/回执/历史/审计与对应占用落地；失败方无残留"
+          },
+          {
+            "testCaseId": "V06-c",
+            "label": "版本冲突：同一安排的两次调整，同一期望版本、不同内容",
+            "pair": "updateSchedule",
+            "sameRequestId": false,
+            "dependsOn": "V06-a",
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "VERSION_MISMATCH",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "版本只 +1；内容等于胜方；历史/审计/回执仅新增一份；无败方残留"
+          }
+        ],
+        "v07Cases": [
+          {
+            "testCaseId": "V07-A",
+            "label": "有未完成安排时移出：应被明确拒绝",
+            "precondition": "hasActiveSchedule",
+            "expect": {
+              "rejected": true,
+              "code": "WORKER_HAS_ACTIVE_SCHEDULES"
+            },
+            "cloudCheck": "成员仍在；安排、目录、月桶不变；失败不新增成功移出审计",
+            "idempotent": false
+          },
+          {
+            "testCaseId": "V07-B",
+            "label": "任务清空后移出：应成功退出",
+            "precondition": "noActiveSchedule",
+            "expect": {
+              "removed": true,
+              "requireResultFields": [
+                "userId",
+                "status"
+              ],
+              "requireStatus": "left"
+            },
+            "cloudCheck": "成员退出；目录/代际正常；旧安排与历史保留；管家仍可查历史；乙本人之后 NO_ACCESS",
+            "idempotent": false
+          }
+        ],
+        "testCases": [
+          {
+            "testCaseId": "V06-a",
+            "label": "并发幂等：两次新增，相同请求号与相同载荷",
+            "pair": "createSchedule",
+            "sameRequestId": true,
+            "expect": {
+              "bothOk": true,
+              "identicalResult": true,
+              "compareFields": [
+                "id",
+                "version",
+                "status"
+              ]
+            },
+            "cloudCheck": "一份新安排且版本为 1；一条对应 revision/审计/回执；目录与占用只增加一次"
+          },
+          {
+            "testCaseId": "V06-b",
+            "label": "占用冲突：两次新增，不同请求号、相同工种与实际施工日",
+            "pair": "createSchedule",
+            "sameRequestId": false,
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "SCHEDULE_CONFLICT",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "仅胜方的安排/回执/历史/审计与对应占用落地；失败方无残留"
+          },
+          {
+            "testCaseId": "V06-c",
+            "label": "版本冲突：同一安排的两次调整，同一期望版本、不同内容",
+            "pair": "updateSchedule",
+            "sameRequestId": false,
+            "dependsOn": "V06-a",
+            "expect": {
+              "oneOkOneConflict": true,
+              "conflictCode": "VERSION_MISMATCH",
+              "orderAgnostic": true
+            },
+            "cloudCheck": "版本只 +1；内容等于胜方；历史/审计/回执仅新增一份；无败方残留"
+          },
+          {
+            "testCaseId": "V07-A",
+            "label": "有未完成安排时移出：应被明确拒绝",
+            "precondition": "hasActiveSchedule",
+            "expect": {
+              "rejected": true,
+              "code": "WORKER_HAS_ACTIVE_SCHEDULES"
+            },
+            "cloudCheck": "成员仍在；安排、目录、月桶不变；失败不新增成功移出审计",
+            "idempotent": false
+          },
+          {
+            "testCaseId": "V07-B",
+            "label": "任务清空后移出：应成功退出",
+            "precondition": "noActiveSchedule",
+            "expect": {
+              "removed": true,
+              "requireResultFields": [
+                "userId",
+                "status"
+              ],
+              "requireStatus": "left"
+            },
+            "cloudCheck": "成员退出；目录/代际正常；旧安排与历史保留；管家仍可查历史；乙本人之后 NO_ACCESS",
+            "idempotent": false
+          }
+        ],
+        "caseStates": [
+          "ready",
+          "preflight",
+          "armed",
+          "inFlight",
+          "candidate",
+          "stopped",
+          "reviewed"
+        ],
+        "reviewableStates": [
+          "candidate"
+        ],
+        "v07TargetUserId": "",
+        "uiTimeoutSeconds": 30,
+        "description": "独立副本专用测试驱动配置（V06 三对并发 + V07 两次移出）。默认关闭，动态值为空；需与旧 sandbox proof 同时启用才可发送。"
+      },
+      "deepFrozen": true
+    },
+    "schedule-sandbox-proof": {
+      "value": {
+        "enabled": false,
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "appId": "wxfb4db1615ac15531",
+        "functionName": "scheduleSandbox",
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "sandboxProjectId": "",
+        "roundId": "",
+        "cachePrefix": "schtest_v1:",
+        "description": "施工安排独立测试副本专用入口（本地配置，未启用）。"
+      },
+      "deepFrozen": true
+    },
+    "schedule-entry-proof": {
+      "value": {
+        "enabled": false,
+        "appId": "wxfb4db1615ac15531",
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "allowedProjectIds": [],
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "description": "施工安排新增、调整、改派、取消、只读查看及版本历史入口。"
+      },
+      "deepFrozen": true
+    }
+  },
+  "results": [
+    {
+      "id": "S3-a-all-sync-throw-V06-a",
+      "requirement": "V06 两笔均同步抛错 → 能收尾、stopped、释放占用",
+      "sealed": true,
+      "harnessError": null,
+      "completed": true,
+      "invoked": 2,
+      "businessRequests": 2,
+      "persistedState": "stopped",
+      "persistedOutcomes": [
+        "sync-throw",
+        "sync-throw"
+      ],
+      "runtimeHeld": false
+    },
+    {
+      "id": "S3-a-all-sync-throw-V07-B",
+      "requirement": "V07 唯一移出调用同步抛错 → 能收尾、stopped、释放占用",
+      "sealed": true,
+      "harnessError": null,
+      "completed": true,
+      "invoked": 1,
+      "businessRequests": 1,
+      "persistedState": "stopped",
+      "persistedOutcomes": [
+        "sync-throw"
+      ],
+      "runtimeHeld": false
+    },
+    {
+      "id": "S3-a-mixed-sync-throw-and-async",
+      "requirement": "单笔同步抛错 + 另一笔异步成功 → 正常收尾",
+      "sealed": true,
+      "harnessError": null,
+      "completed": true,
+      "persistedOutcomes": [
+        "responded",
+        "sync-throw"
+      ],
+      "runtimeHeld": false
+    },
+    {
+      "id": "S3-b-late-success-after-timeout",
+      "requirement": "晚到成功 → 补存净化证据、保留 timeout/停止、不回写状态",
+      "sealed": true,
+      "harnessError": null,
+      "storageChanged": true,
+      "stateBefore": "stopped",
+      "stateAfter": "stopped",
+      "mainOutcomes": [
+        "responded",
+        "timeout"
+      ],
+      "lateCount": 1,
+      "lateOutcome": [
+        "responded"
+      ],
+      "lateContent": [
+        "LATE_ARRIVED_CONTENT"
+      ],
+      "lateMarked": true
+    },
+    {
+      "id": "S3-b-late-rejection-after-timeout",
+      "requirement": "晚到拒绝 → 补存 network-error、保留原判定",
+      "sealed": true,
+      "harnessError": null,
+      "stateAfter": "stopped",
+      "mainOutcomes": [
+        "responded",
+        "timeout"
+      ],
+      "lateOutcomes": [
+        "network-error"
+      ],
+      "lateMarked": true
+    },
+    {
+      "id": "S3-b-late-persist-failure-stays-stopped",
+      "requirement": "补存失败 → 原停止判定与原 timeout 证据均不被破坏",
+      "sealed": true,
+      "harnessError": null,
+      "stateAfter": "stopped",
+      "mainOutcomes": [
+        "responded",
+        "timeout"
+      ]
+    },
+    {
+      "id": "S3-b-same-request-id-slots-distinguished",
+      "requirement": "相同 requestId 的两笔按各自槽位区分晚到证据",
+      "sealed": true,
+      "harnessError": null,
+      "state": "stopped",
+      "requestIds": [
+        "same-id",
+        "same-id"
+      ],
+      "mainOutcomes": [
+        "responded",
+        "timeout"
+      ],
+      "lateCount": 1,
+      "lateContent": [
+        "FIRST_LATE_OK"
+      ]
+    },
+    {
+      "id": "S3-b-no-resend-no-unlock",
+      "requirement": "晚到补存不得补发、不得解锁下一例",
+      "sealed": true,
+      "harnessError": null,
+      "sendsBeforeLate": 2,
+      "sendsAfterLate": 2,
+      "blockingAfterLate": [
+        "V06-a=stopped"
+      ],
+      "nextCaseStarted": false
+    }
+  ],
+  "notVerified": [
+    "真机未验证：全部使用合成 wx 与内存存储。",
+    "真实管理 SDK 未核实：P4 仅本地原子核心，primary 未在生产初始化（本轮未触碰 P4 写核心）。",
+    "真实 wcc/wcsc 编译未执行。",
+    "互斥为同一设备/运行时操作互斥，不是跨设备锁。",
+    "S3-b 的晚到补存只在**本地合成**响应下验证；真实网络下的晚到时序未实测。",
+    "宿主进程创建在本机会偶发 EBUSY（node 内 spawn 任何可执行文件均失败），此时重跑/CLI 子进程项如实标未验证。"
+  ],
+  "boundaries": {
+    "installed": false,
+    "cloudCalled": false,
+    "resourcesCreated": false,
+    "deployed": false,
+    "entryEnabled": false,
+    "cacheCleared": false,
+    "sdkAdapterConnected": false,
+    "abcProcessed": false,
+    "historyEvidenceRewritten": false
+  }
+}

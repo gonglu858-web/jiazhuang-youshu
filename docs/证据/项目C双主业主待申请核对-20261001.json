@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-01",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "source": "用户报告两份申请在列表；Codex管理端只读核对",
+  "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+  "requestIds": {
+    "invitations": "b8ad3e94-a3c6-4919-8293-4a9b6b6ccf2a",
+    "members": "1f82037f-1a10-4f9b-831b-433cdf4e24b9",
+    "projects": "d283dddb-8264-4e67-800c-0ef49bd16135"
+  },
+  "project": {"name":"虚构测试 · 装修项目","status":"active","scope":"identity-test","version":1,"primaryOwnerUserId":null},
+  "memberCount": 2,
+  "memberLabels": ["2d3aa4：负责人，active/v1", "64193d：管家，active/v1"],
+  "invitations": [
+    {"id":"i_a723e933cae24c52858ec24f2781e98e","applicantUserId":"u_a2acfbaea35f409671860b2c4b13d777a6989a74","role":"主业主","trades":[],"status":"requested","version":2,"issuedByUserId":"u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d","issuedAt":"2026-10-01T12:16:40.847Z","requestedAt":"2026-10-01T12:18:21.525Z","expiresAt":"2026-10-08T12:16:40.660Z"},
+    {"id":"i_e8fe4566389e4ad2b2070c62d038f162","applicantUserId":"u_15703f790f293a33c184af9eb0b8db9852f182f4","role":"主业主","trades":[],"status":"requested","version":2,"issuedByUserId":"u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d","issuedAt":"2026-10-01T12:19:43.516Z","requestedAt":"2026-10-01T12:20:27.836Z","expiresAt":"2026-10-08T12:19:43.352Z"}
+  ],
+  "cloudWritesByCodex": 0,
+  "executionBaselineReady": false,
+  "remaining": "两候选各获取一次本人新绑定编号后，核对用户摘要归属和有效期、项目成员邀请与全量审计，形成完整新鲜执行基线；不得用本准备记录启用"
+}

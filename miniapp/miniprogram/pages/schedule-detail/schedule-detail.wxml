@@ -1,0 +1,46 @@
+<view class="page">
+  <view wx:if="{{error}}" class="error">{{error}}</view>
+  <view wx:if="{{loading}}" class="muted">加载中…</view>
+  <block wx:if="{{schedule && !loading}}">
+    <view class="title">{{schedule.trade}} · {{schedule.stage}}</view>
+    <view class="muted gap">{{project.name || project.stage || ''}}</view>
+    <view class="card">
+      <view class="row"><view class="label">状态</view><view class="value {{schedule.status === 'cancelled' ? 'cancelled' : ''}}">{{schedule.status === 'cancelled' ? '已取消' : '有效'}}</view></view>
+      <view class="row"><view class="label">责任人</view><view class="value">{{schedule.workerName}}</view></view>
+      <view class="row"><view class="label">起止日期</view><view class="value">{{schedule.startDate}} 至 {{schedule.endDate}}</view></view>
+      <view class="row"><view class="label">预计完成</view><view class="value">{{schedule.expectedDate}}</view></view>
+      <view class="row" wx:if="{{schedule.hasRestDays}}"><view class="label">休息／停工</view><view class="value">{{schedule.restDaysText}}</view></view>
+      <view class="row"><view class="label">本次施工内容</view></view>
+      <view class="prewrap">{{schedule.content}}</view>
+      <view class="small muted gap">第 {{schedule.version}} 版 · {{schedule.mode === 'cloud' ? '云端' : '本机示例'}}</view>
+    </view>
+    <view wx:if="{{pendingCancel && pendingCancel.state === 'unknown'}}" class="card error">
+      <view>上次取消结果未知，请勿离开或重复操作。</view>
+      <view class="small gap">可点击“重试取消”以原原因重试；在他处确认结果后请返回列表刷新。</view>
+      <view class="row gap">
+        <button class="danger" loading="{{cancelling}}" disabled="{{cancelling}}" bindtap="retryCancel">重试取消</button>
+      </view>
+    </view>
+    <view class="actions" wx:if="{{canManage && schedule.status === 'active' && !(pendingCancel && pendingCancel.state === 'unknown')}}">
+      <button class="secondary" bindtap="edit">调整安排</button>
+      <button wx:if="{{schedule.mode === 'cloud'}}" class="danger" loading="{{cancelling}}" disabled="{{cancelling}}" bindtap="cancel">取消安排</button>
+    </view>
+    <view wx:if="{{revisions.length}}" class="section">
+      <view class="subtitle">历史版本</view>
+      <view wx:for="{{revisions}}" wx:key="afterVersion" class="card gap">
+        <view>此次变更：第 {{item.afterVersion}} 版 · {{item.changeLabel}}<view wx:if="{{item.beforeVersion > 0}}" class="small muted">由第 {{item.beforeVersion}} 版变更</view><view wx:else class="small muted">首次创建</view></view>
+        <view class="small muted">{{item.actorLabel}} · {{item.createdAt}}</view>
+        <view wx:if="{{item.reason}}" class="small gap">原因：{{item.reason}}</view>
+        <view class="small muted">变更前内容（第 {{item.snapshot.version}} 版）：</view>
+        <view class="small muted gap">{{item.snapshot.trade}} · {{item.snapshot.stage}} · {{item.snapshot.startDate}} 至 {{item.snapshot.endDate}}</view>
+        <view wx:if="{{item.snapshot.hasRestDays}}" class="small muted">休息／停工：{{item.snapshot.restDaysText}}</view>
+        <view class="small muted">责任人：{{item.snapshot.workerName}} · {{item.snapshot.status === 'cancelled' ? '已取消' : '有效'}}</view>
+        <view class="small muted gap">预计完成：{{item.snapshot.expectedDate}}</view>
+        <view class="small muted">本次施工内容：</view>
+        <view class="small prewrap">{{item.snapshot.content}}</view>
+      </view>
+      <view wx:if="{{revPagination.hasMore}}" class="card"><button class="secondary" loading="{{loading}}" disabled="{{loading}}" bindtap="loadMoreRevisions">加载更多历史</button></view>
+    </view>
+  </block>
+  <view wx:if="{{!schedule && !loading && !error}}" class="card empty">未找到施工安排</view>
+</view>

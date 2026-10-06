@@ -1,0 +1,98 @@
+{
+  "env": "cloud1-d8gcq5ag39d847723",
+  "version": 1,
+  "mode": "concurrent-approval",
+  "account": "本人账号 64193d",
+  "complete": true,
+  "expectedCount": 2,
+  "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+  "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+  "targetMemberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+  "targetUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+  "credential": {
+    "evidenceId": "concurrent-approval-782afab7-4c48-495d-8f1e-28081b7677fb",
+    "bindingEvidenceId": "4937ecfc-3e57-4a5e-a2c3-8558d62be75b",
+    "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+    "invitationExpiresAt": "2026-10-07T12:20:14.221Z",
+    "bindingExpiresAt": "2026-10-01T13:49:09.810Z",
+    "checkBefore": "2026-10-01T13:49:09.810Z",
+    "validationSource": "管理端事前核实；事后仍须复核申请、编号、成员和审计"
+  },
+  "preflight": [
+    {
+      "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+      "roles": [
+        "管家"
+      ]
+    },
+    {
+      "memberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+      "roles": [
+        "师傅",
+        "设计师"
+      ],
+      "trades": [
+        "拆改",
+        "木工"
+      ]
+    },
+    {
+      "invitations": [
+        {
+          "id": "i_0e0483488efb40ada6825d259ebc1736",
+          "role": "师傅",
+          "trades": [
+            "拆改"
+          ],
+          "applicantLabel": "成员 989a74",
+          "requestedAt": "2026-09-30T12:21:56.286Z"
+        }
+      ],
+      "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+      "role": "师傅",
+      "trades": [
+        "拆改"
+      ],
+      "applicantLabel": "成员 989a74"
+    }
+  ],
+  "results": [
+    {
+      "status": "success",
+      "code": "",
+      "message": "批准请求成功。",
+      "resourceId": "i_0e0483488efb40ada6825d259ebc1736",
+      "startedAt": "2026-10-01T05:10:05.757Z",
+      "completedAt": "2026-10-01T05:10:07.070Z"
+    },
+    {
+      "status": "business_denied",
+      "code": "CODE_INVALID",
+      "message": "邀请未待核对或编号已失效。",
+      "resourceId": "",
+      "startedAt": "2026-10-01T05:10:05.757Z",
+      "completedAt": "2026-10-01T05:10:08.096Z"
+    }
+  ],
+  "after": {
+    "member": {
+      "memberId": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+      "roles": [
+        "师傅",
+        "设计师"
+      ],
+      "trades": [
+        "拆改",
+        "木工"
+      ]
+    },
+    "invitations": [],
+    "targetRemoved": true
+  },
+  "stoppedReason": "",
+  "candidate": {
+    "summary": "一次成功、一次业务拒绝",
+    "verifiedByCloudBaseline": false
+  },
+  "launchedAt": "2026-10-01T05:10:05.756Z"
+}

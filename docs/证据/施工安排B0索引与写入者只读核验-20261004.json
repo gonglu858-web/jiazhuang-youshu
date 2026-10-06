@@ -1,0 +1,1185 @@
+{
+  "recordedAt": "2026-10-04T02:46:48.346Z",
+  "status": "B0_7_STATIC_MAPPING_AND_LIMITED_MANAGEMENT_QUERY_VERIFIED_B0_8_PARTIAL",
+  "complete": false,
+  "env": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "appId": "wxfb4db1615ac15531",
+    "instanceId": "tnt-eficftvp6",
+    "requestId": "5a3049d4-15bb-49af-a626-d995be38cab8"
+  },
+  "scope": "Read-only management metadata/queries and local source review. Not deployment clearance or a stable migration baseline.",
+  "localVerification": {
+    "comparedFileCount": 87,
+    "mismatches": [],
+    "entry": {
+      "enabled": false,
+      "allowedProjectIds": [],
+      "frozen": true
+    },
+    "sourceHashes": {
+      "miniapp/cloudfunctions/memberAccess/service.js": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+      "miniapp/cloudfunctions/memberAccess/schedule-service.js": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+      "miniapp/cloudbase/member-access-indexes.json": "3705f4c23ea1028343baccf655c5279086b6c1d509df14efc803da2306b793c1",
+      "docs/WorkBuddy方案-施工安排部署前准备-20261003.md": "e99ee419197619d5a2abb7b95378d91d700a9c841873b9120f790cc80c7514d5"
+    },
+    "expectedIndexes": {
+      "appid": "wxfb4db1615ac15531",
+      "envId": "cloud1-d8gcq5ag39d847723",
+      "indexes": [
+        {
+          "collection": "users",
+          "name": "bindingCodeHash_1",
+          "fields": [
+            {
+              "name": "bindingCodeHash",
+              "direction": "1"
+            }
+          ],
+          "unique": false
+        },
+        {
+          "collection": "projects",
+          "name": "scope_1_status_1",
+          "fields": [
+            {
+              "name": "scope",
+              "direction": "1"
+            },
+            {
+              "name": "status",
+              "direction": "1"
+            }
+          ],
+          "unique": false
+        },
+        {
+          "collection": "project_members",
+          "name": "userId_1_status_1",
+          "fields": [
+            {
+              "name": "userId",
+              "direction": "1"
+            },
+            {
+              "name": "status",
+              "direction": "1"
+            }
+          ],
+          "unique": false
+        },
+        {
+          "collection": "project_members",
+          "name": "projectId_1_status_1",
+          "fields": [
+            {
+              "name": "projectId",
+              "direction": "1"
+            },
+            {
+              "name": "status",
+              "direction": "1"
+            }
+          ],
+          "unique": false
+        },
+        {
+          "collection": "invitations",
+          "name": "tokenHash_1",
+          "fields": [
+            {
+              "name": "tokenHash",
+              "direction": "1"
+            }
+          ],
+          "unique": true
+        },
+        {
+          "collection": "invitations",
+          "name": "projectId_1_status_1",
+          "fields": [
+            {
+              "name": "projectId",
+              "direction": "1"
+            },
+            {
+              "name": "status",
+              "direction": "1"
+            }
+          ],
+          "unique": false
+        },
+        {
+          "collection": "audit_events",
+          "name": "projectId_1_createdAt_-1",
+          "fields": [
+            {
+              "name": "projectId",
+              "direction": "1"
+            },
+            {
+              "name": "createdAt",
+              "direction": "-1"
+            }
+          ],
+          "unique": false
+        }
+      ]
+    }
+  },
+  "collectionObservation": {
+    "at": "2026-10-04T02:42:02.017Z",
+    "data": {
+      "success": true,
+      "requestId": "5efda60c-c5d9-476f-9975-2f7930e3bd9c",
+      "collections": [
+        {
+          "TableName": "app_admins",
+          "Count": 1,
+          "Size": 546,
+          "IndexCount": 2,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "audit_events",
+          "Count": 53,
+          "Size": 20085,
+          "IndexCount": 3,
+          "IndexSize": 110592
+        },
+        {
+          "TableName": "invitations",
+          "Count": 8,
+          "Size": 4739,
+          "IndexCount": 4,
+          "IndexSize": 147456
+        },
+        {
+          "TableName": "project_members",
+          "Count": 8,
+          "Size": 2244,
+          "IndexCount": 4,
+          "IndexSize": 147456
+        },
+        {
+          "TableName": "projects",
+          "Count": 3,
+          "Size": 889,
+          "IndexCount": 3,
+          "IndexSize": 110592
+        },
+        {
+          "TableName": "relation_data_depart",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 6,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "sys_department",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 2,
+          "IndexSize": 12288
+        },
+        {
+          "TableName": "sys_user",
+          "Count": 1,
+          "Size": 394,
+          "IndexCount": 2,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "users",
+          "Count": 4,
+          "Size": 1293,
+          "IndexCount": 3,
+          "IndexSize": 110592
+        },
+        {
+          "TableName": "yf_diag_visibility",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 2,
+          "IndexSize": 12288
+        }
+      ],
+      "pager": {
+        "Offset": 0,
+        "Limit": 100,
+        "Total": 10
+      },
+      "message": "获取 NoSQL 数据库集合列表成功"
+    }
+  },
+  "arrangementCollections": {
+    "status": "NOT_EXISTS_AT_OBSERVATION",
+    "names": [
+      "schedules",
+      "schedule_revisions",
+      "schedule_occupancy",
+      "member_task_guard",
+      "schedule_receipts"
+    ],
+    "basis": "Complete listCollections: offset 0 limit 100 total 10; all 10 returned. No historical absence claim."
+  },
+  "indexReadback": [
+    {
+      "collection": "projects",
+      "observedAt": "2026-10-04T02:42:02.017Z",
+      "requestId": "5f8dc080-17b8-49d3-83ce-b2bfce44cccf",
+      "indexNum": 3,
+      "indexes": [
+        {
+          "name": "_id_",
+          "keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_openid_1",
+          "keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "scope_1_status_1",
+          "keys": [
+            {
+              "Name": "scope",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        }
+      ]
+    },
+    {
+      "collection": "project_members",
+      "observedAt": "2026-10-04T02:42:02.017Z",
+      "requestId": "374c9314-fa23-4a10-89f0-adaf2a43f08a",
+      "indexNum": 4,
+      "indexes": [
+        {
+          "name": "_openid_1",
+          "keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "userId_1_status_1",
+          "keys": [
+            {
+              "Name": "userId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_id_",
+          "keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "projectId_1_status_1",
+          "keys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        }
+      ]
+    },
+    {
+      "collection": "users",
+      "observedAt": "2026-10-04T02:42:17.744Z",
+      "requestId": "6da1ae25-fdd9-40f3-836e-59469a162f4e",
+      "indexNum": 3,
+      "indexes": [
+        {
+          "name": "bindingCodeHash_1",
+          "keys": [
+            {
+              "Name": "bindingCodeHash",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_openid_1",
+          "keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_id_",
+          "keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        }
+      ]
+    },
+    {
+      "collection": "invitations",
+      "observedAt": "2026-10-04T02:42:02.017Z",
+      "requestId": "b1bc516b-385c-4f7f-849a-6785a0fe7631",
+      "indexNum": 4,
+      "indexes": [
+        {
+          "name": "_openid_1",
+          "keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "tokenHash_1",
+          "keys": [
+            {
+              "Name": "tokenHash",
+              "Direction": "1"
+            }
+          ],
+          "unique": true,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "projectId_1_status_1",
+          "keys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_id_",
+          "keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        }
+      ]
+    },
+    {
+      "collection": "audit_events",
+      "observedAt": "2026-10-04T02:42:02.017Z",
+      "requestId": "d03e0c42-95ab-45b4-89db-3ceaccfcfc66",
+      "indexNum": 3,
+      "indexes": [
+        {
+          "name": "_openid_1",
+          "keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "projectId_1_createdAt_-1",
+          "keys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "createdAt",
+              "Direction": "-1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_id_",
+          "keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        }
+      ]
+    },
+    {
+      "collection": "app_admins",
+      "observedAt": "2026-10-04T02:42:02.017Z",
+      "requestId": "00f68816-d7bb-4ad3-a84b-7d4a6f6fb3ce",
+      "indexNum": 2,
+      "indexes": [
+        {
+          "name": "_id_",
+          "keys": [
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        },
+        {
+          "name": "_openid_1",
+          "keys": [
+            {
+              "Name": "_openid",
+              "Direction": "1"
+            }
+          ],
+          "unique": false,
+          "sparse": false,
+          "partialFilterExpression": ""
+        }
+      ]
+    }
+  ],
+  "existingManifestComparison": [
+    {
+      "collection": "users",
+      "name": "bindingCodeHash_1",
+      "matched": true
+    },
+    {
+      "collection": "projects",
+      "name": "scope_1_status_1",
+      "matched": true
+    },
+    {
+      "collection": "project_members",
+      "name": "userId_1_status_1",
+      "matched": true
+    },
+    {
+      "collection": "project_members",
+      "name": "projectId_1_status_1",
+      "matched": true
+    },
+    {
+      "collection": "invitations",
+      "name": "tokenHash_1",
+      "matched": true
+    },
+    {
+      "collection": "invitations",
+      "name": "projectId_1_status_1",
+      "matched": true
+    },
+    {
+      "collection": "audit_events",
+      "name": "projectId_1_createdAt_-1",
+      "matched": true
+    }
+  ],
+  "queryMapping": [
+    {
+      "id": "I1",
+      "collection": "users",
+      "filterFields": [
+        "bindingCodeHash"
+      ],
+      "sort": [],
+      "status": "EXISTING_FILTER_KEYS_MATCH",
+      "source": "service.js:119",
+      "candidateKeys": []
+    },
+    {
+      "id": "I2",
+      "collection": "projects",
+      "filterFields": [
+        "scope",
+        "status"
+      ],
+      "sort": [],
+      "status": "EXISTING_FILTER_KEYS_MATCH",
+      "source": "service.js:161",
+      "candidateKeys": []
+    },
+    {
+      "id": "I3",
+      "collection": "project_members",
+      "filterFields": [
+        "userId",
+        "status"
+      ],
+      "sort": [],
+      "status": "EXISTING_FILTER_KEYS_MATCH",
+      "source": "service.js:160",
+      "candidateKeys": []
+    },
+    {
+      "id": "I4",
+      "collection": "project_members",
+      "filterFields": [
+        "projectId",
+        "status"
+      ],
+      "sort": [],
+      "status": "EXISTING_FILTER_KEYS_MATCH",
+      "source": "service.js:213",
+      "candidateKeys": []
+    },
+    {
+      "id": "I5",
+      "collection": "invitations",
+      "filterFields": [
+        "tokenHash"
+      ],
+      "sort": [],
+      "status": "EXISTING_FILTER_KEYS_MATCH",
+      "source": "service.js:247",
+      "candidateKeys": []
+    },
+    {
+      "id": "I6",
+      "collection": "invitations",
+      "filterFields": [
+        "projectId",
+        "status"
+      ],
+      "sort": [],
+      "status": "EXISTING_FILTER_KEYS_MATCH",
+      "source": "service.js:274",
+      "candidateKeys": []
+    },
+    {
+      "id": "S1",
+      "collection": "project_members",
+      "filterFields": [
+        "projectId",
+        "status"
+      ],
+      "sort": [
+        [
+          "_id",
+          1
+        ]
+      ],
+      "status": "FILTER_INDEX_PRESENT_NO_EXACT_COMPOSITE_SORT_INDEX; MANAGEMENT_QUERY_PASSED",
+      "source": "schedule-service.js:417/554",
+      "candidateKeys": [
+        "projectId",
+        "status",
+        "_id"
+      ]
+    },
+    {
+      "id": "S2",
+      "collection": "schedules",
+      "filterFields": [
+        "projectId",
+        "workerUserId",
+        "status"
+      ],
+      "sort": [
+        [
+          "_id",
+          1
+        ]
+      ],
+      "status": "COLLECTION_NOT_EXISTS_CANDIDATE_ONLY",
+      "source": "schedule-service.js:283",
+      "candidateKeys": [
+        "projectId",
+        "workerUserId",
+        "status",
+        "_id"
+      ]
+    },
+    {
+      "id": "S3",
+      "collection": "schedules",
+      "filterFields": [
+        "projectId"
+      ],
+      "sort": [
+        [
+          "createdAt",
+          1
+        ],
+        [
+          "_id",
+          1
+        ]
+      ],
+      "status": "COLLECTION_NOT_EXISTS_CANDIDATE_ONLY",
+      "source": "schedule-service.js:451-456",
+      "candidateKeys": [
+        "projectId",
+        "createdAt",
+        "_id"
+      ]
+    },
+    {
+      "id": "S4",
+      "collection": "schedules",
+      "filterFields": [
+        "projectId",
+        "status"
+      ],
+      "sort": [
+        [
+          "createdAt",
+          1
+        ],
+        [
+          "_id",
+          1
+        ]
+      ],
+      "status": "COLLECTION_NOT_EXISTS_CANDIDATE_ONLY",
+      "source": "schedule-service.js:451-456",
+      "candidateKeys": [
+        "projectId",
+        "status",
+        "createdAt",
+        "_id"
+      ]
+    },
+    {
+      "id": "S5",
+      "collection": "schedules",
+      "filterFields": [
+        "projectId",
+        "trade"
+      ],
+      "sort": [
+        [
+          "createdAt",
+          1
+        ],
+        [
+          "_id",
+          1
+        ]
+      ],
+      "status": "COLLECTION_NOT_EXISTS_CANDIDATE_ONLY",
+      "source": "schedule-service.js:451-456",
+      "candidateKeys": [
+        "projectId",
+        "trade",
+        "createdAt",
+        "_id"
+      ]
+    },
+    {
+      "id": "S6",
+      "collection": "schedules",
+      "filterFields": [
+        "projectId",
+        "status",
+        "trade"
+      ],
+      "sort": [
+        [
+          "createdAt",
+          1
+        ],
+        [
+          "_id",
+          1
+        ]
+      ],
+      "status": "COLLECTION_NOT_EXISTS_CANDIDATE_ONLY",
+      "source": "schedule-service.js:451-456",
+      "candidateKeys": [
+        "projectId",
+        "status",
+        "trade",
+        "createdAt",
+        "_id"
+      ]
+    },
+    {
+      "id": "S7",
+      "collection": "schedule_revisions",
+      "filterFields": [
+        "scheduleId"
+      ],
+      "sort": [
+        [
+          "afterVersion",
+          1
+        ]
+      ],
+      "status": "COLLECTION_NOT_EXISTS_CANDIDATE_ONLY",
+      "source": "schedule-service.js:512",
+      "candidateKeys": [
+        "scheduleId",
+        "afterVersion"
+      ]
+    }
+  ],
+  "candidateIndexRules": "All candidate keys ascending; not an instruction to create. Necessity/minimality/SDK behavior/explain plan/large-volume performance unverified. _id/_openid defaults retained as returned; _id Unique=false in response is not interpreted as allowing duplicate primary keys.",
+  "managementQuerySamples": [
+    {
+      "at": "2026-10-04T02:43:32.720Z",
+      "args": {
+        "collectionName": "project_members",
+        "instanceId": "tnt-eficftvp6",
+        "query": {
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "status": "active"
+        },
+        "projection": {
+          "_id": 1,
+          "projectId": 1,
+          "status": 1
+        },
+        "sort": [
+          {
+            "key": "_id",
+            "direction": 1
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      },
+      "data": {
+        "success": true,
+        "requestId": "a5408c81-d1ed-4bee-be7a-be414da7135e",
+        "data": [
+          {
+            "_id": "m_133e881e1131e4d9891ebc566884d599ac1cc60f",
+            "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+            "status": "active"
+          },
+          {
+            "_id": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+            "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+            "status": "active"
+          },
+          {
+            "_id": "m_e5eaf02fd6e0db8565f523431ec9019dc19e54ac",
+            "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+            "status": "active"
+          },
+          {
+            "_id": "m_f5b098e6c02df1b0b7bbe7624627f2b637d46ff9",
+            "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+            "status": "active"
+          }
+        ],
+        "total": 4,
+        "pager": {
+          "Offset": 0,
+          "Limit": 100,
+          "Total": 4
+        },
+        "message": "文档查询成功",
+        "collection": "project_members",
+        "collectionName": "project_members"
+      },
+      "assertions": {
+        "success": true,
+        "count": 4,
+        "expectedObservedCount": 4,
+        "matchesFilter": true,
+        "sortedById": true,
+        "returnedAllAtQueryTime": true
+      },
+      "scope": "Management API only; not wx-server-sdk execution, explain plan, large-data paging, transaction or performance verification."
+    },
+    {
+      "at": "2026-10-04T02:43:32.720Z",
+      "args": {
+        "collectionName": "project_members",
+        "instanceId": "tnt-eficftvp6",
+        "query": {
+          "projectId": "p_a328c08992f7414c812047935bc3c31e",
+          "status": "active"
+        },
+        "projection": {
+          "_id": 1,
+          "projectId": 1,
+          "status": 1
+        },
+        "sort": [
+          {
+            "key": "_id",
+            "direction": 1
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      },
+      "data": {
+        "success": true,
+        "requestId": "0c155c32-757e-4219-9436-8e48ae2d8516",
+        "data": [
+          {
+            "_id": "m_45fd5794f0aa51559c2b57e8aecb07fc6e3902b1",
+            "projectId": "p_a328c08992f7414c812047935bc3c31e",
+            "status": "active"
+          }
+        ],
+        "total": 1,
+        "pager": {
+          "Offset": 0,
+          "Limit": 100,
+          "Total": 1
+        },
+        "message": "文档查询成功",
+        "collection": "project_members",
+        "collectionName": "project_members"
+      },
+      "assertions": {
+        "success": true,
+        "count": 1,
+        "expectedObservedCount": 1,
+        "matchesFilter": true,
+        "sortedById": true,
+        "returnedAllAtQueryTime": true
+      },
+      "scope": "Management API only; not wx-server-sdk execution, explain plan, large-data paging, transaction or performance verification."
+    },
+    {
+      "at": "2026-10-04T02:43:53.606Z",
+      "args": {
+        "collectionName": "project_members",
+        "instanceId": "tnt-eficftvp6",
+        "query": {
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "status": "active"
+        },
+        "projection": {
+          "_id": 1,
+          "projectId": 1,
+          "status": 1
+        },
+        "sort": [
+          {
+            "key": "_id",
+            "direction": 1
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      },
+      "data": {
+        "success": true,
+        "requestId": "6a6e5dc3-ec01-4684-baf7-96db2ba243f1",
+        "data": [
+          {
+            "_id": "m_3c26c01fc7d1dd463d6f9f335fadf92df33e7a53",
+            "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+            "status": "active"
+          },
+          {
+            "_id": "m_c05c3e21ed3870ebae794754e43fe93e55283371",
+            "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+            "status": "active"
+          },
+          {
+            "_id": "m_dc1be40cda2f9519cf9ca25cb1df74e443c903da",
+            "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+            "status": "active"
+          }
+        ],
+        "total": 3,
+        "pager": {
+          "Offset": 0,
+          "Limit": 100,
+          "Total": 3
+        },
+        "message": "文档查询成功",
+        "collection": "project_members",
+        "collectionName": "project_members"
+      },
+      "assertions": {
+        "success": true,
+        "count": 3,
+        "expectedObservedCount": 3,
+        "matchesFilter": true,
+        "sortedById": true,
+        "returnedAllAtQueryTime": true
+      },
+      "scope": "Management API only; not wx-server-sdk execution, explain plan, large-data paging, transaction or performance verification."
+    }
+  ],
+  "functionList": {
+    "at": "2026-10-04T02:42:02.007Z",
+    "requestId": "3e874b7b-17bd-422b-8e53-9b87a24c4384",
+    "totalCount": 2,
+    "names": [
+      "memberAccess",
+      "connectionCheck"
+    ]
+  },
+  "functions": [
+    {
+      "name": "memberAccess",
+      "detail": {
+        "observedAt": "2026-10-04T02:42:39.265Z",
+        "requestId": "5e16fbd3-34e4-4ef2-a4bb-6eb01ae0c11e",
+        "FunctionVersion": "$LATEST",
+        "Runtime": "Nodejs16.13",
+        "Status": "Active",
+        "Timeout": 3,
+        "MemorySize": 256,
+        "ModTime": "2026-09-25 21:40:10",
+        "Namespace": "cloud1-d8gcq5ag39d847723",
+        "Role": "TCB_QcsRole"
+      },
+      "versions": {
+        "observedAt": "2026-10-04T02:43:04.407Z",
+        "requestId": "783197e7-9826-4e52-b175-639552d73df8",
+        "versions": [
+          {
+            "Version": "$LATEST",
+            "Description": "",
+            "AddTime": "2026-09-25 16:30:54",
+            "ModTime": "2026-09-25 21:40:10",
+            "Status": "Active"
+          }
+        ],
+        "totalCount": 1
+      },
+      "defaultAlias": {
+        "observedAt": "2026-10-04T02:42:39.266Z",
+        "requestId": "f2e2c081-0c56-463d-a710-8d7bbfbf7d8d",
+        "aliasName": "$DEFAULT",
+        "functionVersion": "$LATEST",
+        "routingConfig": {
+          "AdditionalVersionWeights": [],
+          "AddtionVersionMatchs": [],
+          "AdditionVersionMatches": []
+        }
+      },
+      "triggers": {
+        "observedAt": "2026-10-04T02:42:39.266Z",
+        "requestId": "ab925b44-588b-4f49-bea1-bfb2dd074e1c",
+        "triggers": []
+      }
+    },
+    {
+      "name": "connectionCheck",
+      "detail": {
+        "observedAt": "2026-10-04T02:42:40.148Z",
+        "requestId": "6d3f28e2-6490-43a7-b6d9-5031fea009bd",
+        "FunctionVersion": "$LATEST",
+        "Runtime": "Nodejs16.13",
+        "Status": "Active",
+        "Timeout": 3,
+        "MemorySize": 256,
+        "ModTime": "2026-09-23 18:49:23",
+        "Namespace": "cloud1-d8gcq5ag39d847723",
+        "Role": "TCB_QcsRole"
+      },
+      "versions": {
+        "observedAt": "2026-10-04T02:43:04.983Z",
+        "requestId": "d34cbb53-f629-467b-a564-71808fa9c6f7",
+        "versions": [
+          {
+            "Version": "$LATEST",
+            "Description": "",
+            "AddTime": "2026-09-23 18:43:57",
+            "ModTime": "2026-09-23 18:49:23",
+            "Status": "Active"
+          }
+        ],
+        "totalCount": 1
+      },
+      "defaultAlias": {
+        "observedAt": "2026-10-04T02:43:05.560Z",
+        "requestId": "841ca59e-1ee5-4b2f-8935-13907bb3592d",
+        "aliasName": "$DEFAULT",
+        "functionVersion": "$LATEST",
+        "routingConfig": {
+          "AdditionalVersionWeights": [],
+          "AddtionVersionMatchs": [],
+          "AdditionVersionMatches": []
+        }
+      },
+      "triggers": {
+        "observedAt": "2026-10-04T02:42:40.148Z",
+        "requestId": "fe0535d7-8e71-4c66-bc38-ea189619a6fa",
+        "triggers": []
+      }
+    }
+  ],
+  "fingerprint": {
+    "at": "2026-10-04T02:43:06.949Z",
+    "data": {
+      "success": true,
+      "data": {
+        "action": "getFunctionDownloadUrl",
+        "functionName": "memberAccess",
+        "codeSha256": "af337224c177c8c5ea9327e437c22d14fea4e81d4f0cc1b3b2ee8a15442f5163",
+        "requestId": "28178928-e2c8-4845-9e8b-6608f518b1a1",
+        "raw": {
+          "RequestId": "28178928-e2c8-4845-9e8b-6608f518b1a1",
+          "CodeSha256": "af337224c177c8c5ea9327e437c22d14fea4e81d4f0cc1b3b2ee8a15442f5163"
+        }
+      },
+      "message": "已获取函数 memberAccess 的代码下载链接"
+    }
+  },
+  "collectionPermissions": [
+    {
+      "collection": "projects",
+      "observedAt": "2026-10-04T02:44:17.411Z",
+      "aclTag": "ADMINONLY",
+      "requestId": "369991a9-a8e0-4126-a60d-6c9a8b344090"
+    },
+    {
+      "collection": "project_members",
+      "observedAt": "2026-10-04T02:44:17.400Z",
+      "aclTag": "ADMINONLY",
+      "requestId": "92152591-238f-4179-b9db-912cd493d333"
+    },
+    {
+      "collection": "users",
+      "observedAt": "2026-10-04T02:44:51.256Z",
+      "aclTag": "ADMINONLY",
+      "requestId": "76feb76a-5e43-4294-830b-2f1e7ac21e24"
+    },
+    {
+      "collection": "invitations",
+      "observedAt": "2026-10-04T02:44:17.940Z",
+      "aclTag": "ADMINONLY",
+      "requestId": "deee03c7-0e01-4bc9-b4ae-9809e4b402f0"
+    },
+    {
+      "collection": "audit_events",
+      "observedAt": "2026-10-04T02:44:18.481Z",
+      "aclTag": "ADMINONLY",
+      "requestId": "ac8ae965-5c1d-458c-96a3-7bb902f2b71c"
+    },
+    {
+      "collection": "app_admins",
+      "observedAt": "2026-10-04T02:44:19.168Z",
+      "aclTag": "ADMINONLY",
+      "requestId": "5c44d002-d206-4dbb-9bdc-c9f293fed0bd"
+    }
+  ],
+  "transientTransportErrors": {
+    "recoveredByOneReadOnlyRetry": [
+      "indexes:users",
+      "listVersionByFunction:memberAccess",
+      "listVersionByFunction:connectionCheck",
+      "getFunctionAlias:connectionCheck",
+      "query:C",
+      "permission:users"
+    ],
+    "type": "MCP transport JSON deserialization/non-JSON response; not a database empty-result or missing-resource conclusion."
+  },
+  "writerCoverage": {
+    "known": "Two environment functions, each $LATEST only, $DEFAULT->$LATEST with no returned weighted routing, empty returned triggers; six collection ACLs ADMINONLY. Codex used management read-only calls only.",
+    "unknown": [
+      "Tencent CAM/IAM principals and credentials with write capability",
+      "Console/manual writes",
+      "External services/CI/scripts or schedulers outside returned function triggers",
+      "Historical deletions or collection recreation",
+      "Full alias/gateway/auth policy inventory; only $DEFAULT inspected",
+      "Full coverage and draining of in-flight/legacy writers"
+    ],
+    "userFactQuestion": "Asked whether other people/services/scripts write this environment; no response received at evidence generation.",
+    "closed": false
+  },
+  "notPerformed": [
+    "Business cloud-function invocation",
+    "Cloud writes",
+    "Resource/index creation",
+    "Package download",
+    "Deployment",
+    "Migration",
+    "Ready restore",
+    "Entry enablement",
+    "Platform write/transaction/performance tests",
+    "Whole S/R/B0 flow or 53 design cases"
+  ],
+  "remaining": [
+    "B0-7 native SDK/platform validation for new query shapes after separately approved isolated resources",
+    "B0-8 admin/external writer and historical provenance facts",
+    "B has no manager; no authorized alternative maintenance path",
+    "Restore carrier/certification workflow not implemented"
+  ]
+}

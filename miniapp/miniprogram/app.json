@@ -3,8 +3,12 @@
     "pages/index/index",
     "pages/project/project",
     "pages/schedule/schedule",
+    "pages/schedule-detail/schedule-detail",
     "pages/record/record",
-    "pages/members/members"
+    "pages/members/members",
+    "pages/access/access",
+    "pages/permission-check/permission-check",
+    "pages/schedule-sandbox/schedule-sandbox"
   ],
   "window": {
     "navigationBarTitleText": "装修进度验收",

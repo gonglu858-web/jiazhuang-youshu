@@ -1,0 +1,273 @@
+{
+  "recordedAt": "2026-10-01T10:21:39.336631+00:00",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "appid": "wxfb4db1615ac15531",
+  "purpose": "不同主业主申请并发验收方案规划；不是执行基线",
+  "status": "planning_ready_local_implementation_pending",
+  "collections": {
+    "projects": {
+      "success": true,
+      "requestId": "912114ae-f7b1-4448-9e64-6d805482c4b0",
+      "data": [
+        {
+          "_id": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "primaryOwnerUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "scope": "identity-test",
+          "status": "active",
+          "version": 2
+        },
+        {
+          "_id": "p_a328c08992f7414c812047935bc3c31e",
+          "primaryOwnerUserId": null,
+          "scope": "identity-test",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "total": 2,
+      "pager": {
+        "Offset": 0,
+        "Limit": 20,
+        "Total": 2
+      },
+      "message": "文档查询成功",
+      "collection": "projects",
+      "collectionName": "projects"
+    },
+    "project_members": {
+      "success": true,
+      "requestId": "e597c87a-ce83-4475-8886-a69a70dd4876",
+      "data": [
+        {
+          "_id": "m_e5eaf02fd6e0db8565f523431ec9019dc19e54ac",
+          "joinedAt": "2026-09-25T13:59:55.728Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_45fd5794f0aa51559c2b57e8aecb07fc6e3902b1",
+          "joinedAt": "2026-09-25T14:00:04.480Z",
+          "projectId": "p_a328c08992f7414c812047935bc3c31e",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_133e881e1131e4d9891ebc566884d599ac1cc60f",
+          "joinedAt": "2026-09-25T14:56:12.594Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "管家"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "version": 1
+        },
+        {
+          "_id": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+          "joinedAt": "2026-09-27T12:04:48.997Z",
+          "leftAt": null,
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "师傅",
+            "设计师"
+          ],
+          "status": "active",
+          "trades": [
+            "拆改",
+            "木工"
+          ],
+          "userId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "version": 6
+        },
+        {
+          "_id": "m_f5b098e6c02df1b0b7bbe7624627f2b637d46ff9",
+          "joinedAt": "2026-09-27T13:47:05.639Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "主业主"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "version": 1
+        }
+      ],
+      "total": 5,
+      "pager": {
+        "Offset": 0,
+        "Limit": 20,
+        "Total": 5
+      },
+      "message": "文档查询成功",
+      "collection": "project_members",
+      "collectionName": "project_members"
+    },
+    "invitations": {
+      "success": true,
+      "requestId": "cd418ef5-ad18-4b31-8ba7-29a79a5a97e6",
+      "data": [
+        {
+          "_id": "i_de9287cb806e4098846161e2734d30db",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-27T12:04:49.045Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-03T07:04:07.034Z",
+          "issuedAt": "2026-09-26T07:04:07.200Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-26T07:14:44.777Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_176841d33c0d40eca2fb23e92fe5b024",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-27T12:47:40.290Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-04T12:44:18.719Z",
+          "issuedAt": "2026-09-27T12:44:18.904Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-27T12:45:50.306Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_5d088d16872444479c775d3474d5852d",
+          "applicantUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "approvedAt": "2026-09-27T13:47:05.721Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-04T13:43:23.115Z",
+          "issuedAt": "2026-09-27T13:43:23.276Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-27T13:44:07.890Z",
+          "role": "主业主",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_7f201930411243dd823798545263e236",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-29T12:30:49.565Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-06T12:26:59.818Z",
+          "issuedAt": "2026-09-29T12:26:59.984Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-29T12:28:34.589Z",
+          "role": "设计师",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_a360a5387ef549679eb1f2a370f23bab",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-29T13:12:00.369Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-06T13:09:32.531Z",
+          "issuedAt": "2026-09-29T13:09:32.704Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-29T13:11:13.727Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "木工"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_0e0483488efb40ada6825d259ebc1736",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-10-01T05:10:06.829Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-07T12:20:14.221Z",
+          "issuedAt": "2026-09-30T12:20:14.528Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-30T12:21:56.286Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        }
+      ],
+      "total": 6,
+      "pager": {
+        "Offset": 0,
+        "Limit": 20,
+        "Total": 6
+      },
+      "message": "文档查询成功",
+      "collection": "invitations",
+      "collectionName": "invitations"
+    }
+  },
+  "sources": [
+    {
+      "collection": "projects",
+      "requestId": "912114ae-f7b1-4448-9e64-6d805482c4b0",
+      "localFileSavedAt": "2026-10-01T06:35:34.184969+00:00",
+      "sha256": "41c58b171494eb8f985d266b5cef2bea26175b80b70c4c81a32e6d7ce8308be4"
+    },
+    {
+      "collection": "project_members",
+      "requestId": "e597c87a-ce83-4475-8886-a69a70dd4876",
+      "localFileSavedAt": "2026-10-01T10:18:27.356500+00:00",
+      "sha256": "396011889834d4fef203bd76a1b58b865acf2b783054885ee76eeec38292fda9"
+    },
+    {
+      "collection": "invitations",
+      "requestId": "cd418ef5-ad18-4b31-8ba7-29a79a5a97e6",
+      "localFileSavedAt": "2026-10-01T10:18:28.152453+00:00",
+      "sha256": "5283ba860fc433da8b55bbab0fb927e451a875542c65ac4fbe12d2c36554ff29"
+    }
+  ],
+  "selectedFieldsEqualPreviousPostCheck": true,
+  "comparisonBaseline": "同一申请并发批准事后复核-20261001.json",
+  "interruption": {
+    "previousMemberAndInvitationReadsExecuted": false,
+    "reason": "Automatic approval review could not complete due to usage limit",
+    "resumedByUser": true,
+    "resumedReadsSucceeded": true
+  },
+  "limitations": [
+    "projects查询在中断前成功；成员与邀请在用户接续后读取，不是同一时刻或原子快照。",
+    "未读取本轮全量审计、用户编号或app_admins；不得用于启用未来执行配置。",
+    "新项目C、两个requested主业主邀请、有效绑定编号均未准备。"
+  ],
+  "plannedActors": [
+    "2d3aa4",
+    "64193d",
+    "989a74",
+    "f182f4"
+  ],
+  "cloudWritesExecuted": false,
+  "implementationChangedByCodex": false,
+  "nextTask": "../WorkBuddy任务-不同主业主申请并发唯一性-20261001.md"
+}

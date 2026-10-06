@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="title gap">开发权限核验</view>
+  <view wx:if="{{!testEntryAllowed}}" class="card">
+    <view class="subtitle">测试入口不可用</view>
+    <view class="small muted gap">{{testEntryMessage}}</view>
+  </view>
+  <block wx:if="{{testEntryAllowed}}">
+    <view class="notice gap">由当前微信账号直接访问指定集合。空测试集合已完成首次人工核验；业务集合建好并逐个设权后再使用下方新检测。</view>
+    <view class="card">
+      <view class="small muted">环境：{{envId}}</view>
+      <view class="small muted">集合：{{collection}}</view>
+      <button class="primary" bindtap="checkRead" disabled="{{busy || readAttempted}}">1. 检测读取权限</button>
+      <view class="gap">{{readMessage}}</view>
+      <button class="primary" bindtap="checkWrite" disabled="{{busy || !readDenied || writeAttempted}}">2. 检测新增记录权限</button>
+      <view class="gap">{{writeMessage}}</view>
+      <view class="small muted gap">第二步仅尝试新增一条虚构检测标记。正确设置权限时，请求应被拒绝；若意外成功，停止并保留标记供核查。</view>
+    </view>
+    <view class="notice">{{summary}}</view>
+    <view class="card gap">
+      <view class="title">六个业务集合逐个核验</view>
+      <view class="small muted gap">仅在六个集合各自显示“无权限 [ADMINONLY]”并保存后运行。每个集合先试读，明确被拒绝后才试新增；任一步异常立即停止，整轮只运行一次。</view>
+      <button class="primary" bindtap="checkBusinessCollections" disabled="{{busy || businessAttempted}}">逐个检测六个业务集合</button>
+      <view class="gap">{{businessSummary}}</view>
+    </view>
+    <view wx:if="{{details}}" class="card">
+      <button class="secondary" bindtap="copyResult">复制检测结果</button>
+      <text selectable class="small prewrap">{{details}}</text>
+    </view>
+  </block>
+</view>

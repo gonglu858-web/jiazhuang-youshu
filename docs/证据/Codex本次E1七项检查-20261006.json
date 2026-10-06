@@ -1,0 +1,56 @@
+{
+  "executedAt": "2026-10-06T02:36:14.018Z",
+  "scope": "E1 单一入口的函数级故障注入；合成 spawn/fs；无云调用；不修改任何历史证据",
+  "summary": {
+    "total": 7,
+    "sealed": 7,
+    "unsealed": 0,
+    "harnessErrors": 0
+  },
+  "results": [
+    {
+      "id": "e1-ETIMEDOUT-single-execution",
+      "requirement": "超时不得触发第二次执行，且不得声称完成",
+      "sealed": true
+    },
+    {
+      "id": "e1-EBUSY-no-in-process-fallback",
+      "requirement": "启动失败不得回退进程内执行，不得声称完成",
+      "sealed": true
+    },
+    {
+      "id": "e1-nonzero-exit-not-completed",
+      "requirement": "非零退出即便产出结果文件也不得算完成",
+      "sealed": true
+    },
+    {
+      "id": "e1-zero-exit-no-result",
+      "requirement": "零退出但无本次结果文件 → 未完成",
+      "sealed": true
+    },
+    {
+      "id": "e1-partial-not-sealed",
+      "requirement": "只有一份完成时整体不得 sealed",
+      "sealed": true
+    },
+    {
+      "id": "e1-history-drift-voids",
+      "requirement": "历史结果被改动时即便完成也作废结论",
+      "sealed": true
+    },
+    {
+      "id": "e1-orchestration-patch-guarded",
+      "requirement": "编排段缺失/不唯一时拒绝执行",
+      "sealed": true
+    }
+  ],
+  "note": "这是对 runOnce/orchestrate 的控制流验证，不是对真实宿主行为的声称；真实执行结论以 WorkBuddy单一重跑入口-20261006.json 的 sealed 为准。",
+  "boundaries": {
+    "installed": false,
+    "cloudCalled": false,
+    "sdkConnected": false,
+    "deployed": false,
+    "entryEnabled": false,
+    "cacheCleared": false
+  }
+}

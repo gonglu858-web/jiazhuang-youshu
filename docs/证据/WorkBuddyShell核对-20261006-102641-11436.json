@@ -1,0 +1,60 @@
+{
+  "executedAt": "2026-10-06T02:28:46.697Z",
+  "runId": "20261006-102641-11436",
+  "scope": "shell 独立核对：宿主 spawn 受限时另行验证断言；不回填单一入口的 sealed 结论",
+  "relationToSingleEntry": "WorkBuddy单一重跑入口-20261006.json 的 sealed 仍按其自身执行结果（宿主 spawn 受阻时为 false）；本文件不修改它",
+  "records": [
+    {
+      "label": "前轮34条",
+      "producedJson": true,
+      "completed": true,
+      "summary": {
+        "total": 34,
+        "sealed": 34,
+        "unsealed": 0,
+        "harnessErrors": 0
+      },
+      "matchesExpectation": true,
+      "expectedSummary": {
+        "total": 34,
+        "sealed": 34,
+        "unsealed": 0
+      },
+      "producedSha256": "f04dc41cd5597fbaf153dc7e575ef06a391f31063cd82d53949c7627aef636d4",
+      "executedAt": "2026-10-06T02:28:11.474Z",
+      "isolatedScript": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修R1R5复现-20261005.cjs",
+      "isolatedResult": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修R1R5复现-20261005.json"
+    },
+    {
+      "label": "上轮18条",
+      "producedJson": true,
+      "completed": true,
+      "summary": {
+        "total": 18,
+        "sealed": 18,
+        "unsealed": 0,
+        "harnessErrors": 0
+      },
+      "matchesExpectation": true,
+      "expectedSummary": {
+        "total": 18,
+        "sealed": 18,
+        "unsealed": 0
+      },
+      "producedSha256": "55cf5deb71e73f984f861c09c5d1376190bf57988953ff283a5e54f2cffa7441",
+      "executedAt": "2026-10-06T02:28:41.766Z",
+      "isolatedScript": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修S1S5复现-20261006.cjs",
+      "isolatedResult": "docs/证据重跑/20261006-102641-11436__WorkBuddy返修S1S5复现-20261006.json"
+    }
+  ],
+  "cliShellVerification": {
+    "note": "宿主 spawn 受限时，CLI 拒绝只能由 shell 另行核对；此结果不回填单一入口的 sealed 结论",
+    "executeRefused": true,
+    "executeMentionsNoFakeAtomicity": true,
+    "executeExitCode": 1,
+    "approvalFlagRefused": true,
+    "approvalExitCode": 1,
+    "allCorrect": true
+  },
+  "allMatched": true
+}

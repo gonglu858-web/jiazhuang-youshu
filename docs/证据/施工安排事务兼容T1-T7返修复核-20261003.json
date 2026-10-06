@@ -1,0 +1,375 @@
+{
+  "recordedAt": "2026-10-03T12:50:21.615Z",
+  "verdict": "changes_requested_U1_U3",
+  "originalEvidenceSha256": "9d6b42b975e0463c14da3727294e9c4a7d5cc43dafbd1960ecc84c7b0c6fd5f3",
+  "regression": {
+    "tests": 369,
+    "pass": 369,
+    "fail": 0,
+    "skipped": 0,
+    "sdk": "existing 3.0.1; entry-only offline regression"
+  },
+  "compile": {
+    "routes": 8,
+    "wxml": 8,
+    "wxss": 9,
+    "passed": true
+  },
+  "originalReplayRerun": {
+    "recordedAt": "2026-10-03T12:45:45.368Z",
+    "scope": "offline synthetic in-memory only; no cloud or real binding credentials",
+    "results": [
+      {
+        "name": "cross_month_update",
+        "result": {
+          "scheduleId": "s_1_yhas",
+          "version": 2,
+          "status": "active"
+        },
+        "unchanged": false
+      },
+      {
+        "name": "existing_compat_7b_actual_outcome",
+        "result": {
+          "scheduleId": "s_1_ctq7",
+          "version": 2,
+          "status": "active"
+        },
+        "peak": 70,
+        "attemptedWrites": 32
+      },
+      {
+        "name": "26_buckets_same_dates_change_trade_worker_fixture80",
+        "result": {
+          "scheduleId": "s_1_05ni",
+          "version": 2,
+          "status": "active"
+        },
+        "peak": 74,
+        "attemptedWrites": 34,
+        "unchanged": false
+      },
+      {
+        "name": "26_buckets_same_dates_change_trade_worker_platform100_only",
+        "result": {
+          "scheduleId": "s_1_sjhi",
+          "version": 2,
+          "status": "active"
+        },
+        "peak": 74,
+        "attemptedWrites": 34,
+        "unchanged": false
+      },
+      {
+        "name": "generation0_with_existing_active_removal",
+        "code": "GUARD_INCONSISTENT",
+        "message": "该成员尚有未取消的施工安排，任务目录未初始化，请联系管理员核对。",
+        "memberStatus": "active",
+        "remainingActive": 1
+      },
+      {
+        "name": "maintenance_approveInvitation",
+        "code": "PROJECT_NOT_WRITABLE",
+        "message": "项目当前处于维护或未就绪状态，暂不能变更成员，请联系管理员。",
+        "epoch": 1,
+        "mode": "maintenance",
+        "roles": [
+          "师傅"
+        ]
+      },
+      {
+        "name": "maintenance_assignManager",
+        "code": "PROJECT_NOT_WRITABLE",
+        "message": "项目当前处于维护或未就绪状态，暂不能变更成员，请联系管理员。",
+        "epoch": 1,
+        "mode": "maintenance",
+        "roles": [
+          "师傅"
+        ]
+      },
+      {
+        "name": "mixed_external_snapshot_before_scan",
+        "result": {
+          "scheduleId": "s_1_r2j0",
+          "version": 1,
+          "status": "active"
+        },
+        "attempts": 3
+      },
+      {
+        "name": "committed_receipt_blocked_by_later_guard_loss",
+        "first": {
+          "scheduleId": "s_1_mq4f",
+          "version": 1,
+          "status": "active"
+        },
+        "result": {
+          "scheduleId": "s_1_mq4f",
+          "version": 1,
+          "status": "active"
+        }
+      },
+      {
+        "name": "fixture_first_where_not_rejected",
+        "code": "PLATFORM_UNSUPPORTED_IN_TXN",
+        "message": "PLATFORM_UNSUPPORTED_IN_TXN:where:schedules"
+      },
+      {
+        "name": "receipt_replay_mode_changed_after_collect",
+        "code": "PROJECT_NOT_WRITABLE",
+        "message": "项目当前处于维护或未就绪状态，暂不能提交写操作，请联系管理员。",
+        "mode": "maintenance"
+      }
+    ]
+  },
+  "additionalReplays": {
+    "recordedAt": "2026-10-03T12:49:14.475Z",
+    "scope": "offline synthetic only; no cloud",
+    "results": [
+      {
+        "name": "concurrent_same_id_createSchedule",
+        "outcomes": [
+          {
+            "result": {
+              "scheduleId": "s_1_fy00",
+              "version": 1,
+              "status": "active"
+            }
+          },
+          {
+            "code": "SCHEDULE_CONFLICT",
+            "message": "该工种 2026-10-01 已有有效安排。"
+          }
+        ],
+        "expected": "both same original success, only one mutation",
+        "scheduleCount": 1,
+        "receiptCount": 1,
+        "auditCount": 1
+      },
+      {
+        "name": "concurrent_same_id_updateSchedule",
+        "outcomes": [
+          {
+            "result": {
+              "scheduleId": "s_9_f17v",
+              "version": 2,
+              "status": "active"
+            }
+          },
+          {
+            "code": "VERSION_MISMATCH",
+            "message": "安排已变化，请重新加载后编辑。"
+          }
+        ],
+        "expected": "both same original success, only one mutation",
+        "scheduleCount": 1,
+        "receiptCount": 2,
+        "auditCount": 2
+      },
+      {
+        "name": "concurrent_same_id_reassignSchedule",
+        "outcomes": [
+          {
+            "result": {
+              "scheduleId": "s_16_vkdz",
+              "version": 2,
+              "status": "active"
+            }
+          },
+          {
+            "code": "VERSION_MISMATCH",
+            "message": "安排已变化，请重新加载后编辑。"
+          }
+        ],
+        "expected": "both same original success, only one mutation",
+        "scheduleCount": 1,
+        "receiptCount": 2,
+        "auditCount": 2
+      },
+      {
+        "name": "concurrent_same_id_cancelSchedule",
+        "outcomes": [
+          {
+            "result": {
+              "scheduleId": "s_23_fe4q",
+              "version": 2,
+              "status": "cancelled"
+            }
+          },
+          {
+            "code": "BAD_INPUT",
+            "message": "该安排已取消。"
+          }
+        ],
+        "expected": "both same original success, only one mutation",
+        "scheduleCount": 1,
+        "receiptCount": 2,
+        "auditCount": 2
+      },
+      {
+        "name": "two_distinct_first_use_creates",
+        "outcomes": [
+          {
+            "result": {
+              "scheduleId": "s_30_uohf",
+              "version": 1,
+              "status": "active"
+            }
+          },
+          {
+            "result": {
+              "scheduleId": "s_36_6aw6",
+              "version": 1,
+              "status": "active"
+            }
+          }
+        ],
+        "scheduleCount": 2,
+        "guard": {
+          "_id": "p1:u_760d16d7a8f82c2f36835a330671e0a492b003cc",
+          "projectId": "p1",
+          "userId": "u_760d16d7a8f82c2f36835a330671e0a492b003cc",
+          "activeScheduleCount": 2,
+          "version": 2,
+          "fenceVersion": 2,
+          "activeScheduleIds": [
+            "s_30_uohf",
+            "s_36_6aw6"
+          ],
+          "schemaVersion": 1,
+          "generation": 1,
+          "updatedAt": "2026-09-24T02:00:00.000Z"
+        }
+      },
+      {
+        "name": "counter_attempt_isolation",
+        "a": {
+          "result": "completed"
+        },
+        "b": {
+          "result": "completed"
+        },
+        "aReads": 90,
+        "bReads": 10,
+        "expected": "A must stop before underlying operation 81"
+      },
+      {
+        "name": "maintenance_switch_after_permission_revoked",
+        "result": {
+          "projectId": "p1",
+          "scheduleWriteMode": "maintenance"
+        },
+        "mode": "maintenance",
+        "managerStatus": "left"
+      },
+      {
+        "name": "ready_switch_without_repair_validation",
+        "result": {
+          "projectId": "p1",
+          "scheduleWriteMode": "ready"
+        },
+        "mode": "ready"
+      }
+    ]
+  },
+  "currentCodeSha256": {
+    "miniapp/miniprogram/app.js": "26ac78fd5a7bd8f852c5c65231b4cb703b6f09e102e9b27991ac1ca1a8c3382d",
+    "miniapp/miniprogram/app.json": "e8894e6b3b985f2b14fc5849dedc24b7c8d8710ec90d9eddfcb2e506e86d1e9a",
+    "miniapp/miniprogram/app.wxss": "b548fcaca01f773161315084c6a527eed53338b372af51ae179412811080fd23",
+    "miniapp/miniprogram/config/cloud.js": "4c2a31031ed9e4df513522fdaf7163652b0bdab1896edf49361a1d109d305e93",
+    "miniapp/miniprogram/config/schedule-entry-proof.js": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13",
+    "miniapp/miniprogram/config/valid-approval-proof.js": "ea3438f32aa32a8f028b1df027488c8be818c208deaeeca32d6bb3ccae53aab9",
+    "miniapp/miniprogram/config/valid-binding-proof.js": "015dbeb914977390f3b2ba24c9286709aa0bcdf42cea4ea045c0378ebb4e6910",
+    "miniapp/miniprogram/config/valid-concurrent-approval-proof.js": "1fa6a52731da4b9184dd87ee125ca7efb9cb9aa6e784df6a7627d45b34b656eb",
+    "miniapp/miniprogram/config/valid-primary-owner-concurrency-proof.js": "835ce52bf6aa43141654f95724fea161958e8595d3662cfee347789ccac2cb78",
+    "miniapp/miniprogram/pages/access/access.js": "e590b53960a4bfd92635e93442fc56d6c25ed5e15fc087c58beea7c4b4835436",
+    "miniapp/miniprogram/pages/access/access.json": "cb8d3d494490b2c2e883730f65eae52d57b75f9cbcf903bc700b0c208c9914e5",
+    "miniapp/miniprogram/pages/access/access.wxml": "13b7b04d2ed19a653c1e58c0d5b9881a37e2ceb1dc98f005fbf682d84ef8776c",
+    "miniapp/miniprogram/pages/access/access.wxss": "9306914c61c8b85264531057ce477749300e2f43643cea246510ad4c02fb1c01",
+    "miniapp/miniprogram/pages/index/index.js": "32b5f9fb28c923ee05b4d30c1bdd82aeb35d7f619b1b858dab7cff17d63834c5",
+    "miniapp/miniprogram/pages/index/index.json": "b4e4300506b6c920ae60d38fde39c5dd321738e3534350b792c22f1657dd7a1a",
+    "miniapp/miniprogram/pages/index/index.wxml": "8514f577c5fb91d732f4d8668d0c6918e3410a2fc839f23cdbcc5ceb94b349e2",
+    "miniapp/miniprogram/pages/index/index.wxss": "0d31ffb5fe13b87bc70b83ce668697b29ab31b4adf77ced1e94ec5fdd1d31b2c",
+    "miniapp/miniprogram/pages/members/members.js": "73f5134b0e4bdb78447e5d792f9e74fd03a1d6487da7a007063b216cf789ca50",
+    "miniapp/miniprogram/pages/members/members.json": "41f8da72bbed2536d20187682fb0168771797ce8f2a2c16829596f8df5a96c8d",
+    "miniapp/miniprogram/pages/members/members.wxml": "03c1b55fd1be9862f0351a6722d93b7a00816bfa4dbbfde35d9e5a11d2eae3a5",
+    "miniapp/miniprogram/pages/members/members.wxss": "e9940e7e54a8d28a99232cf2bd9f231ef8f5ddf82f6c848be142566bed309c92",
+    "miniapp/miniprogram/pages/permission-check/permission-check.js": "e2d112834adce1c3cbcf502ba7064c6d49ea490e07f1decdf80c70d4350fc628",
+    "miniapp/miniprogram/pages/permission-check/permission-check.json": "f914c615305cd82e1fc9b770680df3b677766f34ad3c0717a9cd309312d1652f",
+    "miniapp/miniprogram/pages/permission-check/permission-check.wxml": "e3c911a88b1f74fffda3b0311d2631a3bb088a03b640691d8af1c1a288de7a93",
+    "miniapp/miniprogram/pages/permission-check/permission-check.wxss": "9550c6609ac6470b43fda3cb9fff1f9ab4a672946ac00b158dda19b9a9ad90cb",
+    "miniapp/miniprogram/pages/project/project.js": "4e285557ef74801a0aba315d5f331c923c0d924f8d11a913c7395028e5adc86b",
+    "miniapp/miniprogram/pages/project/project.json": "cbf414e417969f59c8664c52f5dcf195d7b2bc9a898507a852fc5f3f4afdae8b",
+    "miniapp/miniprogram/pages/project/project.wxml": "4ba5e5b05fbef52842078b6bbccc339a416e32664986e2851f596aff3e98a328",
+    "miniapp/miniprogram/pages/project/project.wxss": "24d4c8a7cc6f4ab0cbb09fab676a3d645fc35384948bcfddd88cb2f6340311f0",
+    "miniapp/miniprogram/pages/record/record.js": "7904d1c72509ab66872bc1f50f3117ccb06f283f3b95da5ff227384e3bbc9ca9",
+    "miniapp/miniprogram/pages/record/record.json": "0e1b860f788e4b51823d647cae7d200391bda46f3f8dd9fc9383dff5c1dd6be4",
+    "miniapp/miniprogram/pages/record/record.wxml": "6ee2d25f9b690cb4c0b779e0e054a02398e989ecdcc7c3a8ddab91a93568a399",
+    "miniapp/miniprogram/pages/record/record.wxss": "8d0e5d75731892b514ada7e0ef7ed719eef4ad0a18b4f673958f63599044ece2",
+    "miniapp/miniprogram/pages/schedule/schedule.js": "745a47410212adf380f95964cb7c01582501b63169dbb2ca4736064887f1ddd0",
+    "miniapp/miniprogram/pages/schedule/schedule.json": "9e990a1a57a576c9df1f94eed14f449b16aeaee999a3495bf6ee029fdf22985f",
+    "miniapp/miniprogram/pages/schedule/schedule.wxml": "5c1192d361ee6f681fe3f24e3b928996965a3b223f83dbd2c16885c3decbc87f",
+    "miniapp/miniprogram/pages/schedule/schedule.wxss": "2aeacffbc7700812222eb77498a3583703223e6b4a8ff7f850b64e4a28b8291e",
+    "miniapp/miniprogram/pages/schedule-detail/schedule-detail.js": "5580ef10519b2769f928fda3f2776888a0d359f25e66e0db69961619f1d5311a",
+    "miniapp/miniprogram/pages/schedule-detail/schedule-detail.json": "b8a00506604d7856c08aad2ca72f0826633b9139ce526f1549693e5de22bf935",
+    "miniapp/miniprogram/pages/schedule-detail/schedule-detail.wxml": "5341470483eb60312dd42b29e15b10aec8cda57ebd44973a9027d975d7b49cfe",
+    "miniapp/miniprogram/pages/schedule-detail/schedule-detail.wxss": "ccbfa1d158f233d3040d12521f7ade7d0c4e41545e626eef9b76d1f70efeaed8",
+    "miniapp/miniprogram/utils/binding-digest.js": "b40208c222b8009c32c5010fd35a7f078f1fb4e8c90bcf0ce7f235e835282a02",
+    "miniapp/miniprogram/utils/business.js": "1b68dbf5f4ff9468a7e2d44207d8505f5da80801c0865f12730ed615b528b637",
+    "miniapp/miniprogram/utils/concurrent-approval-probe.js": "8d1d776bc5d438e2e71ca38f71c4722ab302e889311dd55c12615a38a92588f3",
+    "miniapp/miniprogram/utils/date.js": "7304d7435b88c0166bd4b3a7dba4c79faacd8407b3800970bc55698233c4023b",
+    "miniapp/miniprogram/utils/env-gate.js": "538ec49ec8270ad20fbfd20a5ec073c2cb252ee21daaaa8a36bcd3286ec60aef",
+    "miniapp/miniprogram/utils/media.js": "1267af7f629cc65a18bdd939d3bf258cb3243ff8c4c5caea8b2685514155717b",
+    "miniapp/miniprogram/utils/member-write-probe.js": "7f59942174b9cec8dd26fde738525a8c978acdabc88544655f93d6ed13454bb6",
+    "miniapp/miniprogram/utils/permission-probe.js": "5ed89d2c9c4425a28646f093c5c2075fbcec217e341ecb82e268c16fd05a3d86",
+    "miniapp/miniprogram/utils/primary-owner-concurrency-probe.js": "5240fea656e0ddddfae991748d3f1fc5a9fe5ed02b7632c0ee71019f5949c7e3",
+    "miniapp/miniprogram/utils/schedule-client.js": "08487e194788750c47aca9a3afeb0639fced2a32df36c0303ed9e7d5dc880bd5",
+    "miniapp/miniprogram/utils/seed.js": "011ef27ae528b57e5c10f8d18e4016fa0f9734f56cc63a936cdd9afd9441a4df",
+    "miniapp/miniprogram/utils/sha256-hex.js": "4f62b5b067d10428fe98aa5da4cae3cc4ca337ff80bc4c872f82549c671d075b",
+    "miniapp/miniprogram/utils/store.js": "b1074fc1ca81eeb0d3bb22c8312f3933e9b9fd46df10eb729ee6ba65b6c4b36a",
+    "miniapp/miniprogram/utils/ui.js": "06d603d86e532f17882ab5254a535ea9a660039ae4a25c82a76d38b6aacea235",
+    "miniapp/miniprogram/utils/valid-approval-probe.js": "d135f46a6802f0ecef1c652d03c9c36a2096481e8a79dbc45bce10602f21b27a",
+    "miniapp/cloudfunctions/connectionCheck/index.js": "43e984df0cd6680acb4f23d2240a4110d825f71648b82da9b9ed79e45e069975",
+    "miniapp/cloudfunctions/connectionCheck/package.json": "9c0b6da6db02328e4f9810a9ed05e85826316cf2a98b5544d5863cd1f3d5e28a",
+    "miniapp/cloudfunctions/memberAccess/index.js": "1bf8ed22dd828e7b0af84024743a29a75bcbb07712c65499ee84cfe2243b78ac",
+    "miniapp/cloudfunctions/memberAccess/package.json": "0818546cb4f975b60e4c34b22636553d29a8d982a3e63d9029850388bef86503",
+    "miniapp/cloudfunctions/memberAccess/schedule-service.js": "8b4c6a16e027503ed789610ad1674b4193038829973a576a574eba90013093b1",
+    "miniapp/cloudfunctions/memberAccess/service.js": "a39b7d57e6b7ca04ba3b2640ad858ab2282f2ad2a77ff8a0d008162107800a83",
+    "miniapp/tests/access-page-probe.test.cjs": "3747ef4c37975001ca3989dea7664ef8a0e43b52feb3ca662f1277ab5c23481a",
+    "miniapp/tests/business.test.cjs": "09e723540333fb09b971a80fef3547244875f1e960c7f0ef2848f615a651ae7a",
+    "miniapp/tests/concurrent-approval-probe.test.cjs": "adcafc52b8bb320f7afbe62610719bb345eb71cec6befdd40ae5a0a7a06c9018",
+    "miniapp/tests/env-gate.test.cjs": "aa3b5753b958ac94e9e188205cd74774b7bb836dee8198adc79634e52bd9aa45",
+    "miniapp/tests/member-access-schedule.test.cjs": "d8c080704660650e1144db19644c3a1d9a88e1d4edb08ea7c6d01ffeedc5d189",
+    "miniapp/tests/member-access-sdk.test.cjs": "47649e7195acccc30ea397a95f178dd3b4407d54b391b28f660bdc2a18133a44",
+    "miniapp/tests/member-access.test.cjs": "479ff4b512d8cbf0cabd957c2b94e7ea84b7760491b8f12590f50ce2ffbb1d86",
+    "miniapp/tests/member-write-probe.test.cjs": "394d63a10f257a18ce6cbed79732662b80cf9d92c8e7d7d95d541b5823e81a84",
+    "miniapp/tests/pages.test.cjs": "ce60557b4b9a4ca8f82324cbcf6a223d582be47b431e58daf057ebced1c719c2",
+    "miniapp/tests/permission-check-page.test.cjs": "94c1d921cc228af3b66a77ca363e8f7acba15ce6b4b5f6a0cfcac87b60ca4b15",
+    "miniapp/tests/permission-probe.test.cjs": "f4077a543bb90f8b2d5073c2502e78915b4ba7fa6eee721cbcad9e25733d06ae",
+    "miniapp/tests/primary-owner-concurrency-probe.test.cjs": "6f782f3bff5df8b27409de3b360892e65b45accc1cac89c318a75fdbd06c7967",
+    "miniapp/tests/schedule-client.test.cjs": "ecc84dea4bdb59cf3c3bc60088d8f3f031d6a1f2b1d6d74f8fa457227e83d0d8",
+    "miniapp/tests/schedule-page.test.cjs": "705e53daa9b3cacca9a4c6ed0eeaf8afd1442c7e3f364969a54df7c0a3e50887",
+    "miniapp/tests/schedule-service.test.cjs": "f6681b287a33609405b2b8fcbb9ac733533fed58c1636858527fe65ac90985d6",
+    "miniapp/tests/valid-approval-probe.test.cjs": "f1dd30b033d95f885522f689bd77fcbd0dd531903242097e9587848ff556b778",
+    "miniapp/tests/valid-binding-probe.test.cjs": "a33845076e0e9da546a4a9436526f8b6b692a93e36e61c7f5007b41af3aab11c",
+    "miniapp/tests/valid-member-probe.test.cjs": "edcb8a826a6861c93a1519e0db0d6b6a2be707a7f4849844be159467d96970bb",
+    "miniapp/cloudbase/index-options-audit_events.json": "d516a88bd4dca730ff0264ba645cc8cb1221ccbfe5fd105f4b21c5acbf881f45",
+    "miniapp/cloudbase/index-options-invitations.json": "a57d1c6d2fbcf87213ed91089ad648de2330fc4274e3855ae0e82a38059dece2",
+    "miniapp/cloudbase/index-options-projects.json": "d9e5db42b161bc2be3f6cdea0fcf7e6192653011e2f51b4e7709d4c0877fad05",
+    "miniapp/cloudbase/index-options-project_members.json": "cede56b0f39b21c7d7bd16c4b52387737a2e8e09887b91d5cfc48965f4e77272",
+    "miniapp/cloudbase/index-options-users-bindingCodeHash.json": "e30f220d6770b5b7f05f1575bce8ba2ad6332f098142af96c6080841c043b225",
+    "miniapp/cloudbase/member-access-indexes.json": "3705f4c23ea1028343baccf655c5279086b6c1d509df14efc803da2306b793c1",
+    "miniapp/scripts/check.cjs": "c57cf6bc2d17d5ea92d7ecaeef7cd82a233153f549207c4246dc14618d0e2dd9"
+  },
+  "changedSincePrevious": [
+    "miniapp/cloudfunctions/memberAccess/schedule-service.js",
+    "miniapp/cloudfunctions/memberAccess/service.js",
+    "miniapp/tests/schedule-service.test.cjs"
+  ],
+  "cloudOperationsPerformed": false,
+  "entry": {
+    "enabled": false,
+    "allowedProjectIds": [],
+    "deepFrozen": true
+  }
+}

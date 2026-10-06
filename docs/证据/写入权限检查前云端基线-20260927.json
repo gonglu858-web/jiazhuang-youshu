@@ -1,0 +1,249 @@
+{
+  "source": "微信开发者工具只读查询，写入探针运行前",
+  "env": "cloud1-d8gcq5ag39d847723",
+  "project_members": {
+    "total": 4,
+    "data": [
+      {
+        "_id": "m_e5eaf02fd6e0db8565f523431ec9019dc19e54ac",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "roles": [
+          "负责人"
+        ],
+        "status": "active",
+        "trades": [],
+        "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "version": 1
+      },
+      {
+        "_id": "m_45fd5794f0aa51559c2b57e8aecb07fc6e3902b1",
+        "projectId": "p_a328c08992f7414c812047935bc3c31e",
+        "roles": [
+          "负责人"
+        ],
+        "status": "active",
+        "trades": [],
+        "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "version": 1
+      },
+      {
+        "_id": "m_133e881e1131e4d9891ebc566884d599ac1cc60f",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "roles": [
+          "管家"
+        ],
+        "status": "active",
+        "trades": [],
+        "userId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "version": 1
+      },
+      {
+        "_id": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+        "leftAt": "2026-09-27T12:08:58.179Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "roles": [
+          "师傅"
+        ],
+        "status": "left",
+        "trades": [
+          "拆改"
+        ],
+        "userId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "version": 2
+      }
+    ],
+    "requestId": "02a4a182-f7dd-4908-9b18-f6b77cf76f68"
+  },
+  "invitations": {
+    "total": 1,
+    "data": [
+      {
+        "_id": "i_de9287cb806e4098846161e2734d30db",
+        "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "role": "师傅",
+        "status": "approved",
+        "trades": [
+          "拆改"
+        ],
+        "version": 3
+      }
+    ],
+    "requestId": "027a2977-9f11-4950-ad30-ffbf137e1ca6"
+  },
+  "audit_events": {
+    "total": 21,
+    "data": [
+      {
+        "_id": "a_f75fd6cadab14443b4cdc24d2999c2e0",
+        "action": "registerIdentity",
+        "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "createdAt": "2026-09-25T13:48:16.478Z",
+        "projectId": null,
+        "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+      },
+      {
+        "_id": "a_4f412d92e85247a1805ea6eb6ab0ec5c",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "createdAt": "2026-09-25T13:48:27.229Z",
+        "projectId": null,
+        "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+      },
+      {
+        "_id": "a_initial_admin_20260925",
+        "action": "bindInitialAdmin",
+        "actorUserId": "management:Codex",
+        "createdAt": "2026-09-25T13:52:08.304Z",
+        "projectId": null,
+        "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+      },
+      {
+        "_id": "a_fec49153ffed4a19ba86eb19a80e4cf2",
+        "action": "createProject",
+        "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "createdAt": "2026-09-25T13:59:55.797Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+      },
+      {
+        "_id": "a_7d1829ccb53c4e42ac6e839da420d758",
+        "action": "createProject",
+        "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "createdAt": "2026-09-25T14:00:04.528Z",
+        "projectId": "p_a328c08992f7414c812047935bc3c31e",
+        "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+      },
+      {
+        "_id": "a_9efb9f2c7f9c4156865849b50ba6548d",
+        "action": "registerIdentity",
+        "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "createdAt": "2026-09-25T14:51:21.53Z",
+        "projectId": null,
+        "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+      },
+      {
+        "_id": "a_10b73d33dbc44ed1bbe90a2223524966",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "createdAt": "2026-09-25T14:52:25.068Z",
+        "projectId": null,
+        "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+      },
+      {
+        "_id": "a_bf9ec4e77c694fc898e76e97fb9c82df",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "createdAt": "2026-09-25T14:54:23.878Z",
+        "projectId": null,
+        "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+      },
+      {
+        "_id": "a_e81057612d2a44ca9142be6e22c338c9",
+        "action": "assignManager",
+        "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "createdAt": "2026-09-25T14:56:12.704Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+      },
+      {
+        "_id": "a_e6cbb302cdad4349aa99adbbaebf554e",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "createdAt": "2026-09-26T07:03:43.757Z",
+        "projectId": null,
+        "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+      },
+      {
+        "_id": "a_f31e9791ec5e44bd9aa877d001ee0e26",
+        "action": "createInvitation",
+        "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "createdAt": "2026-09-26T07:04:07.24Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "subjectUserId": null
+      },
+      {
+        "_id": "a_53b8efad240449f7a8c947791782e05c",
+        "action": "registerIdentity",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-26T07:10:58.325Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_7279a5d2cece4528893275bfe2fe9341",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-26T07:11:02.3Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_a3b0d95d0a1e472a9f0bf52ed78c8bba",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-26T07:11:24.375Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_1ea9287a9f66407fbd967563d3f87035",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-26T07:11:50.615Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_9a2336c9bafd48f8bb327e0e0f0c8ed0",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-26T07:12:18.104Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_31c0a91ddfd541cea40a8eafa2f6f13b",
+        "action": "applyInvitation",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-26T07:14:44.826Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_4cd132d4fa444e8da19def916c63e02e",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-27T11:58:40.365Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_b214598176db495abc8a4bed1d673d08",
+        "action": "requestBindingNumber",
+        "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+        "createdAt": "2026-09-27T12:04:01.92Z",
+        "projectId": null,
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_e7d8bed768ec46de9b3e1fd8ccc5e1dd",
+        "action": "approveInvitation",
+        "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "createdAt": "2026-09-27T12:04:49.142Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      },
+      {
+        "_id": "a_064d9e302a4d40bc8ddba4f83b28c64c",
+        "action": "removeMember",
+        "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+        "createdAt": "2026-09-27T12:08:58.231Z",
+        "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+        "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+      }
+    ],
+    "requestId": "d24e8540-7815-4b3c-8f5f-ae1737689ba7"
+  }
+}

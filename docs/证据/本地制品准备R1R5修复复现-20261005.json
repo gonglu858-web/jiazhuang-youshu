@@ -1,0 +1,250 @@
+{
+  "date": "2026-10-05",
+  "scope": "R1–R5 定点收尾的反例复现；仅本地，只写本次新临时目录与本证据",
+  "reviewReport": "docs/Codex复查-独立副本本地制品准备-20261005.md",
+  "companionHistoricalEvidence": [
+    "docs/证据/本地制品准备Codex复现-20261005.cjs / .json（Codex 原始复现，原样保留未改写）"
+  ],
+  "script": "docs/证据/本地制品准备R1R5修复复现-20261005.cjs",
+  "sourceContractFacts": {
+    "R1-4": "零产物: out=false out2=false out3=false",
+    "R1-5": "零新增: manifest=false index.js=false",
+    "R1-6": "文件数不变: 6 -> 6",
+    "R1-7": "零新增: out 存在=false",
+    "junctionDetectable": true,
+    "pageActionsCount": 17,
+    "pageActions": [
+      "identify",
+      "requestBindingNumber",
+      "createProject",
+      "assignManager",
+      "createInvitation",
+      "applyInvitation",
+      "approveInvitation",
+      "getMembers",
+      "listInvitations",
+      "createSchedule",
+      "updateSchedule",
+      "reassignSchedule",
+      "cancelSchedule",
+      "listSchedules",
+      "getSchedule",
+      "listScheduleRevisions",
+      "getScheduleContext"
+    ],
+    "pageRemoveMemberSelectable": false,
+    "buildPayloadHasRemoveMemberBranch": true,
+    "getScheduleContextKeys": [
+      "project"
+    ],
+    "contextHasActiveScheduleIds": false,
+    "resolveKeepsEnvelope": false,
+    "resolveMarksWriteLocked": true
+  },
+  "results": [
+    {
+      "verdict": "REJECTED",
+      "name": "R1-1 manifest 非法 JSON → check 拒绝",
+      "detail": "manifest 不是合法 JSON，已拒绝：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-v1"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-2 manifest 哈希与源不符 → 拒绝",
+      "detail": "manifest 校验失败，已停止： |   manifest 记录的哈希与源不符：index.js（0000000000000000000000000000000000000000000000000"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-3a manifest 漏项 → 拒绝",
+      "detail": "manifest 校验失败，已停止： |   manifest files 漏项：vendor/MANIFEST.json"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-3b manifest 重复项 → 拒绝",
+      "detail": "manifest 校验失败，已停止： |   manifest files 路径重复：index.js"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-4a 基线不存在 → 停止",
+      "detail": "验收基线不可读，已停止（不得跳过）：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-v4\\none"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-4b 基线坏 JSON → 停止",
+      "detail": "验收基线不是合法 JSON，已停止：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-v4\\bad."
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-4c 基线缺 files → 停止",
+      "detail": "验收基线缺少 files 字典，已停止：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-v4\\no"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-5a package 额外文件 → 生成拒绝",
+      "detail": "产物 package 目录存在白名单外文件，已停止： |   unexpected.txt"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-5b package 额外文件 → check 拒绝",
+      "detail": "产物 package 目录存在白名单外文件，已停止： |   unexpected.txt"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-5c 顶层额外文件 → 拒绝",
+      "detail": "制品目录存在允许项之外的文件，已停止（生成与检查模式均拒绝）： |   stray.txt | 允许的顶层条目：manifest.json、package"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-6 晚序冲突 → 拒绝",
+      "detail": "既有关闭包与源或 manifest 不一致，已停止： | 包体字节数与源/manifest 不符：gate.js"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R1-7 候选清单错误 → 打包前拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-v7\\bad-cand"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R2-a 输出根 junction → 拒绝",
+      "detail": "输出根 自身或其祖先是符号链接/目录联接，已拒绝：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R2-b package 根 junction → 拒绝",
+      "detail": "产物 package 根 自身或其祖先是符号链接/目录联接，已拒绝：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sand"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R2-c 祖先目录 junction → 拒绝",
+      "detail": "输出根 自身或其祖先是符号链接/目录联接，已拒绝：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R2-d 输出根与源目录重叠 → 拒绝",
+      "detail": "输出根与源目录重叠，已拒绝：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-v11\\src"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R2-e 输出根为仓库根 → 拒绝",
+      "detail": "输出根与源目录重叠，已拒绝：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R2-f 输出根在制品目录之外 → 拒绝",
+      "detail": "输出根必须位于仓库制品目录 C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox 之下，已拒绝：C:\\Users\\"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I04 keys 反序 → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I07 desc→asc → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I05 unique→false → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I01 编号改 I99 → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 删除 runtime → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 runtime memoryMB→512 → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I12 追加第 5 字段 → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I03 字段名改错 → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 删除 dependency → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 executable→true → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 containsPlatformApiRequest→true → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 删除 platformPrimaryKeys → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "REJECTED",
+      "name": "R3 I05 unique→false 后再改回仍需唯一 → 拒绝",
+      "detail": "资源候选清单校验失败： | C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.tmp-mut\\c.json#"
+    },
+    {
+      "verdict": "RETURNED",
+      "name": "R3 未变异真实清单应通过",
+      "detail": "OK 通过"
+    }
+  ],
+  "summary": {
+    "total": 32,
+    "rejected": 31,
+    "missed": 0
+  },
+  "zeroWriteChecks": {
+    "missingBaseline": "输出目录未被创建（3 种坏基线 out 均为 false）",
+    "extraFileInPackage": "manifest=false，index.js=false",
+    "extraFileAtTopLevel": "manifest 未创建",
+    "lateOrderConflict": "包体文件数 6 -> 6，manifest 字节不变",
+    "candidateInvalidBeforePackaging": "输出目录未被创建"
+  },
+  "junctionChecks": {
+    "outRootJunction": "拒绝；联接目标 actual/manifest.json=false",
+    "packageRootJunction": "拒绝；pkgActual/manifest.json=false",
+    "ancestorJunction": "拒绝；realParent/out/manifest.json=false",
+    "outDirOverlapSource": "拒绝（与源目录重叠）",
+    "outDirIsRepoRoot": "拒绝",
+    "outDirOutsideArtifacts": "拒绝（必须位于仓库制品目录之下）",
+    "linkCapability": "Windows junction 可复现（lstat isSymbolicLink=true）；普通文件 symlink(type=file) 在本机退化为硬链接，该分支未验证"
+  },
+  "knownLimitsOfThisRun": [
+    "R1.3 的「白名单外路径」变异依赖包体/manifest 双向核对，报错文案可能为「既有关闭包与源或 manifest 不一致」而非「manifest 校验失败」，两者均为拒绝。",
+    "assertTrustedRoot 对不存在的子路径先报「不存在」，同样构成拒绝；已存在的 junction 子路径报「符号链接/目录联接」。"
+  ],
+  "businessSourceChanged": false,
+  "baseline110": {
+    "fileCount": 110,
+    "missing": 0,
+    "changed": 0
+  },
+  "entryStillClosed": true,
+  "cloudOperationsPerformed": false,
+  "resourcesCreated": false,
+  "installed": false,
+  "deployed": false,
+  "userCacheCleared": false,
+  "limitations": [
+    "junction 拒绝路径在本机实测通过；普通文件符号链接分支因本机退化未验证。",
+    "关闭态验证使用合成 wx-server-sdk 与内存替身，不等于实际 SDK 或平台事务已验证。",
+    "R4/R5 的源码契约断言为静态读取与文档断言，未运行真机或云端。",
+    "本地文件哈希不是云端编译后包的哈希。",
+    "旧关闭包目录 closed-20261005 保留未改（其 schema 为 /1，新工具按 /2 校验时会被拒绝，属预期）；新格式包输出到 closed-20261005-r2fix。"
+  ]
+}

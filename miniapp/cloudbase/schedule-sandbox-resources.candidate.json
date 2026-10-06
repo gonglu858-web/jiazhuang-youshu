@@ -1,0 +1,367 @@
+{
+  "schema": "sandbox-resource-candidate/1",
+  "date": "2026-10-05",
+  "status": "候选清单，未创建，平台适配未验证",
+  "purpose": "本地资源计划。不是可直接提交的平台 API 请求，也不构成部署批准。",
+  "executable": false,
+  "containsPlatformApiRequest": false,
+  "authorityNote": "客户端拒绝直接读写；服务端按受控业务访问。这里的『服务端受控』是本副本应用映射层的代码约定，不是平台级管理员权限隔离，也不声称云函数被平台限定为只能访问这 11 个集合。",
+  "source": {
+    "executionPackage": "docs/Codex执行包-独立测试副本小规模云端验证-20261005.md#3-4",
+    "collectionMap": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js",
+    "checkedAgainstLocalBaseline": "docs/证据/独立测试副本执行包本地基线-20261005.json"
+  },
+  "target": {
+    "appId": "wxfb4db1615ac15531",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "region": "ap-shanghai",
+    "functionName": "scheduleSandbox",
+    "database": "NoSQL（沿用当前文档数据库；PostgreSQL/MySQL 未开通，不切换）"
+  },
+  "function": {
+    "name": "scheduleSandbox",
+    "deployRoot": "miniapp/cloudfunctions/scheduleSandbox",
+    "deployRootWarning": "只部署该子目录；绝不上传整个 cloudfunctions 根目录。",
+    "handler": "index.main",
+    "runtime": {
+      "nodejs": "20.19",
+      "memoryMB": 256,
+      "timeoutSeconds": 3,
+      "type": "Event"
+    },
+    "runtimeNote": "候选规格。官方当前配置文档列 Nodejs20.19 为推荐版本；这不是修改旧函数运行时。部署前须确认目标环境支持，部署后先验证 wx-server-sdk 3.0.1 兼容。不可用时保存证据并提交差异，不静默换版本、扩内存或拉长超时。",
+    "dependency": {
+      "packageJson": "miniapp/cloudfunctions/scheduleSandbox/package.json",
+      "wxServerSdk": "3.0.1",
+      "installThisRound": false,
+      "note": "依赖由未来批准的部署步骤在云端构建；本轮不安装、不下载。构建后须记录依赖实际版本与包哈希。"
+    },
+    "configLocation": "index.js 内的 SANDBOX_CONFIG 常量。当前无独立部署 manifest/config.json，服务端开关不是环境变量；不能声称改环境变量就能关开关。",
+    "triggers": [],
+    "httpAccess": [],
+    "timerTriggers": [],
+    "layers": [],
+    "preConcurrency": []
+  },
+  "otherFunctionsCreated": [],
+  "otherFunctionsNote": "memberAccess 与 connectionCheck 不更新、不重部署；本轮及候选计划均不新增其他函数、HTTP 网关、定时器、层或预置并发。",
+  "collections": [
+    {
+      "name": "schtest_v1_users",
+      "logical": "users",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id、openid、status、createdAt/updatedAt、bindingCodeHash、bindingCodeExpiresAt",
+      "purpose": "真实微信在副本重新登记；禁止复制旧 users 文档或 OPENID。",
+      "keyNotes": "_id 为 AppID:OPENID 散列。bindingCodeHash 索引非唯一，不得给可空编号摘要加唯一约束。"
+    },
+    {
+      "name": "schtest_v1_app_admins",
+      "logical": "app_admins",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id=primary、userId、status",
+      "purpose": "受控初始管理员资格。",
+      "keyNotes": "仅主键索引。初始记录不存在才可新增，已存在不得覆盖。"
+    },
+    {
+      "name": "schtest_v1_projects",
+      "logical": "projects",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id/name/ownerUserId/primaryOwnerUserId/scope/status/version/createdAt、scheduleWriteMode/scheduleSchemaVersion/scheduleEpoch",
+      "purpose": "副本项目；本轮项目 ID 由 roundId 确定性推导后以创建结果回读为准。",
+      "keyNotes": "创建后必须回读登记真实 projectId，不凭算法推算值替代已创建证据。"
+    },
+    {
+      "name": "schtest_v1_project_members",
+      "logical": "project_members",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id/projectId/userId/roles/trades/status/joinedAt/leftAt/version、taskDirSchemaVersion/taskDirGeneration",
+      "purpose": "项目成员与角色。",
+      "keyNotes": "_id 为 projectId:userId 散列。不新增会改变业务语义的成员唯一索引。"
+    },
+    {
+      "name": "schtest_v1_invitations",
+      "logical": "invitations",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id/projectId/role/trades/tokenHash/status/issuedByUserId/issuedAt/expiresAt、applicantUserId/requestedAt、批准信息/version",
+      "purpose": "邀请与申请批准。",
+      "keyNotes": "tokenHash 唯一。expiresAt 不建 TTL：过期由业务判断，幂等回执必须保留。"
+    },
+    {
+      "name": "schtest_v1_audit_events",
+      "logical": "audit_events",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id/projectId/actorUserId/actorRole/action/subjectUserId/before/after/createdAt",
+      "purpose": "审计；供受控事后查询。",
+      "keyNotes": "_id 唯一。报告只投影本轮必要子字段；不打印请求体、OPENID、绑定编号或摘要。"
+    },
+    {
+      "name": "schtest_v1_schedules",
+      "logical": "schedules",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id/projectId/stage/trade/workerUserId/startDate/endDate/expectedDate/restDays/content/status/version、创建人/更新人/角色/时间",
+      "purpose": "施工安排。",
+      "keyNotes": "_id 唯一。不存 workingDays（按日期与休息日推导）；不为「项目+工种」建唯一索引。"
+    },
+    {
+      "name": "schtest_v1_schedule_revisions",
+      "logical": "schedule_revisions",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id/scheduleId/projectId/beforeVersion/afterVersion/version/changeType/reason/snapshot/actorUserId/actorRole/actorLabel/createdAt",
+      "purpose": "安排历史版本。",
+      "keyNotes": "_id 唯一。I13 非唯一：恰好一次由事务与回执保证，不擅加会改变错误语义的复合唯一约束。"
+    },
+    {
+      "name": "schtest_v1_schedule_occupancy",
+      "logical": "schedule_occupancy",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id=`projectId:trade:YYYYMM`、schemaVersion=2、projectId、trade、month、days、updatedAt",
+      "purpose": "月桶占用映射；days 为 date→scheduleId。",
+      "keyNotes": "仅主键索引。空 days 桶合法保留，不自动删除；无 TTL。"
+    },
+    {
+      "name": "schtest_v1_member_task_guard",
+      "logical": "member_task_guard",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "_id=`projectId:userId`、projectId、userId、activeScheduleCount、activeScheduleIds、version、schemaVersion、generation、fenceVersion、updatedAt",
+      "purpose": "成员任务目录与代际围栏。",
+      "keyNotes": "仅主键索引。计数等于目录长度；代码限制的是 JSON.stringify(activeScheduleIds) 的 UTF-8 字节，不是平台文档大小上限。无 TTL。"
+    },
+    {
+      "name": "schtest_v1_schedule_receipts",
+      "logical": "schedule_receipts",
+      "permission": "ADMINONLY",
+      "access": "server-controlled",
+      "ttlEnabled": false,
+      "created": false,
+      "persistentFields": "requestId、projectId、action、actorUserId、payloadHash、result、createdAt；项目轮次回执另有 roundId/inputDigest",
+      "purpose": "幂等回执。",
+      "keyNotes": "安排回执 _id=`receipt_`+requestId 散列；建项目回执 _id=`sbx-create-project:`+roundId 散列。两种记录共享集合，不对缺省字段建唯一索引或 TTL。"
+    }
+  ],
+  "indexes": [
+    {
+      "id": "I01",
+      "name": "bindingCodeHash_1",
+      "collection": "schtest_v1_users",
+      "keys": [{ "name": "bindingCodeHash", "direction": "asc" }],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "service codeUser：按编号摘要查回登记记录。",
+      "created": false
+    },
+    {
+      "id": "I02",
+      "name": "scope_1_status_1",
+      "collection": "schtest_v1_projects",
+      "keys": [
+        { "name": "scope", "direction": "asc" },
+        { "name": "status", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "负责人 listMyProjects：按 scope + status 过滤。",
+      "created": false
+    },
+    {
+      "id": "I03",
+      "name": "userId_1_status_1",
+      "collection": "schtest_v1_project_members",
+      "keys": [
+        { "name": "userId", "direction": "asc" },
+        { "name": "status", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "普通账号 listMyProjects：按 userId + status 过滤。",
+      "created": false
+    },
+    {
+      "id": "I04",
+      "name": "project_status_id",
+      "collection": "schtest_v1_project_members",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "status", "direction": "asc" },
+        { "name": "_id", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "getMembers 过滤，及 getScheduleContext 默认 _id↑ 分页。显式含 _id 的复合键；不得只照抄旧二字段索引声称完整适配。",
+      "created": false
+    },
+    {
+      "id": "I05",
+      "name": "tokenHash_1",
+      "collection": "schtest_v1_invitations",
+      "keys": [{ "name": "tokenHash", "direction": "asc" }],
+      "unique": true,
+      "ttl": false,
+      "queryOrigin": "applyInvitation 及包装层归属查询：按邀请码摘要定位。",
+      "created": false
+    },
+    {
+      "id": "I06",
+      "name": "projectId_1_status_1",
+      "collection": "schtest_v1_invitations",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "status", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "listInvitations：项目内邀请列表。",
+      "created": false
+    },
+    {
+      "id": "I07",
+      "name": "project_created_desc",
+      "collection": "schtest_v1_audit_events",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "createdAt", "direction": "desc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "新副本事后审计过滤与倒序排序。不是当前业务页已有查询，属受控事后核对用途。",
+      "created": false
+    },
+    {
+      "id": "I08",
+      "name": "project_created_id",
+      "collection": "schtest_v1_schedules",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "createdAt", "direction": "asc" },
+        { "name": "_id", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "listSchedules 不带状态/工种过滤时的列表。",
+      "created": false
+    },
+    {
+      "id": "I09",
+      "name": "project_status_created_id",
+      "collection": "schtest_v1_schedules",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "status", "direction": "asc" },
+        { "name": "createdAt", "direction": "asc" },
+        { "name": "_id", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "listSchedules 仅带状态过滤。",
+      "created": false
+    },
+    {
+      "id": "I10",
+      "name": "project_trade_created_id",
+      "collection": "schtest_v1_schedules",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "trade", "direction": "asc" },
+        { "name": "createdAt", "direction": "asc" },
+        { "name": "_id", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "listSchedules 仅带工种过滤。",
+      "created": false
+    },
+    {
+      "id": "I11",
+      "name": "project_status_trade_created_id",
+      "collection": "schtest_v1_schedules",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "status", "direction": "asc" },
+        { "name": "trade", "direction": "asc" },
+        { "name": "createdAt", "direction": "asc" },
+        { "name": "_id", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "listSchedules 同时带状态与工种过滤。",
+      "created": false
+    },
+    {
+      "id": "I12",
+      "name": "project_worker_status_id",
+      "collection": "schtest_v1_schedules",
+      "keys": [
+        { "name": "projectId", "direction": "asc" },
+        { "name": "workerUserId", "direction": "asc" },
+        { "name": "status", "direction": "asc" },
+        { "name": "_id", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "scanActiveSchedules：limit=100、skip、_id↑，事务外执行。",
+      "created": false
+    },
+    {
+      "id": "I13",
+      "name": "schedule_afterVersion",
+      "collection": "schtest_v1_schedule_revisions",
+      "keys": [
+        { "name": "scheduleId", "direction": "asc" },
+        { "name": "afterVersion", "direction": "asc" }
+      ],
+      "unique": false,
+      "ttl": false,
+      "queryOrigin": "listScheduleRevisions 历史版本分页。",
+      "created": false
+    }
+  ],
+  "platformPrimaryKeys": {
+    "count": 11,
+    "note": "11 个集合的 _id 主键索引由平台创建并回读，不在本清单重复创建。"
+  },
+  "indexesNotPlanned": {
+    "workingDaysOrDate": "不新增。日期过滤在应用层 workingDays 上完成，不凭空新增字段或索引。",
+    "projectPlusTradeUnique": "不新增。会改变业务语义。",
+    "moveOldIndexes": "不把旧集合索引搬入 schtest_v1_。",
+    "receiptMissingFields": "不对回执缺省字段建唯一索引或 TTL。"
+  },
+  "limitations": [
+    "本清单是本地资源计划，不是可直接提交的平台 API 请求；工具/API 参数形状未核对，executable 恒为 false。",
+    "13 个索引的字段序列、方向、unique 与就绪状态均须在未来平台逐个回读；查询执行成功不等于命中索引，有解释计划才记录命中。",
+    "平台若不接受某种复合键组合（尤其 I04 显式含 _id），停止该步、记录错误与等价适配证据，再修订清单；不得删排序或改业务凑通过。",
+    "schemaVersion=2 的月桶与 guard 目录上限 200 是业务模型限制，不是平台文档大小上限。",
+    "全部集合禁止 TTL 自动清理；七天仅为费用估算观察期，不是自动删除日。",
+    "无权声称云函数管理员权限被平台限定为这 11 个集合；前缀隔离依赖经审查的映射层代码。",
+    "建索引前无业务流量；同名资源出现时先读归属，不覆盖。",
+    "费用与余量由 Codex 另行核对，本清单不含任何额度或计费模式断言。"
+  ]
+}

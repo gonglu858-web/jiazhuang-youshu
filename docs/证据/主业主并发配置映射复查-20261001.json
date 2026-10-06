@@ -1,0 +1,1285 @@
+{
+  "checkedAt": "2026-10-01T12:53:54.471Z",
+  "status": "passed_ready_for_single_manual_run",
+  "baselineFile": "docs/证据/不同主业主并发执行前基线-20261001.json",
+  "evidenceId": "primary-owner-concurrency-b44007a1-5237-4de5-bfdb-a6c5f18d044b",
+  "local": {
+    "checkedAt": "2026-10-01T12:53:01.567Z",
+    "deepEqual": true,
+    "frozenObjects": 15,
+    "noStandaloneTenDigitCode": true,
+    "baselineFiles": 75,
+    "drift": [
+      "miniapp/miniprogram/config/valid-primary-owner-concurrency-proof.js"
+    ],
+    "hashes": {
+      "miniapp/miniprogram/app.js": "26ac78fd5a7bd8f852c5c65231b4cb703b6f09e102e9b27991ac1ca1a8c3382d",
+      "miniapp/miniprogram/app.json": "68d8058f9ac08d3a4902ab1aed9247bda9ad3bd50b65a380b0c94df387315b91",
+      "miniapp/miniprogram/app.wxss": "b548fcaca01f773161315084c6a527eed53338b372af51ae179412811080fd23",
+      "miniapp/miniprogram/config/cloud.js": "4c2a31031ed9e4df513522fdaf7163652b0bdab1896edf49361a1d109d305e93",
+      "miniapp/miniprogram/config/valid-approval-proof.js": "ea3438f32aa32a8f028b1df027488c8be818c208deaeeca32d6bb3ccae53aab9",
+      "miniapp/miniprogram/config/valid-binding-proof.js": "015dbeb914977390f3b2ba24c9286709aa0bcdf42cea4ea045c0378ebb4e6910",
+      "miniapp/miniprogram/config/valid-concurrent-approval-proof.js": "1fa6a52731da4b9184dd87ee125ca7efb9cb9aa6e784df6a7627d45b34b656eb",
+      "miniapp/miniprogram/utils/binding-digest.js": "b40208c222b8009c32c5010fd35a7f078f1fb4e8c90bcf0ce7f235e835282a02",
+      "miniapp/miniprogram/utils/business.js": "649a72cf90746a4ea330da32f9f51586d78fb75993f798f6bce7faa734f01b38",
+      "miniapp/miniprogram/utils/concurrent-approval-probe.js": "8d1d776bc5d438e2e71ca38f71c4722ab302e889311dd55c12615a38a92588f3",
+      "miniapp/miniprogram/utils/date.js": "7304d7435b88c0166bd4b3a7dba4c79faacd8407b3800970bc55698233c4023b",
+      "miniapp/miniprogram/utils/env-gate.js": "538ec49ec8270ad20fbfd20a5ec073c2cb252ee21daaaa8a36bcd3286ec60aef",
+      "miniapp/miniprogram/utils/media.js": "1267af7f629cc65a18bdd939d3bf258cb3243ff8c4c5caea8b2685514155717b",
+      "miniapp/miniprogram/utils/member-write-probe.js": "7f59942174b9cec8dd26fde738525a8c978acdabc88544655f93d6ed13454bb6",
+      "miniapp/miniprogram/utils/permission-probe.js": "5ed89d2c9c4425a28646f093c5c2075fbcec217e341ecb82e268c16fd05a3d86",
+      "miniapp/miniprogram/utils/seed.js": "bbb9370d88e0cca9482a8fc6df8ce02975640116004fb7b2a9a9a297f22e3dd0",
+      "miniapp/miniprogram/utils/store.js": "b1074fc1ca81eeb0d3bb22c8312f3933e9b9fd46df10eb729ee6ba65b6c4b36a",
+      "miniapp/miniprogram/utils/ui.js": "06d603d86e532f17882ab5254a535ea9a660039ae4a25c82a76d38b6aacea235",
+      "miniapp/miniprogram/utils/valid-approval-probe.js": "d135f46a6802f0ecef1c652d03c9c36a2096481e8a79dbc45bce10602f21b27a",
+      "miniapp/miniprogram/pages/access/access.js": "e590b53960a4bfd92635e93442fc56d6c25ed5e15fc087c58beea7c4b4835436",
+      "miniapp/miniprogram/pages/access/access.json": "cb8d3d494490b2c2e883730f65eae52d57b75f9cbcf903bc700b0c208c9914e5",
+      "miniapp/miniprogram/pages/access/access.wxml": "13b7b04d2ed19a653c1e58c0d5b9881a37e2ceb1dc98f005fbf682d84ef8776c",
+      "miniapp/miniprogram/pages/access/access.wxss": "9306914c61c8b85264531057ce477749300e2f43643cea246510ad4c02fb1c01",
+      "miniapp/miniprogram/pages/index/index.js": "32b5f9fb28c923ee05b4d30c1bdd82aeb35d7f619b1b858dab7cff17d63834c5",
+      "miniapp/miniprogram/pages/index/index.json": "b4e4300506b6c920ae60d38fde39c5dd321738e3534350b792c22f1657dd7a1a",
+      "miniapp/miniprogram/pages/index/index.wxml": "8514f577c5fb91d732f4d8668d0c6918e3410a2fc839f23cdbcc5ceb94b349e2",
+      "miniapp/miniprogram/pages/index/index.wxss": "0d31ffb5fe13b87bc70b83ce668697b29ab31b4adf77ced1e94ec5fdd1d31b2c",
+      "miniapp/miniprogram/pages/members/members.js": "73f5134b0e4bdb78447e5d792f9e74fd03a1d6487da7a007063b216cf789ca50",
+      "miniapp/miniprogram/pages/members/members.json": "41f8da72bbed2536d20187682fb0168771797ce8f2a2c16829596f8df5a96c8d",
+      "miniapp/miniprogram/pages/members/members.wxml": "03c1b55fd1be9862f0351a6722d93b7a00816bfa4dbbfde35d9e5a11d2eae3a5",
+      "miniapp/miniprogram/pages/members/members.wxss": "e9940e7e54a8d28a99232cf2bd9f231ef8f5ddf82f6c848be142566bed309c92",
+      "miniapp/miniprogram/pages/permission-check/permission-check.js": "e2d112834adce1c3cbcf502ba7064c6d49ea490e07f1decdf80c70d4350fc628",
+      "miniapp/miniprogram/pages/permission-check/permission-check.json": "f914c615305cd82e1fc9b770680df3b677766f34ad3c0717a9cd309312d1652f",
+      "miniapp/miniprogram/pages/permission-check/permission-check.wxml": "e3c911a88b1f74fffda3b0311d2631a3bb088a03b640691d8af1c1a288de7a93",
+      "miniapp/miniprogram/pages/permission-check/permission-check.wxss": "9550c6609ac6470b43fda3cb9fff1f9ab4a672946ac00b158dda19b9a9ad90cb",
+      "miniapp/miniprogram/pages/project/project.js": "941850288e9703dc7aa705ac87c35ae2e242863f87587df03bf82c389b90d0ca",
+      "miniapp/miniprogram/pages/project/project.json": "cbf414e417969f59c8664c52f5dcf195d7b2bc9a898507a852fc5f3f4afdae8b",
+      "miniapp/miniprogram/pages/project/project.wxml": "555da3e0dfad29560aac125682dc3c965242474de829aa519af418193f85b130",
+      "miniapp/miniprogram/pages/project/project.wxss": "24d4c8a7cc6f4ab0cbb09fab676a3d645fc35384948bcfddd88cb2f6340311f0",
+      "miniapp/miniprogram/pages/record/record.js": "7904d1c72509ab66872bc1f50f3117ccb06f283f3b95da5ff227384e3bbc9ca9",
+      "miniapp/miniprogram/pages/record/record.json": "0e1b860f788e4b51823d647cae7d200391bda46f3f8dd9fc9383dff5c1dd6be4",
+      "miniapp/miniprogram/pages/record/record.wxml": "6ee2d25f9b690cb4c0b779e0e054a02398e989ecdcc7c3a8ddab91a93568a399",
+      "miniapp/miniprogram/pages/record/record.wxss": "8d0e5d75731892b514ada7e0ef7ed719eef4ad0a18b4f673958f63599044ece2",
+      "miniapp/miniprogram/pages/schedule/schedule.js": "c35c915f31816da0291643dc7ba63f2a871228b86bfcfb3c1db3033dfaefc0bc",
+      "miniapp/miniprogram/pages/schedule/schedule.json": "9e990a1a57a576c9df1f94eed14f449b16aeaee999a3495bf6ee029fdf22985f",
+      "miniapp/miniprogram/pages/schedule/schedule.wxml": "b62688957f95e299d0fdc5766ace774407c1ef96dfa9001fdf729b426c94a535",
+      "miniapp/miniprogram/pages/schedule/schedule.wxss": "2aeacffbc7700812222eb77498a3583703223e6b4a8ff7f850b64e4a28b8291e",
+      "miniapp/tests/access-page-probe.test.cjs": "3747ef4c37975001ca3989dea7664ef8a0e43b52feb3ca662f1277ab5c23481a",
+      "miniapp/tests/business.test.cjs": "09e723540333fb09b971a80fef3547244875f1e960c7f0ef2848f615a651ae7a",
+      "miniapp/tests/concurrent-approval-probe.test.cjs": "adcafc52b8bb320f7afbe62610719bb345eb71cec6befdd40ae5a0a7a06c9018",
+      "miniapp/tests/env-gate.test.cjs": "aa3b5753b958ac94e9e188205cd74774b7bb836dee8198adc79634e52bd9aa45",
+      "miniapp/tests/member-access-sdk.test.cjs": "47649e7195acccc30ea397a95f178dd3b4407d54b391b28f660bdc2a18133a44",
+      "miniapp/tests/member-access.test.cjs": "412f752df027a84d3a1f539907f917726bea7784242fab834dc71e948c783b58",
+      "miniapp/tests/member-write-probe.test.cjs": "394d63a10f257a18ce6cbed79732662b80cf9d92c8e7d7d95d541b5823e81a84",
+      "miniapp/tests/pages.test.cjs": "ce60557b4b9a4ca8f82324cbcf6a223d582be47b431e58daf057ebced1c719c2",
+      "miniapp/tests/permission-check-page.test.cjs": "94c1d921cc228af3b66a77ca363e8f7acba15ce6b4b5f6a0cfcac87b60ca4b15",
+      "miniapp/tests/permission-probe.test.cjs": "f4077a543bb90f8b2d5073c2502e78915b4ba7fa6eee721cbcad9e25733d06ae",
+      "miniapp/tests/valid-approval-probe.test.cjs": "f1dd30b033d95f885522f689bd77fcbd0dd531903242097e9587848ff556b778",
+      "miniapp/tests/valid-binding-probe.test.cjs": "a33845076e0e9da546a4a9436526f8b6b692a93e36e61c7f5007b41af3aab11c",
+      "miniapp/tests/valid-member-probe.test.cjs": "edcb8a826a6861c93a1519e0db0d6b6a2be707a7f4849844be159467d96970bb",
+      "miniapp/cloudfunctions/connectionCheck/index.js": "43e984df0cd6680acb4f23d2240a4110d825f71648b82da9b9ed79e45e069975",
+      "miniapp/cloudfunctions/connectionCheck/package.json": "9c0b6da6db02328e4f9810a9ed05e85826316cf2a98b5544d5863cd1f3d5e28a",
+      "miniapp/cloudfunctions/memberAccess/index.js": "1bf8ed22dd828e7b0af84024743a29a75bcbb07712c65499ee84cfe2243b78ac",
+      "miniapp/cloudfunctions/memberAccess/package.json": "0818546cb4f975b60e4c34b22636553d29a8d982a3e63d9029850388bef86503",
+      "miniapp/cloudfunctions/memberAccess/service.js": "f3a1dc8cd7820e165f4219cdbb09ca01a28d5b05533ffe98c53faba50ccfc25f",
+      "miniapp/cloudbase/index-options-audit_events.json": "d516a88bd4dca730ff0264ba645cc8cb1221ccbfe5fd105f4b21c5acbf881f45",
+      "miniapp/cloudbase/index-options-invitations.json": "a57d1c6d2fbcf87213ed91089ad648de2330fc4274e3855ae0e82a38059dece2",
+      "miniapp/cloudbase/index-options-projects.json": "d9e5db42b161bc2be3f6cdea0fcf7e6192653011e2f51b4e7709d4c0877fad05",
+      "miniapp/cloudbase/index-options-project_members.json": "cede56b0f39b21c7d7bd16c4b52387737a2e8e09887b91d5cfc48965f4e77272",
+      "miniapp/cloudbase/index-options-users-bindingCodeHash.json": "e30f220d6770b5b7f05f1575bce8ba2ad6332f098142af96c6080841c043b225",
+      "miniapp/cloudbase/member-access-indexes.json": "3705f4c23ea1028343baccf655c5279086b6c1d509df14efc803da2306b793c1",
+      "miniapp/miniprogram/config/valid-primary-owner-concurrency-proof.js": "a4f7f8baa8f44721042a7408d3f5ac832ce98b6a4d84f530c452436286b4d9fe",
+      "miniapp/miniprogram/utils/primary-owner-concurrency-probe.js": "5240fea656e0ddddfae991748d3f1fc5a9fe5ed02b7632c0ee71019f5949c7e3",
+      "miniapp/tests/primary-owner-concurrency-probe.test.cjs": "6f782f3bff5df8b27409de3b360892e65b45accc1cac89c318a75fdbd06c7967",
+      "miniapp/miniprogram/utils/sha256-hex.js": "4f62b5b067d10428fe98aa5da4cae3cc4ca337ff80bc4c872f82549c671d075b"
+    }
+  },
+  "tests": {
+    "total": 162,
+    "passed": 162,
+    "failed": 0,
+    "skipped": 0,
+    "realSdkRegression": true
+  },
+  "snapshots": {
+    "users": {
+      "total": 4,
+      "rows": [
+        {
+          "_id": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "bindingCodeExpiresAt": "2026-10-02T12:27:51.234Z",
+          "bindingCodeHash": "22d5193237571e664b824f065ea1327ad9d9215cb5563b2a6208108504c8d9d0",
+          "status": "active",
+          "updatedAt": "2026-10-01T12:27:51.277Z"
+        },
+        {
+          "_id": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "bindingCodeExpiresAt": null,
+          "bindingCodeHash": null,
+          "status": "active",
+          "updatedAt": "2026-10-01T12:07:51.537Z"
+        },
+        {
+          "_id": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "bindingCodeExpiresAt": "2026-10-02T12:27:10.726Z",
+          "bindingCodeHash": "dd0ad41fd154505ad06518926ad6de7fd994628593961c284efc991087b1ec95",
+          "status": "active",
+          "updatedAt": "2026-10-01T12:27:10.769Z"
+        },
+        {
+          "_id": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "bindingCodeExpiresAt": "2026-09-26T14:54:23.769Z",
+          "bindingCodeHash": "35ae24919e1e6c73202a91726252e8771d174832e0809882f4dab678aeb4cafe",
+          "status": "active",
+          "updatedAt": "2026-09-25T14:54:23.818Z"
+        }
+      ],
+      "pages": [
+        {
+          "offset": 0,
+          "startedAt": "2026-10-01T12:53:01.3737171Z",
+          "completedAt": "2026-10-01T12:53:02.5593945Z",
+          "requestId": "f5d09d2c-50a4-43d3-918b-f5d1395362f9"
+        }
+      ]
+    },
+    "projects": {
+      "total": 3,
+      "rows": [
+        {
+          "_id": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "createdAt": "2026-09-25T13:59:55.665Z",
+          "name": "虚构测试 · 装修项目",
+          "ownerUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "primaryOwnerUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "scope": "identity-test",
+          "status": "active",
+          "version": 2
+        },
+        {
+          "_id": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "createdAt": "2026-10-01T11:47:01.384Z",
+          "name": "虚构测试 · 装修项目",
+          "ownerUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "primaryOwnerUserId": null,
+          "scope": "identity-test",
+          "status": "active",
+          "version": 1
+        },
+        {
+          "_id": "p_a328c08992f7414c812047935bc3c31e",
+          "createdAt": "2026-09-25T14:00:04.414Z",
+          "name": "虚构测试 · 装修项目",
+          "ownerUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "primaryOwnerUserId": null,
+          "scope": "identity-test",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "pages": [
+        {
+          "offset": 0,
+          "startedAt": "2026-10-01T12:53:02.5908822Z",
+          "completedAt": "2026-10-01T12:53:03.4032680Z",
+          "requestId": "5ae79a7d-eb96-481d-b40f-b813d7e7ea50"
+        }
+      ]
+    },
+    "project_members": {
+      "total": 7,
+      "rows": [
+        {
+          "_id": "m_133e881e1131e4d9891ebc566884d599ac1cc60f",
+          "joinedAt": "2026-09-25T14:56:12.594Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "管家"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "version": 1
+        },
+        {
+          "_id": "m_4312a8548b3a432854ade093290e72c6ed5a6f7f",
+          "joinedAt": "2026-09-27T12:04:48.997Z",
+          "leftAt": null,
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "师傅",
+            "设计师"
+          ],
+          "status": "active",
+          "trades": [
+            "拆改",
+            "木工"
+          ],
+          "userId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "version": 6
+        },
+        {
+          "_id": "m_45fd5794f0aa51559c2b57e8aecb07fc6e3902b1",
+          "joinedAt": "2026-09-25T14:00:04.48Z",
+          "projectId": "p_a328c08992f7414c812047935bc3c31e",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_c05c3e21ed3870ebae794754e43fe93e55283371",
+          "joinedAt": "2026-10-01T11:47:01.448Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_dc1be40cda2f9519cf9ca25cb1df74e443c903da",
+          "joinedAt": "2026-10-01T12:07:51.48Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "roles": [
+            "管家"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "version": 1
+        },
+        {
+          "_id": "m_e5eaf02fd6e0db8565f523431ec9019dc19e54ac",
+          "joinedAt": "2026-09-25T13:59:55.728Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "负责人"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "version": 1
+        },
+        {
+          "_id": "m_f5b098e6c02df1b0b7bbe7624627f2b637d46ff9",
+          "joinedAt": "2026-09-27T13:47:05.639Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "roles": [
+            "主业主"
+          ],
+          "status": "active",
+          "trades": [],
+          "userId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "version": 1
+        }
+      ],
+      "pages": [
+        {
+          "offset": 0,
+          "startedAt": "2026-10-01T12:53:03.4080095Z",
+          "completedAt": "2026-10-01T12:53:04.2030158Z",
+          "requestId": "32082944-077c-4e59-b65d-3caf8ebbfb87"
+        }
+      ]
+    },
+    "invitations": {
+      "total": 8,
+      "rows": [
+        {
+          "_id": "i_0e0483488efb40ada6825d259ebc1736",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-10-01T05:10:06.829Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-07T12:20:14.221Z",
+          "issuedAt": "2026-09-30T12:20:14.528Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-30T12:21:56.286Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_176841d33c0d40eca2fb23e92fe5b024",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-27T12:47:40.29Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-04T12:44:18.719Z",
+          "issuedAt": "2026-09-27T12:44:18.904Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-27T12:45:50.306Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_5d088d16872444479c775d3474d5852d",
+          "applicantUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "approvedAt": "2026-09-27T13:47:05.721Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-04T13:43:23.115Z",
+          "issuedAt": "2026-09-27T13:43:23.276Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-27T13:44:07.89Z",
+          "role": "主业主",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_7f201930411243dd823798545263e236",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-29T12:30:49.565Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-06T12:26:59.818Z",
+          "issuedAt": "2026-09-29T12:26:59.984Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-29T12:28:34.589Z",
+          "role": "设计师",
+          "status": "approved",
+          "trades": [],
+          "version": 3
+        },
+        {
+          "_id": "i_a360a5387ef549679eb1f2a370f23bab",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-29T13:12:00.369Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-06T13:09:32.531Z",
+          "issuedAt": "2026-09-29T13:09:32.704Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-29T13:11:13.727Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "木工"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_a723e933cae24c52858ec24f2781e98e",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "expiresAt": "2026-10-08T12:16:40.66Z",
+          "issuedAt": "2026-10-01T12:16:40.847Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "requestedAt": "2026-10-01T12:18:21.525Z",
+          "role": "主业主",
+          "status": "requested",
+          "trades": [],
+          "version": 2
+        },
+        {
+          "_id": "i_de9287cb806e4098846161e2734d30db",
+          "applicantUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "approvedAt": "2026-09-27T12:04:49.045Z",
+          "approvedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "expiresAt": "2026-10-03T07:04:07.034Z",
+          "issuedAt": "2026-09-26T07:04:07.2Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "requestedAt": "2026-09-26T07:14:44.777Z",
+          "role": "师傅",
+          "status": "approved",
+          "trades": [
+            "拆改"
+          ],
+          "version": 3
+        },
+        {
+          "_id": "i_e8fe4566389e4ad2b2070c62d038f162",
+          "applicantUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "expiresAt": "2026-10-08T12:19:43.352Z",
+          "issuedAt": "2026-10-01T12:19:43.516Z",
+          "issuedByUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "requestedAt": "2026-10-01T12:20:27.836Z",
+          "role": "主业主",
+          "status": "requested",
+          "trades": [],
+          "version": 2
+        }
+      ],
+      "pages": [
+        {
+          "offset": 0,
+          "startedAt": "2026-10-01T12:53:04.2061356Z",
+          "completedAt": "2026-10-01T12:53:04.9971594Z",
+          "requestId": "dbf9bb2d-81ac-4591-bf8b-a65d212675c3"
+        }
+      ]
+    },
+    "app_admins": {
+      "total": 1,
+      "rows": [
+        {
+          "_id": "primary",
+          "status": "active",
+          "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        }
+      ],
+      "pages": [
+        {
+          "offset": 0,
+          "startedAt": "2026-10-01T12:53:04.9992745Z",
+          "completedAt": "2026-10-01T12:53:05.9096691Z",
+          "requestId": "df554785-736d-40bc-9949-a06272355b7a"
+        }
+      ]
+    },
+    "audit_events": {
+      "total": 52,
+      "rows": [
+        {
+          "_id": "a_064d9e302a4d40bc8ddba4f83b28c64c",
+          "action": "removeMember",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "师傅"
+            ],
+            "status": "left"
+          },
+          "before": {
+            "roles": [
+              "师傅"
+            ],
+            "status": "active"
+          },
+          "createdAt": "2026-09-27T12:08:58.231Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_10b73d33dbc44ed1bbe90a2223524966",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "expiresAt": "2026-09-26T14:52:24.953Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T14:52:25.068Z",
+          "projectId": null,
+          "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+        },
+        {
+          "_id": "a_17aeade19aa14648a24ad6127dcb7cdd",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_176841d33c0d40eca2fb23e92fe5b024",
+            "role": "师傅",
+            "status": "issued",
+            "trades": [
+              "拆改"
+            ]
+          },
+          "before": null,
+          "createdAt": "2026-09-27T12:44:18.965Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_18668514d2124906b0b7eecafba5a0e7",
+          "action": "approveInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "师傅",
+              "设计师"
+            ],
+            "status": "active",
+            "trades": [
+              "拆改",
+              "木工"
+            ]
+          },
+          "before": {
+            "roles": [
+              "师傅",
+              "设计师"
+            ],
+            "status": "active"
+          },
+          "createdAt": "2026-10-01T05:10:06.929Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_18f3651c344f474390d3ff91f66ad470",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "after": {
+            "expiresAt": "2026-09-28T13:46:52.239Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-27T13:46:52.336Z",
+          "projectId": null,
+          "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+        },
+        {
+          "_id": "a_1ea9287a9f66407fbd967563d3f87035",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-27T07:11:50.528Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:11:50.615Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_2032e1f9679e41889cf8ec1ea59b458d",
+          "action": "approveInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "师傅",
+              "设计师"
+            ],
+            "status": "active",
+            "trades": [
+              "拆改",
+              "木工"
+            ]
+          },
+          "before": {
+            "roles": [
+              "师傅",
+              "设计师"
+            ],
+            "status": "active"
+          },
+          "createdAt": "2026-09-29T13:12:00.449Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_31c0a91ddfd541cea40a8eafa2f6f13b",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-09-26T07:14:44.826Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_36414bd0332e4c26800294c6bbdc5833",
+          "action": "assignManager",
+          "actorRole": "负责人",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "roles": [
+              "管家"
+            ],
+            "status": "active"
+          },
+          "before": null,
+          "createdAt": "2026-10-01T12:07:51.586Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+        },
+        {
+          "_id": "a_37818d4b58234f5c84b7662f41ad5c09",
+          "action": "approveInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "主业主"
+            ],
+            "status": "active",
+            "trades": []
+          },
+          "before": null,
+          "createdAt": "2026-09-27T13:47:05.827Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+        },
+        {
+          "_id": "a_39f218eb5aef47a6b5cd78319fad58f1",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_0e0483488efb40ada6825d259ebc1736",
+            "role": "师傅",
+            "status": "issued",
+            "trades": [
+              "拆改"
+            ]
+          },
+          "before": null,
+          "createdAt": "2026-09-30T12:20:14.64Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_3d8ec065e67e4eae887e44b1bb7f6457",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "after": {
+            "expiresAt": "2026-10-02T12:27:51.234Z"
+          },
+          "before": null,
+          "createdAt": "2026-10-01T12:27:51.336Z",
+          "projectId": null,
+          "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+        },
+        {
+          "_id": "a_3e3ce7b496324ec78656c9485ff45981",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_e8fe4566389e4ad2b2070c62d038f162",
+            "role": "主业主",
+            "status": "issued",
+            "trades": []
+          },
+          "before": null,
+          "createdAt": "2026-10-01T12:19:43.567Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_40163b505e4947798a3afb5fcb9798ae",
+          "action": "createProject",
+          "actorRole": "负责人",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "name": "虚构测试 · 装修项目"
+          },
+          "before": null,
+          "createdAt": "2026-10-01T11:47:01.503Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        },
+        {
+          "_id": "a_468857c4f4a44513b939f26b1e83b976",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_5d088d16872444479c775d3474d5852d",
+            "role": "主业主",
+            "status": "issued",
+            "trades": []
+          },
+          "before": null,
+          "createdAt": "2026-09-27T13:43:23.32Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_4cd132d4fa444e8da19def916c63e02e",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-28T11:58:40.273Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-27T11:58:40.365Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_4f412d92e85247a1805ea6eb6ab0ec5c",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "expiresAt": "2026-09-26T13:48:27.124Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T13:48:27.229Z",
+          "projectId": null,
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        },
+        {
+          "_id": "a_53b8efad240449f7a8c947791782e05c",
+          "action": "registerIdentity",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "active"
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:10:58.325Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_6b3b89808857431eb227d9d829bdd660",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-09-29T13:11:13.783Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_6caf9ea869114c0cac4a6b54f4fc241d",
+          "action": "approveInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "师傅",
+              "设计师"
+            ],
+            "status": "active",
+            "trades": [
+              "拆改"
+            ]
+          },
+          "before": {
+            "roles": [
+              "师傅"
+            ],
+            "status": "active"
+          },
+          "createdAt": "2026-09-29T12:30:49.664Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_72313451720644b191be3b5dddcd9c3f",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-09-29T12:28:34.642Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_7279a5d2cece4528893275bfe2fe9341",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-27T07:11:02.217Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:11:02.3Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_78140a77a1644ccdbcc38e3d226a7d14",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-10-01T12:20:27.893Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+        },
+        {
+          "_id": "a_7cc27bf12ce04fe2a1b6b7b9fbc365a7",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-09-27T12:45:50.354Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_7d1829ccb53c4e42ac6e839da420d758",
+          "action": "createProject",
+          "actorRole": "负责人",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "name": "虚构测试 · 装修项目"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T14:00:04.528Z",
+          "projectId": "p_a328c08992f7414c812047935bc3c31e",
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        },
+        {
+          "_id": "a_83507725b96c42b295bb508d14f45ddb",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_a360a5387ef549679eb1f2a370f23bab",
+            "role": "师傅",
+            "status": "issued",
+            "trades": [
+              "木工"
+            ]
+          },
+          "before": null,
+          "createdAt": "2026-09-29T13:09:32.753Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_909da22b35454b20abfc181356c984db",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-28T12:47:27.165Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-27T12:47:27.291Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_90f8718d3eb3436f92e0a75e4167f30d",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-30T12:28:43.2Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-29T12:28:43.289Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_9a2336c9bafd48f8bb327e0e0f0c8ed0",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-27T07:12:18.02Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:12:18.104Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_9d4c790c308b4956b5aa3b2b9ffecb0c",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-10-01T12:18:21.577Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_9dd7da95e8254fb48505a7a4897ab9e4",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-09-30T12:21:56.345Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_9efb9f2c7f9c4156865849b50ba6548d",
+          "action": "registerIdentity",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "status": "active"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T14:51:21.53Z",
+          "projectId": null,
+          "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+        },
+        {
+          "_id": "a_a3b0d95d0a1e472a9f0bf52ed78c8bba",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-27T07:11:24.274Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:11:24.375Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_ae4d70eba0a7406da8750fdb8159713d",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_7f201930411243dd823798545263e236",
+            "role": "设计师",
+            "status": "issued",
+            "trades": []
+          },
+          "before": null,
+          "createdAt": "2026-09-29T12:27:00.042Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_b214598176db495abc8a4bed1d673d08",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-28T12:04:01.556Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-27T12:04:01.92Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_bae9844d706d4542abc97f046b717f10",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-30T13:38:20.502Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-29T13:38:20.6Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_bf9ec4e77c694fc898e76e97fb9c82df",
+          "action": "requestBindingNumber",
+          "actorRole": "负责人",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "expiresAt": "2026-09-26T14:54:23.769Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T14:54:23.878Z",
+          "projectId": null,
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        },
+        {
+          "_id": "a_c45c7058c59c4f35b2c216007f298b1c",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-10-02T12:27:10.726Z"
+          },
+          "before": null,
+          "createdAt": "2026-10-01T12:27:10.823Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_c6c25a48958a4b5aa4639ed7a3365c5d",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-09-30T13:11:19.893Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-29T13:11:19.996Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_d77a3c64bb584fdeb234397811f37738",
+          "action": "registerIdentity",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "after": {
+            "status": "active"
+          },
+          "before": null,
+          "createdAt": "2026-09-27T13:39:46.776Z",
+          "projectId": null,
+          "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+        },
+        {
+          "_id": "a_df34cc334177434ca4c2b0cdb22c8385",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74",
+          "after": {
+            "expiresAt": "2026-10-01T13:49:09.81Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-30T13:49:09.911Z",
+          "projectId": null,
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_e2ab9c83c64b4471b4c7476104e30816",
+          "action": "applyInvitation",
+          "actorRole": "申请人",
+          "actorUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4",
+          "after": {
+            "status": "requested"
+          },
+          "before": {
+            "status": "issued"
+          },
+          "createdAt": "2026-09-27T13:44:07.946Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_15703f790f293a33c184af9eb0b8db9852f182f4"
+        },
+        {
+          "_id": "a_e3a452ec8e88410686b46265f99c8093",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_a723e933cae24c52858ec24f2781e98e",
+            "role": "主业主",
+            "status": "issued",
+            "trades": []
+          },
+          "before": null,
+          "createdAt": "2026-10-01T12:16:40.91Z",
+          "projectId": "p_4e53f8437dab4ddcb62971d58455acaa",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_e3d1db63472c4b8f87a3f5123d1d49a4",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "expiresAt": "2026-10-02T12:07:36.503Z"
+          },
+          "before": null,
+          "createdAt": "2026-10-01T12:07:36.601Z",
+          "projectId": null,
+          "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+        },
+        {
+          "_id": "a_e6cbb302cdad4349aa99adbbaebf554e",
+          "action": "requestBindingNumber",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "expiresAt": "2026-09-27T07:03:43.663Z"
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:03:43.757Z",
+          "projectId": null,
+          "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+        },
+        {
+          "_id": "a_e7d8bed768ec46de9b3e1fd8ccc5e1dd",
+          "action": "approveInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "师傅"
+            ],
+            "status": "active",
+            "trades": [
+              "拆改"
+            ]
+          },
+          "before": null,
+          "createdAt": "2026-09-27T12:04:49.142Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_e81057612d2a44ca9142be6e22c338c9",
+          "action": "assignManager",
+          "actorRole": "负责人",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "roles": [
+              "管家"
+            ],
+            "status": "active"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T14:56:12.704Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d"
+        },
+        {
+          "_id": "a_f2b21482db464b4a8d0c03b7f137dbad",
+          "action": "approveInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "roles": [
+              "师傅"
+            ],
+            "status": "active",
+            "trades": [
+              "拆改"
+            ]
+          },
+          "before": {
+            "roles": [
+              "师傅"
+            ],
+            "status": "left"
+          },
+          "createdAt": "2026-09-27T12:47:40.379Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_a2acfbaea35f409671860b2c4b13d777a6989a74"
+        },
+        {
+          "_id": "a_f31e9791ec5e44bd9aa877d001ee0e26",
+          "action": "createInvitation",
+          "actorRole": "管家",
+          "actorUserId": "u_8256b2f0dbfdcdff95ccf9ea7beba2afda64193d",
+          "after": {
+            "invitationId": "i_de9287cb806e4098846161e2734d30db",
+            "role": "师傅",
+            "status": "issued",
+            "trades": [
+              "拆改"
+            ]
+          },
+          "before": null,
+          "createdAt": "2026-09-26T07:04:07.24Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": null
+        },
+        {
+          "_id": "a_f75fd6cadab14443b4cdc24d2999c2e0",
+          "action": "registerIdentity",
+          "actorRole": "本人普通账号",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "status": "active"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T13:48:16.478Z",
+          "projectId": null,
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        },
+        {
+          "_id": "a_fec49153ffed4a19ba86eb19a80e4cf2",
+          "action": "createProject",
+          "actorRole": "负责人",
+          "actorUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+          "after": {
+            "name": "虚构测试 · 装修项目"
+          },
+          "before": null,
+          "createdAt": "2026-09-25T13:59:55.797Z",
+          "projectId": "p_38507fc9b43c4e23a7fbd996415637bb",
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        },
+        {
+          "_id": "a_initial_admin_20260925",
+          "action": "bindInitialAdmin",
+          "actorRole": "授权开发协作者",
+          "actorUserId": "management:Codex",
+          "after": {
+            "adminId": "primary",
+            "status": "active",
+            "userId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+          },
+          "authorizationSource": "User explicitly confirmed ownership of current valid binding number in main project conversation",
+          "before": null,
+          "createdAt": "2026-09-25T13:52:08.304Z",
+          "managementRequestId": "142c5ad4-c979-4376-981a-435661b5906c",
+          "projectId": null,
+          "subjectUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+        }
+      ],
+      "pages": [
+        {
+          "offset": 0,
+          "startedAt": "2026-10-01T12:53:05.9119322Z",
+          "completedAt": "2026-10-01T12:53:06.6453055Z",
+          "requestId": "5b42c1d7-2994-485a-9371-f0dccb12d6db"
+        },
+        {
+          "offset": 20,
+          "startedAt": "2026-10-01T12:53:06.6471404Z",
+          "completedAt": "2026-10-01T12:53:07.4982208Z",
+          "requestId": "4d359a31-c464-4cd5-bc8f-3d0c31b23170"
+        },
+        {
+          "offset": 40,
+          "startedAt": "2026-10-01T12:53:07.5014343Z",
+          "completedAt": "2026-10-01T12:53:08.2421091Z",
+          "requestId": "b9b23962-8dd6-4bbf-88cf-fa88d2205405"
+        }
+      ]
+    }
+  },
+  "selectedFieldsUnchanged": true,
+  "checkBefore": "2026-10-02T12:27:10.726Z",
+  "cloudWritesByCodex": 0,
+  "manualExecutionPerformed": false,
+  "limitations": [
+    "跨集合与分页读取不是原子快照；仅确认本次读取时选定字段保持。",
+    "本地75个基线文件只目标配置变化，不代表整个历史未提交工作区只有一处修改。",
+    "本结果不是并发唯一性验收结论；真机执行后须再次核对完整云端状态。"
+  ],
+  "compilation": {
+    "syntaxAndRoutes": true,
+    "wxml": 7,
+    "wxss": 8
+  }
+}

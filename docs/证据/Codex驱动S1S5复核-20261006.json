@@ -1,0 +1,84 @@
+{
+  "executedAt": "2026-10-06T01:30:14.556Z",
+  "scope": "local review, synthetic API/storage, no cloud calls",
+  "previous34": {
+    "total": 34,
+    "sealed": 34,
+    "unsealed": 0,
+    "harnessErrors": 0
+  },
+  "current18": {
+    "total": 18,
+    "sealed": 18,
+    "unsealed": 0,
+    "harnessErrors": 0
+  },
+  "historicalFilesChecked": 37,
+  "historicalFilesPreserved": true,
+  "results": [
+    {
+      "id": "all-sync-throw-V06-a",
+      "invoked": 2,
+      "completed": false,
+      "storedState": "inFlight",
+      "storedOutcomes": [
+        "sync-throw",
+        "sync-throw"
+      ],
+      "runtimeHeld": true,
+      "defect": true
+    },
+    {
+      "id": "all-sync-throw-V07-B",
+      "invoked": 1,
+      "completed": false,
+      "storedState": "inFlight",
+      "storedOutcomes": [
+        "sync-throw"
+      ],
+      "runtimeHeld": true,
+      "defect": true
+    },
+    {
+      "id": "late-success-after-timeout",
+      "verdict": "stopped",
+      "stoppedReason": "UNKNOWN_RESULT",
+      "storedState": "stopped",
+      "storageChangedAfterLate": false,
+      "responses": [
+        {
+          "sentAtIso": "2026-10-06T01:30:14.540Z",
+          "requestId": "r-a-1",
+          "outcome": "timeout",
+          "invoked": true,
+          "resultUnknown": true,
+          "arrivedAtIso": "2026-10-06T01:30:14.542Z"
+        },
+        {
+          "sentAtIso": "2026-10-06T01:30:14.540Z",
+          "requestId": "r-a-1",
+          "outcome": "responded",
+          "invoked": true,
+          "resultUnknown": false,
+          "result": {
+            "ok": true,
+            "id": "s_review01",
+            "projectId": "p_sbx_fixed_target",
+            "stage": "拆改",
+            "trade": "拆改",
+            "workerUserId": "u_89abcdef0123456789abcdef0123456789abcdef",
+            "startDate": "2026-11-02",
+            "endDate": "2026-11-03",
+            "expectedDate": "2026-11-03",
+            "restDays": [],
+            "content": "并发验证内容",
+            "status": "active",
+            "version": 1
+          },
+          "arrivedAtIso": "2026-10-06T01:30:14.540Z"
+        }
+      ],
+      "defect": true
+    }
+  ]
+}

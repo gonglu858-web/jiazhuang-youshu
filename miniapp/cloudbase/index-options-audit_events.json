@@ -1,0 +1,14 @@
+{
+  "CreateIndexes": [
+    {
+      "IndexName": "projectId_1_createdAt_-1",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          { "Name": "projectId", "Direction": "1" },
+          { "Name": "createdAt", "Direction": "-1" }
+        ],
+        "MgoIsUnique": false
+      }
+    }
+  ]
+}
