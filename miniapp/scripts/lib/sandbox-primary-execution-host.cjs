@@ -196,19 +196,24 @@ function computeImplementationFingerprint() {
 function issueControlledApproval(spec) {
   const s = spec || {};
   const handle = Object.create(null);
-  // 完整计划**深复制**并冻结：之后调用方改动自己的副本不影响绑定值
-  handle.plan = JSON.parse(JSON.stringify(s.plan));
-  handle.approval = JSON.parse(JSON.stringify(s.approval));
+  /**
+   * S1：内部快照必须**递归冻结**。
+   * 此前只对句柄顶层`Object.freeze`，嵌套 `plan`/`approval` 仍可被改写
+   * （实测 `signed-handle-nested-mutation`：签发后改 `source.approval.approvedBy`，
+   *  核对仍 `ok:true`）。WeakSet 只能证明对象由本模块发出，不能证明其内部未被改。
+   */
+  handle.plan = deepFreeze(JSON.parse(JSON.stringify(s.plan)));
+  handle.approval = deepFreeze(JSON.parse(JSON.stringify(s.approval)));
   handle.approvedBy = s.approvedBy;
   handle.writeScope = Object.freeze(Array.isArray(s.writeScope) ? s.writeScope.slice() : []);
   handle.expiresAtMs = s.expiresAtMs;
   handle.expectedSubjectDigest = s.expectedSubjectDigest;
-  handle.cliFingerprint = {
+  handle.cliFingerprint = Object.freeze({
     bundleSha256: FIXED.cliFingerprint.bundleSha256,
     entrySha256: FIXED.cliFingerprint.entrySha256
-  };
+  });
   // 签发时绑定**实际**实现内容；不是签发者自报
-  handle.implementationFingerprint = computeImplementationFingerprint();
+  handle.implementationFingerprint = deepFreeze(computeImplementationFingerprint());
   // 摘要基于原始计划字段（与核心同算法），同时另算「完整计划」规范化摘要
   handle.planDigest = p4.inputDigest(handle.plan);
   handle.fullPlanDigest = sha256Of(JSON.stringify(
@@ -223,6 +228,61 @@ function issueControlledApproval(spec) {
   Object.freeze(handle);
   ISSUED_APPROVALS.add(handle);
   return handle;
+}
+
+/**
+ * 递归冻结（S1）：把对象与其**所有**嵌套对象/数组都冻结。
+ *
+ * 只冻结顶层时，嵌套属性仍可被赋值 —— 这正是 S1 样本 2 的可复现路径。
+ * 数组元素也逐个冻结，避免 `writeScope`/`approvedUserIds` 被 `push`。
+ * 非对象（字符串、数字、布尔、null）原样返回。
+ */
+function deepFreeze(value) {
+  if (value === null || typeof value !== 'object') return value;
+  if (Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const key of Object.getOwnPropertyNames(value)) {
+    const child = value[key];
+    // 跳过原始 json 字符串（writeScope 是字符串数组，逐字符递归没有意义且会退化）
+    if (typeof child === 'object' && child !== null) deepFreeze(child);
+  }
+  return value;
+}
+
+/**
+ * 取句柄里**已核验**的不可变快照（S1）。
+ *
+ * 这是 worker 载荷的唯一来源：`executeOnce` 必须用它，而不是另取调用方
+ * 传入的 `o.plan`/`o.approval`。此前「核验一份、执行另一份」导致：
+ *  - 样本 1：只改 `o.approval.approvedBy`，审计里落的是**未绑定值**；
+ *  - 样本 3：在 `persistRoundStarted` 回调里改 `o.plan.operatorRef`，同样落库。
+ */
+function boundSnapshot(approvalSource, plan) {
+  const src = approvalSource;
+  if (!src || !ISSUED_APPROVALS.has(src)) return null;
+  // 计划：句柄内的冻结副本优先；调用方传入的 plan 只用于比对，不用于执行
+  const planSnapshot = src.plan;
+  if (!isPlainObject(planSnapshot)) return null;
+  if (isPlainObject(plan) && fullPlanDigestOf(plan) !== src.fullPlanDigest) {
+    // 调用方计划与绑定快照不同：**拒绝**，不静默替换审计身份
+    return null;
+  }
+  return {
+    plan: planSnapshot,
+    approval: src.approval,
+    planDigest: src.planDigest,
+    fullPlanDigest: src.fullPlanDigest,
+    auditId: p4.auditId(planSnapshot, src.planDigest),
+    expiresAtMs: src.expiresAtMs,
+    expectedSubjectDigest: src.expectedSubjectDigest
+  };
+}
+
+/** 覆盖全部字段的规范化摘要（与签发时同一算法）。 */
+function fullPlanDigestOf(plan) {
+  return sha256Of(JSON.stringify(
+    Object.keys(plan).sort().map(k => [k, plan[k]])
+  ));
 }
 
 /**
@@ -274,9 +334,7 @@ function verifyControlledApproval(options) {
   let fullDigest;
   try {
     digest = p4.inputDigest(plan);
-    fullDigest = sha256Of(JSON.stringify(
-      Object.keys(plan).sort().map(k => [k, plan[k]])
-    ));
+    fullDigest = fullPlanDigestOf(plan);
   } catch (_) {
     return { ok: false, errorCode: ERR.PLAN_INVALID, reason: '计划摘要计算失败。' };
   }
@@ -285,10 +343,23 @@ function verifyControlledApproval(options) {
       reason: '批准绑定的计划摘要与当前计划不一致（含未覆盖字段）。' };
   }
 
-  // 批准人与批准上下文也必须与签发时一致（防止换批准人）
+  /**
+   * S1：批准人要**真实一致**，不只是类型检查。
+   * 此前只检查 `typeof === 'string'`，注释写「与签发时一致」但实际没比值。
+   * 现在要求 `approval.approvedBy` 与句柄顶层 `approvedBy` 相等，
+   * 且句柄内部快照必须处于冻结状态（防止签发后被改写）。
+   */
   if (typeof source.approvedBy !== 'string' || source.approvedBy.length === 0 ||
     typeof source.approval.approvedBy !== 'string') {
     return { ok: false, errorCode: ERR.APPROVAL_SOURCE_MISSING, reason: '批准缺少确认人。' };
+  }
+  if (source.approval.approvedBy !== source.approvedBy) {
+    return { ok: false, errorCode: ERR.APPROVAL_SOURCE_MISSING,
+      reason: '批准上下文与绑定确认人不一致。' };
+  }
+  if (!Object.isFrozen(source.approval) || !Object.isFrozen(source.plan)) {
+    return { ok: false, errorCode: ERR.APPROVAL_SOURCE_MISSING,
+      reason: '批准绑定内部快照未被冻结，拒绝执行。' };
   }
 
   // 有效期：取**绑定值**与当前时刻比较，不用调用方传入的另一次读数
@@ -333,10 +404,28 @@ function verifyControlledApproval(options) {
       reason: '批准未绑定执行前受审的主体摘要预期值。' };
   }
 
+  /**
+   * S1/S3：返回**已核验的绑定快照**与预先算好的确定性 auditId。
+   *
+   * auditId 在这里由受控计划 + P4 算法得出，**不依赖子进程输出**。
+   * S3 要求 started 与所有终态都能保留它 —— 此前它只在 worker 成功输出里
+   * 才拿得到，超时/坏输出时整份报告的 `auditId` 为 null。
+   */
+  const snapshot = boundSnapshot(source, plan);
+  if (snapshot === null) {
+    return { ok: false, errorCode: ERR.APPROVAL_PLAN_BINDING_MISMATCH,
+      reason: '批准绑定快照不可用或与当前计划不一致。' };
+  }
+
   return {
     ok: true, errorCode: null, planDigest: digest, fullPlanDigest: fullDigest,
     approvedBy: source.approvedBy, expiresAtMs: source.expiresAtMs,
-    expectedSubjectDigest: source.expectedSubjectDigest
+    expectedSubjectDigest: source.expectedSubjectDigest,
+    // S1：worker 载荷的唯一来源
+    boundPlan: snapshot.plan,
+    boundApproval: snapshot.approval,
+    // S3：确定性审计键，启动前即已确定
+    auditId: snapshot.auditId
   };
 }
 
@@ -551,6 +640,19 @@ async function executeOnce(options) {
   }
   report.stages.push('approvalSource');
 
+  /**
+   * S1：执行范围就此**冻结**为绑定快照。
+   * 后续所有阶段（含跨多次 await 之后）只用 `boundPlan`/`boundApproval`，
+   * 绝不再用调用方传入的 `o.plan`/`o.approval` —— 否则「核验一份、执行另一份」，
+   * 改动值会落进审计（Codex 样本 1 与样本 3）。
+   */
+  const boundPlan = approvalCheck.boundPlan;
+  const boundApproval = approvalCheck.boundApproval;
+  // S3：确定性审计键此刻已确定，先放进报告；任何终态都能保留
+  report.auditId = approvalCheck.auditId;
+  report.roundId = typeof o.roundId === 'string' ? o.roundId : null;
+  report.planDigest = approvalCheck.planDigest;
+
   // 2) 文件指纹（受控来源绑定 + 本机固定值一致）
   report.stages.push('fileFingerprint');
 
@@ -590,9 +692,13 @@ async function executeOnce(options) {
   } catch (error) {
     report.stoppedAt = 'credentialFetch';
     report.errorCode = ERR.CREDENTIAL_FETCH_FAILED;
-    // 如实保留**固定**失败类别（白名单内），不外传任意 code / message / stack
-    report.credentialFailureClass = /^[A-Z_]{3,64}$/.test(String(error && error.code))
-      ? String(error.code) : 'UNKNOWN';
+    /**
+     * S4：使用凭据宿主的**实际固定错误码枚举**，不是大写正则。
+     * `/^[A-Z_]{3,64}$/` 会把任意大写串当作合法失败类别透出。
+     */
+    const credentialCode = String(error && error.code);
+    report.credentialFailureClass = CREDENTIAL_FAILURE_CODES.has(credentialCode)
+      ? credentialCode : 'UNKNOWN';
     report.incomplete.push('未能取得合规临时凭据；未发起后续动作。');
     return report;
   }
@@ -668,11 +774,11 @@ async function executeOnce(options) {
     report.incomplete.push('缺少本轮轮次标识；未发起写请求。');
     return report;
   }
-  // 轮次必须与计划里的轮次**完全一致**（不是任意取一个）
-  if (o.plan && typeof o.plan.roundId === 'string' && o.plan.roundId !== round) {
+  // 轮次必须与**绑定快照**里的轮次完全一致（不是任意取一个，也不是调用方可改的）
+  if (typeof boundPlan.roundId === 'string' && boundPlan.roundId !== round) {
     report.stoppedAt = 'roundStarted';
     report.errorCode = ERR.ROUND_START_FAILED;
-    report.incomplete.push('本轮轮次标识与计划不一致；未发起写请求。');
+    report.incomplete.push('本轮轮次标识与绑定计划不一致；未发起写请求。');
     return report;
   }
   if (typeof o.persistRoundStarted !== 'function') {
@@ -683,11 +789,11 @@ async function executeOnce(options) {
   }
   let created;
   try {
-    // 异步失败必须被等待 —— 不 await 会把「尚未成功」当成已成功
+    // S3：确定性 auditId 此刻已算出并写入 started，不依赖子进程输出
     created = await o.persistRoundStarted({
       roundId: round,
       planDigest: approvalCheck.planDigest,
-      auditId: null
+      auditId: approvalCheck.auditId
     });
   } catch (_) {
     created = false;
@@ -700,7 +806,10 @@ async function executeOnce(options) {
   }
   report.stages.push('roundStarted');
 
-  // R3/R4：worker 启动**前**再次复核批准有效期 —— 前面已消耗过凭据与关联耗时
+  /**
+   * S1：worker 启动**前**复核批准有效期与**实际**实施文件绑定。
+   * 前面已消耗凭据与关联耗时，实现文件也可能在此期间变化。
+   */
   if (approvalCheck.expiresAtMs <= now()) {
     report.stoppedAt = 'approvalRecheck';
     report.errorCode = ERR.APPROVAL_SOURCE_MISSING;
@@ -714,22 +823,59 @@ async function executeOnce(options) {
     report.incomplete.push('当次完整云主体与批准绑定的预期不一致；已停止，未自动放宽。');
     return report;
   }
+  // S1：启动前再核一次实际实现文件指纹（签发后文件可能已被改动）
+  {
+    const actualNow = computeImplementationFingerprint();
+    for (const name of FINGERPRINT_FILES) {
+      if (actualNow[name] === null ||
+        actualNow[name] !== o.approvalSource.implementationFingerprint[name]) {
+        report.stoppedAt = 'fileFingerprintRecheck';
+        report.errorCode = ERR.FINGERPRINT_MISMATCH;
+        report.incomplete.push('启动前复核发现实现文件已变化；未启动写 worker：' + name);
+        return report;
+      }
+    }
+  }
+  report.stages.push('implementationRecheck');
 
   // 7) 启动写 worker（同批凭据经私有 stdin 一次传入随即关闭）
   report.workerStarted = true;
+  /**
+   * S1：载荷取自**绑定快照**，不是调用方传入的 `o.plan`/`o.approval`。
+   * S2：把凭据期限与批准期限一并传入，由 worker 在**执行期**各操作边界复核
+   * （`fixedNowMs` 只作审计记录时间，P4 的有效期校验改用实时 now）。
+   */
   const workerResult = await runExecutionWorker({
-    snapshot, plan: o.plan, approval: o.approval,
+    snapshot, plan: boundPlan, approval: boundApproval,
     verifiedCaller: true, fixedNowMs: o.fixedNowMs,
     roundId: round,
+    // S2：执行期期限由 worker 复核
+    approvalExpiresAtMs: approvalCheck.expiresAtMs,
+    expectedAuditId: approvalCheck.auditId,
+    // S4：父层按本计划确定性键逐项核对 worker 输出的摘要/审计键
+    expected: {
+      auditId: approvalCheck.auditId,
+      inputDigest: approvalCheck.planDigest
+    },
     // R2/R3：worker cwd 绑定到**本次新建并经核对**的隔离目录
     cwd: isolationDir,
     spawn: o.spawnWorker, limits: o.workerLimits
   });
 
-  // R5：先把 worker 的**提交事实、核对结论、auditId** 如实落到报告，
-  // 无论成功失败 —— 此前这些在失败路径上被整体丢弃。
-  report.auditId = workerResult && workerResult.auditId ? workerResult.auditId : null;
+  /**
+   * S3：worker 消失（超时/信号/坏输出）时，轮次与确定性 auditId 仍必须保留。
+   * 此前这些值只在子进程成功输出里才拿得到；此处**不再**用worker 的输出
+   * 覆盖已在启动前确定的键。
+   */
   report.planDigest = approvalCheck.planDigest;
+  report.auditId = approvalCheck.auditId;
+  report.roundId = round;
+  if (workerResult && typeof workerResult.auditId === 'string' &&
+    workerResult.auditId !== approvalCheck.auditId) {
+    // S4：worker 输出的审计键与本计划不一致 —— 不升级为成功，如实记录
+    report.incomplete.push('worker 输出的审计键与本计划确定性键不一致，未采信。');
+    workerResult.auditIdMismatch = true;
+  }
   report.bootstrap = workerResult && workerResult.bootstrap ? workerResult.bootstrap : null;
   report.observed = workerResult && workerResult.observed ? workerResult.observed : null;
   report.observeFailed = Boolean(workerResult && workerResult.observeFailed);
@@ -737,17 +883,54 @@ async function executeOnce(options) {
   report.granted = workerResult && workerResult.granted === true;
   report.initialized = workerResult && workerResult.initialized === true;
   report.observationConfirmed = workerResult && workerResult.observationConfirmed === true;
+  report.workerProcess = workerResult && workerResult.processFacts
+    ? workerResult.processFacts : null;
 
-  // R5：**只有核对确认**才算完成；结果未知保留轮次与审计 ID
+  /**
+   * S3：结果未知时，父层用**同批仍有效的凭据**做只读核对
+   * （primary + 本计划审计两条固定读取），绝不再次进入 initializePrimary。
+   * 「子进程是否已退出」与「平台事务是否仍在途」分别记录 ——
+   * 未确认终止时，一次「暂时没读到」不能升级为确定未提交。
+   */
   if (!workerResult || workerResult.ok !== true || report.observationConfirmed !== true) {
-    const unknown = Boolean(workerResult && workerResult.resultUnknown) ||
-      report.observeFailed === true;
+    const mayHaveWritten = Boolean(workerResult && workerResult.resultUnknown) ||
+      report.observeFailed === true ||
+      (workerResult && workerResult.processFacts
+        ? (workerResult.processFacts.timedOut || workerResult.processFacts.signal !== null ||
+           workerResult.processFacts.closeNotObserved ||
+           workerResult.processFacts.terminationRequested === true ||
+           workerResult.processFacts.terminationConfirmed === false)
+        : false);
+    report.resultUnknown = mayHaveWritten;
+    // 同批凭据是否仍可用（过期则不做核对，明确留待只读接续）
+    const credentialUsable = Number.isFinite(snapshot.expiresAtMs) && snapshot.expiresAtMs > now();
+    if (mayHaveWritten && credentialUsable && typeof o.reconcileReadOnly === 'function') {
+      let rec = null;
+      try {
+        rec = await o.reconcileReadOnly({
+          snapshot, isolationDir,
+          auditId: approvalCheck.auditId,
+          targetUserId: boundPlan.targetUserId
+        });
+      } catch (_) { rec = null; }
+      report.reconcile = rec;
+      report.reconcileAttempted = true;
+      if (rec && rec.ok === true && rec.state === 'present') {
+        report.observationConfirmed = true;
+        report.reconcileConfirmed = true;
+      }
+    } else if (mayHaveWritten) {
+      report.reconcileAttempted = false;
+      report.reconcileSkipReason = credentialUsable
+        ? 'NO_RECONCILE_CAPABILITY'
+        : 'CREDENTIAL_EXPIRED_NO_RECONCILE';
+    }
     report.stoppedAt = 'worker';
-    report.errorCode = unknown ? ERR.RESULT_UNKNOWN : ERR.WORKER_FAILED;
-    report.resultUnknown = unknown;
-    report.incomplete.push(unknown
+    report.errorCode = report.resultUnknown ? ERR.RESULT_UNKNOWN : ERR.WORKER_FAILED;
+    report.incomplete.push(report.resultUnknown
       ? '事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。'
       : '写 worker 未成功完成；未重试初始化。');
+    // S3：结果未知**不保存为成功**
     return report;
   }
 
@@ -816,7 +999,10 @@ async function runExecutionWorker(options) {
     plan: o.plan,
     approval: o.approval,
     verifiedCaller: o.verifiedCaller === true,
-    fixedNowMs: o.fixedNowMs
+    fixedNowMs: o.fixedNowMs,
+    // S2：受控批准的到期时刻必须随载荷传给 worker，由其在执行期各边界复核。
+    // 缺该字段 worker 会按「无批准期限约束」拒绝执行。
+    approvalExpiresAtMs: o.approvalExpiresAtMs
   });
   // stdin 写入失败必须**如实记录**（此前完全忽略）
   let stdinFailure = null;
@@ -849,22 +1035,20 @@ async function runExecutionWorker(options) {
     }
   );
 
-  // R3：stdin 未成功送达 → 载荷不完整，worker 不会执行；按失败处理且不算结果未知
+  /**
+   * S3：stdin 失败**不能**单凭该错误断言「载荷必未送达/零写」。
+   * stdin 写失败可能发生在管道已部分接收之后；子进程已启动即可能已执行。
+   * 因此保守判定为「可能已写」→ 结果未知，交父层只读核对。
+   * 只有 spawnError（根本没启动）才允许确定未写。
+   */
   if (stdinFailure !== null && !r.spawnError) {
-    return {
-      ok: false, errorCode: ERR.WORKER_FAILED, resultUnknown: false,
-      reason: stdinFailure,
-      processFacts: Object.freeze({
-        spawnError: false, timedOut: false, overflow: false,
-        signal: null, exitCode: (r.code === undefined ? null : r.code),
-        closeNotObserved: Boolean(r.closeNotObserved),
-        terminationRequested: Boolean(r.terminationRequested),
-        terminationConfirmed: Boolean(r.terminationConfirmed)
-      }),
-      bootstrap: null, observed: null, observeFailed: false,
-      outcome: 'UNKNOWN', granted: false, initialized: false,
-      observationConfirmed: false, auditId: null
-    };
+    return projectWorkerOutput(null, {
+      spawnError: false, timedOut: false, overflow: false,
+      signal: null, exitCode: (r.code === undefined ? null : r.code),
+      closeNotObserved: Boolean(r.closeNotObserved),
+      terminationRequested: Boolean(r.terminationRequested),
+      terminationConfirmed: Boolean(r.terminationConfirmed)
+    }, true, stdinFailure, o.expected);
   }
 
   // R3-b/d：**先**判退出事实。stdout 内容不能覆盖进程事实。
@@ -888,36 +1072,73 @@ async function runExecutionWorker(options) {
     processFacts.closeNotObserved
   );
 
+  /**
+   * S3：退出码 0 **不**证明数据库提交结果确定。
+   * - 超时 / 信号 / 非零 / close 未观察到 → 结果未知；
+   * - **stdout 解析失败也按未知处理**（此前判 `WORKER_FAILED/resultUnknown=false`，
+   *   等于断言「没写」，Codex 样本 `malformed-output-clean-exit`）；
+   * - 启动失败（spawnError）才允许确定未写。
+   */
   if (processFacts.spawnError) {
-    return projectWorkerOutput(null, processFacts, false);
+    return projectWorkerOutput(null, processFacts, false, null, o.expected);
   }
   if (resultUnknown) {
-    return projectWorkerOutput(null, processFacts, true);
+    return projectWorkerOutput(null, processFacts, true, null, o.expected);
   }
   if (processFacts.timedOut || processFacts.overflow) {
-    return projectWorkerOutput(null, processFacts, mayHaveWritten);
+    return projectWorkerOutput(null, processFacts, mayHaveWritten, null, o.expected);
   }
 
-  // 只有退出事实干净时才读 stdout
+  /**
+   * 只有退出事实干净时才读 stdout。
+   * `expected` 传入本计划的确定性键，供 S4 逐项精确核对。
+   */
   let parsed = null;
   try {
     parsed = JSON.parse(String(r.stdout || ''));
   } catch (_) {
     parsed = null;
   }
-  return projectWorkerOutput(parsed, processFacts, false);
+  // S3：退出干净但输出坏/缺 → 保守留作待核对
+  if (!isPlainObject(parsed)) {
+    return projectWorkerOutput(null, processFacts, true, 'MALFORMED_OUTPUT', o.expected);
+  }
+  return projectWorkerOutput(parsed, processFacts, false, null, o.expected);
 }
 
 /**
- * 父层严格投影：只接受**固定字段集**，其余一律丢弃。
- *
- * R3-c：此前直接把 `JSON.parse(stdout)` 的对象透传，worker 若多输出一个
- * 字段（实测可带出未知敏感字段）就会原样出现在宿主报告里。
+ * S4：凭据失败类别白名单，**直接取自凭据宿主的实际导出**（不手抄近似名）。
+ * 手抄/正则会在宿主新增或改名时失配，也会放过任意大写串。
  */
-function projectWorkerOutput(parsed, facts, unknown) {
+const CREDENTIAL_FAILURE_CODES = new Set(Object.values(credentialHost.ERR));
+
+/** S4：有限枚举（值白名单，与 worker 层同一套，不新增任意字符串放行规则）。 */
+const PARENT_OUTCOMES = Object.freeze(['initialized', 'alreadyPresent', 'auditAlreadyPresent']);
+const PARENT_OBSERVED_STATES = Object.freeze(['present', 'absent', 'inconsistent', 'unconfirmed']);
+const PARENT_PRIMARY_STATUS = Object.freeze(['active', 'disabled']);
+const DIGEST_HEX_32 = /^[0-9a-f]{32}$/;
+const REQUEST_ID_UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * 父层严格投影：**字段名与字段值都限定**。
+ *
+ * R3-c：此前直接透传 worker 对象，未知字段会原样进入报告。
+ * S4：仅限定字段名还不够 —— `outcome`、`bootstrap.errorCode/inputDigest/requestIds`、
+ *      `observed.state/primaryStatus/errorCode` 等**已知字段内**可放任意字符串
+ *      （Codex 样本 `known-field-projection-leak`实测 `SYNTH_PRIVATE_MARKER` 全被保留）。
+ * 现在这些字段一律走有限枚举/格式校验，非法值归固定未知值。
+ *
+ * @param {object} parsed worker 输出（可能为 null）
+ * @param {object} facts 进程事实
+ * @param {boolean} unknown 父层判定的「可能已写」
+ * @param {string} [reason] 失败类别（仅固定短语，不透传任意字符串）
+ * @param {object} [expected] 本计划的期望值 `{auditId, inputDigest}`，逐项精确核对
+ */
+function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
   const base = {
     ok: false,
     errorCode: ERR.WORKER_FAILED,
+    // S3：worker 声明的未知与父层判定**保守合并**，父层正常退出不覆盖业务未知
     resultUnknown: Boolean(unknown),
     processFacts: Object.freeze({
       spawnError: facts.spawnError, timedOut: facts.timedOut, overflow: facts.overflow,
@@ -927,62 +1148,97 @@ function projectWorkerOutput(parsed, facts, unknown) {
     }),
     bootstrap: null, observed: null, observeFailed: false,
     outcome: 'UNKNOWN', granted: false, initialized: false,
-    observationConfirmed: false, auditId: null
+    observationConfirmed: false, auditId: null,
+    reason: typeof reason === 'string' ? reason : null
   };
   if (!isPlainObject(parsed)) return base;
 
   // 逐字段重建；未列出的字段（无论叫什么）都不进入结果
   const out = Object.assign({}, base);
-  out.ok = parsed.ok === true;
+  // S3：worker 自己声明 resultUnknown:true 时**必须**保守合并，不能被父层 false 覆盖
+  if (parsed.resultUnknown === true) out.resultUnknown = true;
+  out.ok = parsed.ok === true && out.resultUnknown === false;
   if (typeof parsed.errorCode === 'string' && executionWorker.CORE_ERROR_CODES.has(parsed.errorCode)) {
     out.errorCode = parsed.errorCode;
   } else if (out.resultUnknown) {
     out.errorCode = ERR.RESULT_UNKNOWN;
   }
-  // `resultUnknown` 以**父层判定**为准，不接受 stdout 自行声称
-  if (isPlainObject(parsed.bootstrap)) out.bootstrap = projectBootstrap(parsed.bootstrap);
+  if (isPlainObject(parsed.bootstrap)) out.bootstrap = projectBootstrap(parsed.bootstrap, expected);
   if (isPlainObject(parsed.observed)) out.observed = projectObserved(parsed.observed);
   out.observeFailed = parsed.observeFailed === true;
-  out.outcome = typeof parsed.outcome === 'string' ? parsed.outcome : 'UNKNOWN';
+  // S4：outcome 走有限枚举
+  out.outcome = typeof parsed.outcome === 'string' && PARENT_OUTCOMES.indexOf(parsed.outcome) !== -1
+    ? parsed.outcome : 'UNKNOWN';
   out.granted = parsed.granted === true;
   out.initialized = parsed.initialized === true;
   out.observationConfirmed = parsed.observationConfirmed === true;
-  // auditId 只保留本计划确定性形状
-  out.auditId = typeof parsed.auditId === 'string' &&
-    parsed.auditId.startsWith(p4.AUDIT_ID_PREFIX) ? parsed.auditId : null;
+  /**
+   * S4：顶层 auditId 必须是本计划的**精确**确定性键。
+   * 此前只查 startsWith 前缀 —— 同前缀的其它键会被当成有效审计键。
+   * `expected` 由 `executeOnce` 传入；缺预期时一律丢弃（不据worker 自述采信）。
+   */
+  out.auditId = (expected && typeof expected.auditId === 'string' &&
+    parsed.auditId === expected.auditId) ? expected.auditId : null;
   return out;
 }
 
-/** bootstrap 字段白名单投影（固定形状，不透传 extra）。 */
-function projectBootstrap(b) {
-  return {
+/**
+ * bootstrap 字段白名单投影（固定形状 + **值也限定**）。
+ *
+ * S4：此前 `outcome`/`errorCode`/`inputDigest`/`requestIds`/`existingPrimary.status`
+ * 只做了 `typeof === 'string'` 检查 —— 任意文本都能原样进入报告。
+ * 现在：枚举走有限集合、摘要须 32 位十六进制、请求 ID 须 UUID v4、
+ * 错误码走核心白名单；非法值一律归固定未知值。
+ * `expected` 存在时，auditId/inputDigest 还须与**本计划**逐项精确一致。
+ */
+function projectBootstrap(b, expected) {
+  const out = {
     ok: b.ok === true,
-    outcome: typeof b.outcome === 'string' ? b.outcome : 'UNKNOWN',
+    outcome: typeof b.outcome === 'string' && PARENT_OUTCOMES.indexOf(b.outcome) !== -1
+      ? b.outcome : 'UNKNOWN',
     granted: b.granted === true,
     initialized: b.initialized === true,
-    auditId: typeof b.auditId === 'string' ? b.auditId : null,
-    inputDigest: typeof b.inputDigest === 'string' ? b.inputDigest : null,
+    auditId: null,
+    inputDigest: null,
     existingPrimary: isPlainObject(b.existingPrimary) ? {
-      status: typeof b.existingPrimary.status === 'string' ? b.existingPrimary.status : 'unknown',
+      status: typeof b.existingPrimary.status === 'string' &&
+        PARENT_PRIMARY_STATUS.indexOf(b.existingPrimary.status) !== -1
+        ? b.existingPrimary.status : 'unknown',
       sameAsTarget: typeof b.existingPrimary.sameAsTarget === 'boolean'
         ? b.existingPrimary.sameAsTarget : null
     } : null,
-    errorCode: typeof b.errorCode === 'string' ? b.errorCode : null,
+    errorCode: typeof b.errorCode === 'string' && executionWorker.CORE_ERROR_CODES.has(b.errorCode)
+      ? b.errorCode : null,
     requestIds: Array.isArray(b.requestIds)
-      ? b.requestIds.filter(v => typeof v === 'string').slice(0, 8) : []
+      ? b.requestIds.filter(v => typeof v === 'string' && REQUEST_ID_UUID_V4.test(v)).slice(0, 8)
+      : []
   };
+  // 摘要：格式合法，且（若有期望值）须与本计划一致
+  if (typeof b.inputDigest === 'string' && DIGEST_HEX_32.test(b.inputDigest)) {
+    out.inputDigest = (expected && typeof expected.inputDigest === 'string' &&
+      b.inputDigest !== expected.inputDigest) ? null : b.inputDigest;
+  }
+  // 审计键：精确匹配本计划（缺期望值则丢弃，不据 worker 自述采信）
+  if (expected && typeof expected.auditId === 'string' && b.auditId === expected.auditId) {
+    out.auditId = expected.auditId;
+  }
+  return out;
 }
 
-/** observed 字段白名单投影。 */
+/** observed 字段白名单投影（值同样走枚举/白名单）。 */
 function projectObserved(o2) {
   return {
-    state: typeof o2.state === 'string' ? o2.state : 'unconfirmed',
+    state: typeof o2.state === 'string' && PARENT_OBSERVED_STATES.indexOf(o2.state) !== -1
+      ? o2.state : 'unconfirmed',
     primaryPresent: typeof o2.primaryPresent === 'boolean' ? o2.primaryPresent : null,
-    primaryStatus: typeof o2.primaryStatus === 'string' ? o2.primaryStatus : null,
+    primaryStatus: typeof o2.primaryStatus === 'string' &&
+      PARENT_PRIMARY_STATUS.indexOf(o2.primaryStatus) !== -1
+      ? o2.primaryStatus : null,
     auditPresent: typeof o2.auditPresent === 'boolean' ? o2.auditPresent : null,
     // 只读观察永不成为写授权，父层强制为 false
     writeAuthorized: false,
-    errorCode: typeof o2.errorCode === 'string' ? o2.errorCode : null
+    errorCode: typeof o2.errorCode === 'string' && executionWorker.CORE_ERROR_CODES.has(o2.errorCode)
+      ? o2.errorCode : null
   };
 }
 
@@ -992,11 +1248,20 @@ module.exports = Object.freeze({
   parseArgs,
   issueControlledApproval,
   computeImplementationFingerprint,
+  deepFreeze,
+  boundSnapshot,
+  fullPlanDigestOf,
   verifyControlledApproval,
   callerTupleDigest,
   verifyCallerSubject,
   localCheck,
   executeOnce,
   runExecutionWorker,
-  projectWorkerOutput
+  projectWorkerOutput,
+  projectBootstrap,
+  projectObserved,
+  CREDENTIAL_FAILURE_CODES,
+  PARENT_OUTCOMES,
+  PARENT_OBSERVED_STATES,
+  PARENT_PRIMARY_STATUS
 });

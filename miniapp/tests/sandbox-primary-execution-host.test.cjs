@@ -3,28 +3,31 @@
  * 首次管理员受控接线 —— 相称离线测试
  * ======================================
  *
- * ⚠️ **当前状态：12 通过 / 0 失败 / 9 显式跳过（skip）—— 不是全绿。**
+ * **当前状态：53 项，52 通过 / 0 失败 / 1 显式跳过。**
  *
- * 跳过的 9 项（B-1、C-1、C-3、C-4、D-2、D-3、E-1、E-2、E-3）原因相同：
- * 走 `executeOnce` 或 `worker.run` 时抛出 `WORKER_PLAN_INVALID` /
- * `CREDENTIAL_FETCH_FAILED(SPAWN_FAILED)`，而**同一入参在测试外单独调用
- * P4 六个函数（validateApprovalContext / resolveNowMs / validatePlan /
- * assertApprovedTarget / inputDigest / auditId）全部通过**，
- * 且用相同 spawn 替身单独调用凭据宿主亦成功。已在两轮有依据的排查内定位到
- * 「宿主/worker 组合调用」与「分别调用」行为不一致，但未查明确切机制。
+ * 上一版（12 通过 / 9 跳过）已过时：当时三处组合根因尚未定位。Codex 复核后
+ * 查明并已修复 —— CLI 替身曾把 `setImmediate()` 句柄当子进程返回；worker 曾把
+ * `validatePlan` 的归一化结果（含未登记字段 `deadlineMs`）回传给 P4；worker 替身
+ * 曾用 `out = await worker.run(...)` 覆盖 `emit` 已收集的结果。三处修复后原9 项
+ * 全部恢复通过。
  *
- * 按项目规则（同一失败原因最多 2 轮）停止该路径，**未通过 skip 冒充通过**，
- * 也未修改任何已验收模块来迁就测试。该缺口已写入交付记录交 Codex 裁决。
+ * 唯一跳过项 **R3-e**（worker 作为真实子进程可运行）：本机 `spawnSync` 对**任意**
+ * node 可执行文件返回 EBUSY（实测启动一个只写 `console.log(1)` 的临时脚本同样
+ * EBUSY），属 Codex 审查时装入的网络拒绝钩子残留，**不是 worker 代码问题**。
+ * 按「不冒充通过」原则显式 skip并写明原因，不用替身假装真实入口已验证。
  *
  * 覆盖：docs/WorkBuddy任务-首次管理员受控接线与本人登记准备-20261009.md §5
  * 组A 默认与拒绝 / B 正向整链 / C 身份 / D 事务门槛 / E 失败接续 /
- * F 重入与留证 / G 净化与边界
+ * F 重入与留证 / G 净化与边界；另含 R1–R5 定点反例与 Codex 复核 S1–S4 反例。
  *
- *合成传输替换在哪一层（如实标注）：
+ * 合成传输替换在哪一层（如实标注）：
  *  - CLI 层：`deps.spawn` 替换子进程（凭据命令、三阶段关联、额外 STS 核验）；
- *  - SDK 层：`@cloudbase/database` 的 `Db.reqClass` 替换为合成请求类 ——
- *    **真实** `sdk.init` / `database()` / 文档序列化 / 事务对象仍走固定 SDK。
- *  - 因此「真实 SDK 本地转换」是真实发生的；平台行为**未**验证。
+ *  - SDK 层：替换 `@cloudbase/database` 的**静态** `Db.reqClass`，并**注入已建好的
+ *    db**。注意：`Db.reqClass` 是静态属性，node-sdk 的 `database()` 路径会重设它；
+ *    因此本地顺序必须是「先建 db、后替换静态传输」，而不是「实例固化后只影响旧实例」
+ *    的普遍机制。真实 `sdk.init` / `database()` / 文档序列化 / 事务对象仍走固定 SDK。
+ *  - 因此「真实 SDK 本地转换」是真实发生的；**注入 db 不验证生产 worker 自建 db
+ *    的同批凭据链**，平台行为亦**未**验证。
  *
  * 不联网、不取真实凭据、不初始化、不部署、不启用入口。
  */
@@ -45,6 +48,12 @@ const cliObserver = require('../scripts/lib/cloudbase-readonly-observer.cjs');
 
 // 合成目标由**真实派生算法**得出（非硬编码），与 P4 同一公式
 const SYN_OPENID = 'synthetic-offline-openid';
+/**
+ * S2：合成批准期限（毫秒）。worker 的执行期期限复核**必需**该字段，
+ * 缺失即按「无批准期限约束」拒绝 —— 测试夹具统一注入。
+ */
+const APPROVAL_TTL_MS = Date.now() + 3600000;
+
 const SYN_TARGET = p4.deriveUserId(p4.FIXED_APP_ID, SYN_OPENID);
 const SYN_ACCOUNT = '123456789012';
 const RID = '00000000-0000-4000-8000-000000000001';
@@ -201,7 +210,7 @@ function syntheticCliSpawn(captured, opts) {
  *  - modifyDocument：`{data:{updated, upsert_id}}`
  * 事务开始/提交**不**计为集合写（按 action 分类，不混算）。
  */
-function installSyntheticSdkTransport(docs, failOn) {
+function installSyntheticSdkTransport(docs, failOn, opts) {
   const sdkRoot = host.FIXED.sdkRoot;
   require(path.join(sdkRoot, '@cloudbase', 'node-sdk'));
   const database = require(path.join(sdkRoot, '@cloudbase', 'database'));
@@ -209,14 +218,18 @@ function installSyntheticSdkTransport(docs, failOn) {
   const bson = require(path.join(sdkRoot, 'bson'));
   const EJSON = bson.EJSON || bson;
   const seen = [];
+  // S2：动作事件钩子（用例可在真实 SDK 动作发生时推进合成时钟）
+  let actionHook = typeof (opts && opts.onAction) === 'function' ? opts.onAction : null;
   /**
    * R1-d 关键顺序与注入方式（依据已验收适配测试 M2-26/27 的实测）：
    *  1. **先** `sdk.init(...).database()` 建出 db；
-   *  2. **再** 替换 `Db.reqClass` —— 固定 SDK 的 `Db` 在构造时固定当时的传输类，
-   *     所以替换只对「替换前已建好的 db」生效（反过来会让 db 走真实realtime
-   *     通道并抛 `SIGN_PARAM_INVALID`，事务前就 RESULT_UNKNOWN）；
+   *  2. **再** 替换 `Db.reqClass`。准确机制：`Db.reqClass` 是**静态属性**，
+   *     而 node-sdk `lib/cloudbase.js` 的 `database()` 路径会**重设**它；
+   *     因此「先建 db、后替换静态传输」是本地可行的唯一顺序。替换后再让
+   *     worker 自己 `sdk.init().database()`，db 会拿到重设后的真实传输 →
+   *     事务前抛 `SIGN_PARAM_INVALID`，表现为 RESULT_UNKNOWN 且传输调用数为 0。
+   *     这**不是**「实例固化后只影响旧实例」的普遍机制，不要据此推断。
    *  3. 把这个 db **注入** worker（`deps.db`）—— 与已验收适配层测试同一做法。
-   *     若让 worker 自己 `sdk.init` 建 db，它捕获的是替换后的类并走真实通道。
    */
   const db = sdk.init({
     env: 'offline-shape-only', secretId: 'SYNTHETIC', secretKey: 'SYNTHETIC', throwOnCode: true
@@ -240,6 +253,8 @@ function installSyntheticSdkTransport(docs, failOn) {
     async send(action, params = {}) {
       lastColl = params.collectionName;
       seen.push({ action, coll: params.collectionName, params });
+      // S2：允许用例在**真实动作事件**上推进合成时钟（不按 now() 次数猜测）
+      if (typeof actionHook === 'function') actionHook(action, params);
       if (failIf(action)) {
         throw Object.assign(new Error('SYNTHETIC_SDK_FAILURE'), { code: 'SYNTHETIC_SDK_FAILURE' });
       }
@@ -296,6 +311,7 @@ function installSyntheticSdkTransport(docs, failOn) {
   const isWrite = a => a === 'database.modifyDocument' || a === 'database.updateDocInTransaction';
   return {
     sdk, db, seen, store,
+    setHook: (fn) => { actionHook = typeof fn === 'function' ? fn : null; },
     counts: () => ({
       userGet: seen.filter(x => isRead(x.action) && x.coll === 'schtest_v1_users').length,
       primaryGet: seen.filter(x => isRead(x.action) && x.coll === 'schtest_v1_app_admins').length,
@@ -656,7 +672,12 @@ function syntheticWorkerSpawn(seen, docs, opts) {
     const c = new EventEmitter();
     c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
     let payload = null;
-    c.stdin.write = (raw) => { payload = JSON.parse(String(raw)); return true; };
+    c.stdin.write = (raw) => {
+      payload = JSON.parse(String(raw));
+      // S1：用例需要看到**实际送进 worker 的载荷**
+      if (typeof o.onPayload === 'function') o.onPayload(payload);
+      return true;
+    };
     c.stdin.end = () => {};
     c.kill = () => true;
     setImmediate(async () => {
@@ -691,7 +712,8 @@ test('D-1 目标用户缺失 → 零 set/commit，状态为拒绝', async () => 
     await worker.run({
       credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
       plan: syntheticPlan(), approval: syntheticApproval(),
-      verifiedCaller: true, fixedNowMs: Date.now()
+      verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
     }, { now: () => Date.now(), db: tr.db, emit: (v) => { out = v; } });
     const isWriteAct = a => a === 'database.modifyDocument' || a === 'database.updateDocInTransaction';
     // R1 返修：断言**真实到达的阶段** —— 事务已开启、读过 users，随后零写。
@@ -720,7 +742,8 @@ test('D-2 primary 已存在 → 零写且不误报 initialized', async () => {
     await worker.run({
       credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
       plan: syntheticPlan(userId), approval: syntheticApproval(userId),
-      verifiedCaller: true, fixedNowMs: Date.now()
+      verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
     }, { now: () => Date.now(), db: tr.db, emit: (v) => { out = v; } });
     assert.equal(out.bootstrap.outcome, 'alreadyPresent');
     assert.equal(out.bootstrap.initialized, false, 'alreadyPresent 绝不可报 initialized');
@@ -745,7 +768,8 @@ test('D-3 审计已存在但 primary 缺失 → 停止，不补写', async () =>
     let out = null;
     await worker.run({
       credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
-      plan, approval: syntheticApproval(userId), verifiedCaller: true, fixedNowMs: Date.now()
+      plan, approval: syntheticApproval(userId), verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
     }, { now: () => Date.now(), db: tr.db, emit: (v) => { out = v; } });
     assert.equal(out.bootstrap.outcome, 'auditAlreadyPresent');
     assert.equal(out.bootstrap.initialized, false);
@@ -761,7 +785,8 @@ test('D-4 凭据过期 → worker 零读取', async () => {
     await worker.run({
       credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() - 1 },
       plan: syntheticPlan(), approval: syntheticApproval(),
-      verifiedCaller: true, fixedNowMs: Date.now()
+      verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
     }, { now: () => Date.now(), db: tr.db, emit: (v) => { out = v; } });
     assert.equal(out.errorCode, 'WORKER_CREDENTIAL_EXPIRED');
     assert.equal(tr.seen.length, 0, '过期凭据零读取');
@@ -900,7 +925,14 @@ test('E-3 提交成功但回读未确认 → 不抹去提交事实，不重试�
     // R5：提交事实保留
     assert.equal(r.initialized, true, '已提交事实不得被回读未确认抹去');
     assert.equal(r.outcome, 'initialized');
-    assert.equal(r.auditId, 'sbx-init-primary:synthetic', '审计 ID 必须保留');
+    /**
+     * S3：审计 ID 必须是**启动前由受控计划算出的确定性键**，
+     * 而不是合成 worker 自报的 `sbx-init-primary:synthetic`
+     * （S4 要求父层逐项精确核对，不据子进程输出采信）。
+     */
+    const expectedAuditId = p4.auditId(plan, p4.inputDigest(plan));
+    assert.equal(r.auditId, expectedAuditId, '审计 ID 必须是本计划确定性键');
+    assert.notEqual(r.auditId, 'sbx-init-primary:synthetic', '不得采信 worker 自报的审计键');
     // R5：回读未确认不算成功
     assert.equal(r.observeFailed, true);
     assert.equal(r.observationConfirmed, false);
@@ -995,7 +1027,8 @@ test('R3-a worker 时钟默认真实 Date.now：缺 deps.now 不再抛 TypeError
     let out = null;
     await worker.run({
       credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
-      plan, approval: syntheticApproval(), verifiedCaller: true, fixedNowMs: Date.now()
+      plan, approval: syntheticApproval(), verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
     }, { db: tr.db, emit: (v) => { out = v; } });
     assert.notEqual(out, null, '应产出输出而非抛错');
     assert.equal(out.outcome, 'initialized', JSON.stringify(out).slice(0, 200));
@@ -1016,7 +1049,8 @@ test('R3-b 凭据期限严格校验：缺失 / NaN / Infinity 一律拒绝（不
       await worker.run({
         credential,
         plan: syntheticPlan(), approval: syntheticApproval(),
-        verifiedCaller: true, fixedNowMs: Date.now()
+        verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
       }, { db: tr.db, emit: (v) => { out = v; } });
       assert.equal(out.errorCode, worker.ERR.CREDENTIAL_SHAPE_INVALID, label + ' 应被拒');
       assert.equal(tr.seen.length, 0, label + ' 时零读取');
@@ -1029,7 +1063,8 @@ test('R3-c 私有 stdin 入口存在，且载荷字段受限（含 sdkRoot 被�
   assert.equal(typeof worker.readBoundedStdin, 'function');
   assert.equal(typeof worker.MAX_STDIN_BYTES, 'number');
   assert.deepEqual(worker.ALLOWED_PAYLOAD_FIELDS.slice().sort(),
-    ['approval', 'credential', 'fixedNowMs', 'plan', 'verifiedCaller']);
+    ['approval', 'approvalExpiresAtMs', 'credential', 'fixedNowMs', 'plan', 'verifiedCaller'],
+    'S2：批准到期时刻是执行期复核的必需绑定项');
   for (const extra of [{ sdkRoot: '/evil' }, { script: '/evil.js' }, { cwd: '/evil' }]) {
     const payload = Object.assign(
       { credential: { secretId: 'S' }, plan: {}, approval: {} }, extra);
@@ -1051,18 +1086,63 @@ test('R3-d stdin 有界：超出字节上限即拒绝，不无界读取', async 
   assert.equal(r.reason, 'STDIN_TOO_LARGE');
 });
 
-test('R3-e worker 作为真实子进程可运行（有界 stdin → 单次 JSON 输出）', () => {
+/**
+ * R3-e：worker 作为**真实子进程**可运行（有界 stdin → 单次 JSON 输出）。
+ *
+ * 本机当前**无法执行**该验证：Codex 审查时装入的 http/https/net/tls 网络拒绝钩子
+ * 连带使 `spawnSync` 对**任意** node 可执行文件返回 EBUSY（实测：启动一个只写
+ * `console.log(1)` 的临时脚本同样 EBUSY）。这是审查环境残留，不是 worker 代码问题。
+ *
+ * 按「不冒充通过」原则：能跑就跑并全断言；跑不了就**显式 skip 并写明原因**，
+ * 不用替身假装真实入口已验证。
+ */
+const REAL_SUBPROCESS_AVAILABLE = (() => {
+  const { spawnSync: sync } = require('node:child_process');
+  const fs2 = require('node:fs');
+  const os2 = require('node:os');
+  const path2 = require('node:path');
+  const d = fs2.mkdtempSync(path2.join(os2.tmpdir(), 'probe-'));
+  const f = path2.join(d, 'probe.js');
+  fs2.writeFileSync(f, 'process.stdout.write("ok")');
+  let ok = false;
+  try {
+    const r = sync(process.execPath, [f], { encoding: 'utf8', timeout: 15000 });
+    ok = r.error === undefined && r.status === 0 && String(r.stdout).trim() === 'ok';
+  } catch (_) { ok = false; }
+  fs2.rmSync(d, { recursive: true, force: true });
+  return ok;
+})();
+
+test('R3-e worker 作为真实子进程可运行（有界 stdin → 单次 JSON 输出）', (t) => {
   const { spawnSync } = require('node:child_process');
   const payload = JSON.stringify({
     credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() - 1 },
     plan: syntheticPlan(), approval: syntheticApproval(),
-    verifiedCaller: true, fixedNowMs: Date.now()
+    verifiedCaller: true, fixedNowMs: Date.now(),
+    approvalExpiresAtMs: APPROVAL_TTL_MS
   });
-  const res = spawnSync(process.execPath, [host.FIXED.workerPath], {
+  if (!REAL_SUBPROCESS_AVAILABLE) {
+    t.skip('本机 spawnSync 对任意 node 返回 EBUSY（Codex 审查装入的网络拒绝钩子残留）：'
+      + '真实子进程入口本轮**未验证**，不以替身冒充。');
+    return;
+  }
+  const fs2 = require('node:fs');
+  const os2 = require('node:os');
+  const path2 = require('node:path');
+  // Windows 上直接 spawn 本文件可能 EBUSY（该 .cjs 已被本测试进程 require）；
+  // 复制到合成临时目录再启动，验证的仍是真实入口，复制不改内容。
+  const tmpDir = fs2.mkdtempSync(path2.join(os2.tmpdir(), 'wcopy-'));
+  const copy = path2.join(tmpDir, 'worker-copy.cjs');
+  fs2.copyFileSync(host.FIXED.workerPath, copy);
+  const res = spawnSync(process.execPath, [copy], {
     input: payload, encoding: 'utf8', timeout: 20000,
     env: { PATH: '', SystemRoot: process.env.SystemRoot || '' }
   });
-  assert.equal(res.status, 0, '入口自身应正常退出：' + String(res.stderr).slice(0, 200));
+  fs2.rmSync(tmpDir, { recursive: true, force: true });
+  assert.equal(res.error, undefined,
+    '真实子进程入口应能启动：' + String(res.error && res.error.message).slice(0, 120));
+  assert.equal(res.status, 0,
+    '入口自身应正常退出：status=' + res.status + ' stderr=' + String(res.stderr).slice(0, 200));
   const out = JSON.parse(String(res.stdout).trim());
   assert.equal(out.errorCode, worker.ERR.CREDENTIAL_EXPIRED, String(res.stdout).slice(0, 200));
   assert.equal(String(res.stdout).trim().split('\n').length, 1);
@@ -1286,7 +1366,8 @@ test('R5-e 事务失败也必须做只读核对并保留 auditId 与轮次', asy
     await worker.run({
       credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
       plan: syntheticPlan(), approval: syntheticApproval(),
-      verifiedCaller: true, fixedNowMs: Date.now()
+      verifiedCaller: true, fixedNowMs: Date.now(),
+      approvalExpiresAtMs: APPROVAL_TTL_MS
     }, { db: tr.db, emit: (v) => { out = v; } });
     assert.equal(out.ok, false);
     assert.ok(out.auditId.startsWith(p4.AUDIT_ID_PREFIX), '失败路径须保留 auditId');
@@ -1312,4 +1393,357 @@ test('R2 同批凭据注入隔离环境；错传 profile 时确实拿不到凭�
     baseEnv: {}, isolationDir: 'C:/iso-does-not-exist'
   });
   assert.equal(r.ok, false, '隔离目录缺失须被守卫');
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// 第 3 组：Codex 复核 S1-S4 反例 + 成功对照
+// 每条用**新断言**直接证明拒绝 / 零写 / 确定性键 / 绑定快照的实际结果，
+// 不依赖任何旧脚本的 reproduced 标记。
+// ══════════════════════════════════════════════════════════════════════
+
+test('S1-a 调用方批准与绑定快照不同 → 送进 worker 的是绑定快照', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  let sentToWorker = null;
+  try {
+    const r = await host.executeOnce({
+      plan,
+      // 调用方自带的批准：approvedBy 与绑定句柄**不同**
+      approval: { approvedUserIds: [plan.targetUserId],
+        approvedBy: 'SYNTH_DIFFERENT_REVIEWER', approvedAt: new Date().toISOString() },
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(),
+      roundId: plan.roundId,
+      ...syntheticDirs('S1a'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn(tr.seen, [], {
+        db: tr.db,
+        onPayload: (x) => { sentToWorker = x; }
+      }),
+      persistRoundStarted: () => true,
+      persistResult: () => true
+    });
+    assert.notEqual(sentToWorker, null, '应已启动 worker');
+    assert.equal(sentToWorker.approval.approvedBy, 'SYNTHETIC_REVIEWER_OFFLINE_ONLY',
+      'worker 载荷必须取自绑定快照');
+    assert.notEqual(sentToWorker.approval.approvedBy, 'SYNTH_DIFFERENT_REVIEWER',
+      '未绑定的批准人不得被送进 worker');
+    assert.equal(r.observationConfirmed, true, '正常成功链应保留：' + r.errorCode);
+  } finally { tr.restore(); }
+});
+
+test('S1-b 句柄嵌套不可改写且处于冻结状态', () => {
+  const plan = syntheticPlan();
+  const handle = syntheticApprovalSource(plan);
+  let writeRejected = false;
+  try {
+    handle.approval.approvedBy = 'SYNTH_TAMPERED_APPROVER';
+  } catch (e) {
+    writeRejected = /read only|Cannot assign|not extensible/i.test(String(e && e.message));
+  }
+  assert.equal(handle.approval.approvedBy,
+    'SYNTHETIC_REVIEWER_OFFLINE_ONLY', '批准人必须保持签发时的值');
+  assert.equal(Object.isFrozen(handle.approval), true, '嵌套批准必须冻结');
+  assert.equal(Object.isFrozen(handle.plan), true, '内部计划快照必须冻结');
+  assert.equal(Object.isFrozen(handle.implementationFingerprint), true, '指纹快照必须冻结');
+  assert.equal(Object.isFrozen(handle.writeScope), true);
+  assert.equal(writeRejected || Object.isFrozen(handle.approval), true);
+  const r = host.verifyControlledApproval({ approvalSource: handle, plan, now: () => Date.now() });
+  assert.equal(r.ok, true, '未改动的句柄仍应通过');
+});
+
+test('S1-c started 之后改计划 → 执行原绑定快照，改动值不落库', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  let sentToWorker = null;
+  try {
+    const mutablePlan = JSON.parse(JSON.stringify(plan));
+    const r = await host.executeOnce({
+      plan: mutablePlan,
+      approval: syntheticApproval(plan),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(),
+      roundId: plan.roundId,
+      ...syntheticDirs('S1c'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn(tr.seen, [], {
+        db: tr.db,
+        onPayload: (x) => { sentToWorker = x; }
+      }),
+      persistRoundStarted: () => {
+        // 在异步边界之后改调用方持有的计划对象
+        mutablePlan.operatorRef = 'SYNTH_TAMPERED_OPERATOR_REF';
+        return true;
+      },
+      persistResult: () => true
+    });
+    assert.notEqual(sentToWorker, null, '应已启动 worker');
+    assert.equal(sentToWorker.plan.operatorRef, plan.operatorRef,
+      'worker 必须收到绑定快照里的 operatorRef');
+    assert.notEqual(sentToWorker.plan.operatorRef, 'SYNTH_TAMPERED_OPERATOR_REF',
+      '回调里改的值不得落进执行载荷');
+    assert.equal(r.observationConfirmed, true, 'errorCode=' + r.errorCode);
+  } finally { tr.restore(); }
+});
+
+test('S2-a 事务中途过期 → 零 set/commit 且不报成功', async () => {
+  const plan = syntheticPlan();
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  try {
+    let clockMs = Date.now();
+    let out = null;
+    // 在 SDK 的**读取动作事件**上推进合成时钟（不按 now() 次数猜测）
+    tr.setHook((action) => {
+      if (action === 'database.getInTransaction' || action === 'database.getDocument') {
+        clockMs += 7200000; // 推进 2 小时：跨越凭据与批准期限
+      }
+    });
+    await worker.run({
+      credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T',
+        expiresAtMs: Date.now() + 3600000 },
+      plan, approval: syntheticApproval(plan), verifiedCaller: true,
+      fixedNowMs: Date.now(), approvalExpiresAtMs: Date.now() + 3600000
+    }, { db: tr.db, now: () => clockMs, emit: (v) => { out = v; } });
+    const c = tr.counts();
+    assert.equal(c.primarySet, 0, '过期后不得写 primary：' + JSON.stringify(c));
+    assert.equal(c.auditSet, 0, '过期后不得写审计：' + JSON.stringify(c));
+    assert.equal(c.commit, 0, '过期后不得提交：' + JSON.stringify(c));
+    assert.equal(out.ok, false, '过期后不得报成功');
+  } finally { tr.restore(); }
+});
+
+test('S2-b 入口即过期 → 零 begin', async () => {
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  try {
+    let out = null;
+    const plan = syntheticPlan();
+    await worker.run({
+      credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T',
+        expiresAtMs: Date.now() + 3600000 },
+      plan, approval: syntheticApproval(plan), verifiedCaller: true,
+      fixedNowMs: Date.now(),
+      approvalExpiresAtMs: Date.now() - 1
+    }, { db: tr.db, emit: (v) => { out = v; } });
+    assert.equal(tr.counts().begin, 0, '入口即过期不得开启事务');
+    assert.equal(out.ok, false);
+  } finally { tr.restore(); }
+});
+
+test('S2-c 缺批准期限 → 拒绝且零读取', async () => {
+  const tr = installSyntheticSdkTransport({});
+  try {
+    let out = null;
+    await worker.run({
+      credential: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
+      plan: syntheticPlan(), approval: syntheticApproval(),
+      verifiedCaller: true, fixedNowMs: Date.now()
+      // 故意不传 approvalExpiresAtMs
+    }, { db: tr.db, emit: (v) => { out = v; } });
+    assert.equal(out.errorCode, worker.ERR.APPROVAL_INVALID, '缺批准期限须拒绝：' + out.errorCode);
+    assert.equal(tr.seen.length, 0, '拒绝前零读取');
+  } finally { tr.restore(); }
+});
+
+test('S3-a worker 超时 → 仍保留轮次与确定性 auditId', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const expectedAuditId = p4.auditId(plan, p4.inputDigest(plan));
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const started = [];
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(plan),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('S3a'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn([], {}, { hang: true }),
+      persistRoundStarted: (v) => { started.push(v); return true; },
+      persistResult: (v) => { saves.push(v); return true; },
+      workerLimits: { timeoutMs: 60, maxOutputBytes: 4096, closeGraceMs: 20 }
+    });
+    assert.equal(r.errorCode, host.ERR.RESULT_UNKNOWN);
+    assert.equal(r.resultUnknown, true);
+    assert.equal(r.auditId, expectedAuditId,
+      '超时时审计键须为本计划确定性键：' + r.auditId);
+    assert.equal(r.roundId, plan.roundId, '轮次必须保留');
+    assert.equal(started.length, 1);
+    assert.equal(started[0].auditId, expectedAuditId,
+      'started 须保存确定性审计键，不依赖子进程输出');
+    assert.equal(saves.length, 0, '结果未知不得触发结果保存');
+  } finally { tr.restore(); }
+});
+
+test('S3-b 退出码 0 但 stdout 坏 JSON → 结果未知', async () => {
+  const r = await host.runExecutionWorker({
+    snapshot: { secretId: 'S', secretKey: 'K', sessionToken: 'T', expiresAtMs: Date.now() + 60000 },
+    plan: syntheticPlan(), approval: syntheticApproval(), verifiedCaller: true,
+    fixedNowMs: Date.now(), approvalExpiresAtMs: Date.now() + 60000,
+    cwd: os.tmpdir(),
+    spawn: () => {
+      const { EventEmitter } = require('node:events');
+      const c = new EventEmitter();
+      c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+      c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+      setImmediate(() => {
+        c.stdout.emit('data', Buffer.from('{ not json at all'));
+        c.emit('exit', 0, null); c.emit('close', 0, null);
+      });
+      return c;
+    },
+    limits: { timeoutMs: 5000, maxOutputBytes: 65536, closeGraceMs: 20 }
+  });
+  assert.equal(r.ok, false);
+  assert.equal(r.resultUnknown, true,
+    '退出码 0 不证明提交结果；坏输出须保守留作待核对');
+  assert.equal(r.reason, 'MALFORMED_OUTPUT');
+});
+
+test('S3-c worker 声明 resultUnknown → 父层不得覆盖为 false', () => {
+  const r = host.projectWorkerOutput(
+    { ok: false, errorCode: 'RESULT_UNKNOWN', resultUnknown: true,
+      outcome: 'UNKNOWN', granted: false, initialized: false, observationConfirmed: false },
+    { spawnError: false, timedOut: false, overflow: false, signal: null,
+      exitCode: 0, closeNotObserved: false, terminationRequested: false,
+      terminationConfirmed: true },
+    false, null, { auditId: 'sbx-init-primary:x', inputDigest: 'a'.repeat(32) });
+  assert.equal(r.resultUnknown, true, 'worker 声明的未知必须被保守合并');
+});
+
+test('S4-a 已知字段内的非法值一律丢弃', () => {
+  const marker = 'SYNTH_PRIVATE_MARKER';
+  const expected = { auditId: 'sbx-init-primary:expected', inputDigest: 'a'.repeat(32) };
+  const facts = { spawnError: false, timedOut: false, overflow: false, signal: null,
+    exitCode: 0, closeNotObserved: false, terminationRequested: false,
+    terminationConfirmed: true };
+  const r = host.projectWorkerOutput({
+    ok: true, outcome: marker, granted: true, initialized: true,
+    observationConfirmed: true, auditId: 'sbx-init-primary:expected',
+    bootstrap: {
+      ok: true, outcome: marker, granted: true, initialized: true,
+      auditId: 'sbx-init-primary:expected', inputDigest: marker,
+      errorCode: marker, requestIds: [marker],
+      existingPrimary: { status: marker, sameAsTarget: 'yes' }
+    },
+    observed: {
+      state: marker, primaryPresent: 'true', primaryStatus: marker,
+      auditPresent: 'no', writeAuthorized: true, errorCode: marker
+    }
+  }, facts, false, null, expected);
+  assert.equal(JSON.stringify(r).includes(marker), false,
+    '已知字段内的非法值不得保留：' + JSON.stringify(r).slice(0, 200));
+  assert.equal(r.outcome, 'UNKNOWN');
+  assert.equal(r.bootstrap.outcome, 'UNKNOWN');
+  assert.equal(r.bootstrap.inputDigest, null);
+  assert.equal(r.bootstrap.errorCode, null);
+  assert.deepEqual(r.bootstrap.requestIds, []);
+  assert.equal(r.bootstrap.existingPrimary.status, 'unknown');
+  assert.equal(r.bootstrap.existingPrimary.sameAsTarget, null);
+  assert.equal(r.observed.state, 'unconfirmed');
+  assert.equal(r.observed.primaryPresent, null);
+  assert.equal(r.observed.primaryStatus, null);
+  assert.equal(r.observed.errorCode, null);
+  assert.equal(r.observed.writeAuthorized, false, '只读观察永不成为写授权');
+});
+
+test('S4-b 正常值必须通过（不得把成功状态错误净化掉）', () => {
+  const auditId = 'sbx-init-primary:expected';
+  const digest = 'a'.repeat(32);
+  const rid = '00000000-0000-4000-8000-000000000001';
+  const facts = { spawnError: false, timedOut: false, overflow: false, signal: null,
+    exitCode: 0, closeNotObserved: false, terminationRequested: false,
+    terminationConfirmed: true };
+  const r = host.projectWorkerOutput({
+    ok: true, errorCode: null, resultUnknown: false, outcome: 'initialized',
+    granted: true, initialized: true, observationConfirmed: true, auditId,
+    bootstrap: { ok: true, outcome: 'initialized', granted: true, initialized: true,
+      auditId, inputDigest: digest, errorCode: null, requestIds: [rid],
+      existingPrimary: null },
+    observed: { state: 'present', primaryPresent: true, primaryStatus: 'active',
+      auditPresent: true, writeAuthorized: true, errorCode: null },
+    observeFailed: false
+  }, facts, false, null, { auditId, inputDigest: digest });
+  assert.equal(r.ok, true, '正常成功链不得被净化掉');
+  assert.equal(r.outcome, 'initialized');
+  assert.equal(r.auditId, auditId);
+  assert.equal(r.bootstrap.inputDigest, digest);
+  assert.deepEqual(r.bootstrap.requestIds, [rid]);
+  assert.equal(r.observed.state, 'present');
+  assert.equal(r.observed.primaryStatus, 'active');
+});
+
+test('S4-c 审计键仅前缀相同 → 不采信', () => {
+  const facts = { spawnError: false, timedOut: false, overflow: false, signal: null,
+    exitCode: 0, closeNotObserved: false, terminationRequested: false,
+    terminationConfirmed: true };
+  const r = host.projectWorkerOutput({
+    ok: true, outcome: 'initialized', granted: true, initialized: true,
+    observationConfirmed: true,
+    auditId: 'sbx-init-primary:OTHER_KEY_SAME_PREFIX',
+  }, facts, false, null,
+  { auditId: 'sbx-init-primary:expected', inputDigest: 'a'.repeat(32) });
+  assert.equal(r.auditId, null,
+    '仅前缀相同不够，必须与本计划确定性键精确一致');
+});
+
+test('S4-d 凭据失败类别走实际枚举（不是大写正则）', () => {
+  const hostCodes = new Set(Object.values(require('../scripts/lib/cloudbase-cli-credential-host.cjs').ERR));
+  assert.equal(host.CREDENTIAL_FAILURE_CODES.size, hostCodes.size);
+  for (const c of hostCodes) {
+    assert.equal(host.CREDENTIAL_FAILURE_CODES.has(c), true, '应含宿主码：' + c);
+  }
+  assert.equal(host.CREDENTIAL_FAILURE_CODES.has('SYNTHETIC_ARBITRARY_TOKEN'), false);
+  assert.equal(host.CREDENTIAL_FAILURE_CODES.has('A'.repeat(64)), false);
+});
+
+test('S-成功对照：S1-S4 收尾后完整正向链仍成立', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const expectedAuditId = p4.auditId(plan, p4.inputDigest(plan));
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(plan),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('SOK'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn(tr.seen, [], { db: tr.db }),
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    const c = tr.counts();
+    assert.equal(r.status, host.STATUS.PLAN_READY, JSON.stringify({
+      stoppedAt: r.stoppedAt, errorCode: r.errorCode, incomplete: r.incomplete }));
+    assert.equal(r.outcome, 'initialized');
+    assert.equal(r.initialized, true);
+    assert.equal(r.observationConfirmed, true);
+    assert.equal(r.resultPersisted, true);
+    assert.equal(r.auditId, expectedAuditId);
+    assert.equal(saves[0].auditId, expectedAuditId);
+    assert.notEqual(r.resultUnknown, true);
+    assert.equal(c.begin, 1);
+    assert.equal(c.primarySet, 1);
+    assert.equal(c.auditSet, 1);
+    assert.equal(c.commit, 1);
+    assert.equal(c.abort, 0);
+    assert.equal(c.readOnlyGet, 2);
+    assert.equal(captured.credentialFetches, 1);
+  } finally { tr.restore(); }
 });

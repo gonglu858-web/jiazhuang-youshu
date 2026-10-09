@@ -1,0 +1,206 @@
+{
+  "observedAt": "2026-10-09T09:50:35.565Z",
+  "scope": "OFFLINE_SYNTHETIC_ONLY",
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "S1-1-handle-nested-immutable",
+      "pass": true,
+      "observed": {
+        "approvedByUnchanged": true,
+        "approvalFrozen": true,
+        "planFrozen": true,
+        "fingerprintFrozen": true,
+        "writeRejectedOrFrozen": true,
+        "snapshotApprovalBy": "SYNTHETIC_REVIEWER_OFFLINE_ONLY"
+      }
+    },
+    {
+      "id": "S1-2-plan-difference-rejected",
+      "pass": true,
+      "observed": {
+        "samePlanAccepted": true,
+        "differentPlanRejected": true
+      }
+    },
+    {
+      "id": "S1-3-worker-payload-from-bound-snapshot",
+      "pass": true,
+      "observed": {
+        "payloadApprovedBy": "SYNTHETIC_REVIEWER_OFFLINE_ONLY",
+        "observationConfirmed": true,
+        "status": "PLAN_READY"
+      }
+    },
+    {
+      "id": "S1-4-plan-change-after-started-ignored",
+      "pass": true,
+      "observed": {
+        "payloadOperatorRef": "SYNTHETIC_OPERATOR_OFFLINE_ONLY",
+        "tamperedValue": "SYNTH_TAMPERED_OPERATOR_REF",
+        "observationConfirmed": true
+      }
+    },
+    {
+      "id": "S2-1-expire-after-tx-read-zero-write",
+      "pass": true,
+      "observed": {
+        "sdkCounts": {
+          "userGet": 1,
+          "primarySet": 0,
+          "auditSet": 0,
+          "commit": 0,
+          "abort": 1,
+          "begin": 1,
+          "readOnlyGet": 0
+        },
+        "ok": false,
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialExpiredDuringRun": true,
+        "planExpiredDuringRun": true
+      }
+    },
+    {
+      "id": "S2-2-expire-before-begin",
+      "pass": true,
+      "observed": {
+        "begin": 0,
+        "errorCode": "WORKER_PLAN_EXPIRED",
+        "expiredAtStage": "BEFORE_TRANSACTION"
+      }
+    },
+    {
+      "id": "S2-3-missing-approval-deadline-rejected",
+      "pass": true,
+      "observed": {
+        "errorCode": "WORKER_APPROVAL_INVALID",
+        "transportCalls": 0
+      }
+    },
+    {
+      "id": "S3-1-timeout-keeps-reconcile-keys",
+      "pass": true,
+      "observed": {
+        "errorCode": "RESULT_UNKNOWN",
+        "resultUnknown": true,
+        "auditIdKept": true,
+        "roundIdKept": true,
+        "startedAuditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "resultSaves": 0,
+        "reconcileAttempted": false,
+        "reconcileSkipReason": "NO_RECONCILE_CAPABILITY"
+      }
+    },
+    {
+      "id": "S3-2-malformed-output-is-unknown",
+      "pass": true,
+      "observed": {
+        "ok": false,
+        "resultUnknown": true,
+        "reason": "MALFORMED_OUTPUT",
+        "exitCode": 0
+      }
+    },
+    {
+      "id": "S3-3-declared-unknown-not-overwritten",
+      "pass": true,
+      "observed": {
+        "resultUnknown": true,
+        "ok": false
+      }
+    },
+    {
+      "id": "S4-1-illegal-values-in-known-fields-dropped",
+      "pass": true,
+      "observed": {
+        "markerLeaked": false,
+        "outcome": "UNKNOWN",
+        "bootstrapOutcome": "UNKNOWN",
+        "inputDigest": null,
+        "requestIds": 0,
+        "observedState": "unconfirmed",
+        "writeAuthorized": false
+      }
+    },
+    {
+      "id": "S4-2-legit-values-pass",
+      "pass": true,
+      "observed": {
+        "ok": true,
+        "outcome": "initialized",
+        "auditId": "sbx-init-primary:expected",
+        "inputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestIds": 1,
+        "observedState": "present"
+      }
+    },
+    {
+      "id": "S4-3-audit-key-prefix-only-rejected",
+      "pass": true,
+      "observed": {
+        "auditId": null
+      }
+    },
+    {
+      "id": "S4-4-credential-failure-allowlist-from-host",
+      "pass": true,
+      "observed": {
+        "hostCodeCount": 17,
+        "allowlistSize": 17,
+        "arbitraryTokenRejected": true
+      }
+    },
+    {
+      "id": "S-positive-control-full-chain",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "outcome": "initialized",
+        "observationConfirmed": true,
+        "resultPersisted": true,
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "sdkCounts": {
+          "userGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "commit": 1,
+          "abort": 0,
+          "begin": 1,
+          "readOnlyGet": 2
+        },
+        "credentialCommands": 1,
+        "fixedApiCalls": 4,
+        "sameSnapshotEveryApiCall": true
+      }
+    }
+  ],
+  "sourceHashes": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "2bbaa5f6019466521f483e34174f89f6bbdc9a0835090c9fdb75e54c3104fddb",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "017a7d001c950f22bf52b20ddf4d5809f05d28e54bfaf7daa313947c544a4285",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "ffeb21600a069a37f7e12ec95bb554443a78f9480763481ec702b9ee7e218a5a",
+    "docs/首次管理员受控接线与本人登记操作稿-20261009.md": "24aaa92a502a595a159328c82a80b7771bb7661a242c386e4552325b4748a7fd"
+  },
+  "historicalEvidenceHashes": {
+    "docs/证据/Codex首次管理员R1R6返修复核-20261009.json": "514cb028564c546ddf7436f2ab0124b77a673ed814b71c063577e014522b2cdd",
+    "docs/证据/WorkBuddy首次管理员接线R1R6返修复现-20261009.json": "36d2fda4c9541582133457144c149f12941b718973b0cb20d8bbfd21620e9078"
+  },
+  "boundaries": {
+    "realCredentialFetches": 0,
+    "realCloudCalls": 0,
+    "readRealAuthStoreContent": false,
+    "wroteHistoricalOrBusinessFiles": false,
+    "realInitializeExecuted": false,
+    "realDeploymentExecuted": false
+  },
+  "statedLimitations": [
+    "本证据只证明**返修后的离线行为**：合成凭据 + 合成 CLI 子进程 + 合成 SDK 传输。",
+    "平台侧签名/IAM/事务行为**未验证**；注入 db 不验证生产 worker 自建 db 的同批凭据链。",
+    "Codex 那份缺陷复现脚本本轮**未复跑**；其 reproduced=false 不作为闭合依据，",
+    "  本证据改以新断言直接证明拒绝/零写/确定性键/绑定快照的实际结果。",
+    "受控批准句柄由本模块 issueControlledApproval 签发，仅供离线；**真实批准未生成**。"
+  ]
+}
