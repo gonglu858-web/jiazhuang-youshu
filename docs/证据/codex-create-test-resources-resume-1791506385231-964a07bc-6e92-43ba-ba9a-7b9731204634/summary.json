@@ -1,0 +1,490 @@
+{
+  "schema": "sandbox-resource-creation-result/1",
+  "runId": "codex-create-test-resources-resume-1791506385231-964a07bc-6e92-43ba-ba9a-7b9731204634",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "appId": "wxfb4db1615ac15531",
+  "region": "ap-shanghai",
+  "instance": "tnt-eficftvp6",
+  "startedAt": "2026-10-09T00:39:45.232Z",
+  "finishedAt": "2026-10-09T00:46:50.360Z",
+  "status": "CREATED_AND_SPEC_VERIFIED_READY_STATUS_UNCONFIRMED",
+  "resourceCreationCompleted": true,
+  "explicitIndexReadinessConfirmed": false,
+  "collections": [
+    {
+      "name": "schtest_v1_app_admins",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:40:28.074Z"
+    },
+    {
+      "name": "schtest_v1_users",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:40:54.221Z"
+    },
+    {
+      "name": "schtest_v1_projects",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:41:02.930Z"
+    },
+    {
+      "name": "schtest_v1_project_members",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:41:11.180Z"
+    },
+    {
+      "name": "schtest_v1_invitations",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:41:19.676Z"
+    },
+    {
+      "name": "schtest_v1_audit_events",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:41:58.924Z"
+    },
+    {
+      "name": "schtest_v1_schedules",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:42:07.245Z"
+    },
+    {
+      "name": "schtest_v1_schedule_revisions",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:42:15.614Z"
+    },
+    {
+      "name": "schtest_v1_schedule_occupancy",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:42:24.076Z"
+    },
+    {
+      "name": "schtest_v1_member_task_guard",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:43:00.403Z"
+    },
+    {
+      "name": "schtest_v1_schedule_receipts",
+      "count": 0,
+      "acl": "ADMINONLY",
+      "safeRule": "ADMINONLY",
+      "at": "2026-10-09T00:43:09.170Z"
+    }
+  ],
+  "indexes": [
+    {
+      "table": "schtest_v1_users",
+      "name": "bindingCodeHash_1",
+      "keys": [
+        {
+          "Name": "bindingCodeHash",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:43:38.764Z"
+    },
+    {
+      "table": "schtest_v1_projects",
+      "name": "scope_1_status_1",
+      "keys": [
+        {
+          "Name": "scope",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:44:40.335Z"
+    },
+    {
+      "table": "schtest_v1_project_members",
+      "name": "userId_1_status_1",
+      "keys": [
+        {
+          "Name": "userId",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:44:46.783Z"
+    },
+    {
+      "table": "schtest_v1_project_members",
+      "name": "project_status_id",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        },
+        {
+          "Name": "_id",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:44:52.964Z"
+    },
+    {
+      "table": "schtest_v1_invitations",
+      "name": "tokenHash_1",
+      "keys": [
+        {
+          "Name": "tokenHash",
+          "Direction": "1"
+        }
+      ],
+      "unique": true,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:44:58.746Z"
+    },
+    {
+      "table": "schtest_v1_invitations",
+      "name": "projectId_1_status_1",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:45:16.800Z"
+    },
+    {
+      "table": "schtest_v1_audit_events",
+      "name": "project_created_desc",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "createdAt",
+          "Direction": "-1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:45:22.813Z"
+    },
+    {
+      "table": "schtest_v1_schedules",
+      "name": "project_created_id",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "createdAt",
+          "Direction": "1"
+        },
+        {
+          "Name": "_id",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:45:28.964Z"
+    },
+    {
+      "table": "schtest_v1_schedules",
+      "name": "project_status_created_id",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        },
+        {
+          "Name": "createdAt",
+          "Direction": "1"
+        },
+        {
+          "Name": "_id",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:45:34.982Z"
+    },
+    {
+      "table": "schtest_v1_schedules",
+      "name": "project_trade_created_id",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "trade",
+          "Direction": "1"
+        },
+        {
+          "Name": "createdAt",
+          "Direction": "1"
+        },
+        {
+          "Name": "_id",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:45:53.037Z"
+    },
+    {
+      "table": "schtest_v1_schedules",
+      "name": "project_status_trade_created_id",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        },
+        {
+          "Name": "trade",
+          "Direction": "1"
+        },
+        {
+          "Name": "createdAt",
+          "Direction": "1"
+        },
+        {
+          "Name": "_id",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:45:59.446Z"
+    },
+    {
+      "table": "schtest_v1_schedules",
+      "name": "project_worker_status_id",
+      "keys": [
+        {
+          "Name": "projectId",
+          "Direction": "1"
+        },
+        {
+          "Name": "workerUserId",
+          "Direction": "1"
+        },
+        {
+          "Name": "status",
+          "Direction": "1"
+        },
+        {
+          "Name": "_id",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:46:05.696Z"
+    },
+    {
+      "table": "schtest_v1_schedule_revisions",
+      "name": "schedule_afterVersion",
+      "keys": [
+        {
+          "Name": "scheduleId",
+          "Direction": "1"
+        },
+        {
+          "Name": "afterVersion",
+          "Direction": "1"
+        }
+      ],
+      "unique": false,
+      "sparse": false,
+      "partial": "",
+      "listed": true,
+      "specMatches": true,
+      "explicitReadyStatus": null,
+      "readyConfirmed": false,
+      "at": "2026-10-09T00:46:11.690Z"
+    }
+  ],
+  "counts": {
+    "createdCollections": 11,
+    "createdCustomIndexes": 13,
+    "writeRequests": 24,
+    "readRequestsThisSession": 67,
+    "readRequestsIncludingPriorSession": 75,
+    "platformInternalRequestsUnknown": true,
+    "beforeCollections": 10,
+    "afterCollections": 21,
+    "allTestCollectionsEmpty": true,
+    "defaultIndexesPreserved": true
+  },
+  "metadata": {
+    "beforeBytes": 816622,
+    "afterBytes": 1058286,
+    "newTestBytes": 241664,
+    "oldMetadataChanges": []
+  },
+  "billingAfter": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "EnableOverrun": false,
+    "IsAutoRenew": true,
+    "Status": "NORMAL",
+    "PackageId": "baas_personal",
+    "PayMode": "PREPAYMENT",
+    "ExpireTime": "2027-04-04 23:59:59"
+  },
+  "configs": [
+    {
+      "name": "schedule-entry-proof.js",
+      "sha256": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13",
+      "enabled": false,
+      "recursiveFrozen": true,
+      "allowedProjectIds": [],
+      "sandboxProjectId": null,
+      "roundId": null
+    },
+    {
+      "name": "schedule-sandbox-proof.js",
+      "sha256": "724bc3c16ca8d03b84d3d8498b06e011b2ad621599167fc78649b2b378c0cf33",
+      "enabled": false,
+      "recursiveFrozen": true,
+      "allowedProjectIds": null,
+      "sandboxProjectId": "",
+      "roundId": ""
+    },
+    {
+      "name": "sandbox-test-driver-proof.js",
+      "sha256": "15acb49fd8e6838950d56edb2ef0b22c6991103db7026cee817b9776fe59a348",
+      "enabled": false,
+      "recursiveFrozen": true,
+      "allowedProjectIds": null,
+      "sandboxProjectId": null,
+      "roundId": ""
+    }
+  ],
+  "unchangedPinnedFiles": true,
+  "scope": {
+    "businessRecordsWritten": 0,
+    "primaryInitialized": false,
+    "functionsDeployed": false,
+    "entryEnabled": false,
+    "purchases": false,
+    "billingSettingsChanged": false,
+    "oldProjectWriteRequests": 0,
+    "deletions": 0
+  },
+  "limitations": [
+    "DescribeTable 返回 Indexes/IndexNum，没有明确 READY/状态字段；规格已核对，不能据此宣称全部平台就绪。",
+    "准确剩余额度、实际账单与新增资源费用未取得；无购买或计费开关变更。",
+    "元数据为多次读取，不是跨集合原子快照。",
+    "未验证 SDK 数据读取、事务、并发、超时、100操作或32KiB限制。"
+  ],
+  "callEvidenceCount": 91
+}

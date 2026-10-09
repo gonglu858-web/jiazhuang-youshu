@@ -1,0 +1,18 @@
+{
+  "table": "schtest_v1_users",
+  "name": "bindingCodeHash_1",
+  "keys": [
+    {
+      "Name": "bindingCodeHash",
+      "Direction": "1"
+    }
+  ],
+  "unique": false,
+  "sparse": false,
+  "partial": "",
+  "listed": true,
+  "specMatches": true,
+  "explicitReadyStatus": null,
+  "readyConfirmed": false,
+  "at": "2026-10-09T00:43:38.764Z"
+}

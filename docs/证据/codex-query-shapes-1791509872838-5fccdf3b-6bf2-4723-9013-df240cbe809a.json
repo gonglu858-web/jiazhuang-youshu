@@ -1,0 +1,631 @@
+{
+  "runId": "codex-query-shapes-1791509872838-5fccdf3b-6bf2-4723-9013-df240cbe809a",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "region": "ap-shanghai",
+  "startedAt": "2026-10-09T01:37:52.839Z",
+  "queries": [
+    {
+      "id": "I01",
+      "collection": "schtest_v1_users",
+      "where": {
+        "bindingCodeHash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "orderBy": [],
+      "limit": 100,
+      "skip": 0,
+      "source": "service.js:119"
+    },
+    {
+      "id": "I02",
+      "collection": "schtest_v1_projects",
+      "where": {
+        "scope": "identity-test",
+        "status": "active"
+      },
+      "orderBy": [],
+      "limit": 100,
+      "skip": 0,
+      "source": "service.js:161"
+    },
+    {
+      "id": "I03",
+      "collection": "schtest_v1_project_members",
+      "where": {
+        "userId": "u_0000000000000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [],
+      "limit": 100,
+      "skip": 0,
+      "source": "service.js:160"
+    },
+    {
+      "id": "I04",
+      "collection": "schtest_v1_project_members",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:417,554"
+    },
+    {
+      "id": "I05",
+      "collection": "schtest_v1_invitations",
+      "where": {
+        "tokenHash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "orderBy": [],
+      "limit": 100,
+      "skip": 0,
+      "source": "service.js:247"
+    },
+    {
+      "id": "I06",
+      "collection": "schtest_v1_invitations",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "requested"
+      },
+      "orderBy": [],
+      "limit": 100,
+      "skip": 0,
+      "source": "service.js:274"
+    },
+    {
+      "id": "I07",
+      "collection": "schtest_v1_audit_events",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "desc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "candidate I07: management audit query, not existing business page"
+    },
+    {
+      "id": "I08",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I09",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I10",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "trade": "水电"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I11",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "active",
+        "trade": "水电"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I12",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "workerUserId": "u_0000000000000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:283-300"
+    },
+    {
+      "id": "I13",
+      "collection": "schtest_v1_schedule_revisions",
+      "where": {
+        "scheduleId": "s_00000000000000000000000000000000"
+      },
+      "orderBy": [
+        {
+          "field": "afterVersion",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 0,
+      "source": "schedule-service.js:505-512"
+    },
+    {
+      "id": "I04-skip100",
+      "collection": "schtest_v1_project_members",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:417,554"
+    },
+    {
+      "id": "I08-skip100",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I09-skip100",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I10-skip100",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "trade": "水电"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I11-skip100",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "status": "active",
+        "trade": "水电"
+      },
+      "orderBy": [
+        {
+          "field": "createdAt",
+          "direction": "asc"
+        },
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:448-456"
+    },
+    {
+      "id": "I12-skip100",
+      "collection": "schtest_v1_schedules",
+      "where": {
+        "projectId": "p_00000000000000000000000000000000",
+        "workerUserId": "u_0000000000000000000000000000000000000000",
+        "status": "active"
+      },
+      "orderBy": [
+        {
+          "field": "_id",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:283-300"
+    },
+    {
+      "id": "I13-skip100",
+      "collection": "schtest_v1_schedule_revisions",
+      "where": {
+        "scheduleId": "s_00000000000000000000000000000000"
+      },
+      "orderBy": [
+        {
+          "field": "afterVersion",
+          "direction": "asc"
+        }
+      ],
+      "limit": 100,
+      "skip": 100,
+      "source": "schedule-service.js:505-512"
+    }
+  ],
+  "writeAuthorized": false,
+  "wrapperSha256": "0b1281f288bede729d1651464da4b513fcaeb35b96e34b4609e9f08ae7eb8ac8",
+  "sourceHashes": {
+    "service": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+    "schedule": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+  },
+  "status": "ALL_QUERIES_SUCCEEDED_EMPTY",
+  "limitations": [
+    "合成查询值并未创建项目、用户或安排。",
+    "I07为受控审计查询，非已有业务页。",
+    "service原无显式limit的查询加100上限；全部仅投影_id，不输出文档。",
+    "分页偏移是直接探测skip=100语法，并非有数据的分页连续性测试。",
+    "SDK内部网络重试数未单独观测；未实现包装层重试。",
+    "空结果成功不证明实际命中哪个索引、排序值正确、性能达标或唯一约束写入行为。"
+  ],
+  "fetch": {
+    "attempted": true,
+    "diagnostics": {
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "spawnFailed": false,
+      "stdoutBytes": 769,
+      "stderrBytes": 0
+    }
+  },
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "e49cd31b-52dd-47ea-8d13-ff862fe70cb8",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "6730",
+          "principalIdTail": "5386",
+          "requestId": "e49cd31b-52dd-47ea-8d13-ff862fe70cb8"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "f11ca940-0ae3-4649-b93c-9b30b6b15afa",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "f11ca940-0ae3-4649-b93c-9b30b6b15afa"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "df77467c-4dcd-4f58-a2a6-af1211e6c3eb",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "df77467c-4dcd-4f58-a2a6-af1211e6c3eb"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "e49cd31b-52dd-47ea-8d13-ff862fe70cb8",
+      "describeEnvs": "f11ca940-0ae3-4649-b93c-9b30b6b15afa",
+      "describeEnvInfo": "df77467c-4dcd-4f58-a2a6-af1211e6c3eb"
+    }
+  },
+  "workerExit": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "spawnFailed": false,
+    "stdinFailed": false
+  },
+  "results": [
+    {
+      "id": "I01",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 289
+    },
+    {
+      "id": "I02",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 73
+    },
+    {
+      "id": "I03",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 85
+    },
+    {
+      "id": "I04",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 69
+    },
+    {
+      "id": "I05",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 75
+    },
+    {
+      "id": "I06",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 60
+    },
+    {
+      "id": "I07",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 48
+    },
+    {
+      "id": "I08",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 59
+    },
+    {
+      "id": "I09",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 51
+    },
+    {
+      "id": "I10",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 53
+    },
+    {
+      "id": "I11",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 78
+    },
+    {
+      "id": "I12",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 55
+    },
+    {
+      "id": "I13",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 52
+    },
+    {
+      "id": "I04-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 55
+    },
+    {
+      "id": "I08-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 58
+    },
+    {
+      "id": "I09-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 54
+    },
+    {
+      "id": "I10-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 58
+    },
+    {
+      "id": "I11-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 61
+    },
+    {
+      "id": "I12-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 54
+    },
+    {
+      "id": "I13-skip100",
+      "status": "QUERY_SUCCEEDED_EMPTY",
+      "count": 0,
+      "requestId": null,
+      "elapsedMs": 56
+    }
+  ],
+  "finishedAt": "2026-10-09T01:38:00.839Z",
+  "dependenciesUnchanged": true
+}

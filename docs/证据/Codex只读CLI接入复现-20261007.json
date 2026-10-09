@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "observedAt": "2026-10-07T11:42:06.683Z",
+  "realNetworkCalls": 0,
+  "sourceSha256": "69afab6163f026fc097bba0332e90e150c0a8e9d9bd62cb7b4d5709da2c1fc12",
+  "findings": [
+    {
+      "id": "R1-entry-extra-code",
+      "unexpectedAccepted": true,
+      "entryCheck": {
+        "name": "cli-entry-content",
+        "ok": true
+      },
+      "note": "合成入口多出可执行语句仍通过；未实际执行篡改入口。"
+    },
+    {
+      "id": "R1-entry-comment-only",
+      "unexpectedAccepted": true
+    },
+    {
+      "id": "R2-combined-output",
+      "totalBytes": 120,
+      "configuredLimit": 100,
+      "overflow": false,
+      "kills": 0
+    },
+    {
+      "id": "R2-after-finish-data",
+      "retainedBytes": 101,
+      "configuredLimit": 100,
+      "killsBefore": 1,
+      "killsAfter": 2,
+      "dataListenerCount": 1,
+      "note": "已settle后仍处理data并再次kill；kill=false未记录为终止未确认。"
+    },
+    {
+      "id": "R2-timeout-unconfirmed",
+      "timedOut": true,
+      "reportedSignal": "SIGTERM",
+      "closeEmitted": false,
+      "killReturned": false,
+      "killsAfterLateData": 2
+    },
+    {
+      "id": "R3-hint-inside-json",
+      "originalValid": false,
+      "unexpectedAccepted": true
+    },
+    {
+      "id": "R4-first-query-parse-failure",
+      "apiProcessesStarted": 1,
+      "cloudObservationPerformed": false,
+      "stoppedAt": "unknown",
+      "errorCode": "CLI_OUTPUT_UNPARSEABLE"
+    },
+    {
+      "id": "R4-missing-enum-code",
+      "hasDefinedCode": false,
+      "existingTestComparesToUndefined": true
+    }
+  ]
+}

@@ -1,0 +1,401 @@
+{
+  "observedAt": "2026-10-08T01:05:41.757Z",
+  "scope": "M1/M2/M3 R1–R5 返修（SDK 只读身份接入，本地离线）",
+  "basedOn": "docs/Codex复核-SDK只读身份M1-M3本地实现-20261007.md 第 2–6 节",
+  "constraints": {
+    "network": false,
+    "executedCli": false,
+    "readAuth": false,
+    "fetchedRealCredential": false,
+    "installed": false,
+    "initialized": false,
+    "deployed": false,
+    "createdResources": false,
+    "wroteFiles": false,
+    "historicalEvidenceOverwritten": false
+  },
+  "realNetworkCalls": 0,
+  "realCloudCalls": 0,
+  "fixedEnvironment": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "appId": "wxfb4db1615ac15531",
+    "region": "ap-shanghai"
+  },
+  "results": [
+    {
+      "id": "R1-1-cli-credential-priority-source",
+      "pass": true,
+      "bundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97",
+      "bundleShaMatchesTaskDoc": true,
+      "order": "project(cwd) > authStore(<config>/.cloudbase/auth.json) > TENCENTCLOUD_*（最低）",
+      "evidenceKind": "STATIC_SOURCE",
+      "note": "静态源码定位；仍不能替代对真实公共入口的离线优先级验证"
+    },
+    {
+      "id": "R1-2-cli-node-launch-and-stop-on-failure",
+      "pass": true,
+      "calls": [
+        {
+          "bin": "node.exe",
+          "argv0": "tcb",
+          "argv1": "api"
+        }
+      ],
+      "launchedBy": "node",
+      "stoppedEarly": true,
+      "notExecutedStages": 2,
+      "note": "上一版把无扩展名 JS 脚本当可执行文件、且失败后仍跑完三阶段"
+    },
+    {
+      "id": "R1-3-sdk-init-entry-and-versions",
+      "pass": true,
+      "exportType": "object",
+      "initType": "function",
+      "constructorError": "TypeError",
+      "nodeSdkVersion": "2.10.0",
+      "databaseVersion": "1.4.1",
+      "resolvedEntry": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+      "note": "上一版 new CloudBase(config) 会停在 SDK_UNAVAILABLE"
+    },
+    {
+      "id": "R1-4-region-actually-passed",
+      "pass": true,
+      "region": "ap-shanghai",
+      "sdkConfigKeys": [
+        "debug",
+        "env",
+        "region",
+        "secretId",
+        "secretKey",
+        "sessionToken"
+      ],
+      "note": "R1.3：报告固定声称 ap-shanghai，就必须真的传"
+    },
+    {
+      "id": "R1-5-real-sdk-init-path-runs",
+      "pass": true,
+      "initOk": true,
+      "hasDatabase": true,
+      "region": "ap-shanghai",
+      "env": "cloud1-d8gcq5ag39d847723",
+      "chainedKeys": [
+        "get"
+      ],
+      "trapThrows": true,
+      "realNetworkCalls": 0,
+      "note": "真实 require + init(config) + database()；只做本地 introspection，未发起任何查询"
+    },
+    {
+      "id": "R1-6-local-preparation-honest",
+      "pass": true,
+      "checkCount": 15,
+      "actualVersions": {
+        "@cloudbase/node-sdk": "2.10.0",
+        "@cloudbase/database": "1.4.1"
+      },
+      "sdkPublicEntry": {
+        "resolved": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+        "exportKind": "object",
+        "hasInit": true
+      },
+      "credentialFetchHostImplemented": false,
+      "publicEntryIdentityProven": false,
+      "note": "交付状态不再写成「完整实现后的平台验证缺口」"
+    },
+    {
+      "id": "R2-1-timeout-without-exit-is-bounded",
+      "pass": true,
+      "settled": true,
+      "elapsedMs": 127,
+      "kills": 1,
+      "errorCode": "WORKER_TIMEOUT",
+      "note": "上一版计时器只 kill 不 resolve，可永久挂起"
+    },
+    {
+      "id": "R2-2-kill-false-still-bounded",
+      "pass": true,
+      "settled": true,
+      "errorCode": "WORKER_TIMEOUT",
+      "kills": 1,
+      "terminationConfirmed": false,
+      "note": "「杀进程」不证明已终止，如实记未确认"
+    },
+    {
+      "id": "R2-3-exit-without-close",
+      "pass": true,
+      "settled": true,
+      "errorCode": "WORKER_CLOSE_NOT_OBSERVED",
+      "note": "复用已验收收尾：宽限只从首次 exit 起算"
+    },
+    {
+      "id": "R2-4-combined-overflow-single-kill",
+      "pass": true,
+      "settled": true,
+      "errorCode": "WORKER_OVERFLOW",
+      "kills": 1,
+      "note": "上一版 stdout/stderr 各自计数，700KB+700KB 可同时低于 1MiB"
+    },
+    {
+      "id": "R2-5-stdout-cannot-override-exit-facts",
+      "pass": true,
+      "nonzeroExit": "WORKER_NONZERO_EXIT",
+      "signaled": "WORKER_SIGNALED",
+      "timeoutWithValidJson": "WORKER_TIMEOUT",
+      "note": "上一版忽略 code/signal，超时后 close 且 stdout 含 ok:true 也判成功"
+    },
+    {
+      "id": "R2-6-stdin-error-and-idempotent-finish",
+      "pass": true,
+      "stdinFailure": "WORKER_STDIN_FAILED",
+      "spawnError": "WORKER_FAILED",
+      "normalRunOk": true,
+      "lateErrorThrew": false,
+      "reEmitThrew": false,
+      "listenersAfterFinish": 0,
+      "stdinClosed": true,
+      "stdinPayloadHasExpiry": true,
+      "note": "stdin 是与已验收收尾的唯一差异，须最小受控实现"
+    },
+    {
+      "id": "R3-1-missing-fields-not-observed",
+      "pass": true,
+      "primaryStatus": "UNCONFIRMED",
+      "primaryReasons": [
+        "userId 缺失或不是完整 userId",
+        "状态缺失或取值非法",
+        "primary 状态不是 active"
+      ],
+      "primaryFieldCompleteness": "INCOMPLETE",
+      "userStatus": "UNCONFIRMED",
+      "userReasons": [
+        "状态缺失或取值非法",
+        "用户已停用或状态非法",
+        "openid 缺失，无法核对身份派生",
+        "未执行身份派生核对"
+      ],
+      "note": "上一版只拒绝 ===false，worker 给 null 时缺失字段被放行成 OBSERVED"
+    },
+    {
+      "id": "R3-2-platform-error-not-not-found",
+      "pass": true,
+      "classification": "UNCONFIRMED",
+      "hasPlatformError": true,
+      "interpretedStatus": "UNCONFIRMED",
+      "note": "上一版先看 data 长度，把带 code 的 {data:[]} 误判为 NOT_FOUND"
+    },
+    {
+      "id": "R3-3-invalid-values-sanitized",
+      "pass": true,
+      "leakedMarker": false,
+      "invalidUserId": null,
+      "invalidStatus": null,
+      "illegalClassification": "UNCONFIRMED",
+      "note": "R3.4：userId/status/requestId/reason 各按自身契约投影"
+    },
+    {
+      "id": "R3-4-worker-failure-not-summarized-as-observed",
+      "pass": true,
+      "workerOk": false,
+      "workerErrorCode": "SDK_UNAVAILABLE",
+      "primaryStatus": "UNCONFIRMED",
+      "targetStatus": "UNCONFIRMED",
+      "note": "上一版顶层 status=OBSERVED 且 incomplete=[]"
+    },
+    {
+      "id": "R3-5-strict-ok-and-write-attempts",
+      "pass": true,
+      "okNotTrue": "WORKER_FAILED",
+      "writeAttemptsPositive": "WORKER_WRITE_ATTEMPTED",
+      "writeAttemptsMissing": "WORKER_WRITE_ATTEMPTED",
+      "spoofNotAccepted": true,
+      "arbitraryFieldDropped": true,
+      "note": "两层都须校验，不能仅信任 worker 的布尔标志"
+    },
+    {
+      "id": "R3-6-injection-is-not-production-evidence",
+      "pass": true,
+      "provenFromInjection": false,
+      "evidenceKind": "SYNTHETIC_INJECTION",
+      "source": "deps:fetchCredential",
+      "unprovenErrorCode": "PUBLIC_ENTRY_IDENTITY_UNPROVEN",
+      "note": "上一版仅提供注入函数即 proven:true；获取宿主其实未实现"
+    },
+    {
+      "id": "R3-7-not-found-and-missing-target",
+      "pass": true,
+      "primaryStatus": "NOT_FOUND",
+      "primaryUserId": null,
+      "targetStatus": "NOT_EXECUTED_TARGET_UNCONFIRMED",
+      "note": "NOT_FOUND 只是「本次未找到」，不得称为有效管理员"
+    },
+    {
+      "id": "R4-1-case-insensitive-isolation",
+      "pass": true,
+      "envKeys": [
+        "APPDATA",
+        "CI",
+        "HOME",
+        "LOCALAPPDATA",
+        "NO_UPDATE_NOTIFIER",
+        "PATH",
+        "TCB_DISABLE_REPORT",
+        "TCB_REGION",
+        "TENCENTCLOUD_SECRETID",
+        "TENCENTCLOUD_SECRETKEY",
+        "TENCENTCLOUD_SESSIONTOKEN",
+        "USERPROFILE"
+      ],
+      "userProfile": "C:/iso/run",
+      "region": "ap-shanghai",
+      "note": "Windows 环境变量忽略大小写；上一版只删大写键、留下 xdg_config_home/UserProfile 与整族代理"
+    },
+    {
+      "id": "R4-2-auth-state-locations-complete",
+      "pass": true,
+      "locationCount": 7,
+      "locations": [
+        "auth.json @ run/.cloudbase",
+        "auth.json @ .config/.cloudbase",
+        "tcb-auth.json @ run/.cloudbase",
+        "config.json @ run/.cloudbase",
+        "auth.json @ .config/.cloudbase",
+        "tcb-auth.json @ .config/.cloudbase",
+        "config.json @ .config/.cloudbase"
+      ],
+      "cleanAccepted": true,
+      "dirtyRejected": true,
+      "fileNotDeleted": true,
+      "note": "上一版只检查两个路径；仍只查位置不读内容"
+    },
+    {
+      "id": "R4-4-expiry-checked-on-failure-paths",
+      "pass": true,
+      "freshnessChecks": 2,
+      "expiredCaughtOnFailurePath": true,
+      "note": "上一版失败即停止会跳过所有后检查；现已覆盖失败路径"
+    },
+    {
+      "id": "R4-5-worker-payload-carries-expiry",
+      "pass": true,
+      "payloadHasExpiresAtMs": true,
+      "expiredDuringRun": true,
+      "note": "上一版载荷根本不含到期时间，两条读取之间无法检查"
+    },
+    {
+      "id": "R5-1-narrow-wrapper-write-unreachable",
+      "pass": true,
+      "chainedWriteReachable": false,
+      "docWriteReachable": false,
+      "dbCollectionTrapped": true,
+      "readPathStillWorks": true,
+      "wrapperKeys": [
+        "doc"
+      ],
+      "note": "上一版仅改 doc 原引用，field() 返回的新 DocumentReference 上写方法未被封堵"
+    },
+    {
+      "id": "R5-2-real-sdk-narrow-wrapper-holds",
+      "pass": true,
+      "realFieldReturnsNewRef": true,
+      "realNewRefHasSetMethod": true,
+      "narrowWrapperWriteReachable": false,
+      "narrowWrapperKeys": "get",
+      "realNetworkCalls": 0,
+      "note": "在真实 @cloudbase/database 上验证缺陷前提，不是自制 mock"
+    },
+    {
+      "id": "R5-3-read-path-triggers-no-write",
+      "pass": true,
+      "wrapperKeys": [
+        "get"
+      ],
+      "chainedWriteReachable": false,
+      "collectionAddExists": false,
+      "dbCollectionTrapped": true,
+      "realNetworkCalls": 0,
+      "note": "窄包装上根本不存在写方法（不可达），不是「被陷阱拦住」"
+    },
+    {
+      "id": "untouched-files-unchanged",
+      "pass": true,
+      "checked": 5,
+      "mismatch": [],
+      "actual": {
+        "scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+        "scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a",
+        "scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+        "scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+        "scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+      },
+      "note": "C1/T1/P4/已验收适配层/初始化 CLI 均未触碰"
+    },
+    {
+      "id": "historical-evidence-preserved",
+      "pass": true,
+      "historicalJsonSha256": "f5e4b2dd86cf0cfe5c1bfcf4690a38e18458e6ea37c4068ee6a60c6e5a951678",
+      "historicalScriptSha256": "1da8655f2e310b1f75d416126e3ca947ef4691bcfed4b598ea99ab0ff134ad01",
+      "declaredJsonSha256": "ea3caa2ec5aaa469f3d14cf9b05280d359be20ef38434b7e91fdaea1e6f582c1",
+      "declaredScriptSha256": "1da8655f2e310b1f75d416126e3ca947ef4691bcfed4b598ea99ab0ff134ad01",
+      "scriptMatchesDeclaration": true,
+      "jsonDiffersFromDeclaration": true,
+      "jsonObservedAt": "2026-10-07T13:14:51.718Z",
+      "differenceCause": "JSON 内含 observedAt 运行时间戳；该 JSON 由同一脚本在收尾时**重跑一次**产出，时间戳变化导致字节不同。脚本本身未变（哈希与声明一致）。非第三方修改。",
+      "codexEvidencePresent": true,
+      "action": "按第 8 节要求：**保留**原 JSON 与原哈希声明，未重跑覆盖来「对齐」；本轮证据只写 stdout。",
+      "note": "Codex 的审查依据是其独立复现，不依赖该 JSON 逐字节可信"
+    }
+  ],
+  "blockingGaps": [
+    {
+      "id": "public-cli-identity-source-not-proven-offline",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "R1 要求先完成「受控公共 CLI 离线身份选择证明」再接入真实获取实现。本轮**未执行**真实 CLI（不执行 bundle、不联网），故该离线证明**未完成**，真实凭据获取宿主因此保持关闭（credentialFetchHostImplemented=false）。",
+      "needed": "在受审宿主内以隔离目录 + 合成凭据执行一次公共 `api` 命令，观察实际选用的身份来源。"
+    },
+    {
+      "id": "same-batch-credential-chain-not-proven-in-production",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "未执行 secrets get --json、未获取任何真实凭据，「同一批凭据同时供给 CLI 与 SDK」在生产层面未证实。本轮已证实的是：注入路径（合成）、隔离清理、有效期多点核对、同一份快照不刷新不混批。",
+      "needed": "受审宿主内按既有只读授权执行一次整组，另存脱敏证据。"
+    },
+    {
+      "id": "no-real-database-read-performed",
+      "severity": "EXPECTED_THIS_ROUND",
+      "detail": "primary / users 均未真实读取。副本是否已有主管理员、指定微信用户记录是否有效**均未知**。",
+      "needed": "同批凭据链证实后，由受审宿主执行一次只读整组。"
+    },
+    {
+      "id": "target-user-source-unconfirmed",
+      "severity": "EXPECTED_THIS_ROUND",
+      "detail": "目标 userId 未预填。CLI 接受一个格式严格的完整 userId 作为只读查询目标，但参数不构成授权，也不构成现实人员证明。",
+      "needed": "由 Codex 把受信指定来源与目标对应好后再执行。"
+    },
+    {
+      "id": "sdk-network-retry-count-unverified",
+      "severity": "EXPECTED_LATER",
+      "detail": "SDK 自身的重试与超时未实测。本轮只固定了 worker 层的 55 秒 / 1 MiB 上限。",
+      "needed": "真实执行时记录实际请求次数与耗时。"
+    },
+    {
+      "id": "permission-denial-vs-collection-missing-unclassified",
+      "severity": "EXPECTED_LATER",
+      "detail": "权限拒绝与网络失败都归为 UNCONFIRMED（不猜错误码、不解析自由 message）。",
+      "needed": "取得官方错误契约后再细分。"
+    }
+  ],
+  "boundaries": {
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false,
+    "collectionsTouched": [
+      "schtest_v1_app_admins",
+      "schtest_v1_users"
+    ],
+    "note": "仅独立测试副本 schtest_v1_*；未查旧业务 users/app_admins"
+  },
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "blockingGaps": 2
+  }
+}

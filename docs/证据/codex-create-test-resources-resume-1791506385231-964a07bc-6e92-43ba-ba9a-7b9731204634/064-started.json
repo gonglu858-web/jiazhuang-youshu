@@ -1,0 +1,26 @@
+{
+  "number": 64,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_invitations",
+    "CreateIndexes": [
+      {
+        "IndexName": "tokenHash_1",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "tokenHash",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": true
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:44:54.886Z",
+  "status": "ATTEMPT_STARTED"
+}

@@ -1,0 +1,540 @@
+{
+  "kind": "REVIEWED_REAL_READONLY_ATTEMPT",
+  "runId": "codex-real-readonly-diagnostic-1791457853956-0e6f5447-faa0-4838-9fb5-f7daca27ce77",
+  "startedAt": "2026-10-08T11:10:53.957Z",
+  "wrapperSha256": "8312b645cd7739f048c1884d768bf1094b666e73ee67691fbacf02542c85bbab",
+  "fingerprints": [
+    {
+      "path": "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs",
+      "sha256": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs",
+      "sha256": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs",
+      "sha256": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-readonly-observer.cjs",
+      "sha256": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+    },
+    {
+      "path": "miniapp/scripts/check-cloudbase-sdk-readonly.cjs",
+      "sha256": "1a0ea9d6eced919d9d4f67d712a4886be2eef0a568ac4a255c0a9ac3e69f2b3c"
+    },
+    {
+      "path": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/bin/tcb",
+      "sha256": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b"
+    },
+    {
+      "path": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/dist/standalone/cli.js",
+      "sha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97"
+    }
+  ],
+  "localPreparation": {
+    "schemaVersion": 2,
+    "observedAt": "2026-10-08T11:10:53.956Z",
+    "mode": "local-check",
+    "status": "LOCAL_READY",
+    "localPreparation": {
+      "status": "READY",
+      "checks": [
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\package.json",
+          "sha256": "5987ce763903cd52c6e432e27d802fd7737e92796b7113fa034d8bd47efa715f",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\cloudbase.js",
+          "sha256": "e201fa91ccb31523fe43fd2681b4d63fd70048537c22d496c582911be67b7a17",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\database\\package.json",
+          "sha256": "5291998925910899e68b1fc3e4071384c704772926fbb79227d107bfed555163",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+          "sha256": "55166fa18fb9f244bac22cddae29c5b157c7d03547aa7fd1c6de64b2dde67a62",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-version",
+          "ok": true,
+          "package": "@cloudbase/node-sdk",
+          "expected": "2.10.0",
+          "actual": "2.10.0"
+        },
+        {
+          "name": "sdk-version",
+          "ok": true,
+          "package": "@cloudbase/database",
+          "expected": "1.4.1",
+          "actual": "1.4.1"
+        },
+        {
+          "name": "sdk-public-entry",
+          "ok": true,
+          "resolved": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+          "exportKind": "object",
+          "hasInit": true,
+          "note": "R1：公开入口是 init(config)；对导出对象 new 会抛 TypeError"
+        },
+        {
+          "name": "worker-present",
+          "ok": true,
+          "file": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs",
+          "sha256": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "node-binary",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-entry",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-bundle",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-entry-content",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-bundle-hash",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-version",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "auth-session-homedir",
+          "ok": true,
+          "detail": null
+        }
+      ],
+      "sdkFiles": [
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\package.json",
+          "present": true,
+          "sha256": "5987ce763903cd52c6e432e27d802fd7737e92796b7113fa034d8bd47efa715f",
+          "historicalBaselineMatched": null
+        },
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\cloudbase.js",
+          "present": true,
+          "sha256": "e201fa91ccb31523fe43fd2681b4d63fd70048537c22d496c582911be67b7a17",
+          "historicalBaselineMatched": null
+        },
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\database\\package.json",
+          "present": true,
+          "sha256": "5291998925910899e68b1fc3e4071384c704772926fbb79227d107bfed555163",
+          "historicalBaselineMatched": null
+        },
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+          "present": true,
+          "sha256": "55166fa18fb9f244bac22cddae29c5b157c7d03547aa7fd1c6de64b2dde67a62",
+          "historicalBaselineMatched": null
+        }
+      ],
+      "sdkPublicEntry": {
+        "resolved": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+        "exportKind": "object",
+        "hasInit": true
+      },
+      "actualVersions": {
+        "@cloudbase/node-sdk": "2.10.0",
+        "@cloudbase/database": "1.4.1"
+      },
+      "credentialFetched": false,
+      "cloudCallAttempted": false,
+      "credentialFetchHostImplemented": true,
+      "publicEntryIdentityProven": true,
+      "productionSameBatchObserved": false,
+      "publicEntryEvidence": {
+        "scope": "固定 Node + 原始 bin/tcb + 原始 bundle；命令 secrets get --json",
+        "fingerprint": {
+          "entrySha256": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b",
+          "bundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97"
+        },
+        "evidence": "docs/证据/CodexSecretsGet离线契约审查-20261008.json",
+        "additionalBehaviorsKnown": true,
+        "notCovered": [
+          "refreshTmpToken 分支尚未产出完整快照，输出契约未定论",
+          "Initialized=false 时命令仍输出凭据（固定版本行为，已接受，不代表服务就绪）",
+          "真实登录目录的缓存写回未验证",
+          "生产同批凭据链、IAM、真实库内容、目标 userId 来源、费用/余量"
+        ],
+        "note": "离线证明只覆盖该命令范围与固定指纹；不证明生产宿主已接上，也不证明任何平台行为"
+      }
+    },
+    "sameBatchCredential": {
+      "status": "NOT_ATTEMPTED",
+      "proven": false
+    },
+    "cliAssociation": {
+      "status": "NOT_ATTEMPTED"
+    },
+    "primaryObservation": {
+      "status": "NOT_ATTEMPTED"
+    },
+    "targetUserObservation": {
+      "status": "NOT_ATTEMPTED"
+    },
+    "incomplete": [],
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false
+  },
+  "targetUserId": null,
+  "dependencyOverrides": [
+    "allowRealCredentialFetch=true"
+  ],
+  "syntheticCredentialOrTransportInjected": false,
+  "writeAuthorized": false,
+  "notes": [
+    "原编排报告不改写proven/status。",
+    "未指定受信微信用户，跳过users；本次只允许固定副本primary读取。",
+    "获取过程中官方CLI可能读取并刷新登录缓存，是否发生未单独观测。",
+    "子进程启动不等于请求到达平台；请求尝试次数与平台响应事实分开解释。"
+  ],
+  "observation": {
+    "schemaVersion": 2,
+    "runId": "run-94df74cb39ad",
+    "observedAt": "2026-10-08T11:10:53.958Z",
+    "mode": "read-only",
+    "status": "INCOMPLETE",
+    "stoppedAt": null,
+    "errorCode": null,
+    "localPreparation": {
+      "status": "READY",
+      "checks": [
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\package.json",
+          "sha256": "5987ce763903cd52c6e432e27d802fd7737e92796b7113fa034d8bd47efa715f",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\cloudbase.js",
+          "sha256": "e201fa91ccb31523fe43fd2681b4d63fd70048537c22d496c582911be67b7a17",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\database\\package.json",
+          "sha256": "5291998925910899e68b1fc3e4071384c704772926fbb79227d107bfed555163",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-source",
+          "ok": true,
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+          "sha256": "55166fa18fb9f244bac22cddae29c5b157c7d03547aa7fd1c6de64b2dde67a62",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "sdk-version",
+          "ok": true,
+          "package": "@cloudbase/node-sdk",
+          "expected": "2.10.0",
+          "actual": "2.10.0"
+        },
+        {
+          "name": "sdk-version",
+          "ok": true,
+          "package": "@cloudbase/database",
+          "expected": "1.4.1",
+          "actual": "1.4.1"
+        },
+        {
+          "name": "sdk-public-entry",
+          "ok": true,
+          "resolved": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+          "exportKind": "object",
+          "hasInit": true,
+          "note": "R1：公开入口是 init(config)；对导出对象 new 会抛 TypeError"
+        },
+        {
+          "name": "worker-present",
+          "ok": true,
+          "file": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs",
+          "sha256": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5",
+          "historicalBaselineMatched": null
+        },
+        {
+          "name": "node-binary",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-entry",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-bundle",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-entry-content",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-bundle-hash",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "cli-version",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "name": "auth-session-homedir",
+          "ok": true,
+          "detail": null
+        }
+      ],
+      "sdkFiles": [
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\package.json",
+          "present": true,
+          "sha256": "5987ce763903cd52c6e432e27d802fd7737e92796b7113fa034d8bd47efa715f",
+          "historicalBaselineMatched": null
+        },
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\cloudbase.js",
+          "present": true,
+          "sha256": "e201fa91ccb31523fe43fd2681b4d63fd70048537c22d496c582911be67b7a17",
+          "historicalBaselineMatched": null
+        },
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\database\\package.json",
+          "present": true,
+          "sha256": "5291998925910899e68b1fc3e4071384c704772926fbb79227d107bfed555163",
+          "historicalBaselineMatched": null
+        },
+        {
+          "file": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+          "present": true,
+          "sha256": "55166fa18fb9f244bac22cddae29c5b157c7d03547aa7fd1c6de64b2dde67a62",
+          "historicalBaselineMatched": null
+        }
+      ],
+      "sdkPublicEntry": {
+        "resolved": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\@cloudbase\\node-sdk\\lib\\index.js",
+        "exportKind": "object",
+        "hasInit": true
+      },
+      "actualVersions": {
+        "@cloudbase/node-sdk": "2.10.0",
+        "@cloudbase/database": "1.4.1"
+      },
+      "credentialFetched": false,
+      "cloudCallAttempted": false,
+      "credentialFetchHostImplemented": true,
+      "publicEntryIdentityProven": true,
+      "productionSameBatchObserved": false,
+      "publicEntryEvidence": {
+        "scope": "固定 Node + 原始 bin/tcb + 原始 bundle；命令 secrets get --json",
+        "fingerprint": {
+          "entrySha256": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b",
+          "bundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97"
+        },
+        "evidence": "docs/证据/CodexSecretsGet离线契约审查-20261008.json",
+        "additionalBehaviorsKnown": true,
+        "notCovered": [
+          "refreshTmpToken 分支尚未产出完整快照，输出契约未定论",
+          "Initialized=false 时命令仍输出凭据（固定版本行为，已接受，不代表服务就绪）",
+          "真实登录目录的缓存写回未验证",
+          "生产同批凭据链、IAM、真实库内容、目标 userId 来源、费用/余量"
+        ],
+        "note": "离线证明只覆盖该命令范围与固定指纹；不证明生产宿主已接上，也不证明任何平台行为"
+      }
+    },
+    "sameBatchCredential": {
+      "status": "FETCHED",
+      "proven": false,
+      "evidenceKind": "PUBLIC_ENTRY_CANDIDATE",
+      "expiresAtIso": "2026-10-08T12:21:41.000Z",
+      "refreshed": false,
+      "refreshDuringFetchObserved": null,
+      "source": "host:secrets-get-json",
+      "fetchSubprocessAttempted": true,
+      "fetchMode": "REAL_CANDIDATE",
+      "fetchRequestCountKnown": false,
+      "fetchDiagnostics": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "overflow": false,
+        "closeNotObserved": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "spawnFailed": false,
+        "stdoutBytes": 769,
+        "stderrBytes": 0
+      }
+    },
+    "cliAssociation": {
+      "status": "MATCHED",
+      "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+      "accountIdTail": "7053",
+      "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+      "uinTail": "7053",
+      "requestIds": {
+        "sts": "71e578b4-ab22-4614-89d8-f97125dba4f7",
+        "describeEnvs": "08ad59ca-ae11-4e48-b0ac-2dde99a63863",
+        "describeEnvInfo": "92d816d8-85fe-4950-87a4-d563b9265f3f"
+      },
+      "stages": [
+        {
+          "stage": "sts",
+          "service": "sts",
+          "action": "GetCallerIdentity",
+          "launchedBy": "node",
+          "entry": "tcb",
+          "exitCode": 0,
+          "timedOut": false,
+          "overflow": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "closeNotObserved": false,
+          "spawnError": false,
+          "signal": null,
+          "requestId": "71e578b4-ab22-4614-89d8-f97125dba4f7",
+          "ok": true,
+          "reasons": [],
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "sts": {
+            "type": "CAMRole",
+            "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+            "accountIdTail": "7053",
+            "userIdTail": "1171",
+            "principalIdTail": "5386",
+            "requestId": "71e578b4-ab22-4614-89d8-f97125dba4f7"
+          }
+        },
+        {
+          "stage": "describeEnvs",
+          "service": "tcb",
+          "action": "DescribeEnvs",
+          "launchedBy": "node",
+          "entry": "tcb",
+          "exitCode": 0,
+          "timedOut": false,
+          "overflow": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "closeNotObserved": false,
+          "spawnError": false,
+          "signal": null,
+          "requestId": "08ad59ca-ae11-4e48-b0ac-2dde99a63863",
+          "ok": true,
+          "reasons": [],
+          "envs": {
+            "envId": "cloud1-d8gcq5ag39d847723",
+            "status": "NORMAL",
+            "region": "ap-shanghai",
+            "requestId": "08ad59ca-ae11-4e48-b0ac-2dde99a63863"
+          }
+        },
+        {
+          "stage": "describeEnvInfo",
+          "service": "tcb",
+          "action": "DescribeEnvInfo",
+          "launchedBy": "node",
+          "entry": "tcb",
+          "exitCode": 0,
+          "timedOut": false,
+          "overflow": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "closeNotObserved": false,
+          "spawnError": false,
+          "signal": null,
+          "requestId": "92d816d8-85fe-4950-87a4-d563b9265f3f",
+          "ok": true,
+          "reasons": [],
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "envInfo": {
+            "envId": "cloud1-d8gcq5ag39d847723",
+            "status": "NORMAL",
+            "region": "ap-shanghai",
+            "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+            "uinTail": "7053",
+            "wxAppId": "wxfb4db1615ac15531",
+            "requestId": "92d816d8-85fe-4950-87a4-d563b9265f3f"
+          }
+        }
+      ]
+    },
+    "primaryObservation": {
+      "status": "UNCONFIRMED",
+      "classification": "UNCONFIRMED",
+      "docId": "primary",
+      "userId": null,
+      "status_field": null,
+      "conflictsWithTarget": false,
+      "reasons": [],
+      "fieldCompleteness": "UNKNOWN",
+      "hasPlatformError": false,
+      "readDiagnostics": {
+        "readStage": "PRIMARY_READ",
+        "localErrorClass": "UNKNOWN",
+        "errorCode": "OTHER",
+        "requestId": null
+      },
+      "errorCode": "READ_FAILED",
+      "writeAttemptsCount": 0
+    },
+    "targetUserObservation": {
+      "status": "NOT_EXECUTED_TARGET_UNCONFIRMED",
+      "classification": null,
+      "docId": null,
+      "userStatus": null,
+      "derivationMatches": null,
+      "reasons": []
+    },
+    "incomplete": [
+      "同批凭据链在本次离线实现中**未获生产证实**（需受审宿主真实执行）。",
+      "未提供受信指定目标：users 记 NOT_EXECUTED_TARGET_UNCONFIRMED，整体记录核对**不得**标完整。",
+      "primary 结论为 UNCONFIRMED，整体记录核对不得标完整。"
+    ],
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false
+  },
+  "finishedAt": "2026-10-08T11:11:01.413Z",
+  "codeUnchangedAfter": true
+}

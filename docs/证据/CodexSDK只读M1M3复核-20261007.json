@@ -1,0 +1,122 @@
+{
+  "scope": "local synthetic only",
+  "realCliExecuted": false,
+  "realCredentialFetched": false,
+  "realCloudCalls": 0,
+  "results": [
+    {
+      "id": "R1-sdk-export",
+      "observed": {
+        "exportType": "object",
+        "initType": "function",
+        "constructorError": "TypeError",
+        "regionSupplied": false
+      }
+    },
+    {
+      "id": "R1-cli-bin-and-stop",
+      "observed": {
+        "calls": [
+          {
+            "bin": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/bin/tcb",
+            "firstArg": "api"
+          },
+          {
+            "bin": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/bin/tcb",
+            "firstArg": "api"
+          },
+          {
+            "bin": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/bin/tcb",
+            "firstArg": "api"
+          }
+        ],
+        "matched": false
+      }
+    },
+    {
+      "id": "R2-timeout-no-close",
+      "observed": {
+        "configuredMs": 55000,
+        "settledAfterTimer": false,
+        "kills": 1
+      }
+    },
+    {
+      "id": "R2-combined-and-nonzero",
+      "observed": {
+        "combinedBytesOverLimit": true,
+        "exitCodeSent": 1,
+        "result": {
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "writeAttemptsCount": 0,
+          "primary": null,
+          "targetUser": null,
+          "ok": true
+        },
+        "kills": 0
+      }
+    },
+    {
+      "id": "R2-timeout-valid-json",
+      "observed": {
+        "terminationRequested": true,
+        "terminationConfirmed": true,
+        "writeAttemptsCount": 0,
+        "primary": null,
+        "targetUser": null,
+        "ok": true
+      }
+    },
+    {
+      "id": "R3-missing-primary-fields",
+      "observed": {
+        "status": "OBSERVED",
+        "classification": "OBSERVED",
+        "docId": "primary",
+        "userId": null,
+        "status_field": null,
+        "conflictsWithTarget": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "R3-missing-user-fields",
+      "observed": {
+        "status": "OBSERVED",
+        "classification": "OBSERVED",
+        "docId": "u_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "userStatus": null,
+        "derivationMatches": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "R3-platform-error-with-empty-data",
+      "observed": {
+        "classification": "NOT_FOUND",
+        "requestId": null
+      }
+    },
+    {
+      "id": "R3-invalid-field-output",
+      "observed": {
+        "leaked": true
+      }
+    },
+    {
+      "id": "R4-inherited-overrides",
+      "observed": {
+        "lowercaseXdgRetained": true,
+        "mixedCaseProfileRetained": true,
+        "proxyRetained": true
+      }
+    },
+    {
+      "id": "R5-field-trap-bypass",
+      "observed": {
+        "fieldSetReturns": "write-reachable"
+      }
+    }
+  ]
+}

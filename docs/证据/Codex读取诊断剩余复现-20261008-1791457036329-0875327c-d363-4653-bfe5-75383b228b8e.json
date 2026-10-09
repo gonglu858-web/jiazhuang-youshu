@@ -1,0 +1,179 @@
+{
+  "kind": "OFFLINE_READ_DIAGNOSTIC_REVIEW",
+  "observedAt": "2026-10-08T10:57:16.328Z",
+  "productSourceModified": false,
+  "realCredentialFetched": false,
+  "realCloudCalls": 0,
+  "transport": "真实worker main和真实SDK转换，SDK请求传输由合成类替换；旧脚本main未执行",
+  "historicalEvidenceUnchanged": true,
+  "results": [
+    {
+      "id": "returned-error-primary-known",
+      "kind": "real-worker-main-with-synthetic-sdk-transport",
+      "reads": 2,
+      "workerRecord": {
+        "classification": "UNCONFIRMED",
+        "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8",
+        "docId": "primary",
+        "reason": "平台返回错误响应",
+        "hasPlatformError": true
+      },
+      "topLevel": {
+        "status": "UNCONFIRMED",
+        "classification": "UNCONFIRMED",
+        "docId": "primary",
+        "userId": null,
+        "status_field": null,
+        "conflictsWithTarget": false,
+        "reasons": [
+          "平台返回错误响应",
+          "平台返回错误响应（不作为空记录）"
+        ],
+        "fieldCompleteness": "UNKNOWN",
+        "hasPlatformError": true,
+        "readDiagnostics": null,
+        "errorCode": "PRIMARY_UNCONFIRMED"
+      },
+      "diagnosticLost": true,
+      "sensitiveMarkerLeaked": false
+    },
+    {
+      "id": "returned-error-primary-unknown",
+      "kind": "real-worker-main-with-synthetic-sdk-transport",
+      "reads": 2,
+      "workerRecord": {
+        "classification": "UNCONFIRMED",
+        "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8",
+        "docId": "primary",
+        "reason": "平台返回错误响应",
+        "hasPlatformError": true
+      },
+      "topLevel": {
+        "status": "UNCONFIRMED",
+        "classification": "UNCONFIRMED",
+        "docId": "primary",
+        "userId": null,
+        "status_field": null,
+        "conflictsWithTarget": false,
+        "reasons": [
+          "平台返回错误响应",
+          "平台返回错误响应（不作为空记录）"
+        ],
+        "fieldCompleteness": "UNKNOWN",
+        "hasPlatformError": true,
+        "readDiagnostics": null,
+        "errorCode": "PRIMARY_UNCONFIRMED"
+      },
+      "diagnosticLost": true,
+      "sensitiveMarkerLeaked": false
+    },
+    {
+      "id": "returned-error-users-known",
+      "kind": "real-worker-main-with-synthetic-sdk-transport",
+      "reads": 2,
+      "workerRecord": {
+        "classification": "UNCONFIRMED",
+        "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8",
+        "docId": "u_2f3d28b0d67a6336a1587eddbd91d4226eef74c9",
+        "reason": "平台返回错误响应",
+        "hasPlatformError": true
+      },
+      "topLevel": {
+        "status": "UNCONFIRMED",
+        "classification": "UNCONFIRMED",
+        "docId": "u_2f3d28b0d67a6336a1587eddbd91d4226eef74c9",
+        "userStatus": null,
+        "derivationMatches": false,
+        "derivationChecked": false,
+        "openidPresent": false,
+        "reasons": [
+          "平台返回错误响应",
+          "平台返回错误响应（不作为空记录）"
+        ],
+        "fieldCompleteness": "UNKNOWN",
+        "hasPlatformError": true,
+        "readDiagnostics": null,
+        "errorCode": "USER_DERIVATION_MISMATCH"
+      },
+      "diagnosticLost": true,
+      "sensitiveMarkerLeaked": false
+    },
+    {
+      "id": "returned-error-users-unknown",
+      "kind": "real-worker-main-with-synthetic-sdk-transport",
+      "reads": 2,
+      "workerRecord": {
+        "classification": "UNCONFIRMED",
+        "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8",
+        "docId": "u_2f3d28b0d67a6336a1587eddbd91d4226eef74c9",
+        "reason": "平台返回错误响应",
+        "hasPlatformError": true
+      },
+      "topLevel": {
+        "status": "UNCONFIRMED",
+        "classification": "UNCONFIRMED",
+        "docId": "u_2f3d28b0d67a6336a1587eddbd91d4226eef74c9",
+        "userStatus": null,
+        "derivationMatches": false,
+        "derivationChecked": false,
+        "openidPresent": false,
+        "reasons": [
+          "平台返回错误响应",
+          "平台返回错误响应（不作为空记录）"
+        ],
+        "fieldCompleteness": "UNKNOWN",
+        "hasPlatformError": true,
+        "readDiagnostics": null,
+        "errorCode": "USER_DERIVATION_MISMATCH"
+      },
+      "diagnosticLost": true,
+      "sensitiveMarkerLeaked": false
+    },
+    {
+      "id": "thrown-error-positive-control",
+      "topLevel": {
+        "status": "UNCONFIRMED",
+        "classification": "UNCONFIRMED",
+        "docId": "primary",
+        "userId": null,
+        "status_field": null,
+        "conflictsWithTarget": false,
+        "reasons": [],
+        "fieldCompleteness": "UNKNOWN",
+        "hasPlatformError": false,
+        "readDiagnostics": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "DATABASE_REQUEST_FAILED",
+          "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8"
+        },
+        "errorCode": "READ_FAILED"
+      },
+      "passed": true
+    },
+    {
+      "id": "throwing-getter-message",
+      "diagnosticBuilderThrew": true
+    },
+    {
+      "id": "throwing-getter-requestId",
+      "diagnosticBuilderThrew": true
+    },
+    {
+      "id": "unrecognised-object-name",
+      "diagnostics": {
+        "readStage": "PRIMARY_READ",
+        "localErrorClass": "NOT_AN_ERROR",
+        "errorCode": "OTHER",
+        "requestId": null
+      },
+      "note": "当前按name分类，无法据此证明异常实际起源；此项仅表述提醒。"
+    }
+  ],
+  "summary": {
+    "returnedErrorPaths": 4,
+    "diagnosticsLost": 4,
+    "throwingGetterPaths": 2,
+    "diagnosticBuilderThrew": 2
+  }
+}

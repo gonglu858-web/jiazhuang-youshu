@@ -1,0 +1,26 @@
+{
+  "table": "schtest_v1_project_members",
+  "name": "project_status_id",
+  "keys": [
+    {
+      "Name": "projectId",
+      "Direction": "1"
+    },
+    {
+      "Name": "status",
+      "Direction": "1"
+    },
+    {
+      "Name": "_id",
+      "Direction": "1"
+    }
+  ],
+  "unique": false,
+  "sparse": false,
+  "partial": "",
+  "listed": true,
+  "specMatches": true,
+  "explicitReadyStatus": null,
+  "readyConfirmed": false,
+  "at": "2026-10-09T00:44:52.964Z"
+}

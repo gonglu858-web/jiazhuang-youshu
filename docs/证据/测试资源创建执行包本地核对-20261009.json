@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-09T00:17:24.197Z",
+  "scope": "local plan validation only",
+  "candidateUnchanged": true,
+  "collections": 11,
+  "indexes": 13,
+  "writeRequestTemplates": 24,
+  "actualResourceWrites": 0,
+  "configs": [
+    {
+      "name": "schedule-entry-proof",
+      "enabled": false,
+      "recursiveFrozen": true
+    },
+    {
+      "name": "schedule-sandbox-proof",
+      "enabled": false,
+      "recursiveFrozen": true
+    },
+    {
+      "name": "sandbox-test-driver-proof",
+      "enabled": false,
+      "recursiveFrozen": true
+    }
+  ],
+  "planSha256": "68f5a40edc0116861e4cc902522a6217a57e3343ac396d517956713b25436ef3",
+  "businessTestsRerun": false
+}

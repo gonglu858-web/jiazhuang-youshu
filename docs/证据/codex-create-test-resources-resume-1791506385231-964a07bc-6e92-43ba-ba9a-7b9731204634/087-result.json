@@ -1,0 +1,55 @@
+{
+  "number": 87,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedule_revisions"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:46:05.696Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "8137e8ea-564e-46bb-8f0a-a7ba8c91748d",
+  "result": {
+    "IndexNum": 2,
+    "Indexes": [
+      {
+        "Name": "_id_",
+        "Keys": [
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_openid_1",
+        "Keys": [
+          {
+            "Name": "_openid",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      }
+    ],
+    "responseKeys": [
+      "IndexNum",
+      "Indexes",
+      "RequestId"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:46:07.710Z"
+}

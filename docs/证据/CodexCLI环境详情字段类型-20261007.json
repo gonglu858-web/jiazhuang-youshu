@@ -1,0 +1,63 @@
+{
+  "observedAt": "2026-10-07T12:32:25.788Z",
+  "action": "DescribeEnvInfo",
+  "requestId": "d45ebd3e-052f-41bf-b308-0a0d70023b06",
+  "rootTypes": {
+    "EnvInfo": "object",
+    "RequestId": "string"
+  },
+  "envInfoTypes": {
+    "BillingInfo": "object",
+    "CircleEndTime": "string",
+    "CircleStartTime": "string",
+    "Eid": "number",
+    "EnvBaseInfo": "object",
+    "SiteFlag": "string",
+    "UserInfo": "object"
+  },
+  "baseTypes": {
+    "Alias": "string",
+    "CreateTime": "string",
+    "CustomLogServices": "null",
+    "Databases": "array",
+    "EnvChannel": "string",
+    "EnvId": "string",
+    "EnvPreferences": "array",
+    "EnvStatus": "string",
+    "EnvType": "string",
+    "Functions": "array",
+    "IsAutoDegrade": "boolean",
+    "IsDauPackage": "boolean",
+    "IsDefault": "boolean",
+    "LogServices": "null",
+    "Meta": "array",
+    "PackageId": "string",
+    "PackageName": "string",
+    "PackageType": "string",
+    "PayMode": "string",
+    "PlatformId": "string",
+    "PostgreSQL": "null",
+    "Region": "string",
+    "Source": "string",
+    "StaticStorages": "array",
+    "Status": "string",
+    "Storages": "array",
+    "Tags": "null",
+    "UpdateTime": "string"
+  },
+  "userInfoTypes": {
+    "AppId": "number",
+    "CreateTime": "string",
+    "OpenAppId": "string",
+    "Uin": "number",
+    "UpdateTime": "string",
+    "WxAppId": "string"
+  },
+  "uinIsSafeInteger": true,
+  "uinStringDigestMatchesObservedAccount": true,
+  "wxAppIdMatches": true,
+  "envIdMatches": true,
+  "regionMatches": true,
+  "statusNormal": true,
+  "writeAuthorized": false
+}

@@ -1,0 +1,113 @@
+{
+  "number": 11,
+  "action": "ListTables",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "MgoLimit": 100,
+    "MgoOffset": 0,
+    "ShowHidden": true
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:40:47.777Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "b37d603d-df96-4d76-8eb6-1f5428c46a84",
+  "result": {
+    "complete": true,
+    "total": 12,
+    "tables": [
+      {
+        "TableName": "app_admins",
+        "Count": 1,
+        "Size": 546,
+        "IndexCount": 2,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "audit_events",
+        "Count": 53,
+        "Size": 20085,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "invitations",
+        "Count": 8,
+        "Size": 4739,
+        "IndexCount": 4,
+        "IndexSize": 147456
+      },
+      {
+        "TableName": "project_members",
+        "Count": 8,
+        "Size": 2244,
+        "IndexCount": 4,
+        "IndexSize": 147456
+      },
+      {
+        "TableName": "projects",
+        "Count": 3,
+        "Size": 889,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "relation_data_depart",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 6,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "schtest_v1_app_admins",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      },
+      {
+        "TableName": "schtest_v1_users",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      },
+      {
+        "TableName": "sys_department",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      },
+      {
+        "TableName": "sys_user",
+        "Count": 1,
+        "Size": 394,
+        "IndexCount": 2,
+        "IndexSize": 45056
+      },
+      {
+        "TableName": "users",
+        "Count": 4,
+        "Size": 1293,
+        "IndexCount": 3,
+        "IndexSize": 110592
+      },
+      {
+        "TableName": "yf_diag_visibility",
+        "Count": 0,
+        "Size": 0,
+        "IndexCount": 2,
+        "IndexSize": 12288
+      }
+    ]
+  },
+  "finishedAt": "2026-10-09T00:40:49.852Z"
+}

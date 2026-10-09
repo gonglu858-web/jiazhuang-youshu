@@ -1,0 +1,38 @@
+{
+  "number": 76,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedules",
+    "CreateIndexes": [
+      {
+        "IndexName": "project_status_created_id",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            },
+            {
+              "Name": "createdAt",
+              "Direction": "1"
+            },
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:45:30.995Z",
+  "status": "ATTEMPT_STARTED"
+}

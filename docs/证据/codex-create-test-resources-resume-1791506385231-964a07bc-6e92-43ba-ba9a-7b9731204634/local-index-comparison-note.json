@@ -1,0 +1,9 @@
+{
+  "actualKeysJSON": "[{\"Name\":\"bindingCodeHash\",\"Direction\":\"1\"}]",
+  "expectedKeysJSON": "[{\"Name\":\"bindingCodeHash\",\"Direction\":\"1\"}]",
+  "byteEqual": true,
+  "arrayPrototypeSame": false,
+  "elementPrototypeSame": false,
+  "writesAfterMismatch": 0,
+  "cause": "VM realm prototype difference in deepStrictEqual; ordered field scalar values are identical."
+}

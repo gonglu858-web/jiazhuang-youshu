@@ -1,0 +1,285 @@
+{
+  "observedAt": "2026-10-08T10:06:34.390Z",
+  "auditKind": "offline-reproduction-fixture-not-production-component",
+  "scope": "S1 发现边界与真实路径 / S2 进程失败事实与枚举净化",
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realNetworkCalls": 0,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "wroteSyntheticTempDirs": true,
+  "allowedLocalNodeChecks": 8,
+  "blockedUnexpectedProcesses": 0,
+  "blockedSamples": [],
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "S1-1-boundary-uses-cli-home-not-parent-home",
+      "pass": true,
+      "observed": {
+        "withoutCliHome": "CREDENTIAL_FETCH_CWD_DISCOVERY_UNSAFE",
+        "withCliHomeInsideProfile": null,
+        "cwdOutsideProfile": "CREDENTIAL_FETCH_CWD_DISCOVERY_UNSAFE",
+        "parentHome": "C:\\Users\\30591",
+        "cliHomeWouldBe": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/auth-session-20261007",
+        "note": "CLI 的 Home 是登录 profile；用父进程 Home 会让「不越过Home」失去边界意义"
+      }
+    },
+    {
+      "id": "S1-2-realpath-junction-target-ancestor",
+      "pass": true,
+      "observed": {
+        "junctionCreated": true,
+        "rejected": true,
+        "errorCode": "CREDENTIAL_FETCH_CWD_DISCOVERY_UNSAFE",
+        "markerFilePreserved": true,
+        "referenceFinderWouldFindMarker": true,
+        "note": "对齐固定 bundle 的 canonicalizePath（优先 realpathSync）；不得删除标记"
+      }
+    },
+    {
+      "id": "S1-3-boundary-stops-at-profile",
+      "pass": true,
+      "observed": {
+        "passed": true,
+        "checkedLayers": 2,
+        "note": "边界之上的标记不在 CLI 发现范围内，不应误拒"
+      }
+    },
+    {
+      "id": "S2-nonzero-retains-attempt-and-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempts": 1,
+        "followups": 0,
+        "kills": 0,
+        "reportedAttempted": true,
+        "fetchMode": "REAL_CANDIDATE",
+        "errorCode": "CREDENTIAL_COMMAND_NONZERO_EXIT",
+        "expectedErrorCode": "CREDENTIAL_COMMAND_NONZERO_EXIT",
+        "errorMatchesHostConstant": true,
+        "exitFacts": {
+          "exitCode": 1,
+          "signal": null,
+          "timedOut": false,
+          "overflow": false,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "spawnFailed": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      }
+    },
+    {
+      "id": "S2-timeout-retains-attempt-and-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempts": 1,
+        "followups": 0,
+        "kills": 1,
+        "reportedAttempted": true,
+        "fetchMode": "REAL_CANDIDATE",
+        "errorCode": "CREDENTIAL_COMMAND_TIMEOUT",
+        "expectedErrorCode": "CREDENTIAL_COMMAND_TIMEOUT",
+        "errorMatchesHostConstant": true,
+        "exitFacts": {
+          "exitCode": null,
+          "signal": null,
+          "timedOut": true,
+          "overflow": false,
+          "closeNotObserved": false,
+          "terminationRequested": true,
+          "terminationConfirmed": false,
+          "spawnFailed": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      }
+    },
+    {
+      "id": "S2-overflow-retains-attempt-and-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempts": 1,
+        "followups": 0,
+        "kills": 1,
+        "reportedAttempted": true,
+        "fetchMode": "REAL_CANDIDATE",
+        "errorCode": "CREDENTIAL_COMMAND_OVERFLOW",
+        "expectedErrorCode": "CREDENTIAL_COMMAND_OVERFLOW",
+        "errorMatchesHostConstant": true,
+        "exitFacts": {
+          "exitCode": null,
+          "signal": null,
+          "timedOut": false,
+          "overflow": true,
+          "closeNotObserved": false,
+          "terminationRequested": true,
+          "terminationConfirmed": false,
+          "spawnFailed": false,
+          "stdoutBytes": 100,
+          "stderrBytes": 0
+        }
+      }
+    },
+    {
+      "id": "S2-signal-retains-attempt-and-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempts": 1,
+        "followups": 0,
+        "kills": 0,
+        "reportedAttempted": true,
+        "fetchMode": "REAL_CANDIDATE",
+        "errorCode": "CREDENTIAL_COMMAND_SIGNALED",
+        "expectedErrorCode": "CREDENTIAL_COMMAND_SIGNALED",
+        "errorMatchesHostConstant": true,
+        "exitFacts": {
+          "exitCode": null,
+          "signal": "SIGTERM",
+          "timedOut": false,
+          "overflow": false,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "spawnFailed": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      }
+    },
+    {
+      "id": "S2-spawn-error-retains-attempt-and-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempts": 1,
+        "followups": 0,
+        "kills": 0,
+        "reportedAttempted": true,
+        "fetchMode": "REAL_CANDIDATE",
+        "errorCode": "SPAWN_FAILED",
+        "expectedErrorCode": "SPAWN_FAILED",
+        "errorMatchesHostConstant": true,
+        "exitFacts": {
+          "exitCode": null,
+          "signal": null,
+          "timedOut": false,
+          "overflow": false,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": false,
+          "spawnFailed": true,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      }
+    },
+    {
+      "id": "S2-parse-failure-retains-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempted": true,
+        "errorCode": "CREDENTIAL_EXPIRY_UNKNOWN",
+        "errorClass": "CREDENTIAL_EXPIRY_UNKNOWN",
+        "exitFacts": {
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "overflow": false,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "spawnFailed": false,
+          "stdoutBytes": 106,
+          "stderrBytes": 0
+        },
+        "note": "退出码 0 + 输出不合规 → 可与「未启动」区分"
+      }
+    },
+    {
+      "id": "S2-fetchmode-enum-sanitized",
+      "pass": true,
+      "observed": {
+        "markerLeaked": false,
+        "fetchMode": "UNKNOWN",
+        "enumValues": [
+          "NONE",
+          "SIMULATED",
+          "REAL_CANDIDATE"
+        ],
+        "note": "仅损坏错误协议，不是已发生的真实密钥泄漏"
+      }
+    },
+    {
+      "id": "S2-error-codes-align-with-host-constants",
+      "pass": true,
+      "observed": {
+        "hostConstantCount": 17,
+        "unrecognized": [],
+        "legacyMisspellingsStillRejected": [],
+        "note": "上一版手抄近似名导致全部退化为泛化失败；现直接引用 host.ERR"
+      }
+    },
+    {
+      "id": "S2-precheck-rejection-remains-not-attempted",
+      "pass": true,
+      "observed": {
+        "attempted": false,
+        "fetchMode": "NONE",
+        "diagnostics": null
+      }
+    }
+  ],
+  "statedLimitations": [
+    "S1-b 的 junction 仅在本机真实创建，且全部文件位于新夹具根内；未读取认证内容、未执行公共 CLI。",
+    "findProjectRoot 仅作算法对照：内存中执行固定 bundle 的函数片段，不替代 H1 公共入口证明。",
+    "S1-a 的「父 Home 之上标记」只存在于内存 access 替身，未向真实用户祖先写任何文件。",
+    "S2 全部为合成 EventEmitter 子进程；真实凭据命令未执行。",
+    "本轮交付文字更正：normalizeCredentialSnapshot 真实规则是「优先 sessionToken，否则取 CLI 字段名 token」，不再声称没有别名兜底。",
+    "R1 敏感性（上一份证据）是原始对象与归一结果的直接对照，并非修改实现后重跑完整链；此处不重复该表述。",
+    "Node 运行时拦截不是操作系统防火墙；本夹具不得作为未经审查的生产网络代理安装。",
+    "平台原子性、IAM、真实库内容、真实网络行为、费用/余量均未验证。"
+  ],
+  "blockingGaps": [
+    {
+      "id": "production-same-batch-credential-chain-not-proven",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "本轮仍未执行真实 `secrets get --json`、未取任何真实凭据。proven 恒为 false、汇总无生产升级分支 —— 这是关闭状态，不能靠把常量改成 true 得到生产证明。",
+      "needed": "受审宿主内按既有只读授权执行一次整组，并明确实际观察事实如何形成。"
+    },
+    {
+      "id": "refresh-branch-output-contract-undecided",
+      "severity": "MEDIUM",
+      "detail": "可刷新分支尚未产出完整快照，输出契约未定论；真实路径保持关闭。",
+      "needed": "按固定源码对齐合成 refresh 响应后再离线验证。"
+    },
+    {
+      "id": "refresh-writes-back-official-login-cache",
+      "severity": "LOW",
+      "detail": "只在合成目录观察到写回类别，未在真实登录目录验证。",
+      "needed": "真实受审运行时单独记录；不得假定「官方 CLI 获取过程不刷新缓存」。"
+    }
+  ],
+  "platformSemanticsNote": {
+    "id": "service-not-initialized-still-issues-credentials",
+    "detail": "按上轮裁决，`Initialized=false` 仍产出凭据是**固定版本 CLI 行为**，如实接受，不视为实现阻断、不新增 InitTcb。凭据可获取 ≠ 服务已就绪；后续只读目标核验须自行成功，不能凭快照认定环境可用。"
+  },
+  "sha256": {
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "d283cc0110ad8e936b07c0aa7bc0ad89bc05bb45821681127727c2430ddc66ad",
+    "miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs": "a510660d74268694fe808a7f5d602aa89059b5e97c7f7d1e209cb00fcd948ccc",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "40a644a1b7bb3fbfd85482066ad1ce02f114e0d97db3caf1fec024361984beb9",
+    "miniapp/scripts/check-cloudbase-sdk-readonly.cjs": "1a0ea9d6eced919d9d4f67d712a4886be2eef0a568ac4a255c0a9ac3e69f2b3c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+  }
+}

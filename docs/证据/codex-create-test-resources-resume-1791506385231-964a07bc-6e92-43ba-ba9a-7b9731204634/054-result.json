@@ -1,0 +1,55 @@
+{
+  "number": 54,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_projects"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:44:34.405Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "eea5cc67-6421-4662-a65d-0902335cbbb1",
+  "result": {
+    "IndexNum": 2,
+    "Indexes": [
+      {
+        "Name": "_id_",
+        "Keys": [
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_openid_1",
+        "Keys": [
+          {
+            "Name": "_openid",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      }
+    ],
+    "responseKeys": [
+      "IndexNum",
+      "Indexes",
+      "RequestId"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:44:36.401Z"
+}

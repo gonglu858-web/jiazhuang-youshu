@@ -1,0 +1,24 @@
+{
+  "number": 49,
+  "action": "DescribeSafeRule",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_schedule_receipts"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:43:07.137Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "5ef5fa11-3154-4e35-94fd-73e773a77010",
+  "result": {
+    "AclTag": "ADMINONLY",
+    "Rule": ""
+  },
+  "finishedAt": "2026-10-09T00:43:09.163Z"
+}

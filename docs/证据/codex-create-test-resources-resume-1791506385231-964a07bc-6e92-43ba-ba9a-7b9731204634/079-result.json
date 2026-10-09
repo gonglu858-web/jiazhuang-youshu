@@ -1,0 +1,53 @@
+{
+  "number": 79,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedules",
+    "CreateIndexes": [
+      {
+        "IndexName": "project_trade_created_id",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "trade",
+              "Direction": "1"
+            },
+            {
+              "Name": "createdAt",
+              "Direction": "1"
+            },
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:45:49.071Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "59c69caf-29d2-43be-aa09-c53f2cb630e1",
+  "result": {
+    "responseKeys": [
+      "RequestId"
+    ],
+    "accepted": true
+  },
+  "finishedAt": "2026-10-09T00:45:51.054Z"
+}

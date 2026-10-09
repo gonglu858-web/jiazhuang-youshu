@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "observedAt": "2026-10-07T11:53:42.213Z",
+  "basis": "docs/Codex复查-CLI身份环境只读接入L1-L3-20261007.md 第2–5节",
+  "scope": "R1–R4 定点返修复现",
+  "realNetworkCalls": 0,
+  "cliExecuted": false,
+  "authRead": false,
+  "readOnlyModeRun": false,
+  "officialInstallModified": false,
+  "historicalEvidenceOverwritten": false,
+  "observerSha256": "bba00885c3e42a25df880b028f3fa3703e243053213bdd74c9b9f5817ed29d14",
+  "findingsTotal": 13,
+  "findingsClosed": 13,
+  "allClosed": true,
+  "findings": [
+    {
+      "id": "R1-entry-extra-code",
+      "expected": "入口检查失败（不再被接受）",
+      "actual": {
+        "readinessOk": false,
+        "entryCheckOk": false
+      },
+      "closed": true,
+      "note": "合成入口多出可执行语句；未实际执行篡改入口。"
+    },
+    {
+      "id": "R1-entry-comment-only",
+      "expected": "入口检查失败（不再被接受）",
+      "actual": {
+        "readinessOk": false
+      },
+      "closed": true,
+      "note": "require 只写在注释里。"
+    },
+    {
+      "id": "R1-zero-api-on-reject",
+      "expected": "任何 API 子进程启动前拒绝",
+      "actual": {
+        "apiProcessesStarted": 0,
+        "errorCode": "LOCAL_PRECONDITION_NOT_MET"
+      },
+      "closed": true,
+      "note": "本地准备条件不满足时零 API。"
+    },
+    {
+      "id": "R2-combined-output",
+      "expected": "stdout+stderr 合并超限 → overflow=true",
+      "actual": {
+        "totalBytes": 120,
+        "configuredLimit": 100,
+        "overflow": true,
+        "kills": 1
+      },
+      "closed": true,
+      "note": "此前按各流分别计数会漏过此样本。"
+    },
+    {
+      "id": "R2-after-finish-data",
+      "expected": "收尾后不累加、不再kill、监听已清理",
+      "actual": {
+        "retainedBytes": 100,
+        "configuredLimit": 100,
+        "killsBefore": 1,
+        "killsAfter": 1,
+        "totalBytesAfterLateData": 101,
+        "dataListenerCount": 0
+      },
+      "closed": true,
+      "note": "收尾后晚到数据被丢弃。"
+    },
+    {
+      "id": "R2-timeout-unconfirmed",
+      "expected": "如实记为终止未确认，不伪造已终止/信号",
+      "actual": {
+        "timedOut": true,
+        "reportedSignal": null,
+        "terminationRequested": true,
+        "processExited": false,
+        "terminationConfirmed": false,
+        "killsAfterLateData": 0
+      },
+      "closed": true,
+      "note": "kill 返回 false：只说明发出终止请求。"
+    },
+    {
+      "id": "R2-kill-throws",
+      "expected": "终止未确认",
+      "actual": {
+        "terminationRequested": true,
+        "terminationConfirmed": false
+      },
+      "closed": true,
+      "note": "kill 抛错路径。"
+    },
+    {
+      "id": "R2-utf8-across-chunks",
+      "expected": "中文字符不被破坏",
+      "actual": {
+        "stdout": "环境"
+      },
+      "closed": true,
+      "note": "按 Buffer 收集、收尾时一次解码。"
+    },
+    {
+      "id": "R3-hint-inside-json",
+      "expected": "拒绝（originalValid=false 不得被\"修好\"）",
+      "actual": {
+        "originalValid": false,
+        "unexpectedAccepted": false
+      },
+      "closed": true,
+      "note": "根对象内部提示行不再被全局删除。"
+    },
+    {
+      "id": "R3-positive-kept",
+      "expected": "纯 JSON 与 提示+JSON 仍可解析",
+      "actual": {
+        "plain": true,
+        "hintWrapped": true
+      },
+      "closed": true,
+      "note": "正向例未被收窄破坏。"
+    },
+    {
+      "id": "R4-first-query-parse-failure",
+      "expected": "绑定 stage + 保留已尝试事实",
+      "actual": {
+        "apiProcessesStarted": 1,
+        "errorCode": "CLI_OUTPUT_UNPARSEABLE",
+        "stoppedAt": "callerIdentity",
+        "cloudQueryAttempted": true,
+        "cloudResponseValidated": false,
+        "stage0": {
+          "stage": "callerIdentity",
+          "status": "failed",
+          "startedAt": "2026-10-07T11:53:42.212Z",
+          "finishedAt": "2026-10-07T11:53:42.213Z",
+          "validationPassed": false,
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "errorCode": "CLI_OUTPUT_UNPARSEABLE"
+        },
+        "stage1": "not-executed"
+      },
+      "closed": true,
+      "note": "不再用「是否有合格 callerIdentity」代替「是否尝试执行查询」。"
+    },
+    {
+      "id": "R4-missing-enum-code",
+      "expected": "ENVS_FIELD_INVALID 已定义且为字符串",
+      "actual": {
+        "code": "ENVS_FIELD_INVALID",
+        "definedInErr": true
+      },
+      "closed": true,
+      "note": "此前 code 为 undefined，旧测试用同一 undefined 比较而误判通过。"
+    },
+    {
+      "id": "R4-nonzero-exit-diag",
+      "expected": "阶段记录保留退出码且报告不带原始 message",
+      "actual": {
+        "note": "见 R4-2 测试用例覆盖；此处确认 ERR 无未定义码"
+      },
+      "closed": true,
+      "note": "所有失败码均为定义过的固定字符串。"
+    }
+  ]
+}

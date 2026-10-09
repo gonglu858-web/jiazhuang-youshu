@@ -1,0 +1,812 @@
+{
+  "schema": "sandbox-resources-approval-plan/1",
+  "status": "AWAITING_COST_EVIDENCE_AND_USER_CONFIRMATION",
+  "executable": false,
+  "writeAuthorized": false,
+  "createdAt": "2026-10-09T00:14:28.370Z",
+  "source": {
+    "path": "miniapp/cloudbase/schedule-sandbox-resources.candidate.json",
+    "sha256": "7a0284d5098375f6910c459fb0ddea3af179fe40876d98cd2807b5cd93a1620b"
+  },
+  "target": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "appId": "wxfb4db1615ac15531",
+    "region": "ap-shanghai",
+    "observedInstanceId": "tnt-eficftvp6",
+    "reReadInstanceBeforeExecution": true
+  },
+  "boundary": {
+    "onlyEmptyCollections": true,
+    "initializePrimary": false,
+    "deploy": false,
+    "enable": false,
+    "purchase": false,
+    "changeOverrun": false,
+    "changeAutoRenew": false,
+    "delete": false,
+    "oldCollectionsWrite": false,
+    "createBusinessRecords": false
+  },
+  "gates": [
+    "Current cost mode and remaining allowance confirmed",
+    "Explicit confirmation for this exact resource scope",
+    "Identity/environment/current instance revalidated",
+    "All target names absent or documented same-run recovery",
+    "Candidate hash unchanged",
+    "No concurrent administrator edits to target names"
+  ],
+  "limits": {
+    "maxCreateCalls": 11,
+    "maxIndexWriteCalls": 13,
+    "maxWriteCalls": 24,
+    "maxReadCalls": 100,
+    "autoRetryWrites": false,
+    "maxWindowMinutes": 30,
+    "maxCashPurchaseCny": 0,
+    "extraBillingAllowanceCny": 0,
+    "note": "These are execution-stop limits, not a platform billing cap or zero-fee guarantee."
+  },
+  "createRequests": [
+    {
+      "step": 1,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_app_admins",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 2,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_users",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 3,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_projects",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 4,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_project_members",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 5,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_invitations",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 6,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_audit_events",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 7,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedules",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 8,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedule_revisions",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 9,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedule_occupancy",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 10,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_member_task_guard",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    },
+    {
+      "step": 11,
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "CreateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedule_receipts",
+        "PermissionInfo": {
+          "AclTag": "ADMINONLY",
+          "EnvId": "cloud1-d8gcq5ag39d847723"
+        }
+      },
+      "after": [
+        "DescribeTable: exists and Count=0",
+        "DescribeDatabaseACL: AclTag=ADMINONLY",
+        "DescribeSafeRule: no contradictory/custom read/write access"
+      ],
+      "executed": false
+    }
+  ],
+  "indexRequests": [
+    {
+      "id": "I01",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_users",
+        "CreateIndexes": [
+          {
+            "IndexName": "bindingCodeHash_1",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "bindingCodeHash",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I02",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_projects",
+        "CreateIndexes": [
+          {
+            "IndexName": "scope_1_status_1",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "scope",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I03",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_project_members",
+        "CreateIndexes": [
+          {
+            "IndexName": "userId_1_status_1",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "userId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I04",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_project_members",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_status_id",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "_id",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I05",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_invitations",
+        "CreateIndexes": [
+          {
+            "IndexName": "tokenHash_1",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "tokenHash",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": true
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I06",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_invitations",
+        "CreateIndexes": [
+          {
+            "IndexName": "projectId_1_status_1",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I07",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_audit_events",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_created_desc",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "createdAt",
+                  "Direction": "-1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I08",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedules",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_created_id",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "createdAt",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "_id",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I09",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedules",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_status_created_id",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "createdAt",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "_id",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I10",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedules",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_trade_created_id",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "trade",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "createdAt",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "_id",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I11",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedules",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_status_trade_created_id",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "trade",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "createdAt",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "_id",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I12",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedules",
+        "CreateIndexes": [
+          {
+            "IndexName": "project_worker_status_id",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "projectId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "workerUserId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "status",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "_id",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    },
+    {
+      "id": "I13",
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "UpdateTable",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "schtest_v1_schedule_revisions",
+        "CreateIndexes": [
+          {
+            "IndexName": "schedule_afterVersion",
+            "MgoKeySchema": {
+              "MgoIndexKeys": [
+                {
+                  "Name": "scheduleId",
+                  "Direction": "1"
+                },
+                {
+                  "Name": "afterVersion",
+                  "Direction": "1"
+                }
+              ],
+              "MgoIsUnique": false
+            }
+          }
+        ]
+      },
+      "before": "Read all indexes. Identical existing index is reused, any conflicting name/spec stops; never submit an existing index for replacement.",
+      "after": "Read ordered keys/directions/unique and observed readiness; no inferred success from RequestId alone.",
+      "executed": false
+    }
+  ],
+  "readActions": [
+    {
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "ListTables",
+      "body": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "MgoLimit": 100,
+        "MgoOffset": 0,
+        "ShowHidden": true
+      }
+    },
+    {
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "DescribeTable",
+      "template": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Tag": "tnt-eficftvp6",
+        "TableName": "EXACT_APPROVED_COLLECTION"
+      }
+    },
+    {
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "DescribeDatabaseACL",
+      "template": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "CollectionName": "EXACT_APPROVED_COLLECTION"
+      }
+    },
+    {
+      "service": "tcb",
+      "apiVersion": "2018-06-08",
+      "region": "ap-shanghai",
+      "action": "DescribeSafeRule",
+      "template": {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "CollectionName": "EXACT_APPROVED_COLLECTION"
+      }
+    }
+  ],
+  "failure": "Stop on any uncertain write. Read current state; no repeated writes, permission expansion, API fallback, deletion or compensation. Preserve empty partial resources and evidence.",
+  "permissions": {
+    "readIdentityAndMetadataObserved": true,
+    "writePermissionsVerified": false,
+    "permissionMeaning": "ADMINONLY denies direct client access; management IAM and privileged server code remain separate. No new IAM grants."
+  }
+}

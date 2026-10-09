@@ -1,0 +1,71 @@
+{
+  "number": 89,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedule_revisions"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:46:09.743Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "1f401efc-94ca-4ba4-982a-331cb02d4703",
+  "result": {
+    "IndexNum": 3,
+    "Indexes": [
+      {
+        "Name": "schedule_afterVersion",
+        "Keys": [
+          {
+            "Name": "scheduleId",
+            "Direction": "1"
+          },
+          {
+            "Name": "afterVersion",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_openid_1",
+        "Keys": [
+          {
+            "Name": "_openid",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_id_",
+        "Keys": [
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      }
+    ],
+    "responseKeys": [
+      "IndexNum",
+      "Indexes",
+      "RequestId"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:46:11.689Z"
+}

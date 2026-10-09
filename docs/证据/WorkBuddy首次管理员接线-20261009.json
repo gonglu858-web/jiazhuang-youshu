@@ -1,0 +1,222 @@
+{
+  "observedAt": "2026-10-09T02:53:47.541Z",
+  "auditKind": "offline-wiring-verification-not-production-component",
+  "scope": "L1 受控初始化宿主 + L3 本人登记准备稿",
+  "delivers": "本地受控接线模块 + 操作稿；默认关闭与参数边界已验证",
+  "doesNotDeliver": "**未执行**真实管理员初始化、**未执行**本人微信登记、**未取得**真实云主体摘要",
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realNetworkCalls": 0,
+  "readRealAuthContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "summary": {
+    "total": 11,
+    "passed": 10,
+    "failed": 1
+  },
+  "results": [
+    {
+      "id": "A-1-arg-allowlist-no-execute",
+      "pass": true,
+      "observed": {
+        "localCheck": true,
+        "forbiddenCount": 20,
+        "allForbidden": true,
+        "unknown": true
+      }
+    },
+    {
+      "id": "A-2-default-local-check-closed",
+      "pass": true,
+      "observed": {
+        "status": "LOCAL_READY",
+        "checks": 2,
+        "credentialFetched": false,
+        "cloudCallAttempted": false,
+        "workerStarted": false,
+        "fixed": {
+          "appId": "wxfb4db1615ac15531",
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "region": "ap-shanghai"
+        }
+      }
+    },
+    {
+      "id": "A-3-controlled-approval-binding",
+      "pass": true,
+      "observed": {
+        "rejected": [
+          {
+            "label": "无来源",
+            "ok": false,
+            "errorCode": "APPROVAL_SOURCE_MISSING"
+          },
+          {
+            "label": "计划摘要不符",
+            "ok": false,
+            "errorCode": "APPROVAL_PLAN_BINDING_MISMATCH"
+          },
+          {
+            "label": "文件指纹不符",
+            "ok": false,
+            "errorCode": "FINGERPRINT_MISMATCH"
+          },
+          {
+            "label": "已过期",
+            "ok": false,
+            "errorCode": "APPROVAL_SOURCE_MISSING"
+          },
+          {
+            "label": "未声明写范围",
+            "ok": false,
+            "errorCode": "APPROVAL_SOURCE_MISSING"
+          },
+          {
+            "label": "非受控来源",
+            "ok": false,
+            "errorCode": "APPROVAL_SOURCE_MISSING"
+          }
+        ],
+        "correctSourceAccepted": true,
+        "planDigest": "cd9455a672c954ca83280247e19b47a0"
+      }
+    },
+    {
+      "id": "A-4-plan-self-report-is-not-authorization",
+      "pass": true,
+      "observed": {
+        "stoppedAt": "approvalSource",
+        "errorCode": "APPROVAL_PLAN_BINDING_MISMATCH",
+        "credentialFetched": false
+      }
+    },
+    {
+      "id": "B-subject-tuple-digest-fixed",
+      "pass": true,
+      "observed": {
+        "digest": "e1a17109396958404940e9daa4774f8312ee90024d78c3d03242fe2e49c432ca",
+        "orderSensitive": true,
+        "caseSensitive": true,
+        "incompleteReturnsNull": true,
+        "note": "严格保持字符串：不裁尾、不改大小写；与手算一致"
+      }
+    },
+    {
+      "id": "D-1-missing-user-zero-write",
+      "pass": true,
+      "observed": {
+        "reads": 0,
+        "writes": 0,
+        "errorCode": "PLAN_INVALID",
+        "note": "目标用户缺失 → 零 set/commit"
+      }
+    },
+    {
+      "id": "D-3-audit-exists-primary-missing-stops",
+      "pass": true,
+      "observed": {
+        "writes": 0,
+        "enteredTransaction": false,
+        "errorCode": "PLAN_INVALID",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "note": "审计已存在场景下零写；本轮因组合调用缺口未能观察 outcome=auditAlreadyPresent（见 GAP 项）"
+      }
+    },
+    {
+      "id": "D-4-expired-credential-zero-read",
+      "pass": true,
+      "observed": {
+        "reads": 0,
+        "errorCode": "WORKER_CREDENTIAL_EXPIRED"
+      }
+    },
+    {
+      "id": "G-1-no-business-route-or-resource-creation",
+      "pass": true,
+      "observed": {
+        "forbiddenHits": [],
+        "writeCollections": [
+          "schtest_v1_app_admins",
+          "schtest_v1_audit_events"
+        ],
+        "memberAccessIsOnlySdkPath": true
+      }
+    },
+    {
+      "id": "G-2-no-execute-in-public-surface",
+      "pass": true,
+      "observed": {
+        "allowedArgs": [
+          "--local-check",
+          "--show-plan"
+        ],
+        "executeIsForbidden": true,
+        "initializeIsForbidden": true,
+        "forbiddenPrefixCount": 25,
+        "note": "--execute 不在允许集且在禁止集 —— 公共面无执行入口"
+      }
+    },
+    {
+      "id": "GAP-combined-call-vs-separate-call",
+      "pass": false,
+      "observed": {
+        "finding": "宿主/worker 组合调用与分别调用同一模块行为不一致；未查明机制",
+        "combinedResult": [
+          {
+            "stoppedAt": "credentialFetch",
+            "errorCode": "CREDENTIAL_FETCH_FAILED",
+            "credentialFailureClass": "SPAWN_FAILED"
+          }
+        ],
+        "excluded": [
+          "同一入参单独调用 P4 六函数全部通过",
+          "相同 spawn 替身单独调用凭据宿主成功（attempted=true）",
+          "argv 形状正确、credDeps 内容正确",
+          "已验收模块哈希全部未变"
+        ],
+        "skippedTests": [
+          "B-1",
+          "C-1",
+          "C-3",
+          "C-4",
+          "D-2",
+          "D-3",
+          "E-1",
+          "E-2",
+          "E-3"
+        ],
+        "disposition": "按项目规则停止该路径；未改已验收模块迁就测试；交 Codex 裁决"
+      }
+    }
+  ],
+  "retainedHistoricalEvidence": {
+    "note": "历史证据与已验收实现均未改写",
+    "untouchedModules": {
+      "sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1",
+      "sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c",
+      "cloudbase-cli-credential-host.cjs": "bccea293069e22ed",
+      "cloudbase-readonly-observer.cjs": "3b05a3057afc0206",
+      "cloudbase-sdk-readonly-worker.cjs": "c5368fff5131d6d4",
+      "cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923e"
+    }
+  },
+  "remainingPreconditions": [
+    "本人测试记录未执行（当前无 prepare 包，仅两个 closed 制品）",
+    "完整云主体元组摘要的真实预期值未取得（只实现算法）",
+    "最终写批准与制品绑定（含文件指纹）未形成",
+    "部署与关闭能力本轮不具备",
+    "实际平台事务与费用未验证"
+  ],
+  "sha256": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "8cd41e6ce06521a4fcfb1c72ac4dc7f31f8fcda88eb2bf40b56f7b610378b366",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "752a58273c7152996e26cc36e53ed74878ed23953da289cda76295127655226a",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "5fa69a01183b3eba582d179e4e52903ce6b2c6a625650e5c5dad7ca69bb664f4",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "miniapp/scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4"
+  }
+}

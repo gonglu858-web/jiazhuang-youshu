@@ -1,0 +1,30 @@
+{
+  "number": 7,
+  "action": "DescribeDatabaseACL",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "app_admins"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:31:33.344Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "terminationConfirmed": true,
+  "requestId": "dd166d3a-fb24-4bb2-8979-416232218d47",
+  "result": {
+    "AclTag": "ADMINONLY",
+    "Rule": "",
+    "responseKeys": [
+      "AclTag",
+      "RequestId",
+      "Rule"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:31:35.538Z"
+}

@@ -1,0 +1,177 @@
+{
+  "observedAt": "2026-10-07T01:41:08.625Z",
+  "scope": "offline synthetic review; no cloud initialization",
+  "closedCases": [
+    {
+      "id": "R1-missing-data",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "read": 2,
+        "write": 0,
+        "commit": 0,
+        "rollback": 1
+      },
+      "closed": true
+    },
+    {
+      "id": "R1-undefined-data",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "read": 2,
+        "write": 0,
+        "commit": 0,
+        "rollback": 1
+      },
+      "closed": true
+    },
+    {
+      "id": "R2-false-updatedCount",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "closed": true
+    },
+    {
+      "id": "R2-zero-no-upsert",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "closed": true
+    },
+    {
+      "id": "R3-wrong-appId",
+      "result": {
+        "code": "CALLER_VERIFY_FAILED",
+        "begin": 0,
+        "read": 0,
+        "write": 0,
+        "commit": 0,
+        "rollback": 0
+      },
+      "closed": true
+    },
+    {
+      "id": "R3-trusted-test-marker",
+      "result": {
+        "code": "CALLER_VERIFY_FAILED",
+        "begin": 0,
+        "read": 0,
+        "write": 0,
+        "commit": 0,
+        "rollback": 0
+      },
+      "closed": true
+    },
+    {
+      "id": "R1-wrong-key-read",
+      "code": "READ_KEY_MISMATCH",
+      "closed": true
+    },
+    {
+      "id": "R4-cross-adapter-unknown",
+      "code": "TX_NOT_OWNED",
+      "closed": true
+    },
+    {
+      "id": "R4-forged-unknown",
+      "code": "TX_NOT_OWNED",
+      "closed": true
+    },
+    {
+      "id": "R5-error-name",
+      "closed": true
+    },
+    {
+      "id": "R5-adapter-error",
+      "closed": true
+    }
+  ],
+  "remainingCases": [
+    {
+      "id": "R2-multiple-upserts",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R2-duplicate-upserts",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R2-unverified-string-upsert",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R2-updated-one-wrong-insert",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    },
+    {
+      "id": "R2-updated-one-invalid-shape",
+      "result": {
+        "outcome": "initialized",
+        "granted": true,
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      }
+    }
+  ],
+  "realSdkInsertionPositive": {
+    "verified": true,
+    "outcome": "initialized",
+    "writes": 2,
+    "commits": 1,
+    "networkAttempts": 0,
+    "transportShape": "{data:{updated:0,upsert_id:requestedKey}}; SDK converts to object entries"
+  },
+  "summary": {
+    "originalCases": 11,
+    "closed": 11,
+    "remainingSamples": 5,
+    "unexpectedInitialized": 5
+  }
+}

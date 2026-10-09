@@ -1,0 +1,121 @@
+{
+  "observedAt": "2026-10-07T12:29:39.202Z",
+  "scope": "T1 close 宽限起点返修（CLI 只读接入事件收尾第 3 轮）",
+  "constraints": {
+    "network": false,
+    "executedCli": false,
+    "readAuth": false,
+    "installed": false,
+    "initialized": false,
+    "deployed": false
+  },
+  "realNetworkCalls": 0,
+  "observerFile": "miniapp/scripts/lib/cloudbase-readonly-observer.cjs",
+  "observerSha256": "168f7a8b76ece598986602e69ceff78da3b75cf380795ba811e448afb2c7edd5",
+  "productionLimits": {
+    "timeoutMs": 55000,
+    "maxOutputBytes": 1048576,
+    "closeGraceMs": 2000
+  },
+  "results": [
+    {
+      "id": "no-exit-production-limits",
+      "elapsedMs": 55007,
+      "pass": true,
+      "processExited": false,
+      "closeNotObserved": false,
+      "timedOut": true,
+      "killCalls": 1
+    },
+    {
+      "id": "partial-direct-limits-normalized",
+      "elapsedMs": 108,
+      "pass": true,
+      "processExited": false,
+      "closeNotObserved": false,
+      "timedOut": true,
+      "killCalls": 1,
+      "note": "旧夹具未提供 closeGraceMs。修复前绕过 resolveLimits 导致 setTimeout(undefined) 立即触发；修复后 spawnBounded 统一走 resolveLimits 归一化，不再出现 undefined 延时。"
+    },
+    {
+      "id": "grace-starts-at-exit",
+      "elapsedMs": 924,
+      "pass": true,
+      "closeNotObserved": true,
+      "timedOut": false,
+      "processExited": true,
+      "exitCode": 0,
+      "stdout": "{\"partial\":1}",
+      "killCalls": 0,
+      "note": "静默 600ms 后才 exit。若宽限从 spawn 起算会在~300ms 失败；实测≈900ms 失败，证明宽限从 exit 起算，且重复 exit 未把宽限推后。"
+    },
+    {
+      "id": "grace-cannot-extend-total-timeout",
+      "elapsedMs": 109,
+      "pass": true,
+      "timedOut": true,
+      "closeNotObserved": false,
+      "killCalls": 1,
+      "note": "总超时 100ms 先于宽限 500ms 到达；宽限既未提前标记 close 未观察到，也未把失败推后。"
+    },
+    {
+      "id": "prior-s1-s2-intact",
+      "pass": true,
+      "settledBeforeClose": false,
+      "stdout": "{\"ok\":true}",
+      "lateErrorThrew": false,
+      "closeNotObserved": false,
+      "timedOut": false,
+      "note": "exit 后 Promise 未收尾（settledBeforeClose=false）、尾部收全为 {\"ok\":true}；收尾后发射 error 不抛且不改报告。"
+    },
+    {
+      "id": "limits-not-inflated",
+      "pass": true,
+      "closeGraceMs": 2000,
+      "timeoutMs": 55000,
+      "note": "closeGraceMs 仍为 2000、timeoutMs 仍为 55000；缺陷由计时起点修复，未靠调大数值掩盖。"
+    }
+  ],
+  "checks": [
+    {
+      "id": "no-exit-production-limits",
+      "pass": true,
+      "elapsedMs": 55007,
+      "processExited": false,
+      "closeNotObserved": false,
+      "timedOut": true,
+      "killCalls": 1,
+      "expected": "未 exit 时由 55 秒总超时负责；不得被 2 秒 close 宽限提前结束"
+    },
+    {
+      "id": "partial-direct-limits-normalized",
+      "pass": true,
+      "elapsedMs": 108
+    },
+    {
+      "id": "grace-starts-at-exit",
+      "pass": true,
+      "elapsedMs": 924,
+      "beforeExitSettled": false
+    },
+    {
+      "id": "grace-cannot-extend-total-timeout",
+      "pass": true,
+      "elapsedMs": 109
+    },
+    {
+      "id": "prior-s1-s2-intact",
+      "pass": true,
+      "settledBeforeClose": false
+    },
+    {
+      "id": "limits-not-inflated",
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  }
+}

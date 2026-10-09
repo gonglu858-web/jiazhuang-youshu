@@ -1,0 +1,183 @@
+{
+  "runId": "codex-primary-target-1791510317202-2c832808-3548-4426-b237-4819c3205a4e",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "appId": "wxfb4db1615ac15531",
+  "targetUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+  "startedAt": "2026-10-09T01:45:17.204Z",
+  "wrapperSha256": "8efffd3734ba66d87226d49e2cf5c50e374f8aad590089f13881724e5fe99ce1",
+  "writeAuthorized": false,
+  "status": "RECORD_OBSERVATIONS_OBTAINED",
+  "limitations": [
+    "四次读取非原子快照。",
+    "派生一致仅证明存储身份一致，不独立证明现实操作者归属。",
+    "SDK底层重试未单独计数；包装层不重试。",
+    "本脚本只有固定get；不能证明写权限或真实事务行为。"
+  ],
+  "fetch": {
+    "diagnostics": {
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "spawnFailed": false,
+      "stdoutBytes": 769,
+      "stderrBytes": 0
+    }
+  },
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "02924752-e17b-4818-a2f4-416f795fe993",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "6730",
+          "principalIdTail": "5386",
+          "requestId": "02924752-e17b-4818-a2f4-416f795fe993"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "dc6a388d-6460-4a0c-ad5f-2f64b618afb9",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "dc6a388d-6460-4a0c-ad5f-2f64b618afb9"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "4c157dd5-ff76-4700-ae5d-5e96a18d45e4",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "4c157dd5-ff76-4700-ae5d-5e96a18d45e4"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "02924752-e17b-4818-a2f4-416f795fe993",
+      "describeEnvs": "dc6a388d-6460-4a0c-ad5f-2f64b618afb9",
+      "describeEnvInfo": "4c157dd5-ff76-4700-ae5d-5e96a18d45e4"
+    }
+  },
+  "workerExit": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "spawnFailed": false,
+    "inputFailed": false
+  },
+  "results": [
+    {
+      "id": "oldPrimary",
+      "collection": "app_admins",
+      "key": "primary",
+      "status": "OBSERVED",
+      "requestId": null,
+      "active": true,
+      "keyMatches": true,
+      "targetMatches": true,
+      "openidDerivationMatches": null
+    },
+    {
+      "id": "oldUser",
+      "collection": "users",
+      "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "status": "OBSERVED",
+      "requestId": null,
+      "active": true,
+      "keyMatches": true,
+      "targetMatches": true,
+      "openidDerivationMatches": true
+    },
+    {
+      "id": "testUser",
+      "collection": "schtest_v1_users",
+      "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "status": "NOT_FOUND",
+      "requestId": null,
+      "active": null,
+      "keyMatches": null,
+      "targetMatches": null,
+      "openidDerivationMatches": null
+    },
+    {
+      "id": "testPrimary",
+      "collection": "schtest_v1_app_admins",
+      "key": "primary",
+      "status": "NOT_FOUND",
+      "requestId": null,
+      "active": null,
+      "keyMatches": null,
+      "targetMatches": null,
+      "openidDerivationMatches": null
+    }
+  ],
+  "finishedAt": "2026-10-09T01:45:24.199Z",
+  "dependenciesUnchanged": true
+}

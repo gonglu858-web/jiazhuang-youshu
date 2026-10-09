@@ -1,0 +1,90 @@
+{
+  "schema": "n0-readonly-capability-observation/1",
+  "recordedAt": "2026-10-07 02:12:01 UTC",
+  "status": "PARTIAL_N0_CREDENTIAL_BRIDGE_UNAVAILABLE",
+  "scope": "Existing MCP read-only environment probe and local executable/package metadata only",
+  "query": {
+    "tool": "queryEnv",
+    "action": "list",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "region": "ap-shanghai",
+    "fields": [
+      "EnvId",
+      "Status",
+      "Region"
+    ],
+    "limit": 5,
+    "offset": 0
+  },
+  "result": {
+    "EnvList": [
+      {
+        "EnvId": "cloud1-d8gcq5ag39d847723",
+        "Status": "NORMAL",
+        "Region": "ap-shanghai"
+      }
+    ],
+    "TotalCount": 1,
+    "Offset": 0,
+    "Limit": 5,
+    "HasMore": false,
+    "AppliedFilters": {
+      "alias": null,
+      "aliasExact": null,
+      "envId": "cloud1-d8gcq5ag39d847723",
+      "region": null,
+      "fields": [
+        "EnvId",
+        "Status",
+        "Region"
+      ],
+      "currentEnvOnly": false
+    },
+    "credential_scope": "single_env",
+    "current_region": "ap-shanghai",
+    "scope_note": "已忽略 region=\"ap-shanghai\"：当前为环境级凭证（单环境权限），查询固定落在绑定环境 cloud1-d8gcq5ag39d847723，地域参数不参与查询。这是凭据权限边界，不代表该地域没有环境。",
+    "query_region": "ap-shanghai",
+    "ignored_params": [
+      {
+        "name": "region",
+        "value": "ap-shanghai",
+        "reason": "环境级凭证为单环境权限，region 不参与查询；结果恒为绑定环境"
+      }
+    ],
+    "RecommendedNextAction": {
+      "tool": "queryEnv",
+      "action": "info",
+      "reason": "action=list with envId only returns a concise summary. Use action=info to fetch detailed environment information such as full resource metadata and additional environment details."
+    }
+  },
+  "local": {
+    "node": "22.16.0",
+    "commandsNotFoundInPATH": [
+      "tccli",
+      "tcb",
+      "cloudbase"
+    ],
+    "sdkPackagesObserved": {
+      "@cloudbase/node-sdk": "2.10.0",
+      "@cloudbase/database": "1.4.1",
+      "@cloudbase/signature-nodejs": "1.0.0-beta.0"
+    },
+    "searchedPackageLocations": [
+      "C:/Users/30591/AppData/Local/npm-cache/_npx/*/node_modules/<specified CloudBase or Tencent package>/package.json",
+      "C:/Users/30591/AppData/Roaming/npm/node_modules/@cloudbase/*/package.json",
+      "C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules/@cloudbase/*/package.json"
+    ],
+    "notAWholeMachineInventory": true
+  },
+  "limitations": [
+    "single_env is scope metadata, not proof of credential source or operator identity",
+    "No STS call; no local SDK cloud access; no credential values read",
+    "No auth/status or callCloudApi tools exposed in this session",
+    "CLI candidate 3.8.4 observed on npm package page; registry integrity and dependency lock not yet obtained",
+    "Public doc search timed out once; guessed login doc path unavailable; no repeated retry loop"
+  ],
+  "writeAuthorized": false,
+  "installed": false,
+  "initialized": false,
+  "deployed": false
+}

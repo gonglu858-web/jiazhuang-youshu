@@ -1,0 +1,33 @@
+{
+  "kind": "PUBLIC_CLI_REFRESH_OFFLINE_AUDIT_CAPTURE",
+  "captureMethod": "本次脚本标准输出的字段摘录；非完整 stdout 字节副本。四条结果均来自同一次实际执行。",
+  "observedAt": "2026-10-08T10:14:43.152Z",
+  "auditRoot": "C:/Users/30591/.codex/tmp/refresh-offline-ZAZ8JC",
+  "entrySha256": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b",
+  "bundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97",
+  "historicalScriptSha256": "78439101f956b3ac113398e0baadcbd2a9d195f3efb61cf57475a46fa5d34801",
+  "historicalEvidenceSha256": "9e9a50506a66f576d414b50ca6190b014ad92c6217f2bb603d1f488e1e1c93b4",
+  "originalFilesUnchanged": true,
+  "results": [
+    {"scenario":"full-refresh","exitCode":0,"refreshCount":1,"refreshUsesSyntheticOriginal":true,"serviceChecksUsingNewCredential":2,"cacheChanged":true,"cacheMatchesRefreshResponse":true,"outputAcceptedByHost":true,"outputMatchesRefreshedTriple":true,"outputMatchesRefreshedExpiry":true,"hostError":null,"pass":true},
+    {"scenario":"missing-refresh-token","exitCode":1,"refreshCount":1,"refreshUsesSyntheticOriginal":true,"serviceChecksUsingNewCredential":2,"cacheChanged":true,"cacheMatchesRefreshResponse":true,"outputAcceptedByHost":false,"hostError":"CREDENTIAL_SHAPE_INVALID","pass":true},
+    {"scenario":"refresh-denied","exitCode":1,"refreshCount":1,"refreshUsesSyntheticOriginal":true,"serviceChecksUsingNewCredential":0,"cacheChanged":false,"cacheMatchesRefreshResponse":false,"outputAcceptedByHost":false,"hostError":"CREDENTIAL_SHAPE_INVALID","pass":true},
+    {"scenario":"expired-refresh-output","exitCode":0,"refreshCount":1,"refreshUsesSyntheticOriginal":true,"serviceChecksUsingNewCredential":2,"cacheChanged":true,"cacheMatchesRefreshResponse":true,"outputAcceptedByHost":false,"hostError":"CREDENTIAL_EXPIRED","pass":true}
+  ],
+  "commonObservedForEachScenario": {
+    "processExited": true, "timedOut": false, "overflow": false, "closeNotObserved": false,
+    "diagnosticMarkerLeaked": false, "actualNetworkCalls": 0, "blockedNetwork": 0,
+    "deniedFileReads": 0, "deniedFileWrites": 0, "unexpectedSubprocesses": 0,
+    "initTcbAttempts": 0, "telemetryAttempts": 0, "unknownRequests": 0
+  },
+  "summary": {"total":4,"passed":4},
+  "realCredentialFetched": false,
+  "productionSameBatchObserved": false,
+  "writeAuthorized": false,
+  "limitations": [
+    "实际执行原始公共 CLI；网络全部由本地合成传输替换。",
+    "完整刷新响应是按固定源码构造的输入，不证明真实平台必然采用该形状。",
+    "仅新合成目录发生登录缓存写回；未读写真实登录缓存。",
+    "合成请求体、签名与输出的原文不写入本证据；临时目录只有合成资料。"
+  ]
+}

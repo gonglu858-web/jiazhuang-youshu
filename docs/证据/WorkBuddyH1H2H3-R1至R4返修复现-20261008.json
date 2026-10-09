@@ -1,0 +1,214 @@
+{
+  "observedAt": "2026-10-08T07:58:28.283Z",
+  "auditKind": "offline-reproduction-fixture-not-production-component",
+  "scope": "R1 token 归一 / R2 cwd 隔离 / R3 事实与净化 / R4 全进程拦截兜底",
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realNetworkCalls": 0,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "wroteSyntheticTempDirs": true,
+  "syntheticTempRootKeptForInspection": "C:\\Users\\30591\\AppData\\Local\\Temp\\r4-repro-OevJU3",
+  "allowedLocalNodeChecks": 8,
+  "blockedUnexpectedProcesses": 2,
+  "blockedSamples": [
+    {
+      "program": "node.exe",
+      "argvHead": [
+        "tcb",
+        "api"
+      ]
+    },
+    {
+      "program": "node.exe",
+      "argvHead": [
+        "tcb",
+        "secrets"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "R1-real-host-token-normalized-to-sessionToken",
+      "pass": true,
+      "observed": {
+        "credentialFetchAttempts": 1,
+        "argvShape": [
+          "secrets",
+          "get",
+          "--json"
+        ],
+        "cliAssociationAttempts": 3,
+        "workerAttempts": 1,
+        "cliTokensMatched": true,
+        "workerTokenMatched": true,
+        "reportedProven": false,
+        "fetchMode": "REAL_CANDIDATE",
+        "note": "凭据命令经真实新宿主，仅最底层 spawn 被替换"
+      }
+    },
+    {
+      "id": "R1-sensitivity-without-normalization-would-break",
+      "pass": true,
+      "observed": {
+        "normalizedSessionToken": "T",
+        "note": "删除 R1 归一后，三处 sessionToken 将为 undefined —— 此敏感性证明接线依赖真实成立"
+      }
+    },
+    {
+      "id": "R2-fetch-cwd-isolated-from-login-profile",
+      "pass": true,
+      "observed": {
+        "fetchCwd": "C:\\Users\\30591\\AppData\\Local\\Temp\\cloudbase-credential-fetch-f16e6f76336ab63c",
+        "loginProfile": "C:\\Users\\30591\\AppData\\Local\\Temp\\r4-repro-OevJU3\\profile-b-fEshxS",
+        "cwdEqualsProfile": false,
+        "cwdExists": true,
+        "purposeSeparated": true
+      }
+    },
+    {
+      "id": "R2-discovery-range-checked-not-just-leaf",
+      "pass": true,
+      "observed": {
+        "markerInAncestor": true,
+        "rejected": true,
+        "errorCode": "CREDENTIAL_FETCH_CWD_DISCOVERY_UNSAFE",
+        "markerFilePreserved": true,
+        "passedAfterMarkerRemoved": true,
+        "markerList": [
+          "cloudbaserc.json",
+          "cloudbaserc.js",
+          ".cloudbaserc",
+          ".git"
+        ],
+        "note": "只判断存在性，不读内容、不删除污染文件"
+      }
+    },
+    {
+      "id": "R2-pollution-stops-before-launching-credential-command",
+      "pass": true,
+      "observed": {
+        "credentialFetchAttempts": 0,
+        "reportedAttempted": false,
+        "stoppedAt": "sameBatchCredential",
+        "errorCode": "CREDENTIAL_FETCH_CWD_DISCOVERY_UNSAFE"
+      }
+    },
+    {
+      "id": "R3-precheck-rejection-means-not-attempted",
+      "pass": true,
+      "observed": {
+        "status": "FAILED",
+        "attempted": false,
+        "mode": "NONE",
+        "diagnostics": null
+      }
+    },
+    {
+      "id": "R3-simulated-injection-marked-simulated",
+      "pass": true,
+      "observed": {
+        "mode": "SIMULATED",
+        "attempted": false,
+        "proven": false
+      }
+    },
+    {
+      "id": "R3-parse-failure-retains-exit-facts",
+      "pass": true,
+      "observed": {
+        "attempted": true,
+        "errorCode": "CREDENTIAL_EXPIRY_UNKNOWN",
+        "errorClass": "CREDENTIAL_EXPIRY_UNKNOWN",
+        "exitFactsRetained": {
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "overflow": false,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true,
+          "spawnFailed": false,
+          "stdoutBytes": 134,
+          "stderrBytes": 0
+        },
+        "note": "可区分「已执行但输出不合规」（退出码 0）与「未启动」"
+      }
+    },
+    {
+      "id": "R3-error-detail-projected-not-propagated",
+      "pass": true,
+      "observed": {
+        "markerLeaked": false,
+        "reportedErrorCode": "CREDENTIAL_FETCH_FAILED",
+        "note": "合成故障边界复现，不是已确认发生的真实密钥泄漏"
+      }
+    },
+    {
+      "id": "R4-default-spawn-caught-by-guard",
+      "pass": true,
+      "observed": {
+        "blockedBefore": 1,
+        "blockedAfter": 2,
+        "guardFired": true,
+        "caughtByGuard": false,
+        "note": "不注入 spawn 时，真实公共 CLI/worker 启动被兜底拒绝并计数"
+      }
+    }
+  ],
+  "retainedHistoricalEvidence": {
+    "note": "旧复现脚本/JSON 保留为历史，未改写、未重跑对齐",
+    "WorkBuddyH1H2H3-真实凭据获取最小接线复现-20261008.cjs": "a5060e9d7e42fd3adc628dcede1266a7dbe8f5d95e799c61a192bd9bf6e037d6",
+    "WorkBuddyH1H2H3-真实凭据获取最小接线复现-20261008.json": "6415d8f5c60bcf4c2cc75d253d81c9bfdd8881aadd8ee9c9f5688f053f286dea"
+  },
+  "sha256": {
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "b842daac48dea418898f21aa8971a21d75be878b266ca0c72a68a79bc86d98cc",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "a65a34fed72f4d9bdabc27edbfa57578825c0016b7285d6f9e26224f57b1b2bd",
+    "miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs": "c6e7474894f55bc49134e5b7b16e7d7d03578cbd0b9ffab191865b93f0833794",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "40a644a1b7bb3fbfd85482066ad1ce02f114e0d97db3caf1fec024361984beb9",
+    "miniapp/scripts/check-cloudbase-sdk-readonly.cjs": "1a0ea9d6eced919d9d4f67d712a4886be2eef0a568ac4a255c0a9ac3e69f2b3c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+  },
+  "blockingGaps": [
+    {
+      "id": "production-same-batch-credential-chain-not-proven",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "本轮仍未执行真实 `secrets get --json`、未取任何真实凭据。候选宿主接线（R1）与 cwd 隔离（R2）已离线闭合，但`proven` 恒为 false、汇总无升级分支 —— 这是关闭状态，不能靠把常量改成 true 得到生产证明。",
+      "needed": "受审宿主内按既有只读授权执行一次整组，并明确实际观察事实如何形成。"
+    },
+    {
+      "id": "refresh-branch-output-contract-undecided",
+      "severity": "MEDIUM",
+      "detail": "H1 遗留：可刷新分支尚未产出完整快照，输出契约未定论。Codex 已裁决该分支只继续合成离线核对；未解决时真实路径保持关闭。",
+      "needed": "按固定源码对齐合成 refresh 响应后再离线验证。"
+    },
+    {
+      "id": "service-not-initialized-does-not-block-output",
+      "severity": "MEDIUM",
+      "detail": "Codex 已裁决：`Initialized=false` 仍产出凭据是**固定版本行为**，如实接受为 CLI 行为，不视为失败、不新增 InitTcb。凭据可获取不等于服务已就绪；后续只读核验须自行成功，不能凭快照认定环境可用。",
+      "needed": "无需动作；仅在后续目标核验时不得据快照认定环境可用。"
+    },
+    {
+      "id": "refresh-writes-back-official-login-cache",
+      "severity": "LOW",
+      "detail": "只在合成目录观察到写回类别，未在真实登录目录验证。不得假定「官方 CLI 获取过程不刷新缓存」。",
+      "needed": "真实受审运行时单独记录。"
+    }
+  ],
+  "limitations": [
+    "凭据全部为合成标记值；未取真实凭据、未读真实认证存储内容。",
+    "R1–R3 结论来自合成凭据 + 合成受控子进程；真实公共 CLI 未启动。",
+    "本脚本是离线夹具，不得作为未经审查的生产网络代理安装。",
+    "Node 运行时拦截不是操作系统防火墙。",
+    "平台原子性、IAM、真实库内容、真实网络行为、费用/余量均未验证。"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "number": 48,
+  "action": "DescribeDatabaseACL",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_schedule_receipts"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:43:04.764Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "acf876c4-dadc-4cdc-8d4a-da361d15711f",
+  "result": {
+    "AclTag": "ADMINONLY",
+    "Rule": ""
+  },
+  "finishedAt": "2026-10-09T00:43:07.136Z"
+}

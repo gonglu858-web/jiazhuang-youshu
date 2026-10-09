@@ -1,0 +1,22 @@
+{
+  "table": "schtest_v1_schedule_revisions",
+  "name": "schedule_afterVersion",
+  "keys": [
+    {
+      "Name": "scheduleId",
+      "Direction": "1"
+    },
+    {
+      "Name": "afterVersion",
+      "Direction": "1"
+    }
+  ],
+  "unique": false,
+  "sparse": false,
+  "partial": "",
+  "listed": true,
+  "specMatches": true,
+  "explicitReadyStatus": null,
+  "readyConfirmed": false,
+  "at": "2026-10-09T00:46:11.690Z"
+}

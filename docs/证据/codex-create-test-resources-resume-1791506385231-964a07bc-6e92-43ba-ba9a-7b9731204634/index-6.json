@@ -1,0 +1,22 @@
+{
+  "table": "schtest_v1_invitations",
+  "name": "projectId_1_status_1",
+  "keys": [
+    {
+      "Name": "projectId",
+      "Direction": "1"
+    },
+    {
+      "Name": "status",
+      "Direction": "1"
+    }
+  ],
+  "unique": false,
+  "sparse": false,
+  "partial": "",
+  "listed": true,
+  "specMatches": true,
+  "explicitReadyStatus": null,
+  "readyConfirmed": false,
+  "at": "2026-10-09T00:45:16.800Z"
+}

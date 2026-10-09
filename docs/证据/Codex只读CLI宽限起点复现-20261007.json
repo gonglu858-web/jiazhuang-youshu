@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-10-07T12:16:05.785Z",
+  "realNetworkCalls": 0,
+  "observerSha256": "e6a40af19caaaf9a0d3688e97cb1d68f6c029632c2bc737b7665f97ab6e4431a",
+  "results": [
+    {
+      "id": "no-exit-production-limits",
+      "elapsedMs": 2012,
+      "processExited": false,
+      "closeNotObserved": true,
+      "timedOut": false,
+      "killCalls": 0,
+      "expected": "未exit时应由55秒总超时负责，而不是2秒close宽限提前结束"
+    },
+    {
+      "id": "partial-direct-limits",
+      "elapsedMs": 16,
+      "processExited": false,
+      "closeNotObserved": true,
+      "timedOut": false,
+      "note": "__limits未提供closeGraceMs；直接进入setTimeout(undefined)，resolveLimits未被调用。"
+    },
+    {
+      "id": "prior-fixes-remain",
+      "settledBeforeClose": false,
+      "stdout": "{\"ok\":true}",
+      "lateErrorThrew": false
+    }
+  ]
+}

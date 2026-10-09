@@ -1,0 +1,30 @@
+{
+  "number": 91,
+  "action": "DescribeBillingInfo",
+  "body": {
+    "EnvIds": [
+      "cloud1-d8gcq5ag39d847723"
+    ]
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:46:48.368Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "54bd0322-4c8d-4d63-b596-acd871601d42",
+  "result": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "EnableOverrun": false,
+    "IsAutoRenew": true,
+    "Status": "NORMAL",
+    "PackageId": "baas_personal",
+    "PayMode": "PREPAYMENT",
+    "ExpireTime": "2027-04-04 23:59:59"
+  },
+  "finishedAt": "2026-10-09T00:46:50.354Z"
+}

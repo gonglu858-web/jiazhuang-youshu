@@ -1,0 +1,239 @@
+{
+  "observedAt": "2026-10-07T13:14:51.718Z",
+  "scope": "M1/M2/M3 SDK 只读身份接入与管理员核对（本地实现）",
+  "constraints": {
+    "network": false,
+    "executedCli": false,
+    "readAuth": false,
+    "fetchedRealCredential": false,
+    "installed": false,
+    "initialized": false,
+    "deployed": false,
+    "createdResources": false,
+    "syntheticFixture": true
+  },
+  "realNetworkCalls": 0,
+  "fixedEnvironment": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "appId": "wxfb4db1615ac15531",
+    "region": "ap-shanghai",
+    "cliBundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97"
+  },
+  "limits": {
+    "cli": {
+      "timeoutMs": 55000,
+      "maxOutputBytes": 1048576,
+      "closeGraceMs": 2000
+    },
+    "worker": {
+      "timeoutMs": 55000,
+      "maxOutputBytes": 1048576
+    },
+    "minRemainingMs": 300000
+  },
+  "results": [
+    {
+      "id": "cli-credential-priority-source",
+      "pass": true,
+      "bundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97",
+      "bundleShaMatchesTaskDoc": true,
+      "order": "project(cwd) > authStore(<config>/.cloudbase/auth.json) > TENCENTCLOUD_* env",
+      "envIsLowestPriority": true,
+      "configDirFormula": "XDG_CONFIG_HOME || homedir()/.config  → Windows 下随USERPROFILE 迁移",
+      "note": "静态源码定位；**不等于**已验证真实执行中确实选用注入凭据"
+    },
+    {
+      "id": "isolation-clean-vs-dirty",
+      "pass": true,
+      "absentBefore": true,
+      "clean": true,
+      "dirtyStops": true,
+      "notDeleted": true,
+      "note": "只查位置不读内容；发现污染即停止且未删除任何文件"
+    },
+    {
+      "id": "same-batch-injection",
+      "pass": true,
+      "clearedInherited": true,
+      "injectedSameSnapshot": true,
+      "region": "ap-shanghai",
+      "ci": "1",
+      "note": "凭据不进命令行/磁盘；仅注入该子进程；原登录目录未被使用"
+    },
+    {
+      "id": "token-to-sessiontoken-mapping",
+      "pass": true,
+      "sdkConfigKeys": [
+        "debug",
+        "env",
+        "secretId",
+        "secretKey",
+        "sessionToken"
+      ],
+      "usesSessionToken": true,
+      "usesTokenParamName": false,
+      "sdkLibSha256": "e201fa91ccb31523fe43fd2681b4d63fd70048537c22d496c582911be67b7a17",
+      "sdkSourceAcceptsSessionToken": true,
+      "note": "node-sdk 接收 sessionToken；CLI 输出字段是 token，此处显式映射一次"
+    },
+    {
+      "id": "sdk-request-shape",
+      "pass": true,
+      "nonTransactionReturnsArray": true,
+      "transactionReturnsSingleObject": true,
+      "projectionSupported": true,
+      "classifications": {
+        "zero": "NOT_FOUND",
+        "one": "OBSERVED",
+        "many": "UNCONFIRMED_SHAPE",
+        "txShape": "UNCONFIRMED_SHAPE"
+      },
+      "note": "未用事务读替代普通 get；事务形状出现即判不可信"
+    },
+    {
+      "id": "primary-users-boundaries",
+      "pass": true,
+      "cases": {
+        "primaryNotFound": "NOT_FOUND",
+        "primarySameTarget": "OBSERVED",
+        "primaryOtherPerson": true,
+        "primaryDisabled": "UNCONFIRMED",
+        "primaryBadShape": "UNCONFIRMED",
+        "usersValid": "OBSERVED",
+        "usersNotFound": "NOT_FOUND",
+        "usersDisabled": "UNCONFIRMED",
+        "usersDerivationMismatch": "UNCONFIRMED",
+        "usersNoTarget": "NOT_EXECUTED_TARGET_UNCONFIRMED",
+        "permissionDeniedNotEmpty": "UNCONFIRMED"
+      },
+      "note": "权限拒绝不当作空记录；缺目标不影响 primary 独立观测，但整体不得标完整"
+    },
+    {
+      "id": "credential-strictness",
+      "pass": true,
+      "acceptedFields": [
+        "expiresAtIso",
+        "expiresAtMs",
+        "isTemporary",
+        "secretId",
+        "secretKey",
+        "sessionToken"
+      ],
+      "rejects": {
+        "longTermKey": true,
+        "truthyIsTemporary": true,
+        "unknownExpiry": true,
+        "missingExpiry": true,
+        "alreadyExpired": true,
+        "underThreshold": true,
+        "expiredDuringRun": true,
+        "badJson": true,
+        "emptyField": true
+      },
+      "minRemainingMs": 300000,
+      "note": "门槛 5 分钟是本轮起点要求，不是对平台有效时长的承诺"
+    },
+    {
+      "id": "argument-whitelist",
+      "pass": true,
+      "rejectedForbidden": true,
+      "rejectedNoOpenKnobs": true,
+      "unknownRejected": true,
+      "targetStrict": true,
+      "validTarget": true,
+      "note": "未知/禁止参数在任何云调用之前拒绝；参数不构成授权或现实人员证明"
+    },
+    {
+      "id": "zero-write-traps",
+      "pass": true,
+      "writeAttempts": 0,
+      "primaryClass": "OBSERVED",
+      "targetClass": "OBSERVED",
+      "derivationMatches": true,
+      "collectionFactoryTrapped": true,
+      "transactionTrapped": true,
+      "note": "只读路径触发陷阱数 = 0；写入口与事务入口均已封堵"
+    },
+    {
+      "id": "honest-stop-without-credentials",
+      "pass": true,
+      "readOnlyStatus": "FAILED",
+      "stoppedAt": "sameBatchCredential",
+      "errorCode": "SAME_BATCH_NOT_PROVEN",
+      "localStatus": "LOCAL_READY",
+      "localCheckCount": 10,
+      "writeAuthorized": false,
+      "productionCallerVerifierImplemented": false,
+      "note": "未用合成授权冒充生产核验；本地准备通过但同批凭据链未证实"
+    },
+    {
+      "id": "untouched-files-unchanged",
+      "pass": true,
+      "checked": 5,
+      "hashMismatches": [],
+      "note": "本轮只新增文件，未修改既有观测器/P4/适配层/初始化 CLI"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "same-batch-credential-chain-not-proven-in-production",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "本轮未执行 secrets get --json、未获取任何真实凭据，因此「同一批凭据同时供给 CLI 与 SDK」在**生产**层面未证实。已证实的是：源码层面的优先级顺序与隔离机制（静态定位），以及合成凭据下的注入路径（替身）。",
+      "needed": "受审宿主内按既有只读授权执行一次整组，另存脱敏证据。"
+    },
+    {
+      "id": "public-cli-actually-selects-injected-credential-not-executed",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "任务硬停止点要求「用合成凭据验证公共 CLI 在干净目录确实选用注入凭据」。本轮**未执行**真实 CLI（不执行 bundle、不联网），故此项未完成。源码显示环境变量优先级最低、且 auth.json 位置随 USERPROFILE 迁移，指向隔离可行，但**源码不能替代对真实公共入口的离线优先级验证**。",
+      "needed": "在受审宿主内以隔离目录 + 合成凭据执行一次 `api` 命令并观察实际选用的身份（或等价受审验证）。"
+    },
+    {
+      "id": "no-real-database-read-performed",
+      "severity": "EXPECTED_THIS_ROUND",
+      "detail": "primary / users 均未真实读取；所有分支结论来自离线替身。副本是否已有主管理员、指定微信用户记录是否有效**均未知**。",
+      "needed": "同批凭据链证实后，由受审宿主执行一次只读整组。"
+    },
+    {
+      "id": "target-user-source-unconfirmed",
+      "severity": "EXPECTED_THIS_ROUND",
+      "detail": "目标 userId 未预填。CLI 接受一个格式严格的完整 userId 作为**只读查询目标**，但参数不构成授权，也不构成现实人员证明。缺少受信指定来源时，users 记 NOT_EXECUTED_TARGET_UNCONFIRMED。",
+      "needed": "由 Codex 把受信指定来源与目标对应好后再执行；不必为此立即要求用户取号或发 OPENID。"
+    },
+    {
+      "id": "sdk-network-retry-count-unverified",
+      "severity": "EXPECTED_LATER",
+      "detail": "SDK 自身的重试与超时未实测。本轮只固定了 worker 层的 55 秒 / 1 MiB 上限。不把业务层一次调用说成网络仅一次。",
+      "needed": "真实执行时记录实际请求次数与耗时。"
+    },
+    {
+      "id": "permission-denial-vs-collection-missing-unclassified",
+      "severity": "EXPECTED_LATER",
+      "detail": "权限拒绝与网络失败当前都归为 UNCONFIRMED（不猜错误码、不解析自由 message）。只有已核实的官方错误契约才能把集合缺失分类为 NOT_EXISTS。",
+      "needed": "取得官方错误契约后再细分。"
+    }
+  ],
+  "boundaries": {
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false,
+    "forbiddenCalled": [
+      "identify",
+      "requestBindingNumber",
+      "initializePrimary",
+      "database transactions",
+      "cloud functions",
+      "raw collection names",
+      "arbitrary queries"
+    ],
+    "collectionsTouched": [
+      "schtest_v1_app_admins",
+      "schtest_v1_users"
+    ],
+    "scopeNote": "仅独立测试副本 schtest_v1_*；未查旧业务 users/app_admins；未处理 A/B/C"
+  },
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "blockingGaps": 2
+  }
+}

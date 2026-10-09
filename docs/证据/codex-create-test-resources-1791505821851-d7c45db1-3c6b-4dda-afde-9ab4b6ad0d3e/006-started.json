@@ -1,0 +1,12 @@
+{
+  "number": 6,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "app_admins"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:31:31.070Z",
+  "status": "ATTEMPT_STARTED"
+}

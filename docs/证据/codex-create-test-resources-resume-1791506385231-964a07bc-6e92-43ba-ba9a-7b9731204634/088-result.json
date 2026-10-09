@@ -1,0 +1,45 @@
+{
+  "number": 88,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedule_revisions",
+    "CreateIndexes": [
+      {
+        "IndexName": "schedule_afterVersion",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "scheduleId",
+              "Direction": "1"
+            },
+            {
+              "Name": "afterVersion",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:46:07.711Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "9b581456-3fa0-4d0a-9f53-a6266bebb3c3",
+  "result": {
+    "responseKeys": [
+      "RequestId"
+    ],
+    "accepted": true
+  },
+  "finishedAt": "2026-10-09T00:46:09.742Z"
+}

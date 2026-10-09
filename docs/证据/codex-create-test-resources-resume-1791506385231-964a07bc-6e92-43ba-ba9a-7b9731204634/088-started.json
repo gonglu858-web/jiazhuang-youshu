@@ -1,0 +1,30 @@
+{
+  "number": 88,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedule_revisions",
+    "CreateIndexes": [
+      {
+        "IndexName": "schedule_afterVersion",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "scheduleId",
+              "Direction": "1"
+            },
+            {
+              "Name": "afterVersion",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:46:07.711Z",
+  "status": "ATTEMPT_STARTED"
+}

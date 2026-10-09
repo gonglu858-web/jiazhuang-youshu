@@ -1,0 +1,45 @@
+{
+  "number": 70,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_audit_events",
+    "CreateIndexes": [
+      {
+        "IndexName": "project_created_desc",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "createdAt",
+              "Direction": "-1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:45:18.774Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "fe030cb7-41e3-422b-bede-59cceeb3c5b3",
+  "result": {
+    "responseKeys": [
+      "RequestId"
+    ],
+    "accepted": true
+  },
+  "finishedAt": "2026-10-09T00:45:20.717Z"
+}

@@ -1,0 +1,176 @@
+{
+  "observedAt": "2026-10-08T04:08:42.240Z",
+  "realNetworkCalls": 0,
+  "realCredentialsFetched": false,
+  "syntheticChildOnly": true,
+  "flags": [
+    {
+      "record": "primary",
+      "field": "userIdShapeValid",
+      "input": "missing",
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "userIdShapeValid",
+      "input": null,
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "userIdShapeValid",
+      "input": 0,
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "userIdShapeValid",
+      "input": "",
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "userIdShapeValid",
+      "input": false,
+      "observed": false
+    },
+    {
+      "record": "primary",
+      "field": "userIdShapeValid",
+      "input": true,
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "statusValid",
+      "input": "missing",
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "statusValid",
+      "input": null,
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "statusValid",
+      "input": 0,
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "statusValid",
+      "input": "",
+      "observed": true
+    },
+    {
+      "record": "primary",
+      "field": "statusValid",
+      "input": false,
+      "observed": false
+    },
+    {
+      "record": "primary",
+      "field": "statusValid",
+      "input": true,
+      "observed": true
+    },
+    {
+      "record": "targetUser",
+      "field": "statusValid",
+      "input": "missing",
+      "observed": true
+    },
+    {
+      "record": "targetUser",
+      "field": "statusValid",
+      "input": null,
+      "observed": true
+    },
+    {
+      "record": "targetUser",
+      "field": "statusValid",
+      "input": 0,
+      "observed": true
+    },
+    {
+      "record": "targetUser",
+      "field": "statusValid",
+      "input": "",
+      "observed": true
+    },
+    {
+      "record": "targetUser",
+      "field": "statusValid",
+      "input": false,
+      "observed": false
+    },
+    {
+      "record": "targetUser",
+      "field": "statusValid",
+      "input": true,
+      "observed": true
+    }
+  ],
+  "invalidFlagAccepted": 12,
+  "parentExpiryChecks": {
+    "noExpiry": {
+      "stages": [
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "worker"
+      ],
+      "workerReturned": true,
+      "primary": "OBSERVED",
+      "users": "OBSERVED",
+      "status": "INCOMPLETE",
+      "errorCode": null,
+      "incomplete": [
+        "同批凭据链在本次离线实现中**未获生产证实**（需受审宿主真实执行）。"
+      ],
+      "proven": false
+    },
+    "successExpiry": {
+      "stages": [
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "worker"
+      ],
+      "workerReturned": true,
+      "primary": "OBSERVED",
+      "users": "OBSERVED",
+      "status": "INCOMPLETE",
+      "errorCode": null,
+      "incomplete": [
+        "同批凭据链在本次离线实现中**未获生产证实**（需受审宿主真实执行）。",
+        "worker 返回后父进程复核发现凭据已过期：已完成观测只作为带时间的部分事实，不升级为完整核验。"
+      ],
+      "proven": false
+    },
+    "failureExpiry": {
+      "stages": [
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "worker"
+      ],
+      "workerReturned": true,
+      "primary": "UNCONFIRMED",
+      "users": "UNCONFIRMED",
+      "status": "FAILED",
+      "errorCode": "SDK_UNAVAILABLE",
+      "incomplete": [
+        "SDK 只读 worker 未成功完成（SDK_UNAVAILABLE），未取得任何可用记录结论。",
+        "worker 返回后复核发现凭据已过期：以上失败事实按原样保留，不重新获取凭据。"
+      ],
+      "proven": false
+    }
+  },
+  "limitations": [
+    "Synthetic child events; no real platform or subprocess timing proven.",
+    "flags samples exercise malformed worker output, not an observed production response."
+  ]
+}

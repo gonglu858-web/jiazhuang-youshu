@@ -1,0 +1,31 @@
+{
+  "number": 22,
+  "action": "CreateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_invitations",
+    "PermissionInfo": {
+      "AclTag": "ADMINONLY",
+      "EnvId": "cloud1-d8gcq5ag39d847723"
+    }
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:41:11.181Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "2d4f1ef4-3ac6-494b-a411-24819bd619d0",
+  "result": {
+    "responseKeys": [
+      "RequestId"
+    ],
+    "accepted": true
+  },
+  "finishedAt": "2026-10-09T00:41:13.511Z"
+}

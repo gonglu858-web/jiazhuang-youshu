@@ -1,0 +1,67 @@
+{
+  "number": 65,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_invitations"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:44:56.807Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "a36669ce-c722-4a44-ad94-36b5e8d75b71",
+  "result": {
+    "IndexNum": 3,
+    "Indexes": [
+      {
+        "Name": "tokenHash_1",
+        "Keys": [
+          {
+            "Name": "tokenHash",
+            "Direction": "1"
+          }
+        ],
+        "Unique": true,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_id_",
+        "Keys": [
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_openid_1",
+        "Keys": [
+          {
+            "Name": "_openid",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      }
+    ],
+    "responseKeys": [
+      "IndexNum",
+      "Indexes",
+      "RequestId"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:44:58.745Z"
+}

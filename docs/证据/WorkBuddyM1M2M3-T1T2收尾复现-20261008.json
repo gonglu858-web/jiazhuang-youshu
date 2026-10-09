@@ -1,0 +1,251 @@
+{
+  "observedAt": "2026-10-08T04:20:02.342Z",
+  "scope": "M1/M2/M3 T1/T2 收尾（SDK 只读身份接入，本地离线）",
+  "basedOn": "docs/Codex复核-SDK只读身份S1-S3收尾-20261008.md 第 2、3 节",
+  "constraints": {
+    "network": false,
+    "executedCli": false,
+    "readAuth": false,
+    "fetchedRealCredential": false,
+    "installed": false,
+    "initialized": false,
+    "deployed": false,
+    "createdResources": false,
+    "executedRealWorkerSubprocess": false,
+    "wroteFiles": false,
+    "historicalEvidenceOverwritten": false
+  },
+  "evidenceTiers": {
+    "syntheticVerification": "合成凭据/合成 CLI 响应/合成 EventEmitter 子进程下的本地行为验证",
+    "realWorkerMain": "本轮**未**执行真实 worker main（T1 走解释链、T2 走合成子进程）",
+    "platformUnverified": [
+      "平台原子性",
+      "IAM 权限",
+      "真实数据库内容",
+      "真实 worker 子进程时序",
+      "真实网络行为",
+      "费用/余量",
+      "生产同批凭据链"
+    ]
+  },
+  "realNetworkCalls": 0,
+  "realCloudCalls": 0,
+  "workerMainExecutions": 0,
+  "changedScope": {
+    "observer": "仅两处布尔判断（!== false → === true）+ 导出 PRIMARY_KEY_EXPECTATION",
+    "tests": "重写 S3-5/S3-6 为 T2 组（事件屏障驱动），新增 T1 组 4 项",
+    "worker": "本轮未修改",
+    "entry": "本轮未修改"
+  },
+  "results": [
+    {
+      "id": "T1-1-non-true-flags-rejected",
+      "pass": true,
+      "cases": 18,
+      "invalidFlags": 15,
+      "wrongAccepted": [],
+      "wrongRejected": [],
+      "note": "T1：把「不是 false」误当「明确通过」；现必须是严格 true"
+    },
+    {
+      "id": "T1-2-valid-record-still-observed",
+      "pass": true,
+      "primaryStatus": "OBSERVED",
+      "usersStatus": "OBSERVED",
+      "usersUserStatus": "active",
+      "primaryReasons": [],
+      "usersReasons": [],
+      "note": "本轮正常记录正向照常通过"
+    },
+    {
+      "id": "T1-3-users-contract-unchanged",
+      "pass": true,
+      "userId": null,
+      "userIdShapeValid": null,
+      "statusValid": true,
+      "docIdMatches": true,
+      "fieldCompleteness": "COMPLETE",
+      "note": "users 记录本来就没有 userId 字段 → 保持「不适用」，不新增 users.userId 要求"
+    },
+    {
+      "id": "T1-4-truthy-non-boolean-rejected",
+      "pass": true,
+      "samples": [
+        {
+          "value": "1",
+          "status": "UNCONFIRMED"
+        },
+        {
+          "value": "\"true\"",
+          "status": "UNCONFIRMED"
+        },
+        {
+          "value": "{}",
+          "status": "UNCONFIRMED"
+        },
+        {
+          "value": "[]",
+          "status": "UNCONFIRMED"
+        },
+        {
+          "value": "\"yes\"",
+          "status": "UNCONFIRMED"
+        }
+      ],
+      "note": "严格 true 也排除了 1/\"true\"/{} 这类真值非布尔"
+    },
+    {
+      "id": "T1-5-assignments-use-strict-true",
+      "pass": true,
+      "assignmentLines": [
+        "out.userIdShapeValid = out.userId !== null && rec.userIdShapeValid === true;",
+        "out.userIdShapeValid = null; // 不适用（users 记录本来就没有 userId 字段）",
+        "out.statusValid = out.status !== null && rec.statusValid === true;"
+      ],
+      "looseComparisonCount": 0,
+      "strictTrueCount": 2,
+      "note": "源码级核对：两处赋值均为 === true（注释中引用旧写法仅为说明来历）"
+    },
+    {
+      "id": "T2-1-no-expiry-baseline",
+      "pass": true,
+      "stages": [
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "worker"
+      ],
+      "workerReturned": true,
+      "primaryStatus": "OBSERVED",
+      "usersStatus": "OBSERVED",
+      "overallStatus": "INCOMPLETE",
+      "hasExpiryNote": false,
+      "note": "未过期对照：同样走完四阶段，但不得出现任何过期说明"
+    },
+    {
+      "id": "T2-2-success-return-expired-before-parent-finish",
+      "pass": true,
+      "stages": [
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "worker"
+      ],
+      "primaryStatus": "OBSERVED",
+      "usersStatus": "OBSERVED",
+      "overallStatus": "INCOMPLETE",
+      "incomplete": [
+        "同批凭据链在本次离线实现中**未获生产证实**（需受审宿主真实执行）。",
+        "worker 返回后父进程复核发现凭据已过期：已完成观测只作为带时间的部分事实，不升级为完整核验。"
+      ],
+      "proven": false,
+      "note": "成功路径：两条部分观测保留，整体不升级为完整核验"
+    },
+    {
+      "id": "T2-3-failure-return-expired-before-parent-finish",
+      "pass": true,
+      "stages": [
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "worker"
+      ],
+      "overallStatus": "FAILED",
+      "originalErrorPreserved": "SDK_UNAVAILABLE",
+      "stoppedAt": "primaryObservation",
+      "refreshed": false,
+      "incomplete": [
+        "SDK 只读 worker 未成功完成（SDK_UNAVAILABLE），未取得任何可用记录结论。",
+        "worker 返回后复核发现凭据已过期：以上失败事实按原样保留，不重新获取凭据。"
+      ],
+      "note": "失败路径：原始错误码按原样保留，另有过期说明，不重新获取凭据"
+    },
+    {
+      "id": "T2-4-weak-assertions-removed",
+      "pass": true,
+      "looseStoppedAtAssertionPresent": false,
+      "callCountGuessingPresent": false,
+      "note": "S3-5/S3-6 已重写为 T2 组：不再用 now() 调用次数猜阶段，也不再允许 CLI 提前失败兜底"
+    },
+    {
+      "id": "untouched-files-unchanged",
+      "pass": true,
+      "checked": 5,
+      "mismatch": [],
+      "actual": {
+        "scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+        "scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a",
+        "scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+        "scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+        "scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+      },
+      "note": "C1/T1/P4/已验收适配层/初始化 CLI/既有 CLI 观测器均未触碰"
+    },
+    {
+      "id": "historical-evidence-preserved",
+      "pass": true,
+      "historicalEvidence": {
+        "m1m2m3": {
+          "file": "WorkBuddyM1M2M3-SDK只读接入复现-20261007.json",
+          "sha256": "f5e4b2dd86cf0cfe5c1bfcf4690a38e18458e6ea37c4068ee6a60c6e5a951678"
+        },
+        "r1r5": {
+          "file": "WorkBuddyM1M2M3-R1至R5返修复现-20261008.json",
+          "sha256": "46c4a3b73c688b86fd6d7f66fca954ab1bf6477766879db4e97615b677221889"
+        },
+        "s1s3": {
+          "file": "WorkBuddyM1M2M3-S1至S3收尾复现-20261008.json",
+          "sha256": "8eb9b3b74a59efd74df5469b2d35180164e2109491b6025a8b4a4b9902d94d6a"
+        },
+        "codex-r1r5": {
+          "file": "CodexSDK只读R1R5返修复核-20261008.json",
+          "sha256": "f965227d5f008e108ea8327bfa715835ecc31a48a06c2ab062dd2e5c69dbf513"
+        }
+      },
+      "overwrittenByThisRound": false,
+      "wroteFiles": false,
+      "note": "本脚本只写 stdout；历史 JSON 保留原样，未重跑覆盖来「对齐」"
+    }
+  ],
+  "blockingGaps": [
+    {
+      "id": "public-cli-identity-source-not-proven-offline",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "R1 前置条件仍未完成：公共 CLI 离线身份选择证明未执行（不执行 bundle、不联网），真实凭据获取宿主保持关闭。T1/T2 只是收尾，不改变这一点。",
+      "needed": "在受审宿主内以隔离目录 + 合成凭据执行一次公共 api 命令，观察实际选用的身份来源。"
+    },
+    {
+      "id": "same-batch-credential-chain-not-proven-in-production",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "本轮全部结论来自合成凭据/合成子进程；proven 恒为 false，整体 INCOMPLETE。未执行 secrets get --json、未获取任何真实凭据。",
+      "needed": "受审宿主内按既有只读授权执行一次整组，另存脱敏证据。"
+    },
+    {
+      "id": "real-worker-subprocess-timing-not-simulated",
+      "severity": "EXPECTED_THIS_ROUND",
+      "detail": "T2 的三个时效场景使用合成 EventEmitter 子进程，未通过真实 worker 子进程模拟「worker 最后检查后、父进程收尾前」的时间窗口。S3 实现本身已由 Codex 定点脚本补证通过，本项只说明 T2 的覆盖边界。",
+      "needed": "真实执行时以受控凭据与真实时间戳观察该窗口。"
+    },
+    {
+      "id": "flag-samples-are-malformed-protocol-not-production-response",
+      "severity": "EXPECTED_THIS_ROUND",
+      "detail": "T1 的 15 个损坏标记样本是**损坏的 worker 输出协议**，当前正常 worker 会输出布尔值。本轮不声称真实云记录曾被误认，也不声称取得任何写权限；它只是上轮要求收紧、本轮声称完成的判定。",
+      "needed": "无需平台动作；后续若 worker 协议变化需同步更新契约。"
+    }
+  ],
+  "boundaries": {
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false,
+    "collectionsTouched": [
+      "schtest_v1_app_admins",
+      "schtest_v1_users"
+    ],
+    "note": "仅独立测试副本 schtest_v1_*；未查旧业务 users/app_admins"
+  },
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "blockingGaps": 2
+  }
+}

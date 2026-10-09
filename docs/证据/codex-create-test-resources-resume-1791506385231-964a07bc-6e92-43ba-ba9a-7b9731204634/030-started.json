@@ -1,0 +1,16 @@
+{
+  "number": 30,
+  "action": "CreateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedules",
+    "PermissionInfo": {
+      "AclTag": "ADMINONLY",
+      "EnvId": "cloud1-d8gcq5ag39d847723"
+    }
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:41:58.925Z",
+  "status": "ATTEMPT_STARTED"
+}

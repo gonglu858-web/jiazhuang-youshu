@@ -1,0 +1,165 @@
+{
+  "kind": "REAL_READONLY_COLLECTION_METADATA",
+  "runId": "codex-collection-metadata-1791504181521-f9412695-b47c-466a-a35b-67b3fcab1537",
+  "startedAt": "2026-10-09T00:03:01.525Z",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "targetCollection": "schtest_v1_app_admins",
+  "wrapperSha256": "44cc3912fa577142a914e3538c79b1713332a525c5a3bfd491107ed8264423e3",
+  "fingerprints": [
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs",
+      "sha256": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs",
+      "sha256": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-readonly-observer.cjs",
+      "sha256": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+    }
+  ],
+  "status": "METADATA_OBSERVED_COMPLETE",
+  "stages": [
+    {
+      "service": "sts",
+      "action": "GetCallerIdentity",
+      "startedAt": "2026-10-09T00:03:04.699Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:03:07.806Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "terminationConfirmed": true,
+      "requestId": "03c55af6-9baa-4a31-baa4-640432bd7de2"
+    },
+    {
+      "service": "tcb",
+      "action": "DescribeEnvs",
+      "startedAt": "2026-10-09T00:03:07.807Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:03:10.651Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "terminationConfirmed": true,
+      "requestId": "bb692bea-4a4f-4d68-9b5d-4a104b58cd7d"
+    },
+    {
+      "service": "tcb",
+      "action": "DescribeEnvInfo",
+      "startedAt": "2026-10-09T00:03:10.652Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:03:14.083Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "terminationConfirmed": true,
+      "requestId": "364cec14-bcf5-43a7-8d4a-7deaccc11a64"
+    },
+    {
+      "service": "flexdb",
+      "action": "ListTables",
+      "startedAt": "2026-10-09T00:03:14.085Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:03:17.921Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "terminationConfirmed": true,
+      "requestId": "b1260eaa-09e8-4416-b88c-4ad7d662e301"
+    }
+  ],
+  "writeAuthorized": false,
+  "recordReadsPerformed": false,
+  "credentialRawSaved": false,
+  "rawOutputsSaved": false,
+  "limitations": [
+    "清单是查询时点的元数据观测，不是历史存在性或业务记录快照。",
+    "未知错误不当作空集合。",
+    "未核验SDK读取权限、平台事务、费用或部署就绪。"
+  ],
+  "credentialFetch": {
+    "status": "FETCHED",
+    "attempted": true,
+    "diagnostics": {
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "spawnFailed": false,
+      "stdoutBytes": 769,
+      "stderrBytes": 0
+    },
+    "refreshDuringFetchObserved": null
+  },
+  "identity": {
+    "type": "CAMRole",
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053"
+  },
+  "environment": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "status": "NORMAL",
+    "region": "ap-shanghai",
+    "requestId": "bb692bea-4a4f-4d68-9b5d-4a104b58cd7d"
+  },
+  "databaseInstanceId": "tnt-eficftvp6",
+  "environmentBinding": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "status": "NORMAL",
+    "region": "ap-shanghai",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "wxAppId": "wxfb4db1615ac15531",
+    "requestId": "364cec14-bcf5-43a7-8d4a-7deaccc11a64"
+  },
+  "metadataQuery": {
+    "service": "flexdb",
+    "action": "ListTables",
+    "apiVersion": "2018-11-27",
+    "Tag": "tnt-eficftvp6",
+    "MgoLimit": 100,
+    "MgoOffset": 0
+  },
+  "metadataShape": {
+    "tablesArray": true,
+    "tablesNull": false,
+    "pagerObject": true,
+    "totalType": "number"
+  },
+  "collections": {
+    "names": [
+      "app_admins",
+      "audit_events",
+      "invitations",
+      "project_members",
+      "projects",
+      "users",
+      "yf_diag_visibility"
+    ],
+    "total": 7,
+    "returned": 7,
+    "complete": true,
+    "targetPresent": false,
+    "targetStatus": "NOT_LISTED_IN_COMPLETE_CURRENT_RESULT",
+    "prefixed": []
+  },
+  "finishedAt": "2026-10-09T00:03:17.921Z",
+  "codeUnchangedAfter": true
+}

@@ -1,0 +1,99 @@
+{
+  "number": 77,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedules"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:45:33.012Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "31025e2a-415e-48db-8d49-e99101364ba8",
+  "result": {
+    "IndexNum": 4,
+    "Indexes": [
+      {
+        "Name": "_id_",
+        "Keys": [
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "project_status_created_id",
+        "Keys": [
+          {
+            "Name": "projectId",
+            "Direction": "1"
+          },
+          {
+            "Name": "status",
+            "Direction": "1"
+          },
+          {
+            "Name": "createdAt",
+            "Direction": "1"
+          },
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "project_created_id",
+        "Keys": [
+          {
+            "Name": "projectId",
+            "Direction": "1"
+          },
+          {
+            "Name": "createdAt",
+            "Direction": "1"
+          },
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_openid_1",
+        "Keys": [
+          {
+            "Name": "_openid",
+            "Direction": "1"
+          }
+        ],
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      }
+    ],
+    "responseKeys": [
+      "IndexNum",
+      "Indexes",
+      "RequestId"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:45:34.974Z"
+}

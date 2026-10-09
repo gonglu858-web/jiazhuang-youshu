@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "observedAt": "2026-10-07T12:12:44.875Z",
+  "basis": "docs/Codex复核-CLI只读接入R1-R4返修-20261007.md 第2、3节",
+  "scope": "R2 剩余 S1/S2 事件收尾返修复现（R1/R3/R4 已通过，未重做）",
+  "realNetworkCalls": 0,
+  "cliExecuted": false,
+  "authRead": false,
+  "readOnlyModeRun": false,
+  "installed": false,
+  "officialInstallModified": false,
+  "historicalEvidenceOverwritten": false,
+  "observerSha256": "e6a40af19caaaf9a0d3688e97cb1d68f6c029632c2bc737b7665f97ab6e4431a",
+  "findingsTotal": 8,
+  "findingsClosed": 8,
+  "allClosed": true,
+  "findings": [
+    {
+      "id": "S1-valid-split",
+      "expected": "收全 {\"ok\":true}，不在 close 前完成",
+      "actual": {
+        "settledBeforeClose": false,
+        "observedOutput": "{\"ok\":true}",
+        "parserAccepted": true,
+        "exitCode": 0,
+        "processExited": true,
+        "terminationConfirmed": true,
+        "closeNotObserved": false
+      },
+      "closed": true,
+      "note": "此前在 close 前 finish，只保留前半，解析失败。"
+    },
+    {
+      "id": "S1-invalid-tail",
+      "expected": "收全含尾部，并由解析器拒绝未知尾部",
+      "actual": {
+        "settledBeforeClose": false,
+        "observedOutput": "{\"ok\":true}UNEXPECTED_TAIL",
+        "parserAccepted": false,
+        "exitCode": 0,
+        "processExited": true
+      },
+      "closed": true,
+      "note": "此前尾部丢失，解析器反而接受。"
+    },
+    {
+      "id": "S1-normal-exit-close",
+      "expected": "语义与注释一致：退出已确认、无信号、未请求终止",
+      "actual": {
+        "stdout": "{\"a\":1}",
+        "code": 0,
+        "signal": null,
+        "processExited": true,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "kills": 0
+      },
+      "closed": true,
+      "note": "exit 的 0 不是信号；正常退出不得请求终止。"
+    },
+    {
+      "id": "S1-exit-without-close",
+      "expected": "有界失败：不把半截输出当成功，不无限等待",
+      "actual": {
+        "stdout": "{\"partial\":",
+        "processExited": true,
+        "terminationConfirmed": true,
+        "closeNotObserved": true,
+        "timedOut": false,
+        "exitCode": 0
+      },
+      "closed": true,
+      "note": "宽限到期失败，与总超时区分；exit 记录的 code 仍保留。"
+    },
+    {
+      "id": "S2-late-error-timeout",
+      "expected": "晚到/重复 error 均被吸收：不抛、不改报告、不二次 kill",
+      "actual": {
+        "timedOut": true,
+        "overflow": false,
+        "hasSpawnError": false,
+        "errorListeners": 1,
+        "lateErrorThrew": false,
+        "repeatErrorThrew": false,
+        "killsBefore": 1,
+        "killsAfter": 1,
+        "reportUnchanged": true,
+        "leaksSensitiveMarker": false
+      },
+      "closed": true,
+      "note": "此前收尾移除 error 监听，emit 会抛并可能成为未捕获异常。"
+    },
+    {
+      "id": "S2-late-error-overflow",
+      "expected": "晚到/重复 error 均被吸收：不抛、不改报告、不二次 kill",
+      "actual": {
+        "timedOut": false,
+        "overflow": true,
+        "hasSpawnError": false,
+        "errorListeners": 1,
+        "lateErrorThrew": false,
+        "repeatErrorThrew": false,
+        "killsBefore": 1,
+        "killsAfter": 1,
+        "reportUnchanged": true,
+        "leaksSensitiveMarker": false
+      },
+      "closed": true,
+      "note": "此前收尾移除 error 监听，emit 会抛并可能成为未捕获异常。"
+    },
+    {
+      "id": "S2-late-error-first-error",
+      "expected": "晚到/重复 error 均被吸收：不抛、不改报告、不二次 kill",
+      "actual": {
+        "timedOut": false,
+        "overflow": false,
+        "hasSpawnError": true,
+        "errorListeners": 1,
+        "lateErrorThrew": false,
+        "repeatErrorThrew": false,
+        "killsBefore": 0,
+        "killsAfter": 0,
+        "reportUnchanged": true,
+        "leaksSensitiveMarker": false
+      },
+      "closed": true,
+      "note": "此前收尾移除 error 监听，emit 会抛并可能成为未捕获异常。"
+    },
+    {
+      "id": "S2-post-close-events",
+      "expected": "收尾后晚到 data/exit/close 不抛错、不改报告",
+      "actual": {
+        "threw": false,
+        "reportUnchanged": true,
+        "totalBytes": 0
+      },
+      "closed": true,
+      "note": "只移除会累积数据的 data 监听。"
+    }
+  ]
+}

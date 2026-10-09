@@ -1,0 +1,24 @@
+{
+  "number": 29,
+  "action": "DescribeSafeRule",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_audit_events"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:41:56.883Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "de0d81a8-8d94-4bd9-b54e-a75363a5d001",
+  "result": {
+    "AclTag": "ADMINONLY",
+    "Rule": ""
+  },
+  "finishedAt": "2026-10-09T00:41:58.923Z"
+}

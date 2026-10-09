@@ -1,0 +1,403 @@
+{
+  "observedAt": "2026-10-09T08:13:29.470Z",
+  "summary": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "R1-raw-plan-into-p4",
+      "pass": true,
+      "observed": {
+        "normalizedAddsDeadlineMs": true,
+        "rawPlanHasDeadlineMs": false,
+        "secondValidationRejected": true,
+        "defectNowReproduced": false
+      }
+    },
+    {
+      "id": "R1-full-success-chain-counts",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "stoppedAt": null,
+        "errorCode": null,
+        "credentialCommands": 1,
+        "fixedApiCalls": [
+          "sts.GetCallerIdentity",
+          "tcb.DescribeEnvs",
+          "tcb.DescribeEnvInfo",
+          "sts.GetCallerIdentity"
+        ],
+        "sameSnapshotEveryApiCall": true,
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 2,
+          "auditGet": 2,
+          "primarySet": 1,
+          "auditSet": 1,
+          "commit": 1,
+          "abort": 0,
+          "begin": 1,
+          "readOnlyGet": 2
+        },
+        "observedState": "present",
+        "outcome": "initialized",
+        "granted": true,
+        "resultPersisted": true
+      }
+    },
+    {
+      "id": "R2-snapshot-into-isolated-env",
+      "pass": true,
+      "observed": {
+        "injectedSecretId": "SID",
+        "injectedSessionToken": "ST",
+        "isolationDirUsedAsHome": "C:/iso",
+        "wrongSignatureYieldsNoToken": true,
+        "missingIsolationDirRejected": true,
+        "reason": "NO_ISOLATION_DIR"
+      }
+    },
+    {
+      "id": "R2-extra-sts-uses-fixed-stages",
+      "pass": true,
+      "observed": {
+        "ok": true,
+        "subjectDigestShape": 64,
+        "apiCallKey": "sts.GetCallerIdentity",
+        "apiVersionPresent": true,
+        "sameSnapshotToken": "SYNTH_TOKEN",
+        "cwdIsIsolationDir": true
+      }
+    },
+    {
+      "id": "R3-worker-as-real-subprocess",
+      "pass": true,
+      "observed": {
+        "exitCode": 0,
+        "singleJsonLine": true,
+        "errorCode": "WORKER_CREDENTIAL_EXPIRED",
+        "stderrBytes": 0
+      }
+    },
+    {
+      "id": "R3-stdin-payload-allowlist",
+      "pass": true,
+      "observed": {
+        "allowedFields": [
+          "credential",
+          "plan",
+          "approval",
+          "verifiedCaller",
+          "fixedNowMs"
+        ],
+        "rejectedExtras": [
+          {
+            "key": "sdkRoot",
+            "rejected": true
+          },
+          {
+            "key": "script",
+            "rejected": true
+          },
+          {
+            "key": "env",
+            "rejected": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "R3-stdin-bounded",
+      "pass": true,
+      "observed": {
+        "maxBytes": 65536,
+        "reason": "STDIN_TOO_LARGE"
+      }
+    },
+    {
+      "id": "R3-process-facts-override-stdout",
+      "pass": true,
+      "observed": {
+        "acceptedOk": false,
+        "resultUnknown": true,
+        "processFacts": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": "SIGTERM",
+          "exitCode": 7,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        }
+      }
+    },
+    {
+      "id": "R3-parent-strict-projection",
+      "pass": true,
+      "observed": {
+        "leaks": [],
+        "extraFieldInBootstrap": false
+      }
+    },
+    {
+      "id": "R4-approval-handle-not-forgeable",
+      "pass": true,
+      "observed": {
+        "jsonSerializable": false,
+        "originalHandleAccepted": true,
+        "spreadCopyAccepted": false,
+        "forgedSameShapeAccepted": false,
+        "issueCountsWeakSet": true
+      }
+    },
+    {
+      "id": "R4-full-plan-binding",
+      "pass": true,
+      "observed": {
+        "换 operatorRef": {
+          "ok": false,
+          "errorCode": "APPROVAL_PLAN_BINDING_MISMATCH"
+        },
+        "延长期限": {
+          "ok": false,
+          "errorCode": "APPROVAL_PLAN_BINDING_MISMATCH"
+        },
+        "换 roundId": {
+          "ok": false,
+          "errorCode": "APPROVAL_PLAN_BINDING_MISMATCH"
+        },
+        "加禁止字段": {
+          "ok": false,
+          "errorCode": "PLAN_INVALID"
+        },
+        "未登记字段": {
+          "ok": false,
+          "errorCode": "PLAN_INVALID"
+        },
+        "换目标": {
+          "ok": false,
+          "errorCode": "PLAN_INVALID"
+        },
+        "enabled=false": {
+          "ok": false,
+          "errorCode": "PLAN_INVALID"
+        }
+      }
+    },
+    {
+      "id": "R4-implementation-fingerprint-actual-content",
+      "pass": true,
+      "observed": {
+        "sandbox-primary-execution-host.cjs": {
+          "bound": true,
+          "length": 64
+        },
+        "sandbox-primary-execution-worker.cjs": {
+          "bound": true,
+          "length": 64
+        },
+        "sandbox-primary-bootstrap.cjs": {
+          "bound": true,
+          "length": 64
+        },
+        "sandbox-primary-sdk-adapter.cjs": {
+          "bound": true,
+          "length": 64
+        }
+      }
+    },
+    {
+      "id": "R4-round-started-required-and-awaited",
+      "pass": true,
+      "observed": {
+        "返回 false": {
+          "stoppedAt": "roundStarted",
+          "errorCode": "ROUND_ALREADY_STARTED",
+          "workerStarted": false
+        },
+        "抛错": {
+          "stoppedAt": "roundStarted",
+          "errorCode": "ROUND_ALREADY_STARTED",
+          "workerStarted": false
+        },
+        "异步 false": {
+          "stoppedAt": "roundStarted",
+          "errorCode": "ROUND_ALREADY_STARTED",
+          "workerStarted": false
+        },
+        "轮次不符": {
+          "stoppedAt": "roundStarted",
+          "errorCode": "ROUND_START_FAILED",
+          "workerStarted": false
+        },
+        "缺持久化能力": {
+          "stoppedAt": "roundStarted",
+          "errorCode": "ROUND_START_FAILED",
+          "workerStarted": false
+        }
+      }
+    },
+    {
+      "id": "R5-sameAsTarget-exact-compare",
+      "pass": true,
+      "observed": {
+        "foreignSameAsTarget": false,
+        "sameTargetSameAsTarget": true,
+        "withoutExpectSameAsTarget": null
+      }
+    },
+    {
+      "id": "R5-digest-32-preserved",
+      "pass": true,
+      "observed": {
+        "coreDigestLength": 32,
+        "keptIsCoreDigest": true,
+        "droppedForBadShape": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "R5-code-allowlist-and-audit-exact",
+      "pass": true,
+      "observed": {
+        "fakeCodeResults": [
+          null,
+          null,
+          null
+        ],
+        "knownCodeKept": "RESULT_UNKNOWN",
+        "wrongAuditDropped": true,
+        "rightAuditKept": true
+      }
+    },
+    {
+      "id": "R5-unconfirmed-observation-not-success",
+      "pass": true,
+      "observed": {
+        "status": "FAILED",
+        "resultUnknown": true,
+        "committedFactKept": true,
+        "auditIdKept": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "observationConfirmed": false,
+        "resultPersisted": null,
+        "observedPresent": true,
+        "writeAuthorizedForcedFalse": true,
+        "credentialCommands": 1
+      }
+    },
+    {
+      "id": "R5-write-failure-still-observes",
+      "pass": true,
+      "observed": {
+        "ok": false,
+        "errorCode": "TARGET_USER_NOT_FOUND",
+        "auditIdKept": true,
+        "roundId": "SYNTH-ROUND-0001",
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 0,
+          "auditSet": 0,
+          "commit": 0,
+          "abort": 1,
+          "begin": 1,
+          "readOnlyGet": 2
+        }
+      }
+    },
+    {
+      "id": "R3-credential-expiry-strict",
+      "pass": true,
+      "observed": {
+        "cases": [
+          {
+            "label": "缺失",
+            "errorCode": "WORKER_CREDENTIAL_SHAPE_INVALID",
+            "transportCalls": 0
+          },
+          {
+            "label": "NaN",
+            "errorCode": "WORKER_CREDENTIAL_SHAPE_INVALID",
+            "transportCalls": 0
+          },
+          {
+            "label": "Infinity",
+            "errorCode": "WORKER_CREDENTIAL_SHAPE_INVALID",
+            "transportCalls": 0
+          },
+          {
+            "label": "字符串",
+            "errorCode": "WORKER_CREDENTIAL_SHAPE_INVALID",
+            "transportCalls": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "A-default-closed-and-arg-allowlist",
+      "pass": true,
+      "observed": {
+        "allowedArgs": [
+          "--local-check",
+          "--show-plan"
+        ],
+        "forbiddenChecked": 12,
+        "executeIsForbidden": true
+      }
+    },
+    {
+      "id": "G-forbidden-call-surface-zero",
+      "pass": true,
+      "observed": {
+        "checkedCalls": [
+          "requestBindingNumber",
+          "runTransaction",
+          "createCollection",
+          "createProject",
+          "assignManager",
+          "callFunction"
+        ],
+        "hits": [],
+        "note": "p4.initializePrimary 与事务内写库是任务要求的合法调用，不在禁止面"
+      }
+    }
+  ],
+  "sourceHashes": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "f99616cde2ef24f2f7bb0fa1f8c5d13e17fcf13ffc62b62601864c4256f4ac5e",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "b28e6793abffb461e7621e0e8e22f09c506a0f5be9574b765f12aea9bf7fa0a4",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "8ff1dbd3385c3fd0e7bb4d72665e5db861fda7753e678584fc080ee93e347860",
+    "docs/首次管理员受控接线与本人登记操作稿-20261009.md": "205e24489aea611273ea5b8bf3f7648fa5d45cfcdecefdb78b0c8d14334f95c5"
+  },
+  "historicalEvidenceHashes": {
+    "docs/证据/Codex首次管理员接线复核-20261009.json": "5a2b7a63ff275d6935205cd8a1ffb5b63cd4bad5c5fcfd1b0efb92df47434a33",
+    "docs/证据/Codex首次管理员接线复核-20261009.cjs": "04fd73900bbdd0767bdc32008d375650af4e4c0139c5f542a7fe0e1f7d544fea",
+    "docs/证据/Codex首次管理员目标只读核对-20261009.cjs": "8efffd3734ba66d87226d49e2cf5c50e374f8aad590089f13881724e5fe99ce1",
+    "docs/证据/WorkBuddy凭据接线S1S2收尾复现-20261008.json": "d8536c1a1e1e3bb606e49dbbabc036d9b7d5d93e2f96a2960992c0192b06d815",
+    "docs/证据/Codex重跑-WorkBuddy凭据接线S1S2-20261008.json": "1479242c3b6769e9ccc0bf7f35d3c3d70fc4261573e0552e32b093f31d7057f3",
+    "docs/证据/Codex凭据接线S1S2文件核对-20261008.json": "192c9bccc8369ae0462bc288a5e96dcab222ec340d2991f55d768212cbf19db1"
+  },
+  "boundaries": {
+    "realCredentialFetches": 0,
+    "realCloudCalls": 0,
+    "readRealAuthStoreContent": false,
+    "wroteHistoricalOrBusinessFiles": false,
+    "realInitializeExecuted": false,
+    "realDeploymentExecuted": false,
+    "blockedUnexpectedProcesses": 0
+  },
+  "statedLimitations": [
+    "本证据只证明**返修后的离线行为**：合成凭据 + 合成子进程 + 合成 SDK 传输。",
+    "平台侧签名/IAM/事务行为**未验证**；合成 db 路径上出现过 SIGN_PARAM_INVALID，真实平台错误码空间未核验。",
+    "真实凭据获取与真实管理员初始化**未执行**；本轮不构成生产同批链已证。",
+    "R4 的受控批准句柄由本模块的 issueControlledApproval 签发，仅供离线测试；**真实批准未生成**，测试入口不构成生产授权。",
+    "db 注入仅用于离线合成传输（固定 SDK 的 Db 在构造时固定传输类）；生产子进程入口由 worker 自建 db。"
+  ]
+}

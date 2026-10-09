@@ -1,0 +1,23 @@
+{
+  "number": 1,
+  "action": "GetCallerIdentity",
+  "body": null,
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:30:43.811Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "terminationConfirmed": true,
+  "requestId": "b8499435-2dd7-4038-a29e-7bd11136cc7c",
+  "result": {
+    "type": "CAMRole",
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053"
+  },
+  "finishedAt": "2026-10-09T00:30:46.009Z"
+}

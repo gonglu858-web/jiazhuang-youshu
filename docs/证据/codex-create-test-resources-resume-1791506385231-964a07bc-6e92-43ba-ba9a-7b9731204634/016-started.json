@@ -1,0 +1,11 @@
+{
+  "number": 16,
+  "action": "DescribeDatabaseACL",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_projects"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:40:58.707Z",
+  "status": "ATTEMPT_STARTED"
+}

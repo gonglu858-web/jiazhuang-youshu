@@ -1,0 +1,282 @@
+{
+  "observedAt": "2026-10-08T10:50:53.430Z",
+  "auditKind": "offline-diagnosis-verification-not-production-component",
+  "scope": "读取失败最小诊断：worker catch → observer 双层投影 → 顶层",
+  "delivers": "诊断实现已离线验证",
+  "doesNotDeliver": "**真实 READ_FAILED 根因未查明**；本次未联网复验，未执行真实 secrets 命令",
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realNetworkCalls": 0,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "wroteSyntheticTempDirs": true,
+  "allowedLocalNodeChecks": 0,
+  "blockedUnexpectedProcesses": 0,
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "D1-allowlisted-code-and-requestid-flow-to-toplevel",
+      "pass": true,
+      "observed": {
+        "workerClassification": "UNCONFIRMED",
+        "workerErrorCode": "READ_FAILED",
+        "topLevelStatus": "UNCONFIRMED",
+        "diagnostics": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "DATABASE_REQUEST_FAILED",
+          "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8"
+        },
+        "leakMarkers": [],
+        "note": "失败关闭语义保留（UNCONFIRMED/READ_FAILED），诊断只是附加信息"
+      }
+    },
+    {
+      "id": "D2-unknown-codes-collapse-to-other",
+      "pass": true,
+      "observed": {
+        "rows": [
+          {
+            "label": "unknown-code",
+            "expected": "OTHER",
+            "got": "OTHER",
+            "messageLeaked": false
+          },
+          {
+            "label": "unknown-errCode",
+            "expected": "OTHER",
+            "got": "OTHER",
+            "messageLeaked": false
+          },
+          {
+            "label": "numeric-code",
+            "expected": "OTHER",
+            "got": "OTHER",
+            "messageLeaked": false
+          },
+          {
+            "label": "allowlisted",
+            "expected": "INVALID_PARAM",
+            "got": "INVALID_PARAM",
+            "messageLeaked": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "D3-local-error-classes-bounded",
+      "pass": true,
+      "observed": {
+        "classes": [
+          "LOCAL_TYPE_ERROR",
+          "LOCAL_REFERENCE_ERROR",
+          "LOCAL_SYNTAX_ERROR",
+          "NOT_AN_ERROR",
+          "UNKNOWN"
+        ],
+        "rows": [
+          {
+            "expected": "LOCAL_TYPE_ERROR",
+            "layer1": "LOCAL_TYPE_ERROR",
+            "layer2": "LOCAL_TYPE_ERROR",
+            "matched": true
+          },
+          {
+            "expected": "LOCAL_REFERENCE_ERROR",
+            "layer1": "LOCAL_REFERENCE_ERROR",
+            "layer2": "LOCAL_REFERENCE_ERROR",
+            "matched": true
+          },
+          {
+            "expected": "LOCAL_SYNTAX_ERROR",
+            "layer1": "LOCAL_SYNTAX_ERROR",
+            "layer2": "LOCAL_SYNTAX_ERROR",
+            "matched": true
+          },
+          {
+            "expected": "UNKNOWN",
+            "layer1": "UNKNOWN",
+            "layer2": "UNKNOWN",
+            "matched": true
+          },
+          {
+            "expected": "NOT_AN_ERROR",
+            "layer1": "NOT_AN_ERROR",
+            "layer2": "NOT_AN_ERROR",
+            "matched": true
+          },
+          {
+            "expected": "NOT_AN_ERROR",
+            "layer1": "NOT_AN_ERROR",
+            "layer2": "NOT_AN_ERROR",
+            "matched": true
+          },
+          {
+            "expected": "LOCAL_TYPE_ERROR",
+            "viaRealWorker": "LOCAL_TYPE_ERROR",
+            "primaryClassification": "UNCONFIRMED",
+            "primaryFailed": true,
+            "readsObserved": 2,
+            "note": "worker 两条读取相互独立，primary 失败后仍读 users（既有设计）"
+          }
+        ],
+        "note": "只区分本地代码问题，不据此推断平台拒绝或集合不存在"
+      }
+    },
+    {
+      "id": "D4-platform-error-response-path",
+      "pass": true,
+      "observed": {
+        "allowlisted": {
+          "code": "DATABASE_REQUEST_FAILED",
+          "requestId": null
+        },
+        "unknownPlatform": {
+          "code": "OTHER",
+          "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8"
+        },
+        "note": "固定源码 document.ts:337 —— res.code 存在时 get() 直接返回 res，可能无 requestId"
+      }
+    },
+    {
+      "id": "D5-missing-fields-become-unknown",
+      "pass": true,
+      "observed": {
+        "bare": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "OTHER",
+          "requestId": null
+        },
+        "nullErr": {
+          "readStage": "TARGET_USER_READ",
+          "localErrorClass": "NOT_AN_ERROR",
+          "errorCode": "OTHER",
+          "requestId": null
+        },
+        "badUuid": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "OTHER",
+          "requestId": null
+        }
+      }
+    },
+    {
+      "id": "D6-field-set-fixed-four-keys",
+      "pass": true,
+      "observed": {
+        "keys": [
+          "errorCode",
+          "localErrorClass",
+          "readStage",
+          "requestId"
+        ],
+        "leaks": []
+      }
+    },
+    {
+      "id": "D7-normal-readonly-path-not-regressed",
+      "pass": true,
+      "observed": {
+        "reads": 2,
+        "primary": "OBSERVED",
+        "targetUser": "OBSERVED",
+        "diagnosticsWhenNormal": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "D8-whitelist-traced-to-fixed-sdk-source",
+      "pass": true,
+      "observed": {
+        "sdkSourceCodeCount": 8,
+        "sdkCodesInWhitelist": [
+          "DATABASE_REQUEST_FAILED",
+          "DATABASE_TRANSACTION_CONFLICT",
+          "INVALID_PARAM",
+          "CONN_ERROR",
+          "CREATE_WATCH_NET_ERROR",
+          "CREATE_WACTH_EXCEED_ERROR",
+          "CREATE_WATCH_SERVER_ERROR"
+        ],
+        "whitelistSize": 14,
+        "workerDeclaresAllowlist": true,
+        "excludedGuesses": [
+          "PERMISSION_DENIED",
+          "COLLECTION_NOT_EXIST",
+          "UNAUTHENTICATED"
+        ],
+        "note": "白名单来源为 SDK src/const/code.ts + 本工具自有码；平台侧猜测码一律不入"
+      }
+    }
+  ],
+  "sdkContractBasis": {
+    "version": "1.4.1",
+    "sources": [
+      "src/utils/utils.ts:56-77 — TcbError 携带 code/message，由 E({...res}) 构造",
+      "src/document.ts:320-360 — get() 在 res.code 存在时直接返回 res（不抛），可能无 requestId",
+      "src/const/code.ts — SDK 自身错误码集合（白名单来源）"
+    ],
+    "staticVsUnverified": "以上为固定源码静态契约；平台侧实际错误码与 requestId 形状**未经真实调用验证**"
+  },
+  "preservedFailureSemantics": {
+    "classification": "UNCONFIRMED",
+    "errorCode": "READ_FAILED",
+    "noAutoRetry": true,
+    "noSecondCredentialFetch": true,
+    "noCollectionOrIndexCreation": true,
+    "note": "诊断只是附加信息，不改变失败关闭行为"
+  },
+  "retainedHistoricalEvidence": {
+    "note": "Codex 首次真实执行的脚本/启动标记/原始报告原样保留，未覆盖、未改写",
+    "files": [
+      "证据/Codex真实只读单次执行-20261008.cjs",
+      "证据/Codex真实只读单次执行-20261008.started.json",
+      "证据/codex-real-readonly-1791454898466-e3f10f47-5e43-44d7-aff7-5db0ddac8714.json"
+    ]
+  },
+  "remainingOpen": [
+    {
+      "id": "real-read-failed-root-cause-unknown",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "首次真实执行的 READ_FAILED 根因**仍未查明**。新诊断提供了区分维度（读取阶段/本地异常类别/白名单码/合法 requestId），但要确定实际原因仍需受审宿主内再执行一次只读诊断观测。",
+      "needed": "Codex 复核本诊断实现通过后，另存一次真实只读诊断证据。"
+    },
+    {
+      "id": "platform-error-code-space-unverified",
+      "severity": "MEDIUM",
+      "detail": "白名单只含 SDK 源码可确定的码；平台侧实际返回的错误码与 requestId 形状未经真实调用验证，命中即归OTHER。",
+      "needed": "真实诊断观测后按实际观测补充白名单，不得凭猜测扩充。"
+    },
+    {
+      "id": "production-same-batch-chain-not-proven",
+      "severity": "MEDIUM",
+      "detail": "真实凭据获取与三条 CLI 关联已通过，但 SDK 未取得可用数据库结果，完整生产同批链仍不能判通过；proven 恒 false。",
+      "needed": "数据库读取可用后再评估；不得据凭据输出认定环境可用。"
+    }
+  ],
+  "limitations": [
+    "全部为合成传输与合成凭据；未执行真实云请求。",
+    "SDK 契约为固定源码静态核对，不等于平台实际行为已验证。",
+    "Node 运行时拦截不是操作系统防火墙。",
+    "不改变集合是否存在、权限状态或初始化需求 —— 这些仍未结论化。"
+  ],
+  "sha256": {
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "7304d6a78d441069b44814fcf10481fef8a34a3f99a6fe10b1fd795bf48039de",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "0d3290593da0011514338f02ffedae91f702540546fb2637ed3d344b2861d270",
+    "miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs": "acd0c7d1388927649b1030ed1a893f5dbcc3300c4d8b7a14a2bbd78df419cfe1",
+    "miniapp/scripts/check-cloudbase-sdk-readonly.cjs": "1a0ea9d6eced919d9d4f67d712a4886be2eef0a568ac4a255c0a9ac3e69f2b3c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+  }
+}

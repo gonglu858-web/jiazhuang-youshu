@@ -1,0 +1,11 @@
+{
+  "number": 33,
+  "action": "DescribeSafeRule",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_schedules"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:42:05.218Z",
+  "status": "ATTEMPT_STARTED"
+}

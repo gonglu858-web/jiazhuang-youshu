@@ -1,0 +1,34 @@
+{
+  "number": 61,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_project_members",
+    "CreateIndexes": [
+      {
+        "IndexName": "project_status_id",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "projectId",
+              "Direction": "1"
+            },
+            {
+              "Name": "status",
+              "Direction": "1"
+            },
+            {
+              "Name": "_id",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:44:48.817Z",
+  "status": "ATTEMPT_STARTED"
+}

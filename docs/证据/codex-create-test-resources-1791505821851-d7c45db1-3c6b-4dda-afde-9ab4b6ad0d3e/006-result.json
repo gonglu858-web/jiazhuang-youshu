@@ -1,0 +1,65 @@
+{
+  "number": 6,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "app_admins"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:31:31.070Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "terminationConfirmed": true,
+  "requestId": "982488a9-6154-4b9c-918b-9e5c9e74a07e",
+  "result": {
+    "Indexes": [
+      {
+        "Name": "_openid_1",
+        "Accesses": {
+          "Ops": 0,
+          "Since": "2026-09-24T23:42:38.082+08:00"
+        },
+        "Keys": [
+          {
+            "Name": "_openid",
+            "Direction": "1"
+          }
+        ],
+        "Size": 24576,
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      },
+      {
+        "Name": "_id_",
+        "Accesses": {
+          "Ops": 713,
+          "Since": "2026-09-24T23:42:38.077+08:00"
+        },
+        "Keys": [
+          {
+            "Name": "_id",
+            "Direction": "1"
+          }
+        ],
+        "Size": 20480,
+        "Unique": false,
+        "Sparse": false,
+        "PartialFilterExpression": ""
+      }
+    ],
+    "responseKeys": [
+      "IndexNum",
+      "Indexes",
+      "RequestId"
+    ]
+  },
+  "finishedAt": "2026-10-09T00:31:33.343Z"
+}

@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-10-08T01:15:36.001Z",
+  "mode": "offline-real-sdk-serialization-synthetic-transport",
+  "realNetworkCalls": 0,
+  "realCredentialFetched": false,
+  "productFilesModified": false,
+  "findings": {
+    "S1": {
+      "actualWorkerReads": 2,
+      "actualWorkerUserStatus": "active",
+      "finalTargetStatus": "UNCONFIRMED",
+      "finalTargetUserStatus": null,
+      "renameOnlyStillFails": true
+    },
+    "S2": {
+      "arbitraryErrorCodeRetained": true,
+      "arbitraryNotFoundDocIdRetained": true,
+      "arbitrarySdkRequestIdInWorkerOutput": true
+    },
+    "S3": {
+      "missingExpiryReads": 2,
+      "missingExpiryReportedExpired": false,
+      "expiredControlReads": 0
+    }
+  },
+  "limitations": [
+    "SDK transport is synthetic; no platform behavior is proven.",
+    "Parent post-worker expiry omission is a static finding, not simulated here."
+  ]
+}

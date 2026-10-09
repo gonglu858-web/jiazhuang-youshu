@@ -1,0 +1,292 @@
+{
+  "kind": "RESOURCE_PREPARATION_BILLING_READONLY",
+  "startedAt": "2026-10-09T00:12:36.494Z",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "writeAuthorized": false,
+  "wrapperSha256": "f27705138d092445a8b33d809b32541af22be4764a875c99823a3db7ab36e1b0",
+  "stages": [
+    {
+      "action": "GetCallerIdentity",
+      "key": "callerIdentity",
+      "startedAt": "2026-10-09T00:12:38.438Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:12:40.490Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "16b66d7f-35af-4dc2-abdf-5b414045f15a"
+    },
+    {
+      "action": "DescribeEnvs",
+      "key": "describeEnvs",
+      "startedAt": "2026-10-09T00:12:40.491Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:12:42.505Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "93268acb-b718-4959-9958-16842a22bbbc"
+    },
+    {
+      "action": "DescribeEnvInfo",
+      "key": "describeEnvInfo",
+      "startedAt": "2026-10-09T00:12:42.505Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:12:44.466Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "6cfc3d0d-a740-44cf-8657-03cc5147abb1"
+    },
+    {
+      "action": "DescribeBaasPackageList",
+      "key": "DescribeBaasPackageList",
+      "startedAt": "2026-10-09T00:12:44.467Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:12:46.707Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "524567c6-e754-4535-9cac-38b087f2b5a3"
+    },
+    {
+      "action": "DescribeCreditsUsageDetail",
+      "key": "DescribeCreditsUsageDetail",
+      "startedAt": "2026-10-09T00:12:46.711Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:12:49.054Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "12e38006-a157-417a-9724-fe04ea20af6a"
+    },
+    {
+      "action": "ListTables",
+      "key": "ListTables",
+      "startedAt": "2026-10-09T00:12:49.055Z",
+      "validated": true,
+      "finishedAt": "2026-10-09T00:12:51.287Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "d2fa0a9d-e1cc-4057-99e3-7fa457916121"
+    }
+  ],
+  "observations": {
+    "DescribeBaasPackageList": {
+      "PackageName": "baas_personal",
+      "PackageTitle": "个人版",
+      "PackageType": "default",
+      "UnitPrice": "39.9",
+      "ResourceLimit": {
+        "values": {
+          "Qps": 500,
+          "InvokeNum": {
+            "TimeUnit": "m",
+            "Unit": "万次",
+            "MaxSize": 20
+          },
+          "Capacity": {
+            "TimeUnit": "m",
+            "Unit": "GB",
+            "MaxSize": 3
+          },
+          "Cdn": {
+            "Flux": {
+              "TimeUnit": "m",
+              "Unit": "GB",
+              "MaxSize": 10
+            },
+            "BackFlux": {
+              "TimeUnit": "m",
+              "Unit": "GB",
+              "MaxSize": 10
+            }
+          },
+          "Scf": {
+            "Concurrency": 0,
+            "OutFlux": {
+              "TimeUnit": "m",
+              "Unit": "GB",
+              "MaxSize": 4
+            },
+            "MemoryUse": {
+              "TimeUnit": "m",
+              "Unit": "万GBS",
+              "MaxSize": 15
+            }
+          },
+          "Credits": {
+            "TimeUnit": "m",
+            "Unit": "个",
+            "MaxSize": "40000"
+          }
+        },
+        "availableTopLevelFields": [
+          "Qps",
+          "InvokeNum",
+          "Capacity",
+          "Cdn",
+          "Scf",
+          "AI",
+          "ResUse",
+          "Hosting",
+          "APP",
+          "Auth",
+          "Credits"
+        ]
+      }
+    },
+    "DescribeCreditsUsageDetail": {
+      "usages": [
+        {
+          "EnvId": "cloud1-d8gcq5ag39d847723",
+          "Module": "FLEXDB",
+          "CreditsValue": 0,
+          "DeductValue": 0,
+          "PackageDeductValue": 0,
+          "ReportValue": 0
+        }
+      ]
+    },
+    "ListTables": {
+      "complete": true,
+      "total": 10,
+      "returned": 10,
+      "showHidden": true,
+      "tables": [
+        {
+          "TableName": "app_admins",
+          "Count": 1,
+          "Size": 546,
+          "IndexCount": 2,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "audit_events",
+          "Count": 53,
+          "Size": 20085,
+          "IndexCount": 3,
+          "IndexSize": 110592
+        },
+        {
+          "TableName": "invitations",
+          "Count": 8,
+          "Size": 4739,
+          "IndexCount": 4,
+          "IndexSize": 147456
+        },
+        {
+          "TableName": "project_members",
+          "Count": 8,
+          "Size": 2244,
+          "IndexCount": 4,
+          "IndexSize": 147456
+        },
+        {
+          "TableName": "projects",
+          "Count": 3,
+          "Size": 889,
+          "IndexCount": 3,
+          "IndexSize": 110592
+        },
+        {
+          "TableName": "relation_data_depart",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 6,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "sys_department",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 2,
+          "IndexSize": 12288
+        },
+        {
+          "TableName": "sys_user",
+          "Count": 1,
+          "Size": 394,
+          "IndexCount": 2,
+          "IndexSize": 45056
+        },
+        {
+          "TableName": "users",
+          "Count": 4,
+          "Size": 1293,
+          "IndexCount": 3,
+          "IndexSize": 110592
+        },
+        {
+          "TableName": "yf_diag_visibility",
+          "Count": 0,
+          "Size": 0,
+          "IndexCount": 2,
+          "IndexSize": 12288
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "用量值不自动等于剩余额度。",
+    "本次只读成功不证明创建/改规则/建索引的写权限。",
+    "官方凭据命令可能更新自己的登录缓存；未记录凭据原文。"
+  ],
+  "fetch": {
+    "status": "FETCHED",
+    "diagnostics": {
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "spawnFailed": false,
+      "stdoutBytes": 769,
+      "stderrBytes": 0
+    }
+  },
+  "identity": {
+    "type": "CAMRole",
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053"
+  },
+  "environment": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "status": "NORMAL",
+    "region": "ap-shanghai",
+    "requestId": "93268acb-b718-4959-9958-16842a22bbbc"
+  },
+  "binding": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "status": "NORMAL",
+    "region": "ap-shanghai",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "wxAppId": "wxfb4db1615ac15531",
+    "requestId": "6cfc3d0d-a740-44cf-8657-03cc5147abb1"
+  },
+  "status": "READONLY_QUERIES_FINISHED",
+  "finishedAt": "2026-10-09T00:12:51.289Z",
+  "dependenciesUnchanged": true
+}

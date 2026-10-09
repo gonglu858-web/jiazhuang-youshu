@@ -1,0 +1,26 @@
+{
+  "number": 52,
+  "action": "UpdateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_users",
+    "CreateIndexes": [
+      {
+        "IndexName": "bindingCodeHash_1",
+        "MgoKeySchema": {
+          "MgoIndexKeys": [
+            {
+              "Name": "bindingCodeHash",
+              "Direction": "1"
+            }
+          ],
+          "MgoIsUnique": false
+        }
+      }
+    ]
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:43:34.536Z",
+  "status": "ATTEMPT_STARTED"
+}

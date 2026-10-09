@@ -1,0 +1,323 @@
+{
+  "observedAt": "2026-10-08T05:50:32.606Z",
+  "auditKind": "offline-reproduction-fixture-not-production-component",
+  "scope": "H1 只读引用 / H2 固定宿主 / H3 同批传递与分层报告",
+  "realNetworkCalls": 0,
+  "realCredentialFetches": 0,
+  "readRealAuthStoreContent": false,
+  "wroteFiles": false,
+  "historicalEvidenceOverwritten": false,
+  "summary": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "H1-offline-audit-present-and-unmodified",
+      "pass": true,
+      "observed": {
+        "evidence": "CodexSecretsGet离线契约审查-20261008.json",
+        "cliUnmodified": true,
+        "realNetworkCalls": 0,
+        "positiveScenario": "valid-web-temp",
+        "note": "只读引用；本轮未重跑、未覆盖该证据"
+      }
+    },
+    {
+      "id": "H1-additional-behaviors-recorded",
+      "pass": true,
+      "observed": {
+        "count": 6,
+        "ids": [
+          "auto-service-check",
+          "locale-probe-external-subprocess",
+          "two-config-dir-derivations",
+          "project-config-discovery",
+          "refresh-writes-back-cache",
+          "expiredAt-literal-unknown"
+        ],
+        "why": "任务要求「输出及附加行为」；一次命令 ≠ 内部仅一次请求"
+      }
+    },
+    {
+      "id": "H1-gaps-reported-not-papered-over",
+      "pass": true,
+      "observed": {
+        "count": 3,
+        "ids": [
+          "refresh-scenario-outcome-unknown",
+          "service-not-initialized-still-outputs",
+          "real-cache-writeback-unverified"
+        ],
+        "note": "含两条 MEDIUM：refresh 分支输出契约未定论；Initialized=false 未阻断凭据输出"
+      }
+    },
+    {
+      "id": "H2-1-command-and-fingerprint-are-fixed",
+      "pass": true,
+      "observed": {
+        "count": 3,
+        "ids": [
+          "refresh-scenario-outcome-unknown",
+          "service-not-initialized-still-outputs",
+          "real-cache-writeback-unverified"
+        ],
+        "note": "含两条 MEDIUM：refresh 分支输出契约未定论；Initialized=false 未阻断凭据输出"
+      }
+    },
+    {
+      "id": "H2-2-fingerprint-verified-against-installed-cli",
+      "pass": true,
+      "observed": {
+        "verified": true,
+        "entrySha256": "328da4af4726c2aa",
+        "bundleSha256": "8d987e48b05eef08"
+      }
+    },
+    {
+      "id": "H2-3-parse-accepts-temporary-and-maps-token-to-sessionToken",
+      "pass": true,
+      "observed": {
+        "isTemporary": true,
+        "echoedEnvId": null,
+        "expiresAtIso": "2026-10-08T06:20:28.925Z",
+        "mappedKeys": [
+          "secretId",
+          "secretKey",
+          "sessionToken"
+        ],
+        "note": "CLI 输出字段是 token，SDK 参数名是 sessionToken，此处为唯一映射点"
+      }
+    },
+    {
+      "id": "H2-4-parser-rejects-every-invalid-shape",
+      "pass": true,
+      "observed": {
+        "total": 16,
+        "allRejected": true,
+        "outcomes": [
+          {
+            "label": "expiredAt=未知 字面量",
+            "expected": "CREDENTIAL_EXPIRY_UNKNOWN",
+            "got": "CREDENTIAL_EXPIRY_UNKNOWN",
+            "matched": true
+          },
+          {
+            "label": "expiredAt 非日期",
+            "expected": "CREDENTIAL_EXPIRY_UNKNOWN",
+            "got": "CREDENTIAL_EXPIRY_UNKNOWN",
+            "matched": true
+          },
+          {
+            "label": "isTemporary=false",
+            "expected": "CREDENTIAL_NOT_TEMPORARY",
+            "got": "CREDENTIAL_NOT_TEMPORARY",
+            "matched": true
+          },
+          {
+            "label": "isTemporary=\"true\"",
+            "expected": "CREDENTIAL_NOT_TEMPORARY",
+            "got": "CREDENTIAL_NOT_TEMPORARY",
+            "matched": true
+          },
+          {
+            "label": "isTemporary 缺失",
+            "expected": "CREDENTIAL_NOT_TEMPORARY",
+            "got": "CREDENTIAL_NOT_TEMPORARY",
+            "matched": true
+          },
+          {
+            "label": "缺 token",
+            "expected": "CREDENTIAL_SHAPE_INVALID",
+            "got": "CREDENTIAL_SHAPE_INVALID",
+            "matched": true
+          },
+          {
+            "label": "缺 secretId",
+            "expected": "CREDENTIAL_SHAPE_INVALID",
+            "got": "CREDENTIAL_SHAPE_INVALID",
+            "matched": true
+          },
+          {
+            "label": "缺 secretKey",
+            "expected": "CREDENTIAL_SHAPE_INVALID",
+            "got": "CREDENTIAL_SHAPE_INVALID",
+            "matched": true
+          },
+          {
+            "label": "已过期",
+            "expected": "CREDENTIAL_EXPIRED",
+            "got": "CREDENTIAL_EXPIRED",
+            "matched": true
+          },
+          {
+            "label": "剩余不足 5 分钟",
+            "expected": "CREDENTIAL_EXPIRED",
+            "got": "CREDENTIAL_EXPIRED",
+            "matched": true
+          },
+          {
+            "label": "回显非固定环境",
+            "expected": "CREDENTIAL_ENV_ID_UNEXPECTED",
+            "got": "CREDENTIAL_ENV_ID_UNEXPECTED",
+            "matched": true
+          },
+          {
+            "label": "坏输出 \"{bad\"",
+            "expected": "任意错误码",
+            "got": "CREDENTIAL_OUTPUT_UNPARSEABLE",
+            "matched": true
+          },
+          {
+            "label": "坏输出 \"[]\"",
+            "expected": "任意错误码",
+            "got": "CREDENTIAL_SHAPE_INVALID",
+            "matched": true
+          },
+          {
+            "label": "坏输出 \"\"",
+            "expected": "任意错误码",
+            "got": "CREDENTIAL_OUTPUT_UNPARSEABLE",
+            "matched": true
+          },
+          {
+            "label": "坏输出 \"null\"",
+            "expected": "任意错误码",
+            "got": "CREDENTIAL_SHAPE_INVALID",
+            "matched": true
+          },
+          {
+            "label": "坏输出 \"{\\\"data\\\":[]}\"",
+            "expected": "任意错误码",
+            "got": "CREDENTIAL_SHAPE_INVALID",
+            "matched": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "H2-5-isolation-env-case-insensitive-cleared",
+      "pass": true,
+      "observed": {
+        "offenders": [],
+        "nonCanonicalHome": [],
+        "userProfile": "C:\\Users\\30591\\AppData\\Local\\Temp\\repro-profile",
+        "telemetryDisabled": true,
+        "region": "ap-shanghai",
+        "inheritedCredentialPresent": false
+      }
+    },
+    {
+      "id": "untouched-files-unchanged",
+      "pass": true,
+      "observed": {
+        "offenders": [],
+        "nonCanonicalHome": [],
+        "userProfile": "C:\\Users\\30591\\AppData\\Local\\Temp\\repro-profile",
+        "telemetryDisabled": true,
+        "region": "ap-shanghai",
+        "inheritedCredentialPresent": false
+      }
+    },
+    {
+      "id": "forbidden-calls-absent",
+      "pass": true,
+      "observed": {
+        "offenders": [],
+        "nonCanonicalHome": [],
+        "userProfile": "C:\\Users\\30591\\AppData\\Local\\Temp\\repro-profile",
+        "telemetryDisabled": true,
+        "region": "ap-shanghai",
+        "inheritedCredentialPresent": false
+      }
+    },
+    {
+      "id": "H3-1-credential-passed-only-via-private-stdin-pipe",
+      "pass": true,
+      "observed": {
+        "payloadFields": [
+          "expiresAtMs",
+          "secretId",
+          "secretKey",
+          "sessionToken",
+          "targetUserId"
+        ],
+        "stdinClosed": true,
+        "carriesExpiryForTwoReadRecheck": true,
+        "credentialInArgv": false,
+        "note": "一次送入随即关闭；不落命令行/环境/磁盘"
+      }
+    },
+    {
+      "id": "H3-2-stops-honestly-without-authorization",
+      "pass": true,
+      "observed": {
+        "status": "FAILED",
+        "stoppedAt": "sameBatchCredential",
+        "errorCode": "PUBLIC_ENTRY_IDENTITY_UNPROVEN",
+        "proven": false,
+        "writeAuthorized": false,
+        "incompleteCount": 1
+      }
+    },
+    {
+      "id": "H3-3-synthetic-injection-never-produces-production-proven",
+      "pass": true,
+      "observed": {
+        "status": "INCOMPLETE",
+        "proven": false,
+        "evidenceKind": "SYNTHETIC_INJECTION",
+        "source": "deps:fetchCredential",
+        "refreshed": false,
+        "writeAuthorized": false
+      }
+    },
+    {
+      "id": "H3-4-no-credential-values-in-report",
+      "pass": true,
+      "observed": {
+        "probesChecked": [
+          "SYNTH_H2_ID",
+          "SYNTH_H2_KEY",
+          "SYNTH_H2_TOKEN"
+        ],
+        "anyLeaked": false,
+        "writeAuthorized": false,
+        "productionSameBatchObserved": false
+      }
+    }
+  ],
+  "blockingGaps": [
+    {
+      "id": "production-same-batch-credential-chain-not-proven",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "本轮**未执行** `secrets get --json`、未获取任何真实凭据。H2 宿主只是**候选实现**，H1 只是离线契约证明；两者都不等于生产同批凭据链已成立。报告中 `productionSameBatchObserved` 恒为 false、注入路径 proven 恒为 false。",
+      "needed": "在受审宿主内按既有只读授权执行一次整组，另存脱敏证据。"
+    },
+    {
+      "id": "refresh-branch-output-contract-undecided",
+      "severity": "MEDIUM",
+      "detail": "H1 中 `expired-refreshable` 场景确实发出一次 refreshTmpToken（合成传输已拦截），但命令最终失败、快照未产出，合成响应的 tmp* 字段与 resolveCredential 的对齐尚未验证通过。",
+      "needed": "按固定源码核对 resolveCredential 对 refresh 返回 data 的字段期望后再离线复核；不为此使用真实凭据。"
+    },
+    {
+      "id": "service-not-initialized-does-not-block-output",
+      "severity": "MEDIUM",
+      "detail": "H1 中 CheckTcbService 返回 Initialized=false 时命令**仍继续**并输出快照（合成条件下观测）。本轮未观察到 InitTcb 或任何开通动作，但这与「服务未初始化必须停止」的预期不同。",
+      "needed": "请 Codex 确认该版本语义：Initialized=false 是否本就不阻断凭据输出。"
+    },
+    {
+      "id": "refresh-writes-back-official-login-cache",
+      "severity": "LOW",
+      "detail": "H1 观测到 refreshTmpToken 成功后 authStore.set('credential', ...) 会写回官方登录缓存。本轮只在合成目录观察到该写回类别，未在真实登录目录执行。",
+      "needed": "真实受审运行时单独记录，并在审查中列明该已知行为；不得假定「官方 CLI 获取过程不刷新缓存」。"
+    }
+  ],
+  "limitations": [
+    "凭据全部为合成标记值；未取真实凭据、未读真实认证存储内容。",
+    "H2 宿主的解析与传递链已离线验证，但**未真实执行**过该命令。",
+    "本脚本是离线夹具，不得作为未经审查的生产网络代理安装。",
+    "平台原子性、IAM、真实库内容、真实网络行为、费用/余量均未验证。"
+  ]
+}

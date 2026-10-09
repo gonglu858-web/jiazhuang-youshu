@@ -1,0 +1,90 @@
+{
+  "observedAt": "2026-10-08T09:39:44.544Z",
+  "realCloudCalls": 0,
+  "realCredentialFetches": 0,
+  "readRealAuthStoreContent": false,
+  "wroteSyntheticTempFixtures": true,
+  "allowedLocalNodeChecks": 5,
+  "blockedUnexpectedProcesses": 0,
+  "rows": [
+    {
+      "id": "S1-parent-home-vs-child-home",
+      "syntheticAccessOnly": true,
+      "precheckPassed": true,
+      "childWouldFindMarker": true,
+      "defectReproduced": true
+    },
+    {
+      "id": "S1-realpath-junction",
+      "verified": true,
+      "precheckPassed": true,
+      "childWouldFindMarker": true,
+      "defectReproduced": true
+    },
+    {
+      "id": "S2-nonzero",
+      "attempts": 1,
+      "kills": 0,
+      "followups": 0,
+      "errorCode": "CREDENTIAL_FETCH_FAILED",
+      "fetchSubprocessAttempted": false,
+      "fetchMode": "NONE",
+      "diagnostics": null,
+      "defectReproduced": true
+    },
+    {
+      "id": "S2-timeout",
+      "attempts": 1,
+      "kills": 1,
+      "followups": 0,
+      "errorCode": "CREDENTIAL_FETCH_FAILED",
+      "fetchSubprocessAttempted": false,
+      "fetchMode": "NONE",
+      "diagnostics": null,
+      "defectReproduced": true
+    },
+    {
+      "id": "S2-overflow",
+      "attempts": 1,
+      "kills": 1,
+      "followups": 0,
+      "errorCode": "CREDENTIAL_FETCH_FAILED",
+      "fetchSubprocessAttempted": false,
+      "fetchMode": "NONE",
+      "diagnostics": null,
+      "defectReproduced": true
+    },
+    {
+      "id": "S2-signal",
+      "attempts": 1,
+      "kills": 0,
+      "followups": 0,
+      "errorCode": "CREDENTIAL_FETCH_FAILED",
+      "fetchSubprocessAttempted": false,
+      "fetchMode": "NONE",
+      "diagnostics": null,
+      "defectReproduced": true
+    },
+    {
+      "id": "S2-fetchMode-not-enum-filtered",
+      "syntheticErrorOnly": true,
+      "markerLeaked": true,
+      "defectReproduced": true
+    }
+  ],
+  "hashes": {
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "b842daac48dea418898f21aa8971a21d75be878b266ca0c72a68a79bc86d98cc",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "a65a34fed72f4d9bdabc27edbfa57578825c0016b7285d6f9e26224f57b1b2bd",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "40a644a1b7bb3fbfd85482066ad1ce02f114e0d97db3caf1fec024361984beb9",
+    "miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs": "c6e7474894f55bc49134e5b7b16e7d7d03578cbd0b9ffab191865b93f0833794",
+    "miniapp/scripts/check-cloudbase-sdk-readonly.cjs": "1a0ea9d6eced919d9d4f67d712a4886be2eef0a568ac4a255c0a9ac3e69f2b3c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "docs/证据/Codex核验-H1H2H3接线-20261008.json": "878f40f130d6d91a48343fedd764fe670a461e22c1488d7cdee7e74bd6895f96",
+    "docs/证据/WorkBuddyH1H2H3-真实凭据获取最小接线复现-20261008.cjs": "a5060e9d7e42fd3adc628dcede1266a7dbe8f5d95e799c61a192bd9bf6e037d6",
+    "docs/证据/WorkBuddyH1H2H3-真实凭据获取最小接线复现-20261008.json": "6415d8f5c60bcf4c2cc75d253d81c9bfdd8881aadd8ee9c9f5688f053f286dea"
+  }
+}

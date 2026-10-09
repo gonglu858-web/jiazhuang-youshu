@@ -1,0 +1,275 @@
+{
+  "observedAt": "2026-10-07T01:51:39.352Z",
+  "scope": "offline synthetic R2 receipt tightening; no cloud initialization",
+  "sourceReview": "docs/Codex复核-首次管理员SDK适配R1-R5返修-20261007.md 第2节",
+  "receiptContract": {
+    "sdkSource": "@cloudbase/database 1.4.1 dist/commonjs/document.js:108–112",
+    "transactionSetReturn": "{ updated, upserted: [{_id: res.data.upsert_id}], requestId }",
+    "rules": [
+      "updated 必须是有限非负整数且 <= 1",
+      "upserted 必须存在、必须是数组、元素数量恰为 1、元素必须是对象",
+      "updated===0：_id 必须是有效字符串且等于目标主键（无占位）",
+      "updated===1：_id 为 undefined/null 视为本包正常无插入占位；否则必须是目标主键"
+    ],
+    "notAccepted": [
+      "多条/重复元素",
+      "字符串等非对象元素",
+      "updated=1 分支的错误主键或无效结构",
+      "updatedCount 或单独 upsert_id 作为替代凭据"
+    ]
+  },
+  "samples": [
+    {
+      "id": "R2-multiple-upserts",
+      "stage": "first-write",
+      "payload": {
+        "updated": 0,
+        "upserted": [
+          {
+            "_id": "primary"
+          },
+          {
+            "_id": "other-key"
+          }
+        ]
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-duplicate-upserts",
+      "stage": "first-write",
+      "payload": {
+        "updated": 0,
+        "upserted": [
+          {
+            "_id": "primary"
+          },
+          {
+            "_id": "primary"
+          }
+        ]
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-unverified-string-upsert",
+      "stage": "first-write",
+      "payload": {
+        "updated": 0,
+        "upserted": [
+          "primary"
+        ]
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-updated-one-wrong-insert",
+      "stage": "first-write",
+      "payload": {
+        "updated": 1,
+        "upserted": [
+          {
+            "_id": "other-key"
+          }
+        ]
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-updated-one-invalid-shape",
+      "stage": "first-write",
+      "payload": {
+        "updated": 1,
+        "upserted": false
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 1,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-second-write-multiple",
+      "stage": "second-write",
+      "payload": {
+        "updated": 0,
+        "upserted": [
+          {
+            "_id": "other-key"
+          },
+          {
+            "_id": "other-key-2"
+          }
+        ]
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-second-write-empty-array",
+      "stage": "second-write",
+      "payload": {
+        "updated": 0,
+        "upserted": []
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "R2-second-write-updated-one-invalid",
+      "stage": "second-write",
+      "payload": {
+        "updated": 1,
+        "upserted": false
+      },
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "message": "初始化结果未知，命令已停止；请只读核对 primary 与审计后再决定，不自动重跑。"
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 0,
+        "rollback": 1
+      },
+      "dangerous": false
+    },
+    {
+      "id": "POS-updated-one-placeholder",
+      "stage": "positive",
+      "result": {
+        "outcome": "initialized",
+        "granted": true
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      },
+      "expected": "initialized/granted=true",
+      "pass": true
+    },
+    {
+      "id": "POS-zero-update-matching-keys",
+      "stage": "positive",
+      "result": {
+        "outcome": "initialized",
+        "granted": true
+      },
+      "counts": {
+        "begin": 1,
+        "read": 3,
+        "write": 2,
+        "commit": 1,
+        "rollback": 0
+      },
+      "expected": "initialized/granted=true",
+      "pass": true
+    }
+  ],
+  "realSdkPositiveInsertion": {
+    "attempted": true,
+    "verified": true,
+    "outcome": "initialized",
+    "networkAttempts": 0,
+    "note": "离线合成传输；底层给 upsert_id=各自主键，经真实 SDK 转换后 upserted:[{_id:目标键}]"
+  },
+  "summary": {
+    "total": 10,
+    "dangerousInitialized": 0,
+    "allRejectedHaveZeroCommit": true,
+    "rollbackAttempted": true,
+    "positivesPass": true
+  },
+  "notVerified": [
+    "真实平台 upserted/upsert_id 的实际返回形态未实测",
+    "平台事务原子性、并发冲突与回滚语义未验证",
+    "真实请求签名与 IAM 未核实",
+    "生产调用者核验未接通（依赖注入不是授权机制）"
+  ],
+  "untouched": [
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs（P4 核心）",
+    "miniapp/scripts/prepare-sandbox-primary.cjs（CLI --execute 仍拒绝）",
+    "旧业务代码、历史证据 JSON 与历史测试脚本"
+  ],
+  "files": {
+    "adapter": "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs",
+    "adapterSha256": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "test": "miniapp/tests/sandbox-primary-sdk-adapter.test.cjs",
+    "testSha256": "5e7fcce2cebaa5e579c5a79048393cb92223d099ea54c884692e8cd001e75990"
+  }
+}

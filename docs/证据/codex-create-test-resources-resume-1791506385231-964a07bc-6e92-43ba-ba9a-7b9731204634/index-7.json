@@ -1,0 +1,22 @@
+{
+  "table": "schtest_v1_audit_events",
+  "name": "project_created_desc",
+  "keys": [
+    {
+      "Name": "projectId",
+      "Direction": "1"
+    },
+    {
+      "Name": "createdAt",
+      "Direction": "-1"
+    }
+  ],
+  "unique": false,
+  "sparse": false,
+  "partial": "",
+  "listed": true,
+  "specMatches": true,
+  "explicitReadyStatus": null,
+  "readyConfirmed": false,
+  "at": "2026-10-09T00:45:22.813Z"
+}

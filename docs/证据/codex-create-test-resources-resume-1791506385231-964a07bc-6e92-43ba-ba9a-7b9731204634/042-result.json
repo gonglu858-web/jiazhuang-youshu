@@ -1,0 +1,31 @@
+{
+  "number": 42,
+  "action": "CreateTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_member_task_guard",
+    "PermissionInfo": {
+      "AclTag": "ADMINONLY",
+      "EnvId": "cloud1-d8gcq5ag39d847723"
+    }
+  },
+  "isWrite": true,
+  "startedAt": "2026-10-09T00:42:51.724Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "2b018d2a-afd2-4c8d-9954-23c32ef563f7",
+  "result": {
+    "responseKeys": [
+      "RequestId"
+    ],
+    "accepted": true
+  },
+  "finishedAt": "2026-10-09T00:42:53.848Z"
+}

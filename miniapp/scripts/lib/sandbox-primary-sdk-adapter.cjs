@@ -211,15 +211,68 @@ function assertKeyMatch(doc, expectedKey) {
 }
 
 /**
+ * 完整核对 SDK 构造的插入结果数组（R2 修正）。
+ *
+ * 依据是**已取得的 @cloudbase/database 1.4.1** 的
+ * `dist/commonjs/document.js:108–112`：事务 set 的返回由 SDK 自己构造为
+ * `upserted: [{ _id: res.data.upsert_id }]` —— 外层数组与对象元素都由 SDK 生成，
+ * 因此**不接受字符串元素等未经本版本核实的形状**。
+ *
+ * @param {unknown} upserted 回执里的 upserted
+ * @param {string} expectedKey 本次写入的目标主键
+ * @param {number} updated 已核实的 updated 计数（0 或 1）
+ */
+function assertUpsertedEntry(upserted, expectedKey, updated) {
+  if (!Array.isArray(upserted)) {
+    deny('SET_SHAPE_INVALID', '写入结果 upserted 不是数组，不符合当前 SDK 的转换形状，拒绝。');
+  }
+  // SDK 恒定构造恰好一个元素；0 个或多个都不是本版本的输出形状
+  if (upserted.length !== 1) {
+    deny('SET_SHAPE_INVALID', '写入结果 upserted 元素数量不是 1，与单文档写入语义不符，拒绝。');
+  }
+  const entry = upserted[0];
+  if (!isPlainObject(entry)) {
+    deny('SET_SHAPE_INVALID', '写入结果 upserted 元素不是对象，不符合当前 SDK 的转换形状，拒绝。');
+  }
+  const insertedKey = entry._id;
+  const isPlaceholder = insertedKey === undefined || insertedKey === null;
+  if (updated === 0) {
+    // 零更新必须恰好有一条**有效**的插入结果，且主键就是本次写入目标
+    if (isPlaceholder) {
+      deny('SET_SHAPE_INVALID', '写入零更新但插入结果没有有效主键，无法确认插入目标，拒绝。');
+    }
+    if (!text(insertedKey)) {
+      deny('SET_SHAPE_INVALID', '写入零更新的插入结果主键不是非空字符串，拒绝。');
+    }
+    if (insertedKey !== expectedKey) {
+      deny('SET_KEY_MISMATCH', '写入插入结果的主键与目标主键不一致。');
+    }
+    return true;
+  }
+  // updated === 1：这是「已更新」分支，同样不得忽略异常的插入结构或错误主键。
+  // 本版本 SDK 在底层没有 upsert_id 时会产出 [{_id: undefined}]，属正常占位，不得误拒。
+  if (isPlaceholder) return true;
+  if (!text(insertedKey)) {
+    deny('SET_SHAPE_INVALID', '写入已更新的插入结果主键不是非空字符串，拒绝。');
+  }
+  if (insertedKey !== expectedKey) {
+    deny('SET_KEY_MISMATCH', '写入已更新分支的插入结果主键与目标主键不一致。');
+  }
+  return true;
+}
+
+/**
  * set 的成功判定（R2 修正）。
  *
  * 以**当前真实 SDK 的最终返回形状**为准：事务 set 转换后返回
- * `{ updated, upserted: [...], requestId }`。
+ * `{ updated, upserted: [{_id}], requestId }`。
  * 判定规则：
  *   - 必须是对象；含 code → 拒绝；
  *   - `updated` 必须是**有限非负整数**（拒绝 NaN / 负数 / 非整数）；
  *   - `updated` 至多为 1（单文档语义）；
- *   - `updated === 0` 时必须有 `upserted` 数组且其中含**与目标主键一致**的插入结果；
+ *   - `upserted` 必须存在，且其**结构、数量与主键**由 assertUpsertedEntry 完整核对
+ *     （`updated===0` 必须恰好一条目标主键的有效插入；`updated===1` 不得含错误主键，
+ *      同时保留本包`[{_id:undefined}]` 的正常无插入占位）；
  *   - **不接受**未核实的 `updatedCount` 或底层 `upsert_id` 作为替代成功凭据。
  *
  * @param {object} result
@@ -242,6 +295,9 @@ function assertSetSuccess(result, expectedKey) {
   if (result.updated === undefined) {
     deny('SET_SHAPE_INVALID', '写入结果缺少已核实的 updated 字段，不允许核心继续提交。');
   }
+  if (result.upserted === undefined) {
+    deny('SET_SHAPE_INVALID', '写入结果缺少已核实的 upserted 数组，不允许核心继续提交。');
+  }
   const updated = result.updated;
   if (typeof updated !== 'number' || !Number.isFinite(updated) || !Number.isInteger(updated)) {
     deny('SET_SHAPE_INVALID', '写入结果 updated 不是有限非负整数。');
@@ -252,17 +308,8 @@ function assertSetSuccess(result, expectedKey) {
   if (updated > 1) {
     deny('SET_SHAPE_INVALID', '写入结果 updated 超过 1，与单文档语义不符。');
   }
-  if (updated === 0) {
-    // 零更新必须伴随一条与目标主键一致的插入结果，否则不算成功
-    const upserted = result.upserted;
-    if (!Array.isArray(upserted) || upserted.length === 0) {
-      deny('SET_SHAPE_INVALID', '写入零更新且没有插入结果，无法确认是否成功。');
-    }
-    const matched = upserted.some(item => (isPlainObject(item) ? item._id : item) === expectedKey);
-    if (!matched) {
-      deny('SET_KEY_MISMATCH', '写入插入结果的主键与目标主键不一致。');
-    }
-  }
+  // R2：完整核对插入结果的结构、数量与主键（两个分支都不放过异常形状）
+  assertUpsertedEntry(result.upserted, expectedKey, updated);
   return true;
 }
 
@@ -601,6 +648,7 @@ module.exports = Object.freeze({
   normalizeDoc,
   reconcileId,
   assertSetSuccess,
+  assertUpsertedEntry,
   assertReadAllowed,
   assertWriteAllowed
 });

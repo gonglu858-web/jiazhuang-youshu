@@ -1,0 +1,34 @@
+{
+  "table": "schtest_v1_schedules",
+  "name": "project_status_trade_created_id",
+  "keys": [
+    {
+      "Name": "projectId",
+      "Direction": "1"
+    },
+    {
+      "Name": "status",
+      "Direction": "1"
+    },
+    {
+      "Name": "trade",
+      "Direction": "1"
+    },
+    {
+      "Name": "createdAt",
+      "Direction": "1"
+    },
+    {
+      "Name": "_id",
+      "Direction": "1"
+    }
+  ],
+  "unique": false,
+  "sparse": false,
+  "partial": "",
+  "listed": true,
+  "specMatches": true,
+  "explicitReadyStatus": null,
+  "readyConfirmed": false,
+  "at": "2026-10-09T00:45:59.446Z"
+}

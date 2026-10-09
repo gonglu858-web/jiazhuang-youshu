@@ -1,0 +1,28 @@
+{
+  "runId": "codex-create-test-resources-resume-1791506385231-964a07bc-6e92-43ba-ba9a-7b9731204634",
+  "startedAt": "2026-10-09T00:39:45.232Z",
+  "scope": "11 empty schtest_v1_ collections + 13 exact indexes, ADMINONLY",
+  "userConfirmation": "同意按这个范围执行",
+  "approvalContext": "用户已知准确余量与创建权限未完全核实，确认遇到额度、收费提示、权限不足、同名冲突或未知结果停止。",
+  "supersedes": "原执行包等待余量截图及确认的门槛，按最新明确范围授权执行；不伪称余量已核实。",
+  "remainingQuotaVerified": false,
+  "maxWrites": 24,
+  "maxReads": 100,
+  "maxMinutes": 30,
+  "purchases": false,
+  "initialization": false,
+  "deployment": false,
+  "enable": false,
+  "oldProjectWrites": false,
+  "pinned": {
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "docs/证据/测试集合索引创建请求清单-20261009.json": "68f5a40edc0116861e4cc902522a6217a57e3343ac396d517956713b25436ef3",
+    "miniapp/cloudbase/schedule-sandbox-resources.candidate.json": "7a0284d5098375f6910c459fb0ddea3af179fe40876d98cd2807b5cd93a1620b"
+  },
+  "resumes": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/docs/证据/codex-create-test-resources-1791505821851-d7c45db1-3c6b-4dda-afde-9ab4b6ad0d3e",
+  "priorReadCalls": 8,
+  "priorWriteCalls": 0,
+  "reason": "上一内存会话已丢失；从持久化事实确认没有写请求后，重建执行会话并重新核对。"
+}

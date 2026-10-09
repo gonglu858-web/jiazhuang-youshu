@@ -1,0 +1,85 @@
+{
+  "recordedAt": "2026-10-07T12:31:49.0732247Z",
+  "command": "node miniapp/scripts/check-cloudbase-readonly.cjs --read-only",
+  "wrapperInvocations": 1,
+  "processExitCode": 1,
+  "observerSha256": "168f7a8b76ece598986602e69ceff78da3b75cf380795ba811e448afb2c7edd5",
+  "report": {
+    "schemaVersion": 1,
+    "mode": "read-only",
+    "complete": false,
+    "status": "FAILED",
+    "stoppedAt": "describeEnvInfo",
+    "errorCode": "ENV_INFO_FIELD_INVALID",
+    "observedAt": "2026-10-07T12:31:49.04Z",
+    "cloudQueryAttempted": true,
+    "cloudResponseValidated": true,
+    "cloudObservationPerformed": true,
+    "callerIdentity": {
+      "type": "CAMRole",
+      "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+      "accountIdTail": "7053",
+      "userIdTail": "0693",
+      "principalIdTail": "5386",
+      "requestId": "e088bbd9-686a-42e2-b12a-9396648e9c31"
+    },
+    "describeEnvs": {
+      "envId": "cloud1-d8gcq5ag39d847723",
+      "status": "NORMAL",
+      "region": "ap-shanghai",
+      "requestId": "98e5f62b-edeb-4cdc-9934-284181335af2"
+    },
+    "describeEnvInfo": null,
+    "associationMatched": false,
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false,
+    "isAuthorizationMechanism": false,
+    "stageExecutions": [
+      {
+        "stage": "callerIdentity",
+        "status": "validated",
+        "startedAt": "2026-10-07T12:31:44.37Z",
+        "finishedAt": "2026-10-07T12:31:46.048Z",
+        "validationPassed": true,
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "errorCode": null
+      },
+      {
+        "stage": "describeEnvs",
+        "status": "validated",
+        "startedAt": "2026-10-07T12:31:46.049Z",
+        "finishedAt": "2026-10-07T12:31:47.559Z",
+        "validationPassed": true,
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "errorCode": null
+      },
+      {
+        "stage": "describeEnvInfo",
+        "status": "failed",
+        "startedAt": "2026-10-07T12:31:47.56Z",
+        "finishedAt": "2026-10-07T12:31:49.04Z",
+        "validationPassed": false,
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "errorCode": "ENV_INFO_FIELD_INVALID"
+      }
+    ],
+    "startedAt": "2026-10-07T12:31:44.219Z",
+    "errorCategory": "OBSERVER_REJECTED",
+    "notes": "本工具只做只读观测：所有分支 writeAuthorized=false，未生成初始化计划、approval 或人员允许名单。cloudQueryAttempted 只表示已尝试启动查询进程，不表示网络请求已到达平台；逐阶段 exitCode/超时/终止确认见 stageExecutions。同一登录目录不证明三次调用使用同一份未刷新的临时凭据；本工具也未完成数据库 SDK 的同凭据核验。身份摘要仅供内部关联核对，不是签名，也不是授权证书。"
+  }
+}

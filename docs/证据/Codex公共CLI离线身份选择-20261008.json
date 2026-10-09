@@ -1,0 +1,146 @@
+{
+  "observedAt": "2026-10-08T04:48:08.512Z",
+  "auditRoot": "C:/Users/30591/.codex/tmp/cli-public-offline-zHirdD",
+  "entryHash": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b",
+  "bundleHash": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97",
+  "unchanged": true,
+  "results": [
+    {
+      "label": "A",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stdoutBytes": 245,
+      "stderrBytes": 0,
+      "outputLooksLikeJson": true,
+      "credentialMarkerInOutput": false,
+      "proof": {
+        "kind": "public-cli-offline-transport",
+        "requests": [
+          {
+            "host": "tcb.tencentcloudapi.com",
+            "action": "CheckTcbService",
+            "method": "POST",
+            "selectedLabel": "A",
+            "tokenMatched": true,
+            "hmacKeyMatched": true,
+            "bodyIsEmptyObject": true,
+            "mocked": true
+          },
+          {
+            "host": "tcb.tencentcloudapi.com",
+            "action": "CheckTcbService",
+            "method": "POST",
+            "selectedLabel": "A",
+            "tokenMatched": true,
+            "hmacKeyMatched": true,
+            "bodyIsEmptyObject": true,
+            "mocked": true
+          },
+          {
+            "host": "sts.tencentcloudapi.com",
+            "action": "GetCallerIdentity",
+            "method": "POST",
+            "selectedLabel": "A",
+            "tokenMatched": true,
+            "hmacKeyMatched": true,
+            "bodyIsEmptyObject": true,
+            "mocked": true
+          }
+        ],
+        "hmacKeyLabels": [
+          "A",
+          "A",
+          "A"
+        ],
+        "blockedNetwork": 0,
+        "blockedSubprocess": 1,
+        "deniedFileReads": 0,
+        "deniedFileWrites": 0,
+        "realNetworkCalls": 0
+      }
+    },
+    {
+      "label": "B",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stdoutBytes": 245,
+      "stderrBytes": 0,
+      "outputLooksLikeJson": true,
+      "credentialMarkerInOutput": false,
+      "proof": {
+        "kind": "public-cli-offline-transport",
+        "requests": [
+          {
+            "host": "tcb.tencentcloudapi.com",
+            "action": "CheckTcbService",
+            "method": "POST",
+            "selectedLabel": "B",
+            "tokenMatched": true,
+            "hmacKeyMatched": true,
+            "bodyIsEmptyObject": true,
+            "mocked": true
+          },
+          {
+            "host": "tcb.tencentcloudapi.com",
+            "action": "CheckTcbService",
+            "method": "POST",
+            "selectedLabel": "B",
+            "tokenMatched": true,
+            "hmacKeyMatched": true,
+            "bodyIsEmptyObject": true,
+            "mocked": true
+          },
+          {
+            "host": "sts.tencentcloudapi.com",
+            "action": "GetCallerIdentity",
+            "method": "POST",
+            "selectedLabel": "B",
+            "tokenMatched": true,
+            "hmacKeyMatched": true,
+            "bodyIsEmptyObject": true,
+            "mocked": true
+          }
+        ],
+        "hmacKeyLabels": [
+          "B",
+          "B",
+          "B"
+        ],
+        "blockedNetwork": 0,
+        "blockedSubprocess": 1,
+        "deniedFileReads": 0,
+        "deniedFileWrites": 0,
+        "realNetworkCalls": 0
+      }
+    },
+    {
+      "label": "NONE",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stdoutBytes": 639,
+      "stderrBytes": 0,
+      "outputLooksLikeJson": false,
+      "credentialMarkerInOutput": false,
+      "proof": {
+        "kind": "public-cli-offline-transport",
+        "requests": [],
+        "hmacKeyLabels": [],
+        "blockedNetwork": 0,
+        "blockedSubprocess": 1,
+        "deniedFileReads": 0,
+        "deniedFileWrites": 0,
+        "realNetworkCalls": 0
+      }
+    }
+  ],
+  "syntheticOnly": true,
+  "publicEntrySyntheticIdentityProven": true,
+  "productionSameBatchProven": false,
+  "limitations": [
+    "Node transport hooks, not an OS firewall.",
+    "No IAM/platform response or production credential chain is verified."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "number": 3,
+  "action": "DescribeEnvInfo",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:30:48.130Z",
+  "status": "ATTEMPT_STARTED"
+}

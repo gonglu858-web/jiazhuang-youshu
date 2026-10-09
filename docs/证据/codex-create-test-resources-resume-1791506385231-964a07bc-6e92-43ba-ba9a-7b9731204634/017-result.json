@@ -1,0 +1,24 @@
+{
+  "number": 17,
+  "action": "DescribeSafeRule",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_projects"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:41:00.994Z",
+  "status": "RESPONSE_RECEIVED",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "overflow": false,
+  "closeNotObserved": false,
+  "spawnFailed": false,
+  "processExited": true,
+  "requestId": "30eebfb4-22f3-40f3-9a27-c1ecdbe86254",
+  "result": {
+    "AclTag": "ADMINONLY",
+    "Rule": ""
+  },
+  "finishedAt": "2026-10-09T00:41:02.930Z"
+}

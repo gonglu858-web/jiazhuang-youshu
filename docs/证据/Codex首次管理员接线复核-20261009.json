@@ -1,0 +1,159 @@
+{
+  "observedAt": "2026-10-09T03:09:22.048Z",
+  "summary": {
+    "total": 16,
+    "reproduced": 16,
+    "harnessErrors": 0
+  },
+  "results": [
+    {
+      "id": "R1a-fixture-returns-Immediate",
+      "observed": {
+        "returnedConstructor": "Immediate",
+        "onType": "undefined",
+        "credentialCalls": 1
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R1b-raw-versus-normalized-plan",
+      "observed": {
+        "normalizedAddsDeadlineMs": true,
+        "secondValidationRejected": true,
+        "workerCode": "PLAN_INVALID",
+        "sdkTransportCalls": 0
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R1c-fixture-overwrites-emitted-result",
+      "observed": {
+        "emittedResultOverwrittenByUndefined": true,
+        "syntheticBufferError": "ERR_INVALID_ARG_TYPE"
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R1d-real-SDK-fixture-missing-transactions",
+      "observed": {
+        "onlySend": true,
+        "noTransactionRequest": true,
+        "noWritePersistence": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R2a-extra-STS-loses-snapshot",
+      "observed": {
+        "sessionTokenInjected": false,
+        "secretIdInjected": false,
+        "result": "CLI_ASSOCIATION_FAILED"
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R3a-worker-no-clock-default",
+      "observed": {
+        "missingDepsNowThrows": "TypeError"
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R3b-nonzero-worker-can-report-success",
+      "observed": {
+        "exitCode": 7,
+        "signal": "SIGTERM",
+        "acceptedOk": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R3c-worker-output-not-projected",
+      "observed": {
+        "unknownFieldPassed": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R3d-timeout-not-marked-unknown",
+      "observed": {
+        "errorCode": "RESULT_UNKNOWN",
+        "resultUnknownFieldMissing": true,
+        "stderrDataListeners": 0
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R3e-worker-has-no-process-entry",
+      "observed": {
+        "exportsOnly": true,
+        "stdinReaderAbsent": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R4a-approval-does-not-bind-full-plan",
+      "observed": {
+        "serializedSourceAccepted": true,
+        "deadlineOperatorAndForbiddenFieldChangedStillAccepted": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R4b-missing-started-and-different-round-still-send",
+      "observed": {
+        "predecessorsMocked": true,
+        "persistCallbackAbsent": true,
+        "roundMismatch": true,
+        "workerStarts": 1,
+        "stageReported": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R5a-foreign-user-reported-same",
+      "observed": {
+        "validShapeMistakenForTargetEquality": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R5b-real-digest-dropped",
+      "observed": {
+        "coreDigestLength": 32,
+        "normalizerRequires64": true,
+        "dropped": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R5c-free-uppercase-is-not-code-allowlist",
+      "observed": {
+        "externalUppercaseCodePassed": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "R6-wrong-page-and-close-fields",
+      "observed": {
+        "accessCallsOldFunction": true,
+        "clientHasPhase": false,
+        "closedActionsAbsent": true
+      },
+      "reproduced": true
+    }
+  ],
+  "sourceHashes": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "8cd41e6ce06521a4fcfb1c72ac4dc7f31f8fcda88eb2bf40b56f7b610378b366",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "752a58273c7152996e26cc36e53ed74878ed23953da289cda76295127655226a",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "5fa69a01183b3eba582d179e4e52903ce6b2c6a625650e5c5dad7ca69bb664f4",
+    "docs/证据/WorkBuddy首次管理员接线-20261009.json": "68456ab654040a18fbb38250546b6517696aa9feb29e2f47cf33604a5b1e0420"
+  },
+  "sourceAndHistoricalEvidenceUnchanged": true,
+  "blockedExternal": 0,
+  "realCloudCalls": 0,
+  "limitations": [
+    "前序遮蔽分支以明确内存替身隔离，并非完整端到端通过。",
+    "未运行真实worker子进程、未获取真实凭据；脚本只输出stdout。"
+  ]
+}

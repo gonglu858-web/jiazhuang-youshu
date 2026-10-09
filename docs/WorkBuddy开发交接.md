@@ -1,11 +1,728 @@
 # WorkBuddy 开发交接
 
+## 当前状态：首次管理员接线 R1–R6 返修完成（Codex 待复核，2026-10-09）
+
+- [复核报告](Codex复核-首次管理员受控接线与本人登记准备-20261009.md)已给明确根因、顺序和验收：先修替身返回/原始计划/emit覆盖/事务传输，再修STS、进程、批准与留证、结果/回读，最后更正登记操作稿。
+- 原测试12通过9跳过已确认；16条独立复现全部重现问题。D-1实际数据库传输0次，不能证明用户缺失门槛；D-4在SDK前早退。不能继续将共同症状描述为未知环境机制。
+- 限本轮host/worker/测试/操作稿及新证据与记录，旧核心、适配器、凭据链、进程库、业务与配置不改。审查脚本与JSON独立新建；历史证据未改。无联网、初始化或部署授权，用户现在不用操作。
+
+## 当前接续：首次管理员受控接线本地完成（**含 9 项未通过**），待 Codex 复核（2026-10-09）
+
+### 一句话状态
+
+本地接线与操作稿完成，但**测试 12 通过 / 0 失败 / 9 显式跳过**，正向整链未跑通。
+真实初始化与本人登记**均未执行**；已验收模块哈希全部未变。
+
+### 新增文件
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `miniapp/scripts/lib/sandbox-primary-execution-host.cjs` | `8cd41e6ce06521a4…` |
+| `miniapp/scripts/lib/sandbox-primary-execution-worker.cjs` | `752a58273c715299…` |
+| `miniapp/tests/sandbox-primary-execution-host.test.cjs` | `5fa69a01183b3eba…` |
+| `docs/首次管理员受控接线与本人登记操作稿-20261009.md` | `28f6f7f4baa62ef5…` |
+
+证据 `docs/证据/WorkBuddy首次管理员接线-20261009.{cjs,json}`（`87acf238…` / `68456ab6…`），10/11 PASS。
+
+### ⚠️ 必须先读的缺口
+
+跳过 9 项（`B-1` `C-1` `C-3` `C-4` `D-2` `D-3` `E-1` `E-2` `E-3`）：
+走 `executeOnce` / `worker.run` 返回 `WORKER_PLAN_INVALID` 或
+`CREDENTIAL_FETCH_FAILED(SPAWN_FAILED)`；而**分别**调用 P4 六函数、
+**分别**调用凭据宿主（相同 spawn 替身）**都成功**。
+
+**未查明**：「宿主/worker 组合调用」与「分别调用同一模块」行为不一致的机制。
+已按项目规则停止排查（2 轮），**未用 skip 冒充通过，未改已验收模块迁就测试**。
+下次接续若要推进，建议先用最小复现对比「组合 vs 分别」，而不是再动实现。
+
+### 已确认可用的部分
+
+- 默认关闭（零取凭据/零联网/零 worker）；参数白名单无 `--execute`；
+  `prepare-sandbox-primary --execute` 拒绝保持不变。
+- 受控批准来源独立于计划：绑定 `planDigest`（复用 P4 `inputDigest`）+
+  本机固定 CLI 指纹 + `writeScope` + 有效期；计划自报批准字段无效。
+- 完整云主体元组摘要 `SHA-256(JSON([Type,AccountId,UserId,PrincipalId]))`，
+  与手算一致、顺序/大小写敏感、缺字段返回 null。
+- 真实 SDK 本地转换（真实 `sdk.init`/`database()`/文档序列化/P4 事务，
+  仅换 `Db.reqClass`）；目标用户缺失与凭据过期均零写/零读。
+- 安全闸：profile 缺失或等于真实 `authSessionDir` 时在取凭据前停止。
+
+### L3 操作稿要点
+
+- prepare 实际允许 **15 动作**（`cloudfunctions/scheduleSandbox/gate.js:34-50`），
+  每项仍有原鉴权；**不能称服务端只有 identify 权限**。
+- `identify`（`pages/access/access.wxml:13` → `access.js:340`）**不是只读**：
+  `vendor/service.js:72` 的 `identity()` 会写 `users` + `registerIdentity` 审计；
+  与管理员初始化分属两步。
+- **无 prepare 包**（`artifacts/schedule-sandbox/` 只有两个 closed 制品）；
+  编译/上传/回读云端指纹本轮不具备。关闭包不能冒充 prepare 包。
+- 准备窗口关闭须客户端与服务端**分别回读**。
+
+### 真实路径剩余前置
+
+本人测试记录 → 受审的完整云主体摘要 → 最终写批准与制品绑定 → 部署/关闭能力 →
+实际平台事务与费用。**不得**把合成摘要或合成批准登记为生产授权。
+
+### 边界
+
+未联网、未取真实凭据、未读认证缓存内容、未初始化、未建资源、未部署、未启用入口、
+未改业务云函数/vendor/打包器/入口配置。
+
+---
+
+## 当前待接手：首次管理员受控接线与本人登记准备（Codex，2026-10-09）
+
+- 任务：[首次管理员受控接线与本人登记准备](WorkBuddy任务-首次管理员受控接线与本人登记准备-20261009.md)。用户已要求开始下一步，本轮范围是本地接线/测试与准备文档；请以该任务为准，不执行真实云调用。
+- L1新增受控宿主/worker，复用P4与适配器；L2完整正向链及必要离线反例；L3准备本人登记操作稿，列真实prepare能力、登记写入与关闭方式。原CLI执行拒绝、三配置关闭、vendor/核心/适配器/凭据链保持不变。
+- 云主体完整预期摘要与实际批准尚未形成，不能用尾号/主账号匹配或合成上下文代替。测试用户仍缺失，禁止从旧库复制。接线完成后交Codex审查，再安排明确的部署登记及最终写入确认。
+- 本轮只有任务与记录变化，未自动发送到WorkBuddy会话，未确认其已接手。下方“保持待命/任务未下发”保留为先前状态；本段表示任务文件已可领取，不表示开发已开始。
+
+## 当前接续：首次管理员目标已核对，执行包前置未齐（Codex，2026-10-09）
+
+- [执行包准备](Codex执行包-首次测试管理员初始化准备-20261009.md)：真实核对旧primary/users，尾号2d3aa4有效且派生匹配；测试users与primary均不存在。新四读脚本/脱敏结果独立保存，未改产品代码、测试、配置或历史证据。
+- 初始化事务未来仅新增测试primary和关联审计。本人测试identify登记与受控写宿主仍需准备；前者会写用户和registerIdentity审计，后者不得用allowed:true/修改proven代替身份与批准核验。旧用户不能复制进测试库。原CLI执行拒绝保留。
+- 本文提供最小接线边界，尚未下发新实现或云端执行命令；WorkBuddy保持待命，不重开关闭项。用户明确要求实际写前再确认，部署/启用/登记/初始化均须具体包；本轮未执行。
+
+## 当前接续：实际SDK空查询20/20成功（Codex，2026-10-09）
+
+- [核验结果](Codex核验-测试集合筛选排序只读查询-20261009.md)：13组索引对应过滤/排序（I07为管理审计用途）及7组偏移请求全部真实返回空数组；无写入、初始化、部署、启用或代码返修。
+- 这是查询可执行性证据，不是命中计划、READY状态、非空排序/分页或唯一约束证明。SDK requestId净化后为空如实保留，不为凑通过放宽规则。
+- 下一阶段由Codex整理首次管理员初始化最小执行包并核对受信目标；不能从本次只读成功推导写授权。WorkBuddy继续待命，已关闭项不重开。
+
+## 当前接续：控制台截图已核对，不再等待同页状态截图（2026-10-09）
+
+- [用户人工补证](证据/用户截图核对-schedules索引-20261009.md)：schedules的5个自定义索引和2个默认索引已显示且规格一致；页面不提供明确就绪列，不强行记READY。
+- 下一步由Codex整理实际业务查询的有界只读核验；成功空查询、实际索引命中、性能与唯一约束分别记录，不相互替代。本轮仅图片归档及文档记录，没有云请求；不初始化、部署、启用，WorkBuddy继续待命。
+
+## 当前接续：SDK空集合读取已成功，待控制台索引状态（Codex，2026-10-09）
+
+- [只读核验](Codex核验-建集合后SDK读取与索引状态边界-20261009.md)：真实同次编排身份关联MATCHED，固定primary返回NOT_FOUND，无READ_FAILED；管理员尚未初始化，这是预期。users因无受信目标未读，汇总仍INCOMPLETE，不改proven造通过。
+- 13索引规格沿用已取得的创建回读；官方DescribeTable无明确ready/status字段，待用户提供schtest_v1_schedules索引管理页，不再沿同接口反复猜测。主键读取成功不证明其它自定义索引全就绪。
+- 本轮仅新审查入口与证据/记录；不初始化、不部署、不启用。WorkBuddy继续待命，旧代码关闭项不重开。
+
+## 当前接续：测试集合与索引已创建，待补就绪事实（Codex，2026-10-09）
+
+- [执行结果](Codex执行结果-测试集合与索引创建-20261009.md)：按用户本轮明确授权完成11个空测试集合与13个指定索引。每集合ADMINONLY双回读、索引规格逐项相符，24次写请求未重复；旧集合未写、业务文档0。
+- 当前仍不宣称13索引全部READY：接口无明确状态字段，先补就绪事实，再安排只读SDK空集合观测。准确余量与费用未完整核实，未新增购买/升级或更改按量开关。
+- 不初始化、不部署、不启用、不处理A/B/C；三配置仍关闭且冻结。WorkBuddy继续待命，不重做关闭代码。原候选JSON与执行包保留历史未执行状态，实际授权与结果见新证据；下方旧接续段落已被本段取代。
+
+## 当前接续：创建执行包已整理，等费用补证与集中确认（Codex，2026-10-09）
+
+- [11集合/13索引执行包](Codex执行包-测试集合与索引创建-20261009.md)与24条请求清单已保存，未执行任何云端写入。本包不含部署或primary初始化，不需返修已关闭代码。
+- Codex真实只读核实套餐与用量、商品权益和TCB含隐藏集合清单：10/10集合，测试前缀0。此前7条为不含隐藏表的查询范围，原证据不改。
+- 当前剩余额度与实际计费模式不能从混合商品字段/用量0推定；等用户提供当前用量页后再确认执行。创建写权限尚未实测，禁止替用户扩权或以写操作试探。WorkBuddy收到明确新任务前保持待命。
+
+## 当前接续：测试集合当前不存在，停止重复读库与诊断返修（Codex，2026-10-09）
+
+- [只读核验报告](Codex核验-测试集合当前存在性-20261009.md)：当前环境集合完整清单7/7，无 `schtest_v1_` 测试集合，含目标管理员集合。旧 `app_admins` 不能替代测试集合。
+- 本次只查元数据，未读取业务记录、未创建资源、未初始化或部署。此前READ_FAILED具体原因不据此强行归因，R1/R2继续关闭。
+- 下一步由Codex整理独立副本资源创建具体执行包、核对费用与平台适配。WorkBuddy收到明确任务前继续待命，不改代码、不创建/初始化/部署/启用。历史证据原样保留。
+
+## 当前接续：读取诊断R1/R2验收关闭，WorkBuddy待命（Codex，2026-10-08）
+
+- [验收报告](Codex验收-读取诊断R1R2与真实复验-20261008.md)：186/186测试通过；原4条返回错误响应、2条属性getter反例全部封堵。不再返修，不重做关闭项，不删除重跑产物。
+- Codex已执行一次新的真实只读诊断：身份环境再次匹配；primary为READ_FAILED，新增诊断UNKNOWN/OTHER/null正常传递。根因仍未知不等于R1/R2未修好，禁止据此继续猜测扩充错误码或透传原异常。
+- 下一步由Codex独立核对测试集合元数据现状。WorkBuddy收到明确新任务前不改代码、不联网、不取凭据、不初始化/建资源/部署/启用。历史及本次新证据原样保留。
+
+## 当前接续：读取诊断 R1/R2 定点收尾已完成，待 Codex 复核（2026-10-08）
+
+### 一句话状态
+
+R1/R2 补齐 → 本地离线自测通过（133/133 + 既有 53/53 + 复现 9/9）；**真实 READ_FAILED 根因仍未查明**，未联网复验。
+
+### 改动文件（3 个）
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs` | `c5368fff5131d6d4…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs` | `f43a557d49b3923e…` |
+| `miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs` | `5106d99483965c07…` |
+
+未改项：入口 `1a0ea9d6…`、凭据宿主 `bccea293…`。Codex 首次真实执行三份证据与 Codex 本轮两份复现产物均原样保留。
+
+### 两项修了什么
+
+**R1 — 返回错误响应的路径诊断被丢弃（P1）**
+固定源码 `document.ts:337`：`res.code` 存在时 `get()` 直接返回 res 不抛 → **不经过 catch**。此前 `normalizeReadResult` 产出了 `errorCode`，但 primary/users 组包只复制 5 个字段，诊断全丢；记录级也没有 `READ_FAILED`。现已标 `readFailed` + 组包分支设记录级 `READ_FAILED` 与诊断，**primary/users 对称**；`NOT_FOUND`/坏形状不泛加平台错误含义。
+
+修复后 users 读取失败不再被通用兜底误报成 `USER_DERIVATION_MISMATCH`（那会让人误判身份有问题）。
+
+**R2 — 异常属性访问防护不完整（P2）**
+`classifyLocalError` 读 `error.message`、`buildReadDiagnostics` 读 `error.requestId` 均可被抛错 getter 命中 → **诊断构造本身失败**、丢失本次分类事实。已删去 message 依赖、requestId 加 try、name 读取也包 try；未知 name 归 `UNKNOWN`，`NOT_AN_ERROR` 仅限 null/非对象。
+
+### 文案更正（第 4 节）
+
+* 「本地异常类别」→「**异常名称分类**」，注明不能断定实际来源（任何对象都可自报 name）。
+* 补范围说明：**独立子进程**（生产）异常不跨 IPC 传活对象，本就无跨进程 `instanceof` 问题；**VM/夹具**才涉及跨 realm。两者不混同。
+* 修正 worker 注释替换字符（实测 0 个）。
+
+### 实测
+
+本轮 **133/133**（原 128 + 5）；既有回归 **53/53**；新复现 **9/9**、exit 0、幂等。
+**Codex 自己的复现脚本复跑**：`diagnosticsLost=0`、`diagnosticBuilderThrew=0`、`historicalEvidenceUnchanged=true`。
+
+### 接续时务必知道
+
+1. **交付的是「诊断实现已离线验证并补齐遗漏」，不是「根因已查明」。** 需复核通过后再执行一次真实只读诊断观测。
+2. `localErrorClass` 只是**观察到的 name**，不是来源证明；不得据它断定平台拒绝或集合不存在。
+3. `NOT_AN_ERROR` 只表示「输入不是对象」，不表示「是错误但类别未知」——后者是 `UNKNOWN`。
+4. 诊断**不**改变失败语义：`UNCONFIRMED` + `READ_FAILED`、不自动重试、不取第二批凭据、不写库。
+5. **跨进程 ≠ 跨 realm**：生产子进程传的是序列化后的净化字段，不存在活对象跨 IPC；只有 VM 夹具才有多 realm 问题。别把两者混同。
+
+### 仍未结论化
+
+1. **`real-read-failed-root-cause-unknown`（BLOCKING）** —— 真实根因未查明。
+2. `platform-error-code-space-unverified`（MEDIUM，白名单未扩大）、`production-same-batch-chain-not-proven`（MEDIUM，`proven` 恒 false）。
+
+集合是否存在、权限状态、目标 userId 来源、费用/余量仍未结论化；凭据输出不得用于认定服务就绪。
+
+### 边界
+
+未联网、未取真实凭据、未读认证存储内容、未安装、未初始化、未建资源、未部署、未启用入口。已关闭项均未重做。
+
+---
+
+## 当前接续：读取诊断R1/R2定点收尾（Codex，2026-10-08）
+
+- 按[读取诊断复核报告](Codex复核-读取失败最小诊断-20261008.md)第2、3节：补返回错误对象到最终诊断的接线；保护message/requestId异常属性访问。抛错正向、凭据、进程、初始化与旧业务关闭项不重做。
+- 相关测试181/181虽通过，独立真实worker合成传输仍复现4条诊断丢失；DG-5改成完整链，不手工伪造中间诊断。第4节文案顺手收窄，不扩错误码或架构。
+- 本轮Codex未联网复验。历史真实证据及本轮独立反例原样保留；WorkBuddy仅本地实现/相称测试，交回Codex后再安排真实诊断。用户无需扫码或重复授权。
+
+## 当前接续：读取失败最小诊断已完成，待 Codex 复核（2026-10-08）
+
+### 一句话状态
+
+最小诊断已实现并离线验证（128/128 + 既有 53/53 + 复现 8/8）；**真实 READ_FAILED 根因仍未查明**，本轮未联网复验、未取真实凭据。
+
+### 改动文件（3 个）
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs` | `7304d6a78d441069…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs` | `0d3290593da00115…` |
+| `miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs` | `acd0c7d138892764…` |
+
+未改项：入口 `1a0ea9d6…`、凭据宿主 `bccea293…`。Codex 首次真实执行三份证据原样保留、未覆盖。
+
+### 做了什么
+
+`UNCONFIRMED` / `READ_FAILED` 语义**完全保留**，只附加四个固定诊断字段：`readStage`（枚举）、`localErrorClass`（有限本地类别）、`errorCode`（SDK 源码可确定的 14 项白名单，其余 `OTHER`）、`requestId`（仅 UUID v4）。worker 与 observer **两层各自显式投影**，不透传 message/stack/cause/头/URL/凭据/OPENID。
+
+白名单来源已核对固定 SDK 源码：`src/utils/utils.ts:56-77`（`TcbError` 携带 code/message）、`src/document.ts:320-360`（**`res.code` 存在时直接返回 res、不抛，且可能无 requestId**）、`src/const/code.ts`（SDK 错误码集合）。
+
+### 顺带修掉的 2 个真实缺陷
+
+1. **跨 realm `instanceof` 失效** —— worker 在独立 VM 中运行，其 `Error` 构造与本模块不同 realm，原 `instanceof Error` 把真实 `TypeError` 误判为 `NOT_AN_ERROR`。改按 `error.name` 判断。
+2. **异常 getter 可致诊断崩溃** —— 读 `error.code`/`errCode` 未防护，已包 try。
+
+另修测试夹具一处**假阳性**：`throwOn:'type'` 原落到 users 集合，「真实 worker TypeError」用例实际没覆盖抛错路径却通过。已修正并补断言防复发。
+
+### 实测
+
+本轮 **128/128**（原 120 + 8）；既有回归 **53/53**；新复现 **8/8**、exit 0、幂等。真实取凭据 0 次、真实云调用 0 次、未读认证内容。入口默认 `LOCAL_READY`/exit 0。
+
+### 接续时务必知道
+
+1. **交付的是「诊断实现已离线验证」，不是「根因已查明」。** 要确定真实 READ_FAILED 原因，需 Codex 复核通过后另存一次真实只读诊断观测。
+2. worker 的两条读取**相互独立** —— primary 失败后仍会读 users（既有设计，不在本次范围）。别把「primary 失败」当成「users 不再读」。
+3. `hasPlatformError:false` 是缺省投影，**不代表平台没有错误**；`UNCONFIRMED` 不能改成 `NOT_FOUND`。
+4. 诊断不得被读成因果结论：`localErrorClass=LOCAL_TYPE_ERROR` 只说明本地代码问题，不说明平台拒绝。
+5. 平台侧错误码与 requestId 形状**未验证**，命中即 `OTHER`；白名单不得凭猜测扩充。
+
+### 仍未结论化
+
+1. **`real-read-failed-root-cause-unknown`（BLOCKING）** —— 真实 READ_FAILED 根因未查明。
+2. `platform-error-code-space-unverified`（MEDIUM）、`production-same-batch-chain-not-proven`（MEDIUM，`proven` 恒 false）。
+集合是否存在、权限状态、目标 userId 来源、费用/余量仍未结论化。凭据输出不得用于认定服务就绪。
+
+### 边界
+
+未联网、未取真实凭据、未读认证存储内容、未安装、未初始化、未建资源、未部署、未启用入口。已关闭项均未重做。
+
+---
+
+## 当前接续：真实身份环境已通过，补最小读取错误诊断（Codex，2026-10-08）
+
+- 读[真实只读报告](Codex核验-真实只读首次执行-20261008.md)：一次真实获取与三条CLI关联通过；SDK primary为UNCONFIRMED/READ_FAILED，users因缺受信目标未读。未重新执行，未改权限或建集合。
+- 报告第5节有可复制的WorkBuddy本地任务：仅给两处读取catch及父层投影增加精确白名单净化诊断与相称测试。未知保持未知，不输出原始错误，不据历史推断缺集合。关闭项、P4和业务实现不重开。
+- 新真实证据及启动标记不得改写或重跑对齐。WorkBuddy不联网、不取真实凭据、不初始化/建资源/部署/启用；交付后Codex复核再安排一次受审诊断。用户无需扫码或重复授权。
+
+## 最新接续：刷新离线缺口关闭，Codex安排一次真实只读（2026-10-08）
+
+- [补查报告](Codex核验-临时凭据刷新离线与真实只读安排-20261008.md)：固定公共CLI四个合成刷新场景4/4通过；原夹具缺refreshToken，生产实现不需返修。新证据另存，历史保留。
+- 本轮未联网、未获取真实凭据；缓存写回只发生在合成目录。官方CLI获取阶段可能更新真实登录缓存这一事实已纳入后续安排，不得写成“命令失败必定无缓存变化”。
+- WorkBuddy继续待命，不重开已关闭项。Codex下一次用现有受审模块做一次真实只读观测；公开入口不改、proven不改true、报告按部分事实保留。无受信目标则跳过users，不扩大到旧集合，不初始化/建资源/部署/启用。用户无需重复授权或手机操作。
+
+## 当前接续：凭据接线S1/S2已验收关闭，WorkBuddy待命（Codex，2026-10-08）
+
+- 读[验收报告与状态消息](Codex验收-凭据接线S1-S2收尾-20261008.md)。相关测试173/173、安全复现12/12通过；R1/R4及其它关闭项不重做。本轮不用继续返修或重复运行未变化测试。
+- 宿主错误码不统一改名；旧内部复现契约变化不改历史文件，Codex已用新安全入口核对。真实凭据获取仍关闭，不能将proven改true来“完成”生产核验。
+- 下一步由Codex处理刷新分支离线契约与受审真实只读接续。没有明确新任务前不改代码、不取真实凭据、不联网/初始化/建资源/部署/启用，不覆盖历史证据。用户无需手机操作。
+
+## 当前接续：凭据接线 S1/S2 定点收尾已完成，待 Codex 复查（2026-10-08）
+
+### 一句话状态
+
+S1/S2 完成 → 本地离线自测通过（120/120 + 既有 53/53 + 复现 12/12）；**真实凭据从未获取**，生产同批链仍未证实，路径保持关闭。
+
+### 改动文件（3 个）
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `miniapp/scripts/lib/cloudbase-cli-credential-host.cjs` | `bccea293069e22ed…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs` | `d283cc0110ad8e93…` |
+| `miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs` | `a510660d74268694…` |
+
+未改项实测匹配：worker `40a644a1…`（本轮未改）、入口 `1a0ea9d6…`、既有 CLI 观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。历史证据七份未变，含 Codex 三份。
+
+### 两项修了什么
+
+**S1 — 发现边界与 CLI 一致**
+* 停止点必须是**将传给 CLI 的 profile**，缺失即按「范围不确定」启动前停止，**刻意不回退父进程 Home**。
+* 起点改用 `canonicalizePath()`（优先 `realpathSync`），与固定 bundle 一致 → junction 目标祖先的标记会被看穿。
+* **获取 cwd 改建在 profile 之内**——否则「不越过 Home」在祖先链上没有意义（等价于无边界）。cwd 非profile 祖先即拒绝。
+
+**S2 — 进程失败保留事实 +枚举净化**
+* 新增 `failWithFacts()`：凡已调用 `spawnBounded` 一律记为已尝试并附退出事实；7 个进程失败分支统一走它（此前只有解析 catch 带事实）。
+* 错误码白名单**直接取自 `host.ERR`**，不再手抄近似名。
+* `FETCH_MODES` 固定枚举 + `normalizeFetchMode()`，未知值归 `UNKNOWN` 不保留原字符串。
+
+### 文案更正（第 4 节）
+
+* `normalizeCredentialSnapshot` 真实规则：**优先 `sessionToken`，否则取 CLI 字段名 `token`** —— 这是公共 `secrets get --json` 的实际形状。此前「没有别名兜底」的表述不实，已删。
+* R1 敏感性是对照而非改实现后重跑完整链，已在证据 `statedLimitations` 标注。
+* `Initialized=false` 仍输出凭据归入 `platformSemanticsNote`，不再列为实现阻断。
+
+### 实测
+
+本轮 **120/120**（原 110 + 10）；既有回归 **53/53**；新复现 **12/12**、exit 0、幂等。真实取凭据 0 次、真实云调用 0 次、未读认证内容。入口：默认 `LOCAL_READY`/exit 0；`--read-only` exit 1；坏参数 exit 1。
+
+### 接续时务必知道
+
+1. **`proven` 恒false，汇总无生产升级分支** —— 关闭状态。改成true **得不到**生产证明，也不能表述为「仅再运行一次现有 CLI 就完整通过」。无需用户重复授权。
+2. 宿主错误码命名不统一（`SPAWN_FAILED` 无前缀、`CREDENTIAL_COMMAND_*` 有前缀）是**既有事实**，未改名；白名单已按实际导出对齐。
+3. `publicEntryIdentityProven:true` 只表有限度离线证据，须连 `publicEntryEvidence.notCovered` 一起读。
+4. 命名易混：`cloudbase-cli-credential-host.cjs`（本轮宿主）、`cloudbase-sdk-readonly-observer.cjs`（SDK 编排库）、`cloudbase-readonly-observer.cjs`（既有 CLI 观测器）。
+5. 写未改项哈希**不能凭记忆编**，须先 `sha256sum` 取真实值。
+6. Git Bash 的 `/tmp` 与 Node 的 `C:\tmp` 不是同一路径 —— 校验 JSON 须写进项目内再读。
+
+### 阻断缺口
+
+1. **`production-same-batch-credential-chain-not-proven`（BLOCKING）** —— 未执行 `secrets get --json`。
+2. `refresh-branch-output-contract-undecided`（MEDIUM）、`refresh-writes-back-official-login-cache`（LOW）。
+
+未结论化：平台原子性、IAM、真实库内容、真实网络、费用/余量、受信目标来源。
+
+### 边界
+
+未联网、未取真实凭据、未读认证存储内容、未安装、未初始化、未建资源、未部署、未启用入口。已关闭项均未重做。
+
+---
+
+## 当前任务：凭据接线仅余S1/S2（Codex，2026-10-08）
+
+- 按[返修复核](Codex复核-凭据接线R1-R4返修-20261008.md)第2、3节收尾，第6节可直接复制。R1实际token接线与R4安全复现入口已通过关闭，163/163相关测试与新证据10/10，不重做这些部分。
+- S1仅对齐实际子进程Home和realpath发现范围；S2统一进程失败事实、对齐错误码、枚举净化fetchMode。第4节文案随改，不重写旧CLI收尾/worker/P4，不扩展架构。
+- 只做本地与合成核验，保持真实获取关闭，不联网/初始化/建资源/部署/启用。新证据另存，原始证据不覆盖。用户无需手机操作，也无需重复只读授权。
+
+## 当前接续：H1–H3 R1–R4 定点返修已完成，待 Codex 复查（2026-10-08）
+
+### 一句话状态
+
+R1–R4 全部完成 → 本地离线自测通过（110/110 + 既有 53/53 + 复现 10/10）；**真实凭据从未获取**，生产同批链仍未证实，路径保持关闭。
+
+### 改动文件（4 个）
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `miniapp/scripts/lib/cloudbase-cli-credential-host.cjs` | `b842daac48dea418…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs` | `a65a34fed72f4d9b…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs`（仅注释） | `40a644a1b7bb3fbf…` |
+| `miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs` | `c6e7474894f55bc4…` |
+
+未改项实测匹配：入口 `1a0ea9d6…`、既有 CLI 观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。历史证据全部未变。
+
+### 四项修了什么
+
+* **R1 token 归一**：宿主返回 `token`，消费者读 `sessionToken` → 三处全 `undefined`。现���**单一交界处** `normalizeCredentialSnapshot()` 归一，不改 worker、不让消费者兼容第二套结构。字段缺失一律拒绝，不补齐。
+* **R2 cwd 隔离**：cwd 曾回退登录 profile。现**全新**随机目录 + 按固定源码规则（`cloudbaserc.json`/`.js`/`.cloudbaserc`/`.git`，逐级向上、不越过 Home）核对**整个发现范围**，命中即在启动前停止；只判断存在性，不读不删。
+* **R3 事实与净化**：`fetchSubprocessAttempted` 由写死 `true` 改为**实际启动点**回报 + `fetchMode`（NONE/SIMULATED/REAL_CANDIDATE）；`error.detail` 改为**逐字段重建**；错误码白名单化；解析失败保留已发生的退出事实。文案更正四处（含 worker「不进环境」的范围说明）。
+* **R4 安全复现入口**：旧脚本/JSON 保留为历史未改写；新建**全程拦截**入口，兜底拒绝意外真实 CLI/worker 启动，计数为实际观察值。
+
+### 实测
+
+本轮 **110/110**（原 97 + 13）；既有回归 **53/53**；新复现 **10/10**、exit0、幂等。`blockedUnexpectedProcesses=2` 证明兜底真的抓住了默认启动。真实取凭据 0 次、真实云调用 0 次、未读认证内容。入口：默认 `LOCAL_READY`/15 项ok/exit 0；`--read-only` exit 1；坏参数 exit 1。
+
+### 接续时务必知道
+
+1. **`proven` 恒为 false，汇总无升级分支** —— 这是关闭状态。把常量改成 true **得不到**生产证明；真实接续前须明确实际观察事实如何形成。
+2. `publicEntryIdentityProven:true` 只表**有限度离线证据**，须连 `publicEntryEvidence.notCovered`（4 项）一起读，不可读成「全部前置通过」。
+3. `Initialized=false` 仍输出凭据是**固定版本 CLI 行为**（Codex 已裁决接受），不是失败、不新增 InitTcb；凭据可获取 ≠ 服务已就绪。
+4. 命名易混：`cloudbase-cli-credential-host.cjs` 是本轮**新增**宿主；`cloudbase-sdk-readonly-observer.cjs` 是 SDK 编排库；`cloudbase-readonly-observer.cjs`（无前缀）是既有 CLI 观测器。
+5. 复现脚本里写未改项哈希**不能凭记忆编**，须先 `sha256sum` 取真实值（曾因此误报 FAIL）。
+
+### 阻断缺口
+
+1. **`production-same-batch-credential-chain-not-proven`（BLOCKING）** —— 未执行 `secrets get --json`。需受审宿主内按既有只读授权执行一次整组。
+2. `refresh-branch-output-contract-undecided`（MEDIUM）、`service-not-initialized-does-not-block-output`（MEDIUM）、`refresh-writes-back-official-login-cache`（LOW）。
+
+未结论化：平台原子性、IAM、真实库内容、真实网络、费用/余量、受信目标来源。
+
+### 边界
+
+未联网、未取真实凭据、未读认证存储内容、未安装、未初始化、未建资源、未部署、未启用入口。已关闭项均未重做。
+
+---
+
+## 当前任务：H1–H3复核R1–R4定点返修（Codex，2026-10-08）
+
+- 按[复核报告](Codex复核-真实临时凭据获取H1-H3-20261008.md)第2–5节执行，第8节有可复制提示词。150/150测试通过不覆盖已复现的新宿主接线缺口。
+- R1实际宿主token→sessionToken归一并完整链测试；R2获取cwd独立且检查配置发现范围；R3真实尝试/退出事实与诊断投影；R4旧证据保留，另建有进程兜底的新离线入口，禁止直接重跑旧脚本H3-4。
+- 第6节裁决H1：服务未初始化仍输出凭据不强改官方行为，也不推断已就绪；禁止InitTcb。刷新输出分支仍只在合成条件补证，不以真实凭据排查。不把离线前置全部通过写成既成事实。
+- worker、旧CLI观测器、P4及旧关闭项不重做，历史证据不覆盖。只做本地修改与相称测试；不取真实凭据、不联网、不初始化/建资源/部署/启用。完成交新证据给Codex复查，无需用户手机操作。
+
+## 当前接续：H1/H2/H3 真实临时凭据获取最小接线已完成，待Codex 审查（2026-10-08）
+
+### 一句话状态
+
+代码完成 →本地离线自测通过（97/97 + 既有 53/53 + 复现 14/14）；**真实凭据从未获取**，生产同批链未证实。
+
+### 改动清单（3 个文件；另2 个本轮未改）
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `miniapp/scripts/lib/cloudbase-cli-credential-host.cjs`（**新增**） | `1a2227206ed1bf8e…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs` | `a8ac06e338d47c57…` |
+| `miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs` | `a4494df4bf1ad7a7…` |
+| `miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs`（未改） | `c1abecbb5839d57e…` |
+| `miniapp/scripts/check-cloudbase-sdk-readonly.cjs`（未改） | `1a0ea9d6eced919d…` |
+
+未改项实测匹配：既有 CLI 观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。
+
+### H1：离线核验公共 secrets 命令（Codex 侧已执行，本轮只读引用）
+
+证据 `CodexSecretsGet离线契约审查-20261008.{cjs,json}`（`78439101…` / `9e9a5050…`）。正向场景以合成 Web 登录态经**真实公共入口**产出快照。
+
+**6 项附加行为**（接手时务必知道，一次命令 ≠ 内部仅一次请求）：
+1. 凭据输出前先发**两次** `CheckTcbService`。
+2. 模块加载时 `cmd.exe` + `wmic os get locale`（i18n 用，不碰凭据）。
+3. **两份**配置目录推导，其中一份**忽略 `XDG_CONFIG_HOME`** → 必须同时改 `USERPROFILE`/`HOME`。
+4. cwd 向上找 `package.json` 做项目级配置发现 → cwd 必须落在受控目录内。
+5. refresh 成功会**写回官方登录缓存**。
+6. 缺到期时间时 `expiredAt` 是字符串 `'未知'`，不是省略字段。
+
+### H2：固定凭据获取宿主
+
+固定命令 `secrets get --json`（不传 `--env`）、固定指纹取前核对、`isTemporary` 严格 `true`、到期需过5 分钟门槛、`token → sessionToken` 唯一映射、隔离环境大小写无关清理、沿用已验收 55 秒/1 MiB/2 秒宽限。
+
+### H3：同批传递与分层
+
+一次获取、同一份快照供 CLI 与 SDK、不刷新不混用；凭据只经私有 stdin 管道；未授权即如实停止；**能力与证据分层**：`credentialFetchHostImplemented=true` / `publicEntryIdentityProven=true` / `productionSameBatchObserved=false`。
+
+### 实测
+
+本轮 **97/97**（原 89 + 新增 8）；既有回归 **53/53**；新复现 **14/14**、exit 0、可重跑幂等，真实网络 0 次、真实取凭据 0 次、未读认证内容、未写文件、未覆盖历史证据。入口：默认 `LOCAL_READY`/15 项ok/exit 0；`--read-only` exit 1；坏参数 exit 1。
+
+### 阻断缺口（接续时不要误当已完成）
+
+1. **`production-same-batch-credential-chain-not-proven`（BLOCKING）** —— 未执行 `secrets get --json`、未取真实凭据。H2 是**候选实现**、H1 是**离线契约证明**，都≠ 生产证据。需受审宿主内按既有只读授权执行一次整组。
+2. `refresh-branch-output-contract-undecided`（MEDIUM）、`service-not-initialized-does-not-block-output`（MEDIUM）、`refresh-writes-back-official-login-cache`（LOW）。
+
+未结论化：平台原子性、IAM、真实库内容、真实网络、费用/余量、受信目标来源。
+
+### 边界
+
+未联网、未取真实凭据、未读认证存储内容、未安装、未初始化、未建资源、未部署、未启用入口。已关闭项（C1/T1/S1/S2/R1–R4/R1–R5/S1–S3/T1/T2/SDK适配R1–R5/P4）均未重做。
+
+---
+
+## 当前任务：真实临时凭据获取最小接线（Codex，2026-10-08）
+
+- 执行[最小接线任务](WorkBuddy任务-真实临时凭据获取最小接线-20261008.md)：H1原始公共secrets命令离线契约，H2固定获取宿主，H3同批接线与报告。替代下方“待明确任务”的状态；关闭项不重做。
+- 本轮只允许本地实现、合成profile与受控传输测试；不得访问现有登录目录认证内容、执行真实secrets/--read-only、联网、安装、初始化、建资源、部署或启用。真实验证由Codex审查后接续。
+- 两个目录不能混用：获取阶段未来使用官方既有登录profile；身份关联阶段使用全新空profile注入单份快照。官方获取可能刷新登录缓存，取得后则不得刷新/混批。关闭遥测，先界定CheckTcbService和外部子进程；未知必要行为保留停止点，不自动放通。
+- getter返回只记FETCHED；合成链不产生生产proven，所有写许可仍false。交付实际改动、相关测试、新证据与限制；不覆盖历史，不重写已验收的进程生命周期/worker/P4。用户无需手机操作。
+
+## 当前接续：公共CLI离线身份选择已核验，生产接线仍未实施（2026-10-08）
+
+- 读[Codex核验报告](Codex核验-公共CLI离线身份选择-20261008.md)。原始公共入口+全新目录+合成凭据A/B，实际签名身份随注入切换；无凭据停止。所有传输均本地替身，未读现有认证内容、未联网。
+- 注意公共API命令附加CheckTcbService，默认遥测可由TCB_DISABLE_REPORT=1关闭；不能写“三命令=三底层请求”。外部子进程有一次被拦，用途未核实。
+- T1/T2不重开；暂不改实现。下一步Codex整理真实取凭据宿主的窄接线任务；生产同批链/真实库/IAM/费用仍未验证，不初始化/建资源/部署/启用。
+
+## 当前接续：T1/T2验收通过，WorkBuddy待命（Codex，2026-10-08）
+
+- [验收报告及复制消息](Codex验收-SDK只读身份T1-T2收尾-20261008.md)：142/142相关测试、11/11证据复跑通过，两处布尔判断与三种时序场景关闭。无需继续返修或重跑未变化代码。
+- observer d8ac04c9…、测试d2167520…；worker和入口及五项既有文件未改，四份历史证据哈希一致。Codex重跑结果另存，不覆盖历史。
+- 下一步由Codex处理公共CLI离线身份选择证明；真实取凭据宿主仍关闭。WorkBuddy不自行扩接线、不初始化/建资源/部署/启用，待明确新范围。用户无需手机操作。
+
+## 当前接续：SDK只读 T1/T2 收尾完成，待 Codex 复查（2026-10-08）
+
+- 依据[复核报告](Codex复核-SDK只读身份S1-S3收尾-20261008.md)第 2、3 节与第 5 节最小任务完成 T1/T2。**S1 完整正向链、S2 输出净化、S3 时效实现已通过，未重做**；worker 与入口本轮**无需修改、未修改**。
+- **哈希**：observer `d8ac04c9…`（仅两处布尔判断 + 导出 `PRIMARY_KEY_EXPECTATION`）、测试 `d2167520…`；worker `c1abecbb…`、入口 `1a0ea9d6…` **未改**。未改项实测匹配：既有 CLI 观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。历史证据四份哈希未变、未覆盖。
+  - 注意：`cloudbase-sdk-readonly-observer.cjs`（带 `sdk-` 前缀）是本轮 SDK 编排库、属「四个代码文件」之一，**不是**未改项；未改的是无前缀的 `cloudbase-readonly-observer.cjs`。
+- **T1**：observer `sanitizeWorkerRecord` 两处 `rec.X !== false` → `rec.X === true`（1029/1038 行）。此前把「不是 false」误当「明确通过」，缺失/null/0/空串这些损坏协议值会被放行。用 Codex 定点脚本复跑，其 `invalidFlagAccepted === 12` 断言现得 **0**；3 个 `true` 样例照常通过。**users 契约不变**：`userIdPattern=null` 仍为「不适用」，未新增 users.userId 要求，也未要求 worker 输出它本就不提供的 `docIdMatches`（该标记由净化层自算）。交付说明/注释/实现口径现已一致。
+- **T2**：旧 S3-5/S3-6 的问题成立（子进程全部 exit 1、流程停在 CLI 阶段却当成覆盖；用 `now()` 调用次数猜阶段；S3-6 无明确 worker 响应分支）。已重写为 `T2-1/T2-2/T2-3`，用 `runWithWorkerEventBarrier()`：**时钟只在 worker `close` 事件推进**，每例断言 `workerReturned===true` 且四阶段 `['sts.GetCallerIdentity','tcb.DescribeEnvs','tcb.DescribeEnvInfo','worker']` 都发生过；worker 有明确成功/失败分支。T2-1 成功+过期→两记录仍 OBSERVED、整体不升级、说明含「worker 返回后」；T2-2 **未过期对照**（新增）→不得出现任何过期说明；T2-3 失败+过期→原始 `SDK_UNAVAILABLE` 与 `stoppedAt` 原样保留、另有过期说明、`refreshed===false`。已删除「CLI 提前失败也算通过」的兜底断言与未使用的 `snap`。
+- **测试**：本轮 84 → **89 项，89/89 通过**；既有回归 **53/53 通过**（未改一字节）。新增 T1 组 4 项（12 例非 true 输入走完整解释链、正常记录正向不回归、净化层标记严格性直接核对、真值非布尔 `1/"true"/{}/[]/"yes"` 亦拒）。
+- **新证据**：`docs/证据/WorkBuddyM1M2M3-T1T2收尾复现-20261008.cjs`（`e0f2a4d7…`）/ `.json`（`875e2a31…`），**11/11 全 PASS**、exit 0；`realNetworkCalls=0`、`workerMainExecutions=0`、`wroteFiles=false`、`historicalEvidenceOverwritten=false`。脚本 stdout-only，历史文件未覆盖。
+- **保留限制（已按Codex 第 4 节标注）**：本轮结论全部来自合成凭据/合成 CLI 响应/合成 EventEmitter 子进程，未执行真实 worker main；T1 样本是**损坏的 worker 输出协议**，不声称真实云记录曾被误认、不声称取得写权限；T2 三场景未用真实 worker 子进程模拟该时间窗口。「190 个 requestId 样本」是 WorkBuddy 统计说明，不提升为平台官方保证。平台原子性、IAM、真实库内容、真实网络、费用、生产同批链均未验证。
+- **两项阻断缺口未变**：① 公共 CLI 身份来源离线未证实（真实获取宿主保持关闭）；② 同批凭据链生产未证实。另 2 项非阻断缺口见新证据 `blockingGaps`。
+- **状态**：**代码完成 → 本地离线自测通过（89/89 + 11/11 + 既有 53/53）**；Codex 复查未做。本轮未联网/未取真实凭据/未读认证存储/未安装/未初始化/未建资源/未部署/未启用入口。下一步由 Codex 接续公共 CLI 离线身份选择证明。
+
+## 当前接续：SDK只读S1–S3仅余T1/T2（Codex，2026-10-08）
+
+- 按[最新复核报告](Codex复核-SDK只读身份S1-S3收尾-20261008.md)第2、3、5节执行。137/137相关测试与14/14证据重跑通过；不据此掩盖剩余两行!==false及两条未到目标阶段的测试。
+- S1完整正向、S2、S3时效实现已通过，不重写。T1仅收紧两个布尔判断并补反例；T2重写S3-5/S3-6事件屏障与阶段断言。worker与入口无须修改。
+- Codex新增 `docs/证据/CodexSDK-S1S3定点核验-20261008.cjs/.json` 已补证成功/失败返回后时效路径；不改历史证据。未取真实凭据、未联网，仍不初始化/建资源/部署/启用。
+
+## 当前接续：M1/M2/M3 S1–S3 收尾完成，待 Codex 复查（2026-10-08）
+
+- 依据[复核报告](Codex复核-SDK只读身份R1-R5返修-20261008.md)第 2–4 节与第 6 节最小任务完成 S1–S3。仅改本轮 worker、observer、相称测试与记录；**入口无必要未改**。R1 接线、R2 进程收尾、R4 隔离、R5 包装及既有关闭项**未重做**。
+- **哈希**：worker `c1abecbb…`、observer `8e936a64…`、入口 `1a0ea9d6…`（未改）、测试 `09518e56…`。未改项实测匹配：既有观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。历史证据哈希未变、未覆盖。
+- **S1**：worker `targetUser` 字段由 `userStatus` 统一为 `status`（与 primary 一致）；`interpretWorkerOutput` 对 targetUser 改用 `makeUsersExpectation()`（`userIdPattern=null`，必需项为主键+状态），不再传 `null` 导致合法记录被降级；`interpretWorkerOutput` 现接收 `targetUserId`。**关键**：净化改为**幂等**（`isSanitizedRecord()`）—— 上一版把已净化记录再净化一次，第二次走早退分支致失败原因全丢。实测真实 worker main 输出经父进程两层后 primary/users **各自 OBSERVED**、`userStatus=active`、`fieldCompleteness=COMPLETE`；整体 `proven=false`/`SYNTHETIC_INJECTION`/`≠OBSERVED`。缺字段/disabled/派生不符/错记录键反例保留且逐项写明原因。
+- **S2**：`errorCode` 走 `WORKER_ERROR_CODE_ALLOWLIST`(11 项) + `mapWorkerErrorCode`，未知值映射为固定 `WORKER_FAILED`，顶层与记录内两处都收紧；非 OBSERVED 的 `docId` 只能是请求目标否则 `null`；`requestId` 用 `REQUEST_ID_UUID_V4` + `safeRequestId()` 白名单（依据真实证据 190 个 UUID v4 样本，版本位恒 4），worker 与 observer 共用，未通过者省略。未新增通用脱敏框架。
+- **S3**：worker 输入端要求**有限可用**截止时间 —— 缺失/`Infinity`/`NaN`/非数字一律**零读取**（上一版 null → return true，在无时效约束下读了两条）；父进程在 `runWorker` 返回后用自身时钟复核一次，**抛错路径与 worker 失败/写次数非0 路径同样复核**，保留原始失败原因与退出事实，过期不重写失败、不重新获取凭据；汇总区分「worker 运行期间」与「worker 返回后复核」两个来源，均不升级为完整核验。顺带修掉抛错分支跳过复核的真实缺陷。
+- **测试**：本轮 71 → **84 项，84/84 通过**；既有 CLI 观测器回归 **53/53 通过**（未改一字节）。新增 13 项，其中 `runRealWorkerMain` 执行**真实 worker main()**（真实形状校验/init/database/文档序列化/emit），仅替换 SDK 请求传输 —— 覆盖 Codex 要求的完整正向链，不用手写对象代替。
+- **新证据**：`docs/证据/WorkBuddyM1M2M3-S1至S3收尾复现-20261008.cjs`（`56ed77cd…`）/ `.json`（`8eb9b3b7…`），**14/14 全 PASS**、exit 0，`realNetworkCalls=0`、`wroteFiles=false`、`historicalEvidenceOverwritten=false`。脚本 stdout-only，历史文件未覆盖。
+- **交付分层已明确**：合成验证 / 真实 SDK 本地转换（仅传输层替换）/ 平台未验证（原子性、IAM、真实库内容、真实网络、费用、生产同批链）。合成完整记录判定**不等于**生产同批链已证明。
+- **两项阻断缺口未变**：① 公共 CLI 身份来源离线未证实（R1 前置条件，真实获取宿主保持关闭）；② 同批凭据链生产未证实。另 3 项非阻断缺口见新证据 `blockingGaps`。
+- **状态**：**代码完成 → 本地离线自测通过（84/84 + 14/14 + 既有 53/53）**；Codex 复查未做。本轮未联网/未取真实凭据/未读认证存储/未安装/未初始化/未建资源/未部署/未启用入口。
+
+## 当前接续：SDK 只读身份仅收尾 S1–S3（Codex，2026-10-08）
+
+- 按[新复核报告](Codex复核-SDK只读身份R1-R5返修-20261008.md)第2–4节和第6节可复制任务执行。R1接线、R2进程收尾、R4隔离、R5包装已通过，不重新扩写。
+- Codex实跑124/124；真实worker输出经父进程完整解释仍把正常users判UNCONFIRMED，另有元数据自由文本出口、worker缺期限仍读取及父进程收尾时效缺口。仅修本轮worker/observer/相称测试记录。
+- 新独立证据为 `docs/证据/CodexSDK只读R1R5返修复核-20261008.cjs/.json`，SDK传输合成、零网络；不得当作平台核验。
+- 公共CLI离线来源证明与真实取凭据宿主仍未完成。不取真实凭据、不初始化、不建资源、不部署、不启用，不改P4及旧关闭项。历史证据原样保留；旧JSON差异原因注明WorkBuddy解释而非Codex已证明。
+
+## 当前接续：M1/M2/M3 R1–R5 返修完成，待 Codex 复查（2026-10-08）
+
+- 依据[复核报告](Codex复核-SDK只读身份M1-M3本地实现-20261007.md)第 2–6 节集中完成 R1–R5，第 8 节说明交付 JSON 哈希差异。仅改本轮四个文件及交付记录；**C1/T1/S1/S2/R1–R4/SDK适配R1–R5/P4 未重做**，既有 CLI 观测器与入口未改。
+- **哈希**：worker `c459fbcf…`、observer `8d1258dd…`、入口 `1a0ea9d6…`（未改）、测试 `caf133df…`。未改项实测匹配：既有观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。
+- **R1**：CLI 改用 `固定nodeBin + [固定cliEntry, ...apiArgs]`（上一版把无扩展名 JS 脚本当可执行文件）；任一步失败**立即停止**，后两步标 `notExecuted`；worker 改用真实公开入口 **`sdk.init(config)`**（导出是对象，`new` 会抛 TypeError）；**region 真正传入** SDK；本地准备新增核对 `@cloudbase/database` 1.4.1 / `node-sdk` 2.10.0 与真实入口，由 7 项扩到 **15 项全ok**；默认停止码改为 **`PUBLIC_ENTRY_IDENTITY_UNPROVEN`**、`credentialFetchHostImplemented=false` —— 如实说明**获取宿主未实现**，而非「完整实现后的平台验证缺口」。
+- **R2**：`runWorker` 改为**复用已验收的 `cliObserver.spawnBounded`**，不再自造计时器（上一版只 kill 不resolve 可永久挂起）；上限对 **stdout+stderr 合并**生效、先计数再截断、只终止一次；`interpretWorkerOutput` **逐字段重建**，超时/溢出/close未观察/非零/信号/退出未确认/终止未确认各自归类，**stdout 自报 `ok:true` 无法覆盖退出事实**；stdin 写失败即失败；晚到 error 幂等吸收。生产 55 秒/1 MiB/宽限 2 秒不变。
+- **R3**：`userIdShapeValid`/`statusValid`/`docIdMatches` 必须**严格 true**，缺失/null 一律降级并逐项写明原因；净化层**尊重 worker 的否定结论**；按记录类型区分必需字段（users 记录**没有** userId 字段）；**错误响应优先于 data 形状**（带 code 的 `{data:[]}` 不是 NOT_FOUND）；`userId`/`status`/`reason`/`requestId` 各按自身契约净化，敏感标记零泄露；worker 失败或写次数非 0 **先**反映到顶层，`incomplete` 非空；**依赖注入 `proven:false` + `evidenceKind=SYNTHETIC_INJECTION`**，不再伪造生产 proven；NOT_FOUND 单列但不称有效管理员。
+- **R4**：隔离环境按**大小写无关**清理全前缀（`XDG_*`/`CLOUD_*` 等）、Node 注入与**六类代理变量**，先删光别名再写规范大写形式；`authStatePaths` 扩到 ≥4 个取值链落点，仍只查位置不读内容、污染不删文件；有效期在**每次 CLI 请求前后、worker 调用前、每条 get 前后、结束后**均核对，worker 载荷含 `expiresAtMs`，**失败路径也做后检查**；运行期过期不升级为完整核验。
+- **R5**：改用 `makeReadOnlyHandle` **只读窄包装**，把真实引用封在闭包只交 `doc().field().get()` —— 写方法**根本不存在**（不可达），不构造通用代理框架；真实 SDK 已确认 `field()` 返回新引用且其上带写方法，正是上一版漏封的入口。
+- **测试**：本轮 39 → **71 项，71/71 通过**；既有 CLI 观测器回归 **53/53通过**（未改一字节）。新增 R1/R2/R3/R4/R5 五组，含真实 SDK 初始化探针与 EventEmitter 全生命周期。另修 6 处返修暴露的真实缺陷与若干测试自身问题（含 mock `field()` 返回 `this` 掩盖缺陷、`spawnSync` 本机返回空改用异步 spawn）。
+- **新证据**：`docs/证据/WorkBuddyM1M2M3-R1至R5返修复现-20261008.cjs`（`06be4303…`）/ `.json`（`46c4a3b7…`），**28/28 全PASS**，`realNetworkCalls=0`、`wroteFiles=false`、`historicalEvidenceOverwritten=false`。
+- **第 8 节哈希差异已查明**：声明 `ea3caa2e…`、Codex 只读实测与当前文件均 `f5e4b2dd…`，**当前文件未被改动**。原因是该 JSON 含 `observedAt` 时间戳，上一轮收尾时我**重跑了一次**脚本；脚本哈希 `1da8655f…` 与声明一致，证明脚本未变、仅执行时刻不同。已按要求**保留**原 JSON 与原声明，未重跑覆盖对齐。
+- **两项阻断缺口**：① 公共 CLI 身份来源**离线未证实**（本轮未执行真实 CLI），故真实获取宿主保持关闭 —— 这是 R1 的前置条件，需受审宿主内以隔离目录 + 合成凭据执行一次公共 `api` 命令；② 同批凭据链**生产未证实**（未执行 `secrets get --json`）。另 4 项非阻断缺口见新证据 `blockingGaps`。
+- **状态**：**代码完成 → 本地离线自测通过（71/71 + 28/28）**；生产身份接入路径未证实；Codex 复查未做。本轮未联网/未取真实凭据/未读认证存储/未安装/未初始化/未建资源/未部署/未启用入口。
+
+## 当前接续：SDK只读M1/M2/M3返修R1–R5（2026-10-07）
+
+- 2026-10-08补记：请随返修说明原交付JSON哈希f5e4b2dd…与声明ea3caa2e…不一致的原因，见报告第8节；不重跑覆盖原JSON来对齐，不新增业务范围。四代码文件仍未变化。
+
+- 按[Codex复核报告](Codex复核-SDK只读身份M1-M3本地实现-20261007.md)第2–6节集中返修。92/92测试通过不等于接入完成；11个离线样本及完整编排反例均已另存，原证据不覆盖。
+- 修实际Node/CLI/SDK接线与获取宿主完成度、worker有界收尾、记录/顶层失败判定与脱敏、隔离/时效/阶段停止、field返回链及实际SDK测试。仅本轮四文件和相称测试记录，旧CLI观测器及C1/T1/P4等关闭项不动。
+- 公共CLI选择注入凭据的离线证明仍是硬停止点，不用真实凭据补试，不伪造proven。无法完成时直接报缺口。未安装/联网/取凭据/初始化/建资源/部署/启用，用户无需手机操作。
+
+## 当前接续：M1/M2/M3 本地实现完成，待 Codex 审查（2026-10-07）
+
+- 依据[最小任务](WorkBuddy任务-SDK只读身份接入与管理员核对-20261007.md)完成 M1/M2/M3，**仅新增四个文件**及本段记录。C1/T1/S1/S2/R1–R4/SDK适配R1–R5/P4 及其它关闭项**未重做**，既有 CLI 观测器与入口**未改**。
+- **新增文件与哈希**：worker `624f32c8…`、observer `f40cbcd3…`、入口 `1a0ea9d6…`、测试 `c8d74aae…`。未改项实测匹配：既有观测器 `3b05a305…`、既有 CLI 入口 `552dc122…`、P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、适配层 `9088e647…`。
+- **M1**：一次获取、同一份内存快照供 CLI 与 SDK，不刷新不混用；不直接读 `auth.json`、不扫登录缓存；严格 `isTemporary===true` + 未来 `expiredAt`，门槛 5 分钟（**本轮起点要求，非平台时长承诺**）；凭据只经**私有 stdin 管道**一次送入随即关闭，不进命令行/环境/磁盘，不输出原值、摘要或尾号。**优先级经源码核对**：项目级 API Key > `authStore`(`<config>/.cloudbase/auth.json`) > `TENCENTCLOUD_*`（**最低**），故必须隔离目录；`xdg-basedir` 使 `config` 随 `USERPROFILE` 迁移，隔离成立。bundle SHA-256 `8d987e48…` 与任务文档一致。
+- **映射**：CLI 输出字段是 `token`，node-sdk 参数名是 **`sessionToken`**（`lib/cloudbase.js:135-139`）。worker 中 `buildSdkConfig` 是唯一映射点，未照抄 CLI 示例的 `token`/`envId`。SDK 配置键实测不含 `token`。
+- **M2**：固定副本 `schtest_v1_app_admins`（主键 `primary`）与 `schtest_v1_users`（主键 `<targetUserId>`），投影收窄。写入口（`add/set/update/remove/createCollection`/事务/云函数）以代码级陷阱封堵，只读路径触发陷阱数 **0**。禁止调用面静态检查：`requestBindingNumber`/`initializePrimary`/`runTransaction`/`createCollection` 命中 0；`startTransaction`/`callFunction` 仅在陷阱名单与注释中。**非事务 `get()` 返回 `data` 数组，事务才返回单对象** —— 本工具不用事务，事务形状出现即判 `UNCONFIRMED_SHAPE`。分类 `NOT_FOUND`/`OBSERVED`/`UNCONFIRMED_SHAPE`/`UNCONFIRMED`；**权限拒绝不当作空记录**，未核实官方错误契约不判 `NOT_EXISTS`；缺目标记 `NOT_EXECUTED_TARGET_UNCONFIRMED`。派生一致只证明记录自洽，**不证明现实微信归属**。
+- **M3**：默认=纯本地检查 `LOCAL_READY`/exit 0；`--read-only` 才进观测；**无跳过开关、无任意 env/集合/URL/凭据参数**；未知与禁止参数在任何云调用前拒绝（`ARG_FORBIDDEN`/`ARG_UNKNOWN`/`TARGET_USER_ID_INVALID`），拒绝输出不外传 message/stack/cause，退出码 **1**（与既有入口统一）。所有分支 `writeAuthorized=false`。
+- **测试**：新增 **39/39 通过**；既有 CLI 观测器回归 **53/53 通过**。复现 `docs/证据/WorkBuddyM1M2M3-SDK只读接入复现-20261007.cjs`（`1da8655f…`）/`.json`（`ea3caa2e…`）**11 组全 PASS**，`realNetworkCalls=0`。本轮未联网、未取真实凭据、未读认证存储、未安装/初始化/建资源/部署/启用。
+- **两项阻断缺口（需受审宿主处理，非本轮可解）**：① 同批凭据链在**生产**未证实（未执行 `secrets get --json`）；② **未执行**真实 CLI，故「公共 CLI 在干净目录确实选用注入凭据」未验证 —— **源码不能替代对真实入口的离线优先级验证**。另 4 项非阻断缺口见复现 JSON `gaps`（未真实读库、目标来源未确认、SDK 重试次数未实测、权限拒绝与集合缺失未细分）。
+- **状态**：**代码完成 → 本地离线自测通过**；生产身份接入路径未证实；Codex 复查未做。通过后真实 SDK 只读由 Codex 在既有授权下安排，用户无需手机操作。
+
+## 当前任务：SDK只读身份接入与管理员核对，本地开发（2026-10-07）
+
+- 请按[最小任务](WorkBuddy任务-SDK只读身份接入与管理员核对-20261007.md)执行M1/M2/M3。仅新增四个指定文件及顶部交付记录，离线合成核验；不获取真实临时凭据、不用现有登录态联网。
+- 核心区别：当前CLI三接口已通过，但SDK同批凭据与管理员记录尚未核实。CLI本地登录存储会优先于注入环境变量，必须先验证干净隔离目录的公共入口身份路径；不能简单沿用原登录目录或注入allowed:true。
+- 仅副本primary与指定users主键，不查旧业务，不以primary返回值自动决定拟初始化目标；缺目标保留未确认。审计本轮NOT_APPLICABLE。所有输出writeAuthorized=false，不接P4或生成approval。
+- 已关闭项不重开；真实SDK调用由Codex审查后安排；未安装/建资源/初始化/部署/启用。本次只形成文件交接，没有向WorkBuddy程序自动发消息。
+
+## 当前接续：C1关闭，CLI整组真实只读通过（2026-10-07）
+
+- [Codex验收报告](Codex验收-CLI只读接入C1与整组核验-20261007.md)：C1通过，53/53相关测试通过；本轮无剩余返修项，T1与其他关闭项不重做。
+- Codex已按既有授权完成一次整组真实只读：三阶段全部成功，账号归属/环境/地域/AppID匹配；[新脱敏证据](证据/CodexCLI真实只读-C1验收-20261007.json)另存，writeAuthorized=false。此状态取代下方历史“待复查/整组未通过”，原证据不覆盖。
+- WorkBuddy暂停待命。下一步由Codex界定数据库SDK受控只读身份接入及指定管理员记录核对范围；CLI关联匹配不等于生产verifyCaller已完成。费用/余量仍待核验；不初始化、不建资源、不部署、不启用入口，用户无需手机操作。
+
+## 当前接续：T1已关闭，仅Uin字段兼容C1（2026-10-07）
+
+- 按[Codex验收-CLI接入T1与真实只读](Codex验收-CLI接入T1与真实只读-20261007.md)第3节做C1。T1/R1–R4/S1/S2通过关闭，不重做。
+- Codex真实整组在详情Uin类型停止；一次定点观测确认number安全整数且归属摘要/AppID匹配。仅允许环境Uin的安全正整数明确转换，非法类型仍拒，不放宽STS身份、不改计时器或P4。
+- 仅observer、相关测试及顶部交付记录；离线合成验证，不联网/运行--read-only/安装/初始化/部署。历史证据不覆盖。交Codex通过后再按既有授权整组只读执行。
+
+## C1 环境归属 Uin 数字类型窄适配完成，待 Codex 复查（2026-10-07）
+
+- 依据[验收报告](Codex验收-CLI接入T1与真实只读-20261007.md)第 3 节，**仅做 C1**。T1/R1–R4/S1/S2 通过关闭，**未重做**；CLI 入口与 STS 身份校验本轮**未改**（`552dc122…`）。
+- **新增 `normalizeEnvUin(value, stage)`**，只作用于 `EnvInfo.UserInfo.Uin`：① 十进制正整数字符串 → 保留**原始字节**（不 trim / 不去前导零 / 不数值化）；② number → 仅接受有限、正数、`Number.isSafeInteger` 成立，以 `String(Uin)` 作摘要输入。规范化结果只用于摘要与尾号，**原始 Uin 不落入报告**。
+- **明确拒绝**：`null`/`undefined`/布尔/对象/数组/Symbol/BigInt/函数/`String` 包装对象；不安全整数/小数/负数/零/`NaN`/`Infinity`；非十进制字符串（空白、符号、小数、科学计数、十六进制、全角、全零）。**不使用任意 `String(value)`** —— 否则 `[object Object]` 会成为合法摘要输入。
+- **未放宽**：STS `AccountId`/`UserId`/`PrincipalId` 仍必须字符串；`WxAppId` 仍精确字符串相等（数字型 `AppId` 不可替代）；环境 ID/状态/地域检查不变；`writeAuthorized` 恒为 false。带前导零字符串**不得**被归一后匹配（`"00"+uin` 与 `uin` 摘要不同 → `ACCOUNT_MISMATCH`），尾号取自原始字节。
+- **测试 53/53 通过，0 失败/跳过**（原 47 + `C1-1`~`C1-6`）。`L5-3` 标题已更正为「STS 身份值仍严格只接受字符串；Uin 另见 C1」并补断言，避免被误读为全部身份字段放宽。夹具全部为**合成账号**，未复制真实值。
+- 新证据另存：`docs/证据/WorkBuddyC1Uin类型兼容复现-20261007.cjs` / `.json`（**10/10 闭合**，离线直接调库函数）。Codex 原报告与原证据**未改写**。
+- 真实默认模式 `node scripts/check-cloudbase-readonly.cjs` → `LOCAL_READY`、7/7 ok、exit 0。真实网络 0 次；未联网、未运行 `--read-only`、未安装、未初始化、未部署。
+- 哈希：库 `3b05a305…`、测试 `984939b0…`、CLI 入口未变 `552dc122…`。未改项：P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、已验收适配层 `9088e647…`。
+- 未验证项：**整组真实只读仍未通过**（C1 是本地适配，需 Codex 复查后再执行整组）；生产人员允许名单、数据库 SDK 同凭据核验、目标微信管理员记录读取、费用/余量、初始化与部署均未因此通过；多次读取非原子快照，不证明同一份临时凭据未刷新。
+- 状态：**代码完成 → 本地离线自测通过**；Codex 复查与用户人工核验均未做。用户无需扫码、取号或重新授权。
+
+## T1 close 宽限计时起点返修完成，待 Codex 复查（2026-10-07）
+
+- 依据[复核报告](Codex复核-CLI事件收尾S1S2-20261007.md)第 2 节，仅修 T1；**S2、R1/R3/R4、P4 及其它关闭项未重做**。CLI 入口本轮未改（`552dc122…`）。
+- **根因**：close 宽限的 `setTimeout` 写在注册监听之后而非 `onExit` 内，进入 `spawnBounded` 即开始计时。合成进程从不发exit/close，完整生产 `LIMITS` 下约 2012ms 就返回 `closeNotObserved=true` / `timedOut=false` / `kill=0`。
+- **修复**：`let graceTimer = null`，**仅首次真实 `exit` 后**启动；重复 exit 不刷新、不重复启动。无 exit 的进程不受close 宽限约束，只受 55 秒总超时约束。`LIMITS` 数值未动（`closeGraceMs=2000`、`timeoutMs=55000`），**未靠调大宽限掩盖**。
+- **附带修正**：`spawnBounded` 改为 `resolveLimits({ limits: d.__limits })`，不再绕过归一化 —— 旧夹具只注入 `{timeoutMs, maxOutputBytes}` 时 `closeGraceMs` 为 `undefined`，`setTimeout(cb, undefined)` 立即触发。**此前把该现象只归因为「5ms 事件竞速」是错的**，已按Codex 第 3 节更正。
+- **顺带修掉**：库中监听被重复注册两遍（`data`/`error`/`close`/`exit`），致`removeListener` 摘不干净、`R2-3` 的 `listenerCount('data')` 残留 1。已删除重复注册。
+- **测试 47/47 通过**（数量更正：34 + S1 **5** + S2 **4** = 43，再加 T1 **4** = 47；此前记作「S1 四项 + S2 四项」为算术错误）。新增 `T1-1`~`T1-4`覆盖：未 exit 时宽限不启动、晚 exit 时宽限从 exit 起算且重复 exit 不延长、永不 exit/close 由总超时兜底且不误标 close、宽限不得延长总超时。原 S1/S2 用例改用事件屏障 `listenersReady()`，不再靠极短 sleep 赌时序。
+- 本轮仍仅本地：真实网络 0 次，未联网、未运行 `--read-only`、未安装、未初始化、未部署。Codex 原报告与原复现脚本/JSON **未改写**，新证据另存。
+- 真实默认模式 `node scripts/check-cloudbase-readonly.cjs` → `LOCAL_READY`、7/7 ok、exit 0。
+- 新证据：`docs/证据/WorkBuddyT1宽限起点复现-20261007.cjs` / `.json`（**6/6 闭合**）。关键观测：完整生产限制下无 exit 时 **55012ms** 由总超时结束；静默 600ms 后 exit 的样本 **924ms** 才失败（若从 spawn 起算约 300ms 即失败）；宽限 500ms 晚于总超时 100ms 时 **109ms** 失败；`closeGraceMs=2000` / `timeoutMs=55000` 保持不变。Codex 原 T1 复现脚本在新实现上：`timedOut=true` / `closeNotObserved=false`，S1/S2 正向仍成立。
+- 哈希：库 `168f7a8b…`、测试 `fc31d37b…`、CLI 入口未变 `552dc122…`。未改项：P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、已验收适配层 `9088e647…`。
+- 状态：**代码完成 → 本地离线自测通过**；Codex 复查与用户人工核验均未做。通过后由 Codex 沿用现有只读授权运行一次 `--read-only`，无需用户重新授权或手机操作。
+
+## 当前接续：CLI仅余T1宽限计时起点（2026-10-07）
+
+- 按[Codex复核-CLI事件收尾S1S2](Codex复核-CLI事件收尾S1S2-20261007.md)第2节，仅修首次exit后启动close宽限、保持总超时及相关测试；S2与R1/R3/R4关闭不重做。
+- 同步更正文案：新增9测试=5项S1+4项S2；旧直接__limits缺closeGraceMs使undefined定时器抢先，不能只归因5ms竞速。历史脚本/JSON保留，不改写。
+- 本轮仍仅本地，不联网/运行--read-only/安装/初始化/部署，不改P4或其它关闭项。交Codex通过后再按已有授权做真实只读核验。
+
+## R2 剩余 S1/S2 事件收尾已完成，待 Codex 复查（2026-10-07）
+
+- 依据[复核报告](Codex复核-CLI只读接入R1-R4返修-20261007.md)第 2、3 节，仅修事件收尾与相称测试；**R1/R3/R4 已通过关闭，未重做**。CLI 入口本轮**未改**（`552dc122…`）。
+- **S1**：`onExit` 只记录退出事实/code/signal，**不再提前 finish**；最终收尾与解析等`close`。新增 `LIMITS.closeGraceMs = 2000`：观察到 exit 后若close 未在宽限内到来，则以 `closeNotObserved=true` **有界失败**（新码 `SPAWN_CLOSE_UNCONFIRMED`），`runStage` 在解析前拒绝该情形，半截输出不会变成关联成功。`processExited` / `terminationConfirmed` 与注释语义一致。
+- **S2**：`finish` **保留 child 的 error 监听**作为幂等吸收器（`onError` 在 settled 后直接 return）；只移除会累积数据的 stdout/stderr `data` 监听。晚到/重复 error 不抛、不打印、不追加输出、不改报告、不二次 kill。`close`/`exit` 监听仍在收尾时移除。
+- 测试 **43/43 通过**（34 + S1 **5** 项 + S2 **4** 项；此前记作「S1 四项 + S2 四项」为算术错误）。新增用例改用真正的 `EventEmitter` 合成 child（不再用自制回调），因此「无 error 监听时 emit 会抛」被真实覆盖。`R2-4` 与 `L2-2` 断言已按新增 `closeGraceMs` 适配。
+- 真实默认模式 `node scripts/check-cloudbase-readonly.cjs` → `LOCAL_READY`、7/7 检查 ok、exit 0。真实网络 0 次；未运行 `--read-only`、未安装、未登录/接SDK、未初始化、未建资源/部署/启用。
+- 新证据另存：`docs/证据/WorkBuddyR2事件收尾S1S2复现-20261007.cjs` / `.json`（8 样本全闭合）。Codex 原报告与原 S1/S2 复现 `.cjs/.json` **未改写**。
+- 哈希：库 `e6a40af1…`、测试 `71735c99…`、CLI 入口未变 `552dc122…`。未改项：P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、已验收适配层 `9088e647…`。
+- 未验证项：平台字段形态本轮未实测；同一登录目录不证明三次调用使用同一份未刷新的临时凭据；未完成数据库 SDK 同凭据核验；未核实费用/余量；`spawnSync` 的 EBUSY 是交付当时环境事实。
+- 状态：**代码完成 → 自测通过（本地离线合成）**；Codex 复查与用户人工核验均未做。通过后由 Codex 沿用现有只读授权运行一次 `--read-only`，无需用户重新授权或手机操作。
+
+## 当前接续：CLI R2事件收尾S1/S2（2026-10-07）
+
+- 依据[Codex复核-CLI只读接入R1-R4返修](Codex复核-CLI只读接入R1-R4返修-20261007.md)第2、3节。R1/R3/R4通过关闭，不重做；34项测试及13项原复现均已重跑通过。
+- 仅修observer事件收尾及相关测试：正常exit不能提前丢弃管道尾部，失败收尾后晚到error必须安全处理。不要把“所有监听为零”当验收目标；用EventEmitter覆盖真实事件语义。
+- 原报告/证据不覆盖，新结果另存；不安装/登录/联网/运行--read-only，不接SDK、不初始化/建资源/部署。P4与旧关闭项不重开。交Codex复查后再执行已授权真实只读核验。
+
+## R1–R4 定点返修已完成，待 Codex 复查（2026-10-07）
+
+- 已按[复查报告](Codex复查-CLI身份环境只读接入L1-L3-20261007.md)第 2–5 节完成四项返修，**只改三个新文件**（库、入口、测试）与本记录；异步 `spawn` 按复查意见保留。
+- **R1**：`cli-entry-content` 由片段 `includes` 改为完整字节校验——`cliEntrySha256=328da4af…`（57 字节：shebang + 转发 require，已只读复核真实文件）+ `cliEntryExactBytes` 精确相等。追加可执行语句、require 只在注释里、入口截断三类反例均在启动任何 API 子进程前拒绝。
+- **R2**：`spawnBounded` 重写收尾逻辑——stdout+stderr **合并原始字节**上限（先计数再保留、保留缓冲截断到上限内）、按 Buffer 收集且收尾一次解码（跨 chunk UTF-8 不破坏）、`finish` 移除 stdout/stderr 的 data 监听与 close/exit/error 监听并清计时器、终止请求只发一次；新增 `terminationRequested` / `processExited` / `terminationConfirmed` / `retainedBytes` / `totalBytes`，`kill` 返回 false 或抛错时如实记为**终止未确认**，不再凭发出 kill 合成 `signal='SIGTERM'` 或「已终止」文案。
+- **R3**：`parseCliJson` 重写——先跳过根对象**之前**的空白与允许提示行，在原始行上做括号配对定位根对象，根对象**之后**只允许空白与允许提示行（多根因此被拒），根对象文本**逐字**交给 `JSON.parse`；新增第 4 参 `stage`。提示行不再被全局删除，根内混入提示一律拒绝。
+- **R4**：新增 `ENVS_FIELD_INVALID`（原 `ERR` 缺该码，旧测试以同一 `undefined` 比较而误判通过）与 `SPAWN_SIGNALLED`（与超时分开归类）；`fail()` 支持挂净化诊断；`runStage` 返回 `{payload, diag}`，解析失败也绑定当前 stage 并带上执行事实；报告新增 `stageExecutions`（逐阶段 status/startedAt/finishedAt/validationPassed/exitCode/signal/timedOut/terminationRequested/terminationConfirmed/errorCode）与 `cloudQueryAttempted`、`cloudResponseValidated`，`cloudObservationPerformed` 语义明确为「已尝试且至少一阶段校验通过」，三者都不表示网络请求已到达平台。未发送阶段标 `not-executed`；报告不含原始 message / stdout / stderr。
+- 测试 34/34 通过（原 19 项 + 15 项）。文案更正：`L1-3` 用 `execFileSync` **真实运行**入口的 4 个参数拒绝组合，文件头已注明不能声称「所有子进程均拦截」；这些组合在参数解析阶段停止，未调用云 API。合成入口内容改用与真实已验收值相同的字节常量，使入口检查真实执行。
+- 真实默认模式 `node scripts/check-cloudbase-readonly.cjs` → `LOCAL_READY`、exit 0（新的入口字节校验对真实安装成立）。真实网络 0 次；未运行 `--read-only`、未安装、未读凭据、未初始化/建资源/部署/启用。
+- 新证据另存：`docs/证据/WorkBuddyR1R4返修复现-20261007.cjs` / `.json`（13 样本全闭合）。Codex 原报告与 `Codex只读CLI接入复现-20261007.cjs/.json` **未改写**。
+- 未改项哈希：P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、已验收适配层 `9088e647…`。
+- 未验证项：平台字段形态**本轮**未实测（项目此前已有真实只读观测）；同一登录目录不证明三次调用使用同一份未刷新的临时凭据；未完成数据库 SDK 同凭据核验；未核实费用/余量；`spawnSync` 的 EBUSY 是交付当时的环境事实、非跨时点永久性质。
+- 状态：**代码完成 → 自测通过（本地离线合成）**；Codex 复查与用户人工核验均未做。复查通过后由 Codex 沿用现有只读授权运行一次 `--read-only`，**无需用户重新确认授权或手机操作**。
+
+## 当前接续：只读 CLI R1–R4 定点返修（2026-10-07）
+
+- 按[Codex复查-CLI身份环境只读接入L1-L3](Codex复查-CLI身份环境只读接入L1-L3-20261007.md)第2–5节处理R1–R4。原19项通过但未覆盖8个独立观察样本；只修三个新文件及相称测试/文档，不重开P4、SDK适配层、driver和打包器。
+- 异步spawn保留；需收紧完整入口校验、合计输出限额与终止事实、JSON外提示处理、阶段/错误码记录。原始报告与证据不改写，新复现结果另存。
+- 本轮Codex未发真实云查询。WorkBuddy仍仅本地离线实现，不运行--read-only、不安装/登录/接SDK/初始化/建资源/部署/启用。交付后Codex复查，通过后沿用已有只读授权核验，无需用户重复授权或手机操作。
+
+## L1/L2/L3 已本地完成，待 Codex 审查（2026-10-07）
+
+- 已按[任务文档](WorkBuddy任务-CLI身份环境只读接入-20261007.md)第 2 节新增三个文件，**无其它代码改动**：`miniapp/scripts/lib/cloudbase-readonly-observer.cjs`、`miniapp/scripts/check-cloudbase-readonly.cjs`、`miniapp/tests/cloudbase-readonly-observer.test.cjs`。
+- 边界实现要点：三项查询参数与顺序固定（STS `GetCallerIdentity` → `DescribeEnvs` → `DescribeEnvInfo`）；`shell:false` 参数数组、固定 cwd、仅对子进程设 `USERPROFILE`、清除 `CLOUDBASE_*`/`TCB_*`/`TENCENTCLOUD_*`/`NODE_OPTIONS`、显式 `CI=1` 等；55 秒/1 MiB 超限即 kill 并停止、不重试；stdin 关闭。
+- 解析契约：先清 ANSI，只允许与当前 action 相符的固定提示行与单个 JSON 根对象，剥离 CLI 的 `{data:…}` 包装；多根/截断/数组/null 根/未知文本/平台错误对象一律拒绝，不做「挑一个看起来成功的」。
+- 结果投影：身份只留 SHA-256 摘要与尾 4 位；所有分支 `writeAuthorized=false`；不实现/替换 `verifyCaller`，不生成 approval 或允许名单；正常输出不宣称 SDK 凭据复用、平台事务或初始化通过。
+- 实测：`node --test tests/cloudbase-readonly-observer.test.cjs` → 19/19 通过（子进程全部拦截，真实网络 0 次）；真实默认模式 → `LOCAL_READY`、7/7 检查 ok、exit 0；`--execute` → `ARGS_CONFLICT`，位置参数 → `ARGS_INVALID`，均零子进程 exit 1。
+- 依赖注入（`deps.fixed`/`deps.limits`）**仅供模块测试**，命令行没有任何跳过检查的开关。
+- 未改项哈希核对：P4 核心 `133c21ae…`、初始化 CLI `608aa885…`、已验收适配层 `9088e647…`，与关闭记录一致。
+- 环境事实：`spawnSync` 在本机稳定 `EBUSY`（同参数连续复现），改用异步 `spawn` 表达超时/超限，检查标准未放宽。
+- 未验证项：平台返回字段形态未实测；同一登录目录不证明三次调用使用同一份未刷新的临时凭据；未完成数据库 SDK 同凭据核验；未核实费用/余量；本地离线通过不等于 IAM、平台事务、资源、部署或初始化放行。
+- 状态：**代码完成 → 自测通过（本地离线）**；Codex 审查与用户人工核验均未做。审查通过后由 Codex 运行一次 `--read-only` 并另存脱敏证据；初始化、建资源、部署、入口启用不在本任务内。
+
+## 当前任务：CLI 身份环境最小只读接入（2026-10-07）
+
+- 按[WorkBuddy任务-CLI身份环境只读接入](WorkBuddy任务-CLI身份环境只读接入-20261007.md)实现 L1/L2/L3：三个新文件，固定查询与进程边界、安全解析和相称离线测试。Codex 已完成任务整理，尚未自动发送或代为实现。
+- 本轮允许本地实现及合成测试，不使用已有登录态联网、不安装、不读取认证缓存内容、不登录、不初始化/建资源/部署/启用。默认入口仅本地检查；后续真实 --read-only 由 Codex 审查后执行。
+- 所有输出 writeAuthorized=false；不是 P4 的 verifyCaller 或批准凭据。生产允许名单、SDK 凭据桥、数据库记录核验、费用/余量仍未完成，不扩大到本轮。P4、适配层、既有 CLI、driver、打包器与旧关闭项不重做。
+- 完成后提交实际改动、相关测试、输出样例与未验证项给 Codex。此前“待明确任务”由本段接续；历史记录保留。
+
+## CLI 登录与只读关联核验通过（2026-10-07）
+
+- 接续：[CLI登录与只读身份核验](Codex核验-CLI登录与只读身份-20261007.md)。用户完成官方授权；STS当前账号与DescribeEnvInfo.UserInfo.Uin一致，目标环境/上海地域/微信AppID匹配。
+- 只证明本轮CLI身份与目标环境读取通路。生产允许主体名单、数据库SDK同凭据复用、目标微信账号与primary读取、真实事务未完成；不把查询成功直接变成初始化授权。
+- Codex下一步整理最小只读接入任务；WorkBuddy仍待正式范围，不改P4或已验收适配层，不运行secrets get、初始化、资源创建或部署。用户无需重复手机操作。
+
+## CloudBase CLI 安装检查已完成（2026-10-07）
+
+- [安装核验](Codex核验-CloudBaseCLI独立安装-20261007.md)：固定3.8.4、独立目录、禁安装脚本，tarball完整性与版本/帮助检查通过。没有登录、取凭据、初始化、资源创建或部署。
+- 实际命令为 `api <service> <action>`；bundle内的manager模块不作为公开可require接入API。现阶段不能把工具安装成功描述为生产verifyCaller已接通。
+- 下一步由Codex安排登录边界与只读身份核验；WorkBuddy仍待命，不修改代码、不重开P4/R2等已关闭项。项目依赖和关闭配置未改，不重复跑旧测试。
+
+## Codex N0 核对完成当前范围：待确认工具补齐（2026-10-07）
+
+- 接续依据：[N0接入卡](Codex接入卡-生产身份核验N0-20261007.md)。一次 MCP 环境只读摘要成功（NORMAL / ap-shanghai / single_env），未取得生产操作者身份或本地 SDK 凭据桥。
+- 已找到官方 CLI 浏览器登录及临时凭据路线；当前不具备已核验的本地载体。Codex已列出独立目录安装固定CLI并检查接口的具体方案，等待用户确认，尚未安装或登录。不得视为初始化/资源创建/部署授权。
+- WorkBuddy仍待命，不新增代码、不重跑旧测试、不改关闭配置或历史证据。N0载体与身份来源明确后再下发最小本地只读包；SDK R1–R5与旧已关闭项不重开。
+
+## Codex 已整理：生产身份核验与只读接入最小方案（2026-10-07）
+
+- 方案：[生产身份核验与只读接入](Codex方案-生产身份核验与只读接入-20261007.md)。这是下一阶段设计，真实接入尚未实现或执行；只读结果始终不授予写权限。
+- Codex 下一步先完成 N0 接入卡：可复用的官方调用载体、受信身份来源、同一凭据上下文、固定环境和安全输出。此项未成立前 WorkBuddy 待命，不实现假核验器、不改代码、不安装或操作云端。
+- N0 成立后再下发一个独立只读宿主/默认关闭入口及相称测试的最小任务；不改已验收 P4 核心、适配层、CLI 写入拒绝或业务代码。真实核验与初始化执行包分开。
+- 本轮仅方案及交接记录，公开文档查询不等于云账号核验。SDK R1–R5 与旧关闭项继续关闭；未跑未变化代码的测试，未重新核验配置，不改写历史证据。用户无需手机操作。
+
+## Codex 验收通过：SDK 适配 R2 关闭（2026-10-07）
+
+- 验收报告：[首次管理员SDK适配R2收尾](Codex验收-首次管理员SDK适配R2收尾-20261007.md)。R2通过，R1–R5本地返修全部闭合，无需继续返修；其它已关闭项不重开。
+- 相关测试99/99通过、0失败、0跳过；独立证据12/12通过（5类回执各测首写/第二写，再加2个正向）。新证据：证据/Codex管理员SDK适配R2验收-20261007.cjs/.json，旧证据未覆盖。
+- P4核心、CLI、driver、打包器、服务端八文件与关闭配置核对符合；本地通过不代表真实SDK签名/IAM、平台事务、资源、费用或部署通过。
+- 下一步Codex整理生产调用者核验及只读接入准备的最小方案，WorkBuddy待命。继续不安装、不初始化、不建资源、不部署、不启用，用户无需手机操作；Git远程备份为独立待办。
+
+
+## Codex 复核 SDK 适配 R1–R5：四项关闭，仅 R2 待收尾（2026-10-07）
+
+- 报告：[首次管理员SDK适配返修复核](Codex复核-首次管理员SDK适配R1-R5返修-20261007.md)。相关测试本机95通过、0失败、0跳过；原11反例全部封堵。R1/R3/R4/R5通过关闭，不重做。
+- R2完整插入回执仍漏校验：多条/重复/字符串插入元素及updated=1时错误主键/坏结构，5个合成反例均误至initialized（2写1提交）。仅收紧此项及相称文案、测试；不是重开全部SDK修复。
+- 本次另以现有真实SDK+合成传输验证updated=0+upsert_id插入正向路径，2写1提交、网络尝试0。真实平台/IAM/费用未验证，生产入口未接通。
+- 新证据：证据/Codex管理员SDK适配R1R5返修复核-20261007.cjs/.json；历史证据未覆盖。交付哈希、关键未改项、8文件制品、110基线和关闭配置核对符合。
+- 下一步WorkBuddy按报告第2/3节仅修R2；用户无需手机操作。本轮未安装、联网、初始化、建资源、部署、启用、清缓存或处理A/B/C。Git远程备份仍为独立待办。
+
+
 ## Git 本地工作快照（2026-10-06）
 
 - 本轮整理 Git 入库范围、排除本机凭据/原始导出/临时目录，并保存当前工作快照；细节见 [Git本地存档说明](Git本地存档说明-20261006.md)。
 - 快照包含待审代码，不等于验收通过；首次管理员 SDK 适配 R1–R5 返修仍待 Codex 复核。
 - 仅本地存档，无远程推送、云端操作或部署；下一步确定私有远程仓库，再复核上传范围。
 
+
+## R2 完整插入回执收尾完成，等 Codex 复核（2026-10-07）
+
+依据 `docs/Codex复核-首次管理员SDK适配R1-R5返修-20261007.md` 第 2、3 节。**只做R2 定点收紧与相称文案**；R1/R3/R4/R5 本轮已通过关闭，未重做；P4 核心、CLI、driver、打包器、旧业务与全部历史证据未动。
+
+### 本轮改动
+
+| 文件 | 变化 |
+|---|---|
+| `miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs` | 新增并导出 `assertUpsertedEntry`；`assertSetSuccess` 去掉 `some`，要求 `upserted` 必须存在 |
+| `miniapp/tests/sandbox-primary-sdk-adapter.test.cjs` | 50 → 54 项；修 R2-a / M2-31 标题与 reqClass 注释、默认回执形状；新增 R2-a2、R2-b2、M2-33、M2-34 |
+| `docs/首次管理员SDK适配说明-20261006.md` | 第 3 节第7 条、4.3 表、5 节表、7.1 R2 行、8 节 6b、9 节实跑 |
+| `docs/证据/WorkBuddyR2回执收紧复现-20261007.cjs` / `.json` | **新增**（10 样本；脚本只输出 stdout，不覆盖历史 JSON） |
+
+### R2 现行回执契约（复核重点）
+
+依据已取得的 `@cloudbase/database` 1.4.1 `dist/commonjs/document.js:108–112`：事务set 的返回由 SDK 自己构造为 `upserted:[{_id: res.data.upsert_id}]`。
+
+- `updated` 须`Number.isFinite && Number.isInteger && >=0 && <=1`；`upserted` **必须存在**、必须是数组、**元素数量恰为 1**、元素**必须是对象**；
+- `updated===0`：`_id` 须为有效字符串且等于目标主键 —— 拒绝多条、重复、字符串元素与占位；
+- `updated===1`：**同样核对**，错误主键 → `SET_KEY_MISMATCH`，无效结构 → `SET_SHAPE_INVALID`；但**保留**本包底层无 `upsert_id` 时的正常占位 `[{_id:undefined}]`，不误拒正常已更新响应；
+- `updatedCount` 出现即拒；只有底层 `upsert_id` 而无 `upserted` 即拒。「平台未实测」不作为接受任意形状的理由。
+
+### 实跑
+
+```
+cd miniapp && node --test tests/sandbox-primary-sdk-adapter.test.cjs  → 54/54（网络尝试 0）
+cd miniapp && node --test tests/sandbox-primary-bootstrap.test.cjs    → 45/45（P4 核心未改，零回归）
+SANDBOX_SDK_ROOT=<不存在路径> node --test …sdk-adapter…             → 45 通过 / 0 失败 / 9 跳过
+node docs/证据/WorkBuddyR2回执收紧复现-20261007.cjs                 → 10 样本：危险初始化 0
+     被拒样本全部零 commit 且回滚一次；正向全部 initialized；真实包插入分支 verified=true、networkAttempts=0
+```
+
+### 未验证项（本轮新增/修正的表述）
+
+`upserted` 在**真实平台**上的返回未实测；只按本包源码确定形状。平台事务原子性/并发/回滚、签名与 IAM、生产调用者核验同样未验证。本地离线通过不等于平台事务已验收。
 
 ## R1–R5 返修完成，等 Codex 复核（2026-10-06）
 
@@ -28,7 +745,7 @@ P4 核心 `133c21ae4b1081a1…`｜CLI `608aa8854a4213fc…`（`--execute` 仍拒
 ### 关键实现要点（复核重点）
 
 - **R1** `normalizeDoc(result, {mode, expectedKey})`：事务成功空**仅** `data:null`、非事务**仅** `data:[]`；缺 `data`/`undefined`/未核实结构拒绝；非空记录必须 `_id` 匹配 `expectedKey`。
-- **R2** `assertSetSuccess(result, expectedKey)`：只认 `updated`/`upserted`；计数须 `Number.isFinite && Number.isInteger && >=0 && <=1`；`updated===0` 时 `upserted` 必须含目标主键；`updatedCount` 出现即拒；只有 `upsert_id` 而无 `upserted` 即拒。
+- **R2** `assertSetSuccess(result, expectedKey)`：只认 `updated`/`upserted`；计数须 `Number.isFinite && Number.isInteger && >=0 && <=1`；`upserted` 必须存在且由`assertUpsertedEntry` 完整核对（恰 1 个对象元素；零更新须目标主键，已更新同样核对主键但放行 `[{_id:undefined}]` 占位）；`updatedCount` 出现即拒；只有 `upsert_id` 而无 `upserted` 即拒。（2026-10-07 二次收紧）
 - **R3** `verifyCaller`：**先**核对 `envId`/`appId`/`trusted`，**再**输出白名单 `{allowed, envId}`。
 - **R4** `REGISTRY = new WeakMap()`（实例私有）；返回 `Object.freeze({})` 空壳；`lookupOwn` 先核对归属再谈状态；`beginTransaction` 不再改写宿主 SDK 事务对象。
 - **R5** `ALLOWED_ERROR_NAMES` 白名单；`sanitizeFailure` 返回固定码 + 固定文案 + 白名单化的 `name`，**不使用**传入异常的 `message`/`code`。

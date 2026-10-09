@@ -1,0 +1,92 @@
+{
+  "recordedAt": "2026-10-07T12:43:09.5450898Z",
+  "command": "node miniapp/scripts/check-cloudbase-readonly.cjs --read-only",
+  "wrapperInvocations": 1,
+  "processExitCode": 0,
+  "observerSha256": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+  "report": {
+    "schemaVersion": 1,
+    "mode": "read-only",
+    "complete": true,
+    "status": "ASSOCIATION_OBSERVED",
+    "stoppedAt": null,
+    "errorCode": null,
+    "observedAt": "2026-10-07T12:43:09.509Z",
+    "cloudQueryAttempted": true,
+    "cloudResponseValidated": true,
+    "cloudObservationPerformed": true,
+    "callerIdentity": {
+      "type": "CAMRole",
+      "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+      "accountIdTail": "7053",
+      "userIdTail": "0693",
+      "principalIdTail": "5386",
+      "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8"
+    },
+    "describeEnvs": {
+      "envId": "cloud1-d8gcq5ag39d847723",
+      "status": "NORMAL",
+      "region": "ap-shanghai",
+      "requestId": "3616bd44-e038-4593-881e-2f8fb77d0487"
+    },
+    "describeEnvInfo": {
+      "envId": "cloud1-d8gcq5ag39d847723",
+      "status": "NORMAL",
+      "region": "ap-shanghai",
+      "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+      "uinTail": "7053",
+      "wxAppId": "wxfb4db1615ac15531",
+      "requestId": "8d4ef328-2dc0-41ce-8ee9-8bbc05ae967a"
+    },
+    "associationMatched": true,
+    "writeAuthorized": false,
+    "productionCallerVerifierImplemented": false,
+    "isAuthorizationMechanism": false,
+    "stageExecutions": [
+      {
+        "stage": "callerIdentity",
+        "status": "validated",
+        "startedAt": "2026-10-07T12:43:04.715Z",
+        "finishedAt": "2026-10-07T12:43:06.406Z",
+        "validationPassed": true,
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "errorCode": null
+      },
+      {
+        "stage": "describeEnvs",
+        "status": "validated",
+        "startedAt": "2026-10-07T12:43:06.406Z",
+        "finishedAt": "2026-10-07T12:43:07.971Z",
+        "validationPassed": true,
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "errorCode": null
+      },
+      {
+        "stage": "describeEnvInfo",
+        "status": "validated",
+        "startedAt": "2026-10-07T12:43:07.971Z",
+        "finishedAt": "2026-10-07T12:43:09.509Z",
+        "validationPassed": true,
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "errorCode": null
+      }
+    ],
+    "startedAt": "2026-10-07T12:43:04.58Z",
+    "notes": "本工具只做只读观测：所有分支 writeAuthorized=false，未生成初始化计划、approval 或人员允许名单。cloudQueryAttempted 只表示已尝试启动查询进程，不表示网络请求已到达平台；逐阶段 exitCode/超时/终止确认见 stageExecutions。同一登录目录不证明三次调用使用同一份未刷新的临时凭据；本工具也未完成数据库 SDK 的同凭据核验。身份摘要仅供内部关联核对，不是签名，也不是授权证书。"
+  }
+}

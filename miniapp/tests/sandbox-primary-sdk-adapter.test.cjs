@@ -106,7 +106,10 @@ function makeSyntheticDb(script) {
               const r = pick('set', [name, id]);
               if (r instanceof Error) throw r;
               if (r && r.__throw) throw new Error('synthetic transport failure');
-              if (r && r.__default) return { updated: 1, upserted: [], requestId: 'syn-set' };
+              // 默认形状对齐真实包 document.js:108–112 的转换结果：
+              // 事务 set 恒为 `upserted: [{_id: res.data.upsert_id}]`，
+              // 无底层 upsert_id 时即为 `[{_id: undefined}]`（非 `[]`）
+              if (r && r.__default) return { updated: 1, upserted: [{ _id: undefined }], requestId: 'syn-set' };
               return clone(r);
             }
           };
@@ -141,7 +144,8 @@ function makeSyntheticDb(script) {
                 if (rr && rr.__throw) throw new Error('synthetic transport failure');
                 if (rr && rr.__default) {
                   store[name][id] = Object.assign({ _id: id }, clone(fields));
-                  return { updated: 1, upserted: [], requestId: 'syn-set' };
+                  // 与真实包一致：单个对象元素、无底层 upsert_id 时 _id 为 undefined
+                  return { updated: 1, upserted: [{ _id: undefined }], requestId: 'syn-set' };
                 }
                 if (rr && rr.__apply !== false) {
                   store[name][id] = Object.assign({ _id: id }, clone(fields));
@@ -727,9 +731,9 @@ function withRealSdk(t, fn) {
       await fn({
         db, calls, sdk, Db, net, asEjsonDoc,
         /**
-         * 替换当前生效的传输实现。真实 SDK 的 db 实例在 init 时就捕获了
-         * `Db.reqClass`，因此要按用例替换响应，必须在替换后再自建 db；
-         * 本辅助已保证顺序（先 init、后替换），这里直接换回当前实现即可。
+         * 替换当前生效的传输实现。真实 SDK 的 db 实例在 init 时捕获了当时的
+         * `Db.reqClass`；本辅助已保证「先 init 出db、再替换请求类」的实测顺序，
+         * 因此这里直接换回当前实现即可继续按用例替换响应，不需要重建 db。
          */
         setTransport: impl => { Db.reqClass = impl; },
         setFailure: (code, actions) => { failureCode = code || ''; failActions = new Set(actions || []); }
@@ -949,7 +953,7 @@ test('R1-e 正向：显式 null / 空数组 / 主键匹配都能正常通过', a
 
 // ── R2：set 成功判定须符合真实 SDK 返回契约 ────────────────────────────
 
-test('R2-a 坏回执与真实核心串联 → 零 set、零 commit', async () => {
+test('R2-a 坏回执与真实核心串联 → 不 commit、尝试回滚', async () => {
   const bads = [
     ['updatedCount:false', { updatedCount: false }],
     ['零更新无插入', { updated: 0 }],
@@ -958,27 +962,60 @@ test('R2-a 坏回执与真实核心串联 → 零 set、零 commit', async () =>
     ['updated 非整数', { updated: 1.5 }],
     ['updated 为字符串', { updated: '1' }],
     ['updated 超过 1', { updated: 2 }],
-    ['缺 updated', { upserted: [] }],
+    ['缺 updated', { upserted: [{ _id: PRIMARY_ID }] }],
     ['含 code', { code: 'SYNTHETIC_DENIED', updated: 1 }],
-    ['零更新 + 插入主键不符', { updated: 0, upserted: [{ _id: 'other-key' }] }]
+    ['零更新 + 插入主键不符', { updated: 0, upserted: [{ _id: 'other-key' }] }],
+    // R2 本轮：完整集合校验（结构 / 数量 / 主键 / 两个分支）
+    ['零更新 + 多条插入', { updated: 0, upserted: [{ _id: PRIMARY_ID }, { _id: 'other-key' }] }],
+    ['零更新 + 重复插入', { updated: 0, upserted: [{ _id: PRIMARY_ID }, { _id: PRIMARY_ID }] }],
+    ['零更新 + 字符串元素', { updated: 0, upserted: [PRIMARY_ID] }],
+    ['零更新 + 空数组', { updated: 0, upserted: [] }],
+    ['零更新 + upserted 为 false', { updated: 0, upserted: false }],
+    ['已更新 + 错误插入主键', { updated: 1, upserted: [{ _id: 'other-key' }] }],
+    ['已更新 + upserted 为 false', { updated: 1, upserted: false }],
+    ['已更新 + 字符串元素', { updated: 1, upserted: ['other-key'] }],
+    ['已更新 + 多条插入', { updated: 1, upserted: [{ _id: undefined }, { _id: 'other-key' }] }],
+    ['已更新 + 缺 upserted', { updated: 1 }],
+    ['零更新 + 插入元素无 _id', { updated: 0, upserted: [{}] }]
   ];
   for (const [label, payload] of bads) {
     const db = makeSyntheticDb({ seed: { schtest_v1_users: userRecord() }, txSet: { '*': payload } });
     const a = newAdapter(db);
     const err = await bootstrapRun(a).then(() => null, e => e);
     assert.ok(err, `${label} 必须被拒绝`);
-    // 关键：**零 commit**。写入请求可能已发出一次（回执在传输后才可判定），
-    // 但必须被回滚、事务不得落地 —— 这才是「核心不会继续 commit」的含义。
     assert.equal(db.committed, 0, `${label} 不得 commit`);
     assert.equal(db.rolledBack, 1, `${label} 应回滚一次`);
     assert.equal(db.log.filter(x => x.op === 'tx-set').length, 1, `${label} 只有第一次写入尝试`);
   }
 });
 
-test('R2-b 正向：updated=1 与 updated=0+主键匹配的插入都通过', async () => {
-  // 两条写入的目标主键不同（primary 与本计划审计），零更新回执须按各自主键给出插入结果
+test('R2-a2 第二写回执异常 → 不 commit、两次 set 尝试后回滚', async () => {
+  // 同一回执契约的异常，但落在**第二条写入**（审计）上：
+  // 首写成功不落地，第二写被拒后必须零commit 并回滚
+  for (const payload of [
+    { updated: 0, upserted: [{ _id: 'other-key' }, { _id: 'other-key-2' }] },
+    { updated: 1, upserted: [{ _id: 'other-key' }] },
+    { updated: 1, upserted: false }
+  ]) {
+    const db = makeSyntheticDb({
+      seed: { schtest_v1_users: userRecord() },
+      txSet: { [`schtest_v1_audit_events|${auditIdFor(plan())}`]: payload }
+    });
+    const a = newAdapter(db);
+    const err = await bootstrapRun(a).then(() => null, e => e);
+    assert.ok(err, '第二写坏回执必须被拒绝');
+    assert.equal(db.committed, 0, '不得 commit');
+    assert.equal(db.rolledBack, 1, '应回滚一次');
+    assert.equal(db.log.filter(x => x.op === 'tx-set').length, 2, '首写已发出，第二写被拒');
+  }
+});
+
+test('R2-b 正向：updated=1（含本包无插入占位）与 updated=0+主键匹配的插入都通过', async () => {
+  // 两条写入的目标主键不同（primary 与本计划审计），零更新回执须按各自主键给出插入结果。
+  // updated=1 分支刻意覆盖当前包真实的 `[{_id: undefined}]` 占位形状，
+  // 而不是原夹具臆测的 `[]`。
   for (const [label, payloadFor] of [
-    ['updated=1', () => ({ updated: 1, upserted: [], requestId: 'syn' })],
+    ['updated=1 + 无插入占位', () => ({ updated: 1, upserted: [{ _id: undefined }], requestId: 'syn' })],
     ['零更新+主键匹配的插入', (key) => ({ updated: 0, upserted: [{ _id: key }], requestId: 'syn' })]
   ]) {
     const db = makeSyntheticDb({
@@ -993,6 +1030,26 @@ test('R2-b 正向：updated=1 与 updated=0+主键匹配的插入都通过', asy
     assert.equal(r.granted, true, `${label}: ${r.outcome} / ${(r.detail && r.detail.cause) || ''}`);
     assert.equal(db.committed, 1, `${label} 应提交一次`);
     assert.equal(db.log.filter(x => x.op === 'tx-set').length, 2, `${label} 两条写入`);
+  }
+});
+
+test('R2-b2 正向：assertUpsertedEntry 直接核对单条集合语义', () => {
+  const { assertUpsertedEntry } = adapterModule;
+  // 占位与目标主键在两个分支都可用
+  assert.equal(assertUpsertedEntry([{ _id: undefined }], PRIMARY_ID, 1), true, 'updated=1 占位');
+  assert.equal(assertUpsertedEntry([{ _id: PRIMARY_ID }], PRIMARY_ID, 0), true, '零更新目标主键');
+  // 空数组（真实包不会产出）一律拒绝
+  for (const [label, arg, code] of [
+    ['空数组', [[], PRIMARY_ID, 1], 'SET_SHAPE_INVALID'],
+    ['两条', [[{ _id: undefined }, { _id: undefined }], PRIMARY_ID, 1], 'SET_SHAPE_INVALID'],
+    ['字符串元素', [[PRIMARY_ID], PRIMARY_ID, 0], 'SET_SHAPE_INVALID'],
+    ['非数组', [false, PRIMARY_ID, 1], 'SET_SHAPE_INVALID'],
+    ['零更新无主键', [[{}], PRIMARY_ID, 0], 'SET_SHAPE_INVALID'],
+    ['已更新错主键', [[{ _id: 'other-key' }], PRIMARY_ID, 1], 'SET_KEY_MISMATCH'],
+    ['零更新错主键', [[{ _id: 'other-key' }], PRIMARY_ID, 0], 'SET_KEY_MISMATCH']
+  ]) {
+    assert.throws(() => assertUpsertedEntry(arg[0], arg[1], arg[2]),
+      e => e instanceof AdapterError && e.code === code, label);
   }
 });
 
@@ -1188,7 +1245,7 @@ test('R5-c 保留准确的失败类别与停止语义', async () => {
 
 // ── 第 7 节要求的真实包正向核心串联 ───────────────────────────────────
 
-test('M2-31 真实包 + 核心：正常初始化路径（合成传输返回真实 SDK 形状）', async t => {
+test('M2-31 真实包 + 核心：已有 primary 零写停止（不是一次成功初始化）', async t => {
   await withRealSdk(t, async ({ db, calls, asEjsonDoc, setTransport }) => {
     const p = plan();
     const a = createAdapter({
@@ -1256,7 +1313,9 @@ test('M2-32 真实包 + 核心：空 primary 时按真实 SDK 形状完成一次
           return { data: { list: [] }, requestId: 'syn' };
         }
         if (action === 'database.modifyDocument') {
-          return { data: { updated: 1, upserted: [] }, requestId: 'syn-set' };
+          // **传输层**返回（不是 SDK 最终形状）：SDK 会把它转成
+          // `{updated:1, upserted:[{_id: undefined}]}` —— 无底层 upsert_id 的正常占位
+          return { data: { updated: 1 }, requestId: 'syn-set' };
         }
         if (action === 'database.commitTransaction') return { requestId: 'syn-commit' };
         if (action === 'database.abortTransaction') return { requestId: 'syn-abort' };
@@ -1281,5 +1340,92 @@ test('M2-32 真实包 + 核心：空 primary 时按真实 SDK 形状完成一次
       const ids = writes.map(w => JSON.parse(w.params.query)._id).sort();
       assert.deepEqual(ids, [PRIMARY_ID, auditIdFor(p)].sort(), '写目标恰为 primary + 本计划审计');
     }
+  });
+});
+
+test('M2-33 真实包 + 核心：插入分支（updated:0 + upsert_id:目标键）完成一次初始化', async t => {
+  await withRealSdk(t, async ({ db, calls, asEjsonDoc, setTransport }) => {
+    const p = plan();
+    const a = createAdapter({
+      db,
+      verifyCaller: async () => ({ allowed: true, envId: ENV }),
+      targetUserId: OWNER,
+      auditId: auditIdFor(p),
+      appId: APP, envId: ENV, region: REGION
+    });
+    const targetDoc = { _id: OWNER, status: 'active', openid: OPENID };
+    // 记录真实 SDK 转换后的最终回执形状，供断言核对
+    const seenReceipts = [];
+    setTransport(class {
+      async send(action, params = {}) {
+        calls.push({ action, params });
+        if (action === 'database.startTransaction') return { transactionId: 'offline-tx' };
+        if (action === 'database.getDocument') {
+          const q = typeof params.query === 'string' ? JSON.parse(params.query) : (params.query || {});
+          if (q._id === OWNER) return { data: { list: [asEjsonDoc(targetDoc)] }, requestId: 'syn' };
+          return { data: { list: [] }, requestId: 'syn' };
+        }
+        if (action === 'database.modifyDocument') {
+          // 传输层给底层 upsert_id；SDK 会转成 upserted:[{_id: upsert_id}]
+          const q = typeof params.query === 'string' ? JSON.parse(params.query) : (params.query || {});
+          seenReceipts.push(q._id);
+          return { data: { updated: 0, upsert_id: q._id }, requestId: 'syn-set' };
+        }
+        if (action === 'database.commitTransaction') return { requestId: 'syn-commit' };
+        if (action === 'database.abortTransaction') return { requestId: 'syn-abort' };
+        throw new Error('unexpected SDK action: ' + action);
+      }
+    });
+    const r = await bootstrapRun(a, p);
+    assert.equal(r.granted, true, (r.outcome || '') + ' / ' + (r.reason || ''));
+    assert.equal(r.outcome, 'initialized');
+    assert.deepEqual(seenReceipts.sort(), [PRIMARY_ID, auditIdFor(p)].sort(),
+      '两条写入都走插入分支，且 upsert_id 为各自主键');
+    assert.equal(calls.filter(x => x.action === 'database.modifyDocument').length, 2);
+    assert.equal(calls.filter(x => x.action === 'database.commitTransaction').length, 1);
+  });
+});
+
+test('M2-34 真实包：适配层实际收到的回执是 upserted:[{_id}] 单元素数组', async t => {
+  await withRealSdk(t, async ({ db, calls, setTransport }) => {
+    const p = plan();
+    const a = createAdapter({
+      db,
+      verifyCaller: async () => ({ allowed: true, envId: ENV }),
+      targetUserId: OWNER,
+      auditId: auditIdFor(p),
+      appId: APP, envId: ENV, region: REGION
+    });
+    // 直接观察真实包在两种底层返回下转换出的最终形状
+    const raw = [];
+    for (const [label, data] of [
+      ['已更新无新增键', { updated: 1 }],
+      ['插入带 upsert_id', { updated: 0, upsert_id: PRIMARY_ID }]
+    ]) {
+      setTransport(class {
+        async send(action) {
+          calls.push({ action });
+          if (action === 'database.startTransaction') return { transactionId: 'offline-tx' };
+          if (action === 'database.modifyDocument') return { data, requestId: 'syn-set' };
+          if (action === 'database.abortTransaction') return { requestId: 'syn-abort' };
+          throw new Error('unexpected SDK action: ' + action);
+        }
+      });
+      const tx = await db.startTransaction();
+      const r = await tx.collection('schtest_v1_app_admins').doc(PRIMARY_ID).set({ userId: OWNER });
+      raw.push([label, r]);
+      await tx.rollback();
+      // 通过适配层走同一路径必须成功
+      const tx2 = await a.beginTransaction();
+      await a.setDoc(tx2, 'schtest_v1_app_admins', PRIMARY_ID, { userId: OWNER });
+      await a.rollback(tx2);
+    }
+    const [[l1, r1], [l2, r2]] = raw;
+    assert.ok(Array.isArray(r1.upserted) && r1.upserted.length === 1, l1 + '：应为单元素数组');
+    assert.equal(r1.updated, 1, l1);
+    assert.equal(r1.upserted[0]._id, undefined, l1 + '：无底层 upsert_id 时为占位 undefined');
+    assert.ok(Array.isArray(r2.upserted) && r2.upserted.length === 1, l2 + '：应为单元素数组');
+    assert.equal(r2.updated, 0, l2);
+    assert.equal(r2.upserted[0]._id, PRIMARY_ID, l2 + '：主键来自底层 upsert_id');
   });
 });

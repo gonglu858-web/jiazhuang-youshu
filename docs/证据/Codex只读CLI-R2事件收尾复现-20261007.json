@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-07T12:01:50.194Z",
+  "realNetworkCalls": 0,
+  "cliExecuted": false,
+  "observerSha256": "bba00885c3e42a25df880b028f3fa3703e243053213bdd74c9b9f5817ed29d14",
+  "findings": [
+    {
+      "id": "S1-valid-split",
+      "settledBeforeClose": true,
+      "expectedFullOutput": "{\"ok\":true}",
+      "observedOutput": "{\"ok\":",
+      "parserAccepted": false,
+      "exitCode": 0,
+      "processExited": true,
+      "terminationConfirmed": false
+    },
+    {
+      "id": "S1-invalid-tail",
+      "settledBeforeClose": true,
+      "expectedFullOutput": "{\"ok\":true}UNEXPECTED_TAIL",
+      "observedOutput": "{\"ok\":true}",
+      "parserAccepted": true,
+      "exitCode": 0,
+      "processExited": true,
+      "terminationConfirmed": false
+    },
+    {
+      "id": "S2-late-error-timeout",
+      "timedOut": true,
+      "overflow": false,
+      "errorListeners": 0,
+      "lateErrorThrew": true,
+      "note": "证据脚本外围catch保护自身；实际异步error无监听可成为未捕获异常。"
+    },
+    {
+      "id": "S2-late-error-overflow",
+      "timedOut": false,
+      "overflow": true,
+      "errorListeners": 0,
+      "lateErrorThrew": true,
+      "note": "证据脚本外围catch保护自身；实际异步error无监听可成为未捕获异常。"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "number": 8,
+  "action": "DescribeSafeRule",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "app_admins"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:31:35.539Z",
+  "status": "ATTEMPT_STARTED"
+}

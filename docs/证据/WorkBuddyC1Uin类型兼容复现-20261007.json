@@ -1,0 +1,95 @@
+{
+  "observedAt": "2026-10-07T12:39:05.913Z",
+  "scope": "C1 环境归属 Uin 数字类型窄适配",
+  "constraints": {
+    "network": false,
+    "executedCli": false,
+    "readAuth": false,
+    "installed": false,
+    "initialized": false,
+    "deployed": false,
+    "ranReadOnly": false
+  },
+  "realNetworkCalls": 0,
+  "syntheticFixture": true,
+  "note": "全部使用合成账号，不代表任何真实主体",
+  "observerSha256": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+  "results": [
+    {
+      "id": "uin-number-accepted",
+      "pass": true,
+      "note": "数字型 Uin（已实测形态）必须被接受并按 String(Uin) 摘要",
+      "uinSha256MatchesSts": true,
+      "uinTail": "5678"
+    },
+    {
+      "id": "uin-string-accepted",
+      "pass": true,
+      "note": "十进制正整数字符串形态继续可用",
+      "uinSha256MatchesSts": true
+    },
+    {
+      "id": "uin-number-mismatch-rejected",
+      "pass": true,
+      "rejected": true,
+      "note": "类型合法但账号不同 → 账号不匹配"
+    },
+    {
+      "id": "uin-bad-numbers-rejected",
+      "pass": true,
+      "rejected": true,
+      "tried": 11,
+      "note": "不安全整数/小数/负数/零/NaN/Infinity 全部拒绝"
+    },
+    {
+      "id": "uin-bad-strings-rejected",
+      "pass": true,
+      "rejected": true,
+      "tried": 16,
+      "note": "空白/符号/小数/科学计数/十六进制/全角/全零/非十进制一律拒绝（不做 trim）"
+    },
+    {
+      "id": "uin-bad-types-rejected",
+      "pass": true,
+      "rejected": true,
+      "tried": 12,
+      "note": "null/undefined/布尔/对象/数组/Symbol/BigInt/函数/String 包装对象全部拒绝；不使用任意 String(value) 让对象通过"
+    },
+    {
+      "id": "uin-leading-zero-not-normalized",
+      "pass": true,
+      "digestDiffers": true,
+      "mismatch": true,
+      "tailFromRaw": "5678",
+      "paddedTail": "5678",
+      "note": "前导零字符串保留原始字节，摘要不同→ 不匹配；尾号亦取自原始字节"
+    },
+    {
+      "id": "sts-still-strict",
+      "pass": true,
+      "accountIdNumber": true,
+      "userIdNumber": true,
+      "note": "STS AccountId / UserId 仍必须是字符串；C1 只作用于环境归属 Uin"
+    },
+    {
+      "id": "wxappid-and-region-still-strict",
+      "pass": true,
+      "wxAppIdNumber": true,
+      "regionMismatch": true,
+      "note": "数字型 AppId 不可替代 WxAppId；地域仍精确匹配"
+    },
+    {
+      "id": "no-raw-account-in-output",
+      "pass": true,
+      "leaks": false,
+      "hasDigest": true,
+      "hasTail": true,
+      "note": "只保留摘要与尾号"
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  }
+}

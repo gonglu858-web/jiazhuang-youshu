@@ -1,0 +1,8 @@
+{
+  "number": 1,
+  "action": "GetCallerIdentity",
+  "body": null,
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:39:47.996Z",
+  "status": "ATTEMPT_STARTED"
+}

@@ -1,0 +1,155 @@
+{
+  "observedAt": "2026-10-07T01:55:20.082Z",
+  "scope": "local synthetic responses, real adapter and core; no platform verification",
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": "multiple-write-1",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 1,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "multiple-write-2",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "duplicate-write-1",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 1,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "duplicate-write-2",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "string-write-1",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 1,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "string-write-2",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "updated-wrong-key-write-1",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 1,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "updated-wrong-key-write-2",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "updated-invalid-shape-write-1",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 1,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "updated-invalid-shape-write-2",
+      "result": {
+        "code": "RESULT_UNKNOWN",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 0,
+        "rollbacks": 1
+      },
+      "passed": true
+    },
+    {
+      "id": "insert-positive",
+      "result": {
+        "outcome": "initialized",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 1,
+        "rollbacks": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "update-placeholder-positive",
+      "result": {
+        "outcome": "initialized",
+        "begin": 1,
+        "reads": 3,
+        "writes": 2,
+        "commits": 1,
+        "rollbacks": 0
+      },
+      "passed": true
+    }
+  ]
+}

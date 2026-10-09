@@ -1,0 +1,12 @@
+{
+  "number": 78,
+  "action": "DescribeTable",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "Tag": "tnt-eficftvp6",
+    "TableName": "schtest_v1_schedules"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:45:47.098Z",
+  "status": "ATTEMPT_STARTED"
+}

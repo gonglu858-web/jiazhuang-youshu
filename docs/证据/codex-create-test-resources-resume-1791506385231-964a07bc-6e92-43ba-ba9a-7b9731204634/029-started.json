@@ -1,0 +1,11 @@
+{
+  "number": 29,
+  "action": "DescribeSafeRule",
+  "body": {
+    "EnvId": "cloud1-d8gcq5ag39d847723",
+    "CollectionName": "schtest_v1_audit_events"
+  },
+  "isWrite": false,
+  "startedAt": "2026-10-09T00:41:56.883Z",
+  "status": "ATTEMPT_STARTED"
+}

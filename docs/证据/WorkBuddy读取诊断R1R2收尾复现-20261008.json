@@ -1,0 +1,259 @@
+{
+  "observedAt": "2026-10-08T11:05:09.888Z",
+  "auditKind": "offline-fix-verification-not-production-component",
+  "scope": "R1 返回错误响应的诊断贯穿 / R2 异常属性访问防护 / 第4节文案",
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realNetworkCalls": 0,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "wroteSyntheticTempDirs": true,
+  "allowedLocalNodeChecks": 0,
+  "blockedUnexpectedProcesses": 0,
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "R1-1-primary-returned-error-response",
+      "pass": true,
+      "observed": {
+        "workerErrorCode": "READ_FAILED",
+        "workerDiagnostics": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "DATABASE_REQUEST_FAILED",
+          "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8"
+        },
+        "topLevelErrorCode": "READ_FAILED",
+        "topLevelDiagnostics": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "DATABASE_REQUEST_FAILED",
+          "requestId": "5dc5d7cb-6deb-42d5-9c36-36a958d574f8"
+        },
+        "beforeFix": "readDiagnostics=null 且 errorCode=PRIMARY_UNCONFIRMED"
+      }
+    },
+    {
+      "id": "R1-2-users-returned-error-response-not-derivation-mismatch",
+      "pass": true,
+      "observed": {
+        "workerErrorCode": "READ_FAILED",
+        "workerDiagnostics": {
+          "readStage": "TARGET_USER_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "DATABASE_REQUEST_FAILED",
+          "requestId": null
+        },
+        "topLevelErrorCode": "READ_FAILED",
+        "derivationMismatch": false,
+        "beforeFix": "readDiagnostics=null 且 errorCode=USER_DERIVATION_MISMATCH"
+      }
+    },
+    {
+      "id": "R1-3-unknown-response-code-collapses-to-other",
+      "pass": true,
+      "observed": {
+        "rows": [
+          {
+            "which": "primary",
+            "responseCode": "WEIRD_PLATFORM_CODE",
+            "recordErrorCode": "READ_FAILED",
+            "diagnosticErrorCode": "OTHER",
+            "expected": "OTHER"
+          },
+          {
+            "which": "users",
+            "responseCode": "MYSTERY_CODE",
+            "recordErrorCode": "READ_FAILED",
+            "diagnosticErrorCode": "OTHER",
+            "expected": "OTHER"
+          },
+          {
+            "which": "primary",
+            "responseCode": "INVALID_PARAM",
+            "recordErrorCode": "READ_FAILED",
+            "diagnosticErrorCode": "INVALID_PARAM",
+            "expected": "INVALID_PARAM"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R1-4-not-found-not-marked-as-read-failure",
+      "pass": true,
+      "observed": {
+        "classification": "NOT_FOUND",
+        "topLevelDiagnostics": null,
+        "note": "NOT_FOUND 与坏形状路径不泛加平台错误含义"
+      }
+    },
+    {
+      "id": "R2-1-message-getter-throwing-does-not-break",
+      "pass": true,
+      "observed": {
+        "threw": false,
+        "diagnostics": {
+          "readStage": "PRIMARY_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "OTHER",
+          "requestId": null
+        },
+        "note": "诊断已不读 error.message"
+      }
+    },
+    {
+      "id": "R2-2-requestid-getter-throwing-does-not-break",
+      "pass": true,
+      "observed": {
+        "threw": false,
+        "diagnostics": {
+          "readStage": "TARGET_USER_READ",
+          "localErrorClass": "UNKNOWN",
+          "errorCode": "OTHER",
+          "requestId": null
+        }
+      }
+    },
+    {
+      "id": "R2-3-unknown-name-is-unknown-not-not-an-error",
+      "pass": true,
+      "observed": {
+        "rows": [
+          {
+            "input": "name getter 抛错",
+            "got": "UNKNOWN",
+            "expect": "UNKNOWN"
+          },
+          {
+            "input": "TcbError（SDK自有）",
+            "got": "UNKNOWN",
+            "expect": "UNKNOWN"
+          },
+          {
+            "input": "自定义名称",
+            "got": "UNKNOWN",
+            "expect": "UNKNOWN"
+          },
+          {
+            "input": "name 缺失",
+            "got": "UNKNOWN",
+            "expect": "UNKNOWN"
+          },
+          {
+            "input": "null",
+            "got": "NOT_AN_ERROR",
+            "expect": "NOT_AN_ERROR"
+          },
+          {
+            "input": "undefined",
+            "got": "NOT_AN_ERROR",
+            "expect": "NOT_AN_ERROR"
+          },
+          {
+            "input": "字符串",
+            "got": "NOT_AN_ERROR",
+            "expect": "NOT_AN_ERROR"
+          },
+          {
+            "input": "数字",
+            "got": "NOT_AN_ERROR",
+            "expect": "NOT_AN_ERROR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R4-wording-and-scope-corrected",
+      "pass": true,
+      "observed": {
+        "rows": [
+          {
+            "input": "TypeError",
+            "got": "LOCAL_TYPE_ERROR",
+            "expect": "LOCAL_TYPE_ERROR"
+          },
+          {
+            "input": "ReferenceError",
+            "got": "LOCAL_REFERENCE_ERROR",
+            "expect": "LOCAL_REFERENCE_ERROR"
+          },
+          {
+            "input": "SyntaxError",
+            "got": "LOCAL_SYNTAX_ERROR",
+            "expect": "LOCAL_SYNTAX_ERROR"
+          },
+          {
+            "input": "Error",
+            "got": "UNKNOWN",
+            "expect": "UNKNOWN"
+          }
+        ],
+        "replacementCharsInWorker": 0,
+        "replacementCharsInObserver": 0,
+        "mentionsSubprocessVsVm": true,
+        "nameClassificationOnly": true,
+        "note": "name 分类只是观察到的名称，不能断定实际来源"
+      }
+    },
+    {
+      "id": "P-retained-normal-and-throwing-paths",
+      "pass": true,
+      "observed": {
+        "reads": 2,
+        "primary": "OBSERVED",
+        "targetUser": "OBSERVED",
+        "note": "正常读取不回归；抛异常诊断路径由既有 DG-1 覆盖，仍通过"
+      }
+    }
+  ],
+  "sdkContractBasis": {
+    "version": "1.4.1",
+    "keyFact": "src/document.ts:337 —— res.code 存在时 get() 直接返回 res 而不抛；该路径不经过 catch，诊断必须在组包阶段接上",
+    "staticOnly": "固定源码静态事实；平台实际返回码与 requestId 形状未经真实调用验证"
+  },
+  "retainedFromPreviousRound": [
+    "凭据获取、进程收尾、初始化、业务实现等已关闭项未重做",
+    "抛异常路径的白名单码/合法 requestId/异常名称分类可贯穿父层（既有 DG-1 仍通过）",
+    "正常只读路径不回归"
+  ],
+  "remainingOpen": [
+    {
+      "id": "real-read-failed-root-cause-unknown",
+      "severity": "BLOCKING_FOR_PRODUCTION",
+      "detail": "真实READ_FAILED 根因**仍未查明**。本轮只修诊断实现，未联网复验、未执行真实 secrets 命令、未取真实凭据。本轮交付的是「诊断实现已离线验证」，不是根因结论。",
+      "needed": "Codex 复核通过后再执行一次真实只读诊断观测。"
+    },
+    {
+      "id": "platform-error-code-space-unverified",
+      "severity": "MEDIUM",
+      "detail": "白名单未扩大；平台侧实际错误码与 requestId 形状未验证，命中即 OTHER。",
+      "needed": "真实诊断观测后按实际观测补充，不得凭猜测扩充。"
+    },
+    {
+      "id": "production-same-batch-chain-not-proven",
+      "severity": "MEDIUM",
+      "detail": "真实凭据获取与三条 CLI 关联已通过，但 SDK 未取得可用数据库结果，完整生产同批链仍不能判通过；proven 恒 false。",
+      "needed": "数据库读取可用后再评估。"
+    }
+  ],
+  "limitations": [
+    "全部为合成传输与合成凭据；未执行真实云请求。",
+    "异常名称分类只是观察到的 name，不能断定异常实际来源；任何对象都可自报 name。",
+    "独立子进程的异常不会以活对象跨 IPC 传给父进程；VM 夹具才涉及跨 realm 对象，两者不混同。",
+    "Node 运行时拦截不是操作系统防火墙。",
+    "不改变集合是否存在、权限状态或初始化需求 —— 这些仍未结论化。"
+  ],
+  "sha256": {
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "miniapp/tests/cloudbase-sdk-readonly-observer.test.cjs": "5106d99483965c076aaf6f7877db68d3159b3b0665c05b916b4c3b0f8fcdbaea",
+    "miniapp/scripts/check-cloudbase-sdk-readonly.cjs": "1a0ea9d6eced919d9d4f67d712a4886be2eef0a568ac4a255c0a9ac3e69f2b3c",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/check-cloudbase-readonly.cjs": "552dc12269989ec271338153fba036331cc37a27facc13189c3c2a8d0a17ae3a"
+  }
+}
