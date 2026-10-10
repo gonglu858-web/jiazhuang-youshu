@@ -1,0 +1,255 @@
+{
+  "observedAt": "2026-10-10T04:23:00.458Z",
+  "scope": "Codex 2026-10-10 四次复核 N2 完整结果组合与 §3 真实 alreadyPresent 夹具更正",
+  "networkAttempts": 0,
+  "blockedProcesses": [],
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realInitializeExecuted": false,
+  "realDeploymentExecuted": false,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "historicalAndClosedFilesUnchanged": true,
+  "protectedHashes": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "dc1881e8d7daa8ca",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "c12b791f2ae653b2",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "38ac94faf1ce14e9",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc0206",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923e",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": "c5e93d81e0245471",
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb"
+  },
+  "summary": {
+    "total": 12,
+    "passed": 10,
+    "unverified": 2,
+    "failed": 0
+  },
+  "verificationKinds": {
+    "synthetic": "四个组合样本：合成 CLI/worker 事件 + 合成 SDK 传输，无数据库读写；仅验证父层对损坏协议的处理",
+    "realSdkLocalTransform": "正常初始化 / 真实提交后回读失败 / 真实 alreadyPresent：真实 host/worker/P4/SDK 转换 + 合成传输，仍非云端执行",
+    "notPerformed": "真实凭据获取、真实初始化、平台事务、IAM 写权限、本人微信登记、资源创建、部署、入口启用均未验证"
+  },
+  "boundaries": {
+    "notNetworked": true,
+    "noRealCredentialFetch": true,
+    "noRealInitialize": true,
+    "noResourceCreation": true,
+    "noDeployment": true,
+    "noEntranceEnable": true,
+    "subprocessUsesExpiredSyntheticCredentialOnly": true,
+    "noHistoricalEvidenceOverwritten": true,
+    "clockReplacedOnlyInsideThisProcess": true,
+    "followsRealP4ObserveContract": "observePrimary 不返回 inputDigest；本证据不把摘要缺失当矛盾",
+    "note": "SDK 层替换静态 Db.reqClass 并注入已建好的 db；事务计数是合成传输计数，不是云端写入"
+  },
+  "results": [
+    {
+      "id": "N2-unknown-false-flags",
+      "pass": true,
+      "observed": {
+        "saveRecordType": "RESULT_UNKNOWN",
+        "initialized": false,
+        "granted": false,
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "fullInitializationSuccess": false,
+        "commitFactEstablished": false,
+        "contradictions": [
+          "UNKNOWN_OR_MISSING_OUTCOME"
+        ],
+        "expectedCode": "UNKNOWN_OR_MISSING_OUTCOME"
+      }
+    },
+    {
+      "id": "N2-initialized-denies-flags",
+      "pass": true,
+      "observed": {
+        "saveRecordType": "RESULT_UNKNOWN",
+        "initialized": false,
+        "granted": false,
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "fullInitializationSuccess": false,
+        "commitFactEstablished": false,
+        "contradictions": [
+          "INITIALIZED_WITHOUT_GRANTED",
+          "INITIALIZED_OUTCOME_WITHOUT_INITIALIZED_FLAG",
+          "BOOTSTRAP_INITIALIZED_MISSING_FACTS"
+        ],
+        "expectedCode": "INITIALIZED_OUTCOME_WITHOUT_INITIALIZED_FLAG"
+      }
+    },
+    {
+      "id": "N2-audit-only-confirmed",
+      "pass": true,
+      "observed": {
+        "saveRecordType": "FAILED",
+        "initialized": false,
+        "granted": false,
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "fullInitializationSuccess": false,
+        "commitFactEstablished": false,
+        "contradictions": [],
+        "expectedCode": null
+      }
+    },
+    {
+      "id": "N2-already-present-claims-grant",
+      "pass": true,
+      "observed": {
+        "saveRecordType": "RESULT_UNKNOWN",
+        "initialized": false,
+        "granted": false,
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "fullInitializationSuccess": false,
+        "commitFactEstablished": false,
+        "contradictions": [
+          "ALREADY_PRESENT_CLAIMS_GRANT",
+          "BOOTSTRAP_ALREADY_PRESENT_CLAIMS_FACTS"
+        ],
+        "expectedCode": "ALREADY_PRESENT_CLAIMS_GRANT"
+      }
+    },
+    {
+      "id": "N2-top-bootstrap-mismatch",
+      "pass": true,
+      "observed": {
+        "saveRecordType": "RESULT_UNKNOWN",
+        "initialized": false,
+        "granted": false,
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "fullInitializationSuccess": false,
+        "commitFactEstablished": false,
+        "contradictions": [
+          "INITIALIZED_NOT_IN_BOOTSTRAP",
+          "GRANTED_NOT_IN_BOOTSTRAP",
+          "OUTCOME_MISMATCH",
+          "TOP_LEVEL_INITIALIZED_DENIED_BY_BOOTSTRAP",
+          "BOOTSTRAP_OUTCOME_MISMATCH",
+          "BOOTSTRAP_INITIALIZED_MISMATCH",
+          "BOOTSTRAP_GRANTED_MISMATCH"
+        ],
+        "expectedCode": "BOOTSTRAP_OUTCOME_MISMATCH"
+      }
+    },
+    {
+      "id": "N3-real-already-present-zero-write-no-grant",
+      "pass": true,
+      "observed": {
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 1,
+          "commit": 0,
+          "abort": 1,
+          "readOnlyGet": 4
+        },
+        "outcome": "alreadyPresent",
+        "initialized": false,
+        "granted": false,
+        "bootstrapAuditId": null,
+        "bindingMatched": false,
+        "status": "FAILED",
+        "saveRecordType": "RESULT_UNKNOWN",
+        "reconcileAttempted": true
+      }
+    },
+    {
+      "id": "real-normal-initialization-completes",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "outcome": "initialized",
+        "initialized": true,
+        "granted": true,
+        "fullInitializationSuccess": true,
+        "saveRecordType": "COMPLETED",
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "begin": 1,
+          "commit": 1,
+          "abort": 0,
+          "readOnlyGet": 2
+        }
+      }
+    },
+    {
+      "id": "real-commit-readback-failed-keeps-fact",
+      "pass": true,
+      "observed": {
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "begin": 1,
+          "commit": 1,
+          "abort": 0,
+          "readOnlyGet": 2
+        },
+        "initialized": true,
+        "outcome": "initialized",
+        "commitFactEstablished": true,
+        "observationConfirmed": false,
+        "saveRecordType": "RESULT_UNKNOWN"
+      }
+    },
+    {
+      "id": "wrong-binding-conservative-reconcile",
+      "pass": true,
+      "observed": {
+        "reconcileAttempted": true,
+        "readOnlyGet": 2,
+        "initialized": false,
+        "granted": false,
+        "saveRecordType": "RESULT_UNKNOWN",
+        "foreignKeyLeaked": false
+      }
+    },
+    {
+      "id": "R3-e-original-path-subprocess-entry",
+      "pass": false,
+      "observed": {
+        "unverified": true,
+        "reason": "宿主此刻无法启动该子进程（原始错误如实记录，原因未判定）",
+        "rawError": "spawnSync C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe EBUSY"
+      },
+      "unverified": true
+    },
+    {
+      "id": "R3-e-missing-fields-rejected",
+      "pass": false,
+      "observed": {
+        "unverified": true,
+        "reason": "宿主此刻无法启动该子进程（原始错误如实记录，原因未判定）",
+        "rawError": "spawnSync C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe EBUSY"
+      },
+      "unverified": true
+    },
+    {
+      "id": "default-entry-zero-external-actions",
+      "pass": true,
+      "observed": {
+        "status": "LOCAL_READY",
+        "credentialFetched": false,
+        "cloudCallAttempted": false,
+        "workerStarted": false
+      }
+    }
+  ]
+}

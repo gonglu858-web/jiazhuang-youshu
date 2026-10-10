@@ -897,6 +897,13 @@ async function executeOnce(options) {
   report.granted = workerResult && workerResult.granted === true;
   report.initialized = workerResult && workerResult.initialized === true;
   report.observationConfirmed = workerResult && workerResult.observationConfirmed === true;
+  // N2：组合矛盾码与两个聚合结论如实带到报告（供核对与交付核对）
+  report.stateContradictions = workerResult && Array.isArray(workerResult.stateContradictions)
+    ? workerResult.stateContradictions.slice()
+    : null;
+  report.commitFactEstablished = workerResult && workerResult.commitFactEstablished === true;
+  report.fullInitializationSuccess = workerResult && workerResult.fullInitializationSuccess === true;
+  report.bindingMismatch = workerResult && workerResult.bindingMismatch === true;
   report.workerProcess = workerResult && workerResult.processFacts
     ? workerResult.processFacts : null;
 
@@ -914,7 +921,15 @@ async function executeOnce(options) {
    * S3-3（Codex 2026-10-10）：核对返回值逐字段/逐值净化，不让普通返回对象
    * 里的任意文本进入报告。
    */
-  if (!workerResult || workerResult.ok !== true || report.observationConfirmed !== true) {
+  /**
+   * N2（Codex §2）：只有**完整初始化成功**才进入保存成功分支。
+   * `fullInitializationSuccess` 由聚合点按 outcome 穷举 + 双向一致性 + 绑定
+   * + 观察完整算出；`ok` 与 `observationConfirmed` 是它的必要条件，
+   * 这里显式并列，避免仅凭回执布尔或观察布尔放行。
+   */
+  if (!workerResult || workerResult.ok !== true ||
+    report.observationConfirmed !== true ||
+    report.fullInitializationSuccess !== true) {
     /**
    * N2（Codex 2026-10-10 §3.1）：`mayHaveWritten` 的判定。
    *
@@ -1347,44 +1362,87 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
   }
 
   /**
-   * N2 §3.2：按**合法结果组合**统一定义，而不是继续堆叠不相干的 if。
+   * N2（Codex 2026-10-10 §2）：**完整结果组合规则**。
    *
-   * 合法组合（依据 worker 自身的归一化契约
-   * `initialized = (outcome === 'initialized') && granted`，
-   * 以及 P4 `initializePrimary` 的三个真实 outcome）：
+   * 前一版的检查大多位于 `if (out.initialized === true)` 之内 ——
+   * initialized=false 时，UNKNOWN outcome、denied initialized outcome 等
+   * 仍可搭配顶层 ok=true / observationConfirmed=true 被保存为 COMPLETED。
+   * 实测四个组合（两层同名字段、其余沿用成功载荷）：
+   *   UNKNOWN+false/false、initialized+false/false、
+   *   auditAlreadyPresent+false/false、alreadyPresent+false/**true**
+   * 全部 `observationConfirmed=true` 且保存 COMPLETED。
    *
-   * | outcome             | initialized | granted | observationConfirmed |
-   * |---------------------|-------------|---------|----------------------|
-   * | initialized         | true        | true    | true（且 observed 全 active/present）|
-   * | alreadyPresent      | false       | 可为 true| 可为 true（观察既有记录）|
-   * | auditAlreadyPresent | false       | false   | false                |
-   * | UNKNOWN / 缺失      | false       | false   | false                |
+   * 现在改为**按 outcome 穷举合法组合**（不看 initialized 的取值）：
    *
-   * 要点：
-   *  - `UNKNOWN` 或缺失**不能承载「已初始化」的肯定事实** —— 实测顶层与
-   *    bootstrap.outcome 同时为 UNKNOWN、两层 initialized 仍 true 时被保存
-   *    COMPLETED；
-   *  - `alreadyPresent` 是合法分支，**不要求** initialized=true（不得一律要求）；
-   *  - `auditAlreadyPresent` 表示审计在而 primary 缺，不是成功初始化。
+   * | P4 原始分支        | outcome             | granted | initialized | 可保存完整成功 |
+   * |--------------------|---------------------|---------|-------------|----------------|
+   * | 首建并提交          | initialized         | true    | true        | 是（需绑定+观察完整）|
+   * | primary 已存在      | alreadyPresent      | false   | false       | 否（保守停止/核对）|
+   * | 审计在而 primary 缺  | auditAlreadyPresent | false   | false       | 否（冲突停止）    |
+   * | 未知/缺失/组合矛盾  | UNKNOWN 或非法       | —       | —           | 否              |
+   *
+   * 依据 P4 `initializePrimary` 的三个真实返回：
+   *  - initialized：返回 granted=true、auditId、inputDigest；
+   *  - alreadyPresent：返回 granted=false、existing，**不返回 auditId/inputDigest**；
+   *  - auditAlreadyPresent：返回 granted=false、auditId，**不返回 inputDigest**。
+   * worker 的 `normalizeBootstrapResult` 不会凭空补出缺失字段，
+   * 因此后两分支天然**不满足绑定**，应走保守核对而非伪装成初始化成功。
+   *
+   * 同时核对**顶层与 bootstrap 双向一致**（不只检查「true 是否有支撑」，
+   * 也要拦住相反方向的矛盾）。
    */
-  const legalOutcome = PARENT_OUTCOMES.indexOf(out.outcome) !== -1;
-  if (out.initialized === true) {
-    // 已初始化必须是合法 outcome 且为 'initialized'；UNKNOWN/缺失一律不承载
-    if (!legalOutcome) contradictions.push('INITIALIZED_WITH_UNKNOWN_OUTCOME');
-    else if (out.outcome !== 'initialized') contradictions.push('INITIALIZED_OUTCOME_NOT_INITIALIZED');
-    if (bs !== null && !legalOutcomeFor(bs.outcome)) {
-      contradictions.push('BOOTSTRAP_OUTCOME_UNKNOWN');
-    } else if (bs !== null && bs.outcome !== out.outcome) {
-      contradictions.push('BOOTSTRAP_OUTCOME_MISMATCH');
+  // 双向一致性：顶层与 bootstrap 的 outcome/initialized/granted 必须相互一致
+  if (bs !== null) {
+    if (bs.outcome !== out.outcome) contradictions.push('BOOTSTRAP_OUTCOME_MISMATCH');
+    if (bs.initialized !== out.initialized) contradictions.push('BOOTSTRAP_INITIALIZED_MISMATCH');
+    if (bs.granted !== out.granted) contradictions.push('BOOTSTRAP_GRANTED_MISMATCH');
+  }
+
+  // 未知/缺失 outcome：**任何**取值下都不能承载完整初始化成功
+  if (!legalOutcomeFor(out.outcome)) {
+    contradictions.push('UNKNOWN_OR_MISSING_OUTCOME');
+    // 明确否定肯定事实，避免 ok=true 与 observationConfirmed 单独放行
+    if (out.initialized === true) contradictions.push('INITIALIZED_WITH_UNKNOWN_OUTCOME');
+    if (out.granted === true) contradictions.push('GRANTED_WITH_UNKNOWN_OUTCOME');
+  } else if (bs !== null && !legalOutcomeFor(bs.outcome)) {
+    contradictions.push('BOOTSTRAP_OUTCOME_UNKNOWN');
+  }
+
+  // 按 outcome 穷举该分支的合法布尔组合
+  switch (out.outcome) {
+    case 'initialized':
+      // 首建并提交：两层都必须 granted+initialized，且绑定精确
+      if (out.granted !== true) contradictions.push('INITIALIZED_WITHOUT_GRANTED');
+      if (out.initialized !== true) contradictions.push('INITIALIZED_OUTCOME_WITHOUT_INITIALIZED_FLAG');
+      break;
+    case 'alreadyPresent':
+      // 已有 primary：P4 明确 granted=false、零写入、不重复授予
+      if (out.granted === true) contradictions.push('ALREADY_PRESENT_CLAIMS_GRANT');
+      if (out.initialized === true) contradictions.push('ALREADY_PRESENT_CLAIMS_INITIALIZED');
+      break;
+    case 'auditAlreadyPresent':
+      // 审计在而 primary 缺：P4 因状态冲突停止，不是成功初始化
+      if (out.granted === true) contradictions.push('AUDIT_ONLY_CLAIMS_GRANT');
+      if (out.initialized === true) contradictions.push('AUDIT_ONLY_CLAIMS_INITIALIZED');
+      break;
+    default:
+      // UNKNOWN / 缺失 / 非法：上面的未知分支已记录矛盾
+      break;
+  }
+  // bootstrap 侧同样按分支核对（防止顶层合规、bootstrap 越界）
+  if (bs !== null) {
+    if (bs.outcome === 'alreadyPresent' &&
+      (bs.granted === true || bs.initialized === true)) {
+      contradictions.push('BOOTSTRAP_ALREADY_PRESENT_CLAIMS_FACTS');
     }
-  }
-  if (out.outcome === 'alreadyPresent' && out.initialized === true) {
-    // 合法已有记录分支：观察既有记录 ≠ 本轮初始化
-    contradictions.push('ALREADY_PRESENT_CLAIMS_INITIALIZED');
-  }
-  if (out.outcome === 'auditAlreadyPresent' &&
-    (out.initialized === true || out.granted === true)) {
-    contradictions.push('AUDIT_ONLY_CLAIMS_GRANT');
+    if (bs.outcome === 'auditAlreadyPresent' &&
+      (bs.granted === true || bs.initialized === true)) {
+      contradictions.push('BOOTSTRAP_AUDIT_ONLY_CLAIMS_FACTS');
+    }
+    if (bs.outcome === 'initialized' &&
+      (bs.granted !== true || bs.initialized !== true)) {
+      contradictions.push('BOOTSTRAP_INITIALIZED_MISSING_FACTS');
+    }
   }
 
   if (!bindingMatched) {
@@ -1414,6 +1472,48 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
     out.initialized = false;
     out.granted = false;
     if (out.errorCode === null) out.errorCode = ERR.RESULT_UNKNOWN;
+  }
+
+  /**
+   * N2（Codex §2）：区分「**提交事实已确立**」与「**完整初始化成功**」。
+   *
+   * 提交事实已确立（可绑定、可保留）：
+   *   绑定精确匹配 + 无组合矛盾 + 两层 outcome 均为 initialized +
+   *   两层 granted/initialized 均为 true。
+   *   此时**即使观察未确认**（回读失败/过期），已发生的提交事实**保留**，
+   *   不得抹为零写（Codex §2 表格 initialized 行明确要求）。
+   *
+   * 完整初始化成功（可保存 COMPLETED）：在上述基础上，
+   *   **还必须**观察完整 —— present + 两条存在性 + active。
+   *
+   * 其余分支（alreadyPresent / auditAlreadyPresent / UNKNOWN / 缺失 / 矛盾）
+   * 既不确立提交事实也不构成完整成功：后续观察到有效记录只是**观察结论**，
+   * 不能把 P4 的「零写停止」或「冲突停止」提升为「本轮初始化已完成」。
+   */
+  const commitFactEstablished = Boolean(
+    bindingMatched &&
+    contradictions.length === 0 &&
+    out.outcome === 'initialized' &&
+    out.initialized === true && out.granted === true &&
+    bs !== null && bs.outcome === 'initialized' &&
+    bs.initialized === true && bs.granted === true
+  );
+  out.commitFactEstablished = commitFactEstablished;
+  out.fullInitializationSuccess = Boolean(
+    commitFactEstablished && out.observationConfirmed === true
+  );
+
+  if (!commitFactEstablished) {
+    // 未经绑定与组合校验的回执**不构成**已确立事实：撤销肯定事实，
+    // 但保留 raw* 字段如实记录「回执曾自报过」。
+    out.ok = false;
+    out.initialized = false;
+    out.granted = false;
+    out.observationConfirmed = false;
+  } else if (!out.fullInitializationSuccess) {
+    // 提交事实成立但观察未完成：**不报成功**，但**保留** initialized/granted。
+    out.ok = false;
+    out.observationConfirmed = false;
   }
   // 结果未知必须有固定错误码（此前此分支可能仍是 WORKER_FAILED）
   if (out.resultUnknown === true && out.errorCode !== ERR.RESULT_UNKNOWN &&
