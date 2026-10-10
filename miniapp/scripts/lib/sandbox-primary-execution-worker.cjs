@@ -40,6 +40,7 @@ const ERR = Object.freeze({
   CREDENTIAL_SHAPE_INVALID: 'WORKER_CREDENTIAL_SHAPE_INVALID',
   CREDENTIAL_EXPIRED: 'WORKER_CREDENTIAL_EXPIRED',
   PLAN_EXPIRED: 'WORKER_PLAN_EXPIRED',
+  APPROVAL_EXPIRED: 'WORKER_APPROVAL_EXPIRED',
   SDK_UNAVAILABLE: 'WORKER_SDK_UNAVAILABLE',
   PLAN_INVALID: 'WORKER_PLAN_INVALID',
   APPROVAL_INVALID: 'WORKER_APPROVAL_INVALID',
@@ -140,7 +141,8 @@ function normalizeBootstrapResult(result, expect) {
  */
 const CORE_ERROR_CODES = new Set([
   // 本 worker 自身的执行期期限码（S2）
-  'WORKER_PLAN_EXPIRED', 'WORKER_CREDENTIAL_EXPIRED', 'WORKER_APPROVAL_INVALID',
+  'WORKER_PLAN_EXPIRED', 'WORKER_CREDENTIAL_EXPIRED', 'WORKER_APPROVAL_EXPIRED',
+  'WORKER_APPROVAL_INVALID',
   // 计划 / 时钟
   'PLAN_INVALID', 'CLOCK_INVALID', 'PLAN_EXPIRED_BEFORE_WRITE',
   // 批准上下文
@@ -375,7 +377,8 @@ async function run(payload, deps) {
       // 仅离线合成测试注入；生产子进程入口不传，worker 按固定配置自建
       db: d.db || null,
       // S2：把执行期期限复核接到适配层边界守卫上
-      deadlineCheck: () => assertWithinDeadlines('EXECUTION_BOUNDARY') !== null
+      deadlineCheck: (stage, forObservation) =>
+        noteDeadlineBreach(stage || 'EXECUTION_BOUNDARY', forObservation === true) !== null
     });
   } catch (_) {
     emit({ ok: false, errorCode: ERR.SDK_UNAVAILABLE });
@@ -392,28 +395,62 @@ async function run(payload, deps) {
    */
   const credentialDeadlineMs = cred.expiresAtMs;
   const approvalDeadlineMs = payload.approvalExpiresAtMs;
+  /**
+   * S2-1：**计划自身**的期限。此前守卫只比较凭据与批准，漏掉计划 `expiresAt`，
+   * 于是「计划先到期、凭据与批准仍有效」时仍两写一提交并报成功。
+   * `normalizedPlan.deadlineMs` 由 P4 从 `plan.expiresAt` 派生（已校验为有限数）。
+   */
+  const planDeadlineMs = Number.isFinite(normalizedPlan.deadlineMs)
+    ? normalizedPlan.deadlineMs
+    : Date.parse(rawPlanForDeadline.expiresAt);
 
   /**
-   * S2：凭据期限与**批准期限**的执行期复核。
+   * S2：三种期限在每个实际操作边界分别复核。
    *
    * `fixedNowMs` 只作审计记录时间；**不**用它给 P4 做有效期校验。
    * Codex 实测：事务中途过期仍两写一提交并报成功 —— 因为给 P4 的
    * `nowMs` 是起点常量，核心自己的「首写前再核验」一直看到起点时间。
    *
-   * P4 的 `resolveNowMs` 只接受数字（不改核心），因此这里在**每次**调用
-   * 前取一次实时时钟传入，使核心的多次校验看到推进后的真实时间。
+   * P4 的 `resolveNowMs` 只接受**有限数值**（Codex 2026-10-10 更正：
+   * 「给 P4 传实时函数」不可照做），因此这里在每次调用前取一次实时时钟，
+   * 并在本层按实际操作边界复核三种期限。
    *
+   * @param {string} stage 实际发生的操作边界
+   * @param {boolean} forObservation 只读核对阶段的凭据复核（写入期限不适用）
    * @returns {null|{code:string}} 过期时返回固定错误码，否则 null
    */
-  function assertWithinDeadlines(stage) {
+  function assertWithinDeadlines(stage, forObservation) {
     const nowMs = now();
+    // 凭据过期对**读**同样致命：过期的凭据无法确认平台状态
     if (credentialDeadlineMs <= nowMs) {
       return { code: ERR.CREDENTIAL_EXPIRED, stage };
     }
-    if (approvalDeadlineMs <= nowMs) {
+    if (planDeadlineMs <= nowMs) {
       return { code: ERR.PLAN_EXPIRED, stage };
     }
+    // 批准期限约束的是**写入授权**；只读核对阶段不再据此停止，
+    // 否则会把「写入已过期但核对仍可完成」误报成核对未完成。
+    if (!forObservation && approvalDeadlineMs <= nowMs) {
+      return { code: ERR.APPROVAL_EXPIRED, stage };
+    }
     return null;
+  }
+
+  /**
+   * S2：最近一次越界的**实际**期限与阶段（如实归因）。
+   *
+   * P4 会把守卫抛出的未知错误统一包成 `RESULT_UNKNOWN`（核心既有行为，
+   * 不改核心）。若只记录该码，就无法区分「凭据过期」与「批准过期」——
+   * 报告里只剩一个无信息的 RESULT_UNKNOWN。这里由本层在越界发生时
+   * 记录归因，与 P4 的保守结论并存（不替代它）。
+   */
+  let deadlineBreach = null;
+  function noteDeadlineBreach(stage, forObservation) {
+    const hit = assertWithinDeadlines(stage, forObservation);
+    if (hit !== null) {
+      deadlineBreach = { code: hit.code, stage };
+    }
+    return hit;
   }
 
   // 事务接线：调用既有 initializePrimary，不重写核心。
@@ -431,7 +468,7 @@ async function run(payload, deps) {
    * S2：进入核心**前**再核一次期限（开事务边界）。
    * 核心自己还会在首写前复核，但那时事务已开；此处能在开事务前就停下。
    */
-  const beforeBegin = assertWithinDeadlines('BEFORE_TRANSACTION');
+  const beforeBegin = noteDeadlineBreach('BEFORE_TRANSACTION', false);
   if (beforeBegin !== null) {
     emit({
       ok: false, errorCode: beforeBegin.code, resultUnknown: false,
@@ -473,10 +510,12 @@ async function run(payload, deps) {
     : normalizeBootstrapResult(bootstrap, { targetUserId: normalizedPlan.targetUserId, auditId });
 
   /**
-   * S2 时效事实（如实报告）。
+   * S2 时效事实（**三种期限各自如实报告**，此前 `planExpiredDuringRun`
+   * 统计的其实是批准期限，会误报；只读阶段的过期另计）。
    */
   const credentialExpiredDuringRun = credentialDeadlineMs <= now();
-  const planExpiredDuringRun = approvalDeadlineMs <= now();
+  const planExpiredDuringRun = planDeadlineMs <= now();
+  const approvalExpiredDuringRun = approvalDeadlineMs <= now();
 
   /**
    * 何时需要只读核对：
@@ -494,6 +533,10 @@ async function run(payload, deps) {
   let observed = null;
   let observeFailed = false;
   let observationSkippedReason = null;
+  // S2-3：核对**期间**凭据过期（提交本身合规）—— 与写入期过期分开记录。
+  // 注意：核心 observePrimary 会吞掉读取异常，故这里以「守卫是否触发过」
+  // 为准，而不是依赖 catch 到越界错误。
+  let observeExpiredDuringReadFlag = false;
   if (writeReachedCore && !credentialUsable) {
     observationSkippedReason = 'CREDENTIAL_EXPIRED_NO_OBSERVE';
     observeFailed = true;
@@ -512,32 +555,60 @@ async function run(payload, deps) {
       // 只看异常会把这些当成「已核对」。统一按 `isObservationConfirmed` 判定。
       observeFailed = !isObservationConfirmed(observed);
     } catch (_) {
-      // 回读失败**不得抹去已提交事实**，更不得重试写
+      // 回读失败**不得抹去已提交事实**，更不得重试写。
+      // 注意：核心 observePrimary 内部已吞掉读取异常并返回 unconfirmed，
+      // 因此通常**不会**走到这里；越界判定见下方 observeExpiredDuringRead。
       observeFailed = true;
     }
   }
 
+  // 核对期间守卫是否触发过（无论核心是否吞掉异常）
+  observeExpiredDuringReadFlag = Boolean(
+    deadlineBreach !== null && credentialDeadlineMs <= now()
+  );
   const confirmed = isObservationConfirmed(observed);
+  /**
+   * S2-3：核对期间过期的判定。
+   *
+   * 关键事实：P4 的 `observePrimary` **内部吞掉读取异常**并返回
+   * `state='unconfirmed'`（核心既有行为，不改核心）—— 因此靠 catch 捕获
+   * 越界错误是**不可靠**的：守卫确实抛了错，但核心把它变成了 unconfirmed。
+   *
+   * 正确判据：守卫在**本层**记录了越界归因（`deadlineBreach`），且该次
+   * 核对期间凭据已过期。两者同时成立才算「核对期间过期」。
+   */
+  const observeExpiredDuringRead = Boolean(
+    writeReachedCore && needObservation &&
+    observeExpiredDuringReadFlag &&
+    credentialDeadlineMs <= now()
+  );
 
   /**
    * S2：若提交已发生、随后才过期，**保留提交事实**并区分「核对未完成」，
    * 不能把成功提交抹成零写。
    */
-  const expiredAfterWrite = writeReachedCore && (credentialExpiredDuringRun || planExpiredDuringRun);
+  const expiredAfterWrite = writeReachedCore &&
+    (credentialExpiredDuringRun || planExpiredDuringRun || approvalExpiredDuringRun);
+  // S2-3：回读**期间**才过期（提交本身合规）—— 保留提交事实，标核对未完成
+  const observationExpired = observeExpiredDuringRead;
 
   emit({
     // R5：只有「事务已提交 **且** 核对确认」才算成功。
-    ok: writeErrorCode === null && confirmed && !expiredAfterWrite,
+    ok: writeErrorCode === null && confirmed && !expiredAfterWrite && !observationExpired,
     errorCode: writeErrorCode !== null
       ? writeErrorCode
       : (expiredAfterWrite
-        ? (credentialExpiredDuringRun ? ERR.CREDENTIAL_EXPIRED : ERR.PLAN_EXPIRED)
-        : null),
+        ? (credentialExpiredDuringRun
+          ? ERR.CREDENTIAL_EXPIRED
+          : (planExpiredDuringRun ? ERR.PLAN_EXPIRED : ERR.APPROVAL_EXPIRED))
+        : (observationExpired ? ERR.CREDENTIAL_EXPIRED : null)),
     resultUnknown,
     bootstrap: normalized,
     observed,
     observeFailed,
-    observationSkippedReason,
+    observationSkippedReason: observationExpired
+      ? 'CREDENTIAL_EXPIRED_DURING_OBSERVE'
+      : observationSkippedReason,
     // R5：`PLAN_READY` 不是成功分类。分别记录四件事：
     //  本地计划是否有效、提交事实、回读 state、是否已授予。
     outcome: normalized ? normalized.outcome : 'UNKNOWN',
@@ -549,6 +620,12 @@ async function run(payload, deps) {
     planExpiredDuringRun,
     // S2：提交已发生后又过期 —— 提交事实保留，仅标记核对未完成
     expiredAfterWrite,
+    // S2-3：只读核对期间凭据过期（提交本身合规，核对未完成）
+    observationExpiredDuringRead: observationExpired,
+    // S2-1：三种期限各自的事实，不再用批准期限冒充计划期限
+    approvalExpiredDuringRun,
+    // S2：越界的实际期限与阶段（与 P4 的 RESULT_UNKNOWN 并存，如实归因）
+    deadlineBreach,
     // 已确定的审计 ID 与计划摘要**始终**带出（含失败路径），供宿主核对
     auditId,
     planDigest: digest,
@@ -677,8 +754,8 @@ if (require.main === module) {
  * @param {function} check 每次边界调用前执行，返回 true 表示已越界
  */
 function withExecutionDeadlineGuard(adapter, check) {
-  const guard = (stage) => {
-    if (check(stage)) {
+  const guard = (stage, forObservation) => {
+    if (check(stage, forObservation)) {
       const err = new Error('EXECUTION_DEADLINE_EXCEEDED');
       err.code = 'EXECUTION_DEADLINE_EXCEEDED';
       err.deadlineStage = stage;
@@ -692,6 +769,41 @@ function withExecutionDeadlineGuard(adapter, check) {
     guard(stage + '_AFTER');
     return r;
   };
+  /**
+   * S2-2：`beginTransaction` 的**后置**复核不得丢失已取得的 tx 句柄。
+   *
+   * 此前 begin 也套用通用 `wrapTx`：底层已返回 tx，后检查抛错，
+   * 于是 `tx = await beginTransaction()` 根本没机会赋值 —— P4 的 catch
+   * 拿不到 tx，无法回滚（实测 begin=1 / abort=0，事务句柄遗失）。
+   *
+   * 现在：后置复核失败时**先尝试回滚已取得的句柄**，再抛错；
+   * 回滚结果如实记录（失败不谎称平台已自动回滚）。
+   */
+  const beginTx = async () => {
+    guard('BEFORE_TRANSACTION');
+    const tx = await adapter.beginTransaction();
+    let rollbackAttempted = false;
+    let rollbackSucceeded = null;
+    const after = check('AFTER_TRANSACTION', false) === true;
+    if (after) {
+      rollbackAttempted = true;
+      try {
+        await adapter.rollback(tx);
+        rollbackSucceeded = true;
+      } catch (_) {
+        // 如实记为未确认：不声称平台已自动回滚，也不吞掉过期事实
+        rollbackSucceeded = false;
+      }
+      const err = new Error('EXECUTION_DEADLINE_EXCEEDED');
+      err.code = 'EXECUTION_DEADLINE_EXCEEDED';
+      err.deadlineStage = 'AFTER_TRANSACTION';
+      err.txHandleRecovered = true;
+      err.rollbackAttempted = true;
+      err.rollbackSucceeded = rollbackSucceeded;
+      throw err;
+    }
+    return tx;
+  };
   const writeTx = async (tx, collection, key, doc) => {
     guard('BEFORE_WRITE');
     const r = await adapter.setDoc(tx, collection, key, doc);
@@ -702,14 +814,29 @@ function withExecutionDeadlineGuard(adapter, check) {
     guard('BEFORE_COMMIT');
     return adapter.commit(tx);
   };
+  /**
+   * S2-3：只读核对阶段的每次实际读取**前后**都复核同批凭据。
+   *
+   * 此前 `readOnlyGet` 未包守卫 —— 实测提交正常完成后，在 primary 非事务
+   * 回读事件令凭据过期，仍发生第二条（审计）读取且最终 `ok=true`。
+   *
+   * 过期时抛错由本层 catch：已提交事实保留，标记核对未完成，
+   * **不重写、不补取另一批凭据**。
+   */
+  const readOnlyGet = async (collection, key) => {
+    guard('BEFORE_READ_ONLY', true);
+    const r = await adapter.readOnlyGet(collection, key);
+    guard('AFTER_READ_ONLY', true);
+    return r;
+  };
   return Object.freeze({
     verifyCaller: adapter.verifyCaller,
-    beginTransaction: wrapTx(adapter.beginTransaction.bind(adapter), 'BEGIN_TRANSACTION'),
+    beginTransaction: beginTx,
     getDoc: wrapTx(adapter.getDoc.bind(adapter), 'READ'),
     setDoc: writeTx,
     commit: commitTx,
     rollback: adapter.rollback.bind(adapter),
-    readOnlyGet: adapter.readOnlyGet.bind(adapter),
+    readOnlyGet,
     __meta: adapter.__meta
   });
 }

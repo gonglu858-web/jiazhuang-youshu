@@ -1,0 +1,375 @@
+{
+  "observedAt": "2026-10-10T01:29:19.617Z",
+  "scope": "Codex 2026-10-10 复核 S2/S3/S4 剩余项定点收尾 + R3-e 测试路径与 EBUSY 文案更正；S1 已通过关闭不重做",
+  "networkAttempts": 0,
+  "blockedProcesses": [],
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realInitializeExecuted": false,
+  "realDeploymentExecuted": false,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "syntheticTempDirsCreated": "per-case mkdtempSync (os.tmpdir)",
+  "historicalAndClosedFilesUnchanged": true,
+  "protectedHashes": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "11d1d9a14947d7e6",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "c12b791f2ae653b2",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "dc5b1da0f996d19c",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc0206",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923e",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": "c5e93d81e0245471",
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb"
+  },
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "boundaries": {
+    "notNetworked": true,
+    "noRealCredentialFetch": true,
+    "noRealInitialize": true,
+    "noResourceCreation": true,
+    "noDeployment": true,
+    "noEntranceEnable": true,
+    "subprocessUsesExpiredSyntheticCredentialOnly": true,
+    "noHistoricalEvidenceOverwritten": true,
+    "note": "SDK 层替换 Db.reqClass（静态属性）并注入已建好的 db；真实 CLI/SDK 转换本地执行，平台行为未验证"
+  },
+  "results": [
+    {
+      "id": "S2-plan-alone-expires-zero-write",
+      "pass": true,
+      "observed": {
+        "counts": {
+          "userGet": 1,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 1,
+          "commit": 0,
+          "abort": 1,
+          "readOnlyGet": 0
+        },
+        "flags": {
+          "ok": false,
+          "planExpiredDuringRun": true,
+          "credentialExpiredDuringRun": false,
+          "approvalExpiredDuringRun": false,
+          "deadlineBreach": {
+            "code": "WORKER_PLAN_EXPIRED",
+            "stage": "READ_AFTER"
+          }
+        }
+      }
+    },
+    {
+      "id": "S2-credential-alone-expires-zero-write",
+      "pass": true,
+      "observed": {
+        "counts": {
+          "userGet": 1,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 1,
+          "commit": 0,
+          "abort": 1,
+          "readOnlyGet": 0
+        },
+        "flags": {
+          "ok": false,
+          "credentialExpiredDuringRun": true,
+          "planExpiredDuringRun": false
+        }
+      }
+    },
+    {
+      "id": "S2-approval-alone-expires-zero-write",
+      "pass": true,
+      "observed": {
+        "counts": {
+          "userGet": 1,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 1,
+          "commit": 0,
+          "abort": 1,
+          "readOnlyGet": 2
+        },
+        "flags": {
+          "ok": false,
+          "approvalExpiredDuringRun": true,
+          "planExpiredDuringRun": false,
+          "deadlineBreach": {
+            "code": "WORKER_APPROVAL_EXPIRED",
+            "stage": "READ_AFTER"
+          }
+        }
+      }
+    },
+    {
+      "id": "S2-expiry-during-begin-rolls-back",
+      "pass": true,
+      "observed": {
+        "counts": {
+          "userGet": 0,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 1,
+          "commit": 0,
+          "abort": 1,
+          "readOnlyGet": 0
+        }
+      }
+    },
+    {
+      "id": "S2-expiry-during-observation-stops-read",
+      "pass": true,
+      "observed": {
+        "counts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "begin": 1,
+          "commit": 1,
+          "abort": 0,
+          "readOnlyGet": 1
+        },
+        "flags": {
+          "ok": false,
+          "initialized": true,
+          "observationExpiredDuringRead": true,
+          "observationConfirmed": false
+        }
+      }
+    },
+    {
+      "id": "S3-timeout-default-two-read-reconcile",
+      "pass": true,
+      "observed": {
+        "reconcileAttempted": true,
+        "skipReason": null,
+        "counts": {
+          "userGet": 0,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 0,
+          "commit": 0,
+          "abort": 0,
+          "readOnlyGet": 2
+        },
+        "credentialFetches": 1
+      }
+    },
+    {
+      "id": "S3-unknown-terminal-persisted",
+      "pass": true,
+      "observed": {
+        "saves": [
+          {
+            "recordType": "RESULT_UNKNOWN",
+            "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+            "resultUnknown": true
+          }
+        ],
+        "unknownPersisted": true,
+        "resultPersisted": null
+      }
+    },
+    {
+      "id": "S3-credential-expired-skips-reconcile",
+      "pass": true,
+      "observed": {
+        "reconcileAttempted": false,
+        "skipReason": "CREDENTIAL_EXPIRED_NO_RECONCILE",
+        "readOnlyGet": 0,
+        "credentialFetches": 1
+      }
+    },
+    {
+      "id": "S3-reconcile-value-sanitized",
+      "pass": true,
+      "observed": {
+        "leaked": false,
+        "dirty": {
+          "state": "unconfirmed",
+          "primaryPresent": null,
+          "primaryStatus": null,
+          "auditPresent": null,
+          "auditId": "sbx-init-primary:expected",
+          "inputDigest": null,
+          "errorCode": null
+        },
+        "clean": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "auditId": "sbx-init-primary:expected",
+          "inputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "errorCode": null
+        },
+        "foreign": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "auditId": null,
+          "inputDigest": null,
+          "errorCode": null
+        }
+      }
+    },
+    {
+      "id": "S3-injected-reconcile-not-trusted",
+      "pass": true,
+      "observed": {
+        "reconcile": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "auditId": null,
+          "inputDigest": null,
+          "errorCode": null
+        },
+        "reconcileConfirmed": false
+      }
+    },
+    {
+      "id": "S3-missing-save-rejected-before-write",
+      "pass": true,
+      "observed": {
+        "errorCode": "SAVE_CAPABILITY_MISSING",
+        "stoppedAt": "saveCapability",
+        "workerStarted": false,
+        "before": {
+          "userGet": 0,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 0,
+          "commit": 0,
+          "abort": 0,
+          "readOnlyGet": 0
+        },
+        "after": {
+          "userGet": 0,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 0,
+          "commit": 0,
+          "abort": 0,
+          "readOnlyGet": 0
+        }
+      }
+    },
+    {
+      "id": "S4-foreign-binding-downgraded",
+      "pass": true,
+      "observed": {
+        "foreign": {
+          "ok": false,
+          "observationConfirmed": false,
+          "auditId": null,
+          "bindingMismatch": true
+        },
+        "good": {
+          "ok": true,
+          "observationConfirmed": true,
+          "bindingMatched": true
+        }
+      }
+    },
+    {
+      "id": "S4-foreign-binding-end-to-end",
+      "pass": true,
+      "observed": {
+        "status": "FAILED",
+        "observationConfirmed": false,
+        "saveRecordType": "FAILED",
+        "leak": false
+      }
+    },
+    {
+      "id": "R3-e-original-path-subprocess-entry",
+      "pass": true,
+      "observed": {
+        "error": null,
+        "status": 0,
+        "errorCode": "WORKER_CREDENTIAL_EXPIRED",
+        "stdoutLines": 1,
+        "stderrBytes": 0,
+        "tokenLeaked": false
+      }
+    },
+    {
+      "id": "R3-e-missing-fields-rejected",
+      "pass": true,
+      "observed": {
+        "status": 2,
+        "errorCode": "WORKER_STDIN_INVALID",
+        "stdout": "{\"ok\":false,\"errorCode\":\"WORKER_STDIN_INVALID\"}"
+      }
+    },
+    {
+      "id": "positive-chain-still-passes",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "outcome": "initialized",
+        "observationConfirmed": true,
+        "resultPersisted": true,
+        "auditIdMatches": true,
+        "saveRecordType": "COMPLETED",
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "begin": 1,
+          "commit": 1,
+          "abort": 0,
+          "readOnlyGet": 2
+        },
+        "credentialFetches": 1
+      }
+    },
+    {
+      "id": "S1-binding-still-closed",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "observationConfirmed": true
+      }
+    },
+    {
+      "id": "default-entry-zero-external-actions",
+      "pass": true,
+      "observed": {
+        "status": "LOCAL_READY",
+        "credentialFetched": false,
+        "cloudCallAttempted": false,
+        "workerStarted": false
+      }
+    }
+  ]
+}

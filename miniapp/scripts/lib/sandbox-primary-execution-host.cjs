@@ -89,7 +89,9 @@ const ERR = Object.freeze({
   ROUND_ALREADY_STARTED: 'ROUND_ALREADY_STARTED',
   ROUND_START_FAILED: 'ROUND_START_FAILED',
   RESULT_UNKNOWN: 'RESULT_UNKNOWN',
-  WORKER_FAILED: 'WORKER_FAILED'
+  WORKER_FAILED: 'WORKER_FAILED',
+  // S3-4：执行前缺保存能力（外部动作前拒绝，不等提交后才发现）
+  SAVE_CAPABILITY_MISSING: 'SAVE_CAPABILITY_MISSING'
 });
 
 /** 只接受这三个入口参数；出现其它一律在外部动作前拒绝。 */
@@ -838,6 +840,18 @@ async function executeOnce(options) {
   }
   report.stages.push('implementationRecheck');
 
+  /**
+   * S3-4（Codex 2026-10-10）：**外部动作前**确认结果保存能力。
+   * 此前 `persistResult` 存在性在成功提交后才检查 —— 删除该回调时完整链照样
+   * commit=1，随后才说「未提供保存能力」。保存能力缺失应在发写请求前拒绝。
+   */
+  if (typeof o.persistResult !== 'function') {
+    report.stoppedAt = 'saveCapability';
+    report.errorCode = ERR.SAVE_CAPABILITY_MISSING;
+    report.incomplete.push('未提供结果保存能力；按规则在发起写请求前停止，未启动写 worker。');
+    return report;
+  }
+
   // 7) 启动写 worker（同批凭据经私有 stdin 一次传入随即关闭）
   report.workerStarted = true;
   /**
@@ -887,10 +901,18 @@ async function executeOnce(options) {
     ? workerResult.processFacts : null;
 
   /**
-   * S3：结果未知时，父层用**同批仍有效的凭据**做只读核对
-   * （primary + 本计划审计两条固定读取），绝不再次进入 initializePrimary。
+   * S3：结果未知时，父层用**同批仍有效的凭据**做固定两条只读核对
+   * （primary + 本计划审计），绝不再次进入 initializePrimary。
    * 「子进程是否已退出」与「平台事务是否仍在途」分别记录 ——
    * 未确认终止时，一次「暂时没读到」不能升级为确定未提交。
+   *
+   * S3-1（Codex 2026-10-10）：核对**不是**可选回调。上一版只接受外部注入的
+   * `o.reconcileReadOnly`，超时样本同批凭据仍有效却记 `NO_RECONCILE_CAPABILITY`、
+   * 实际两读为 0。现在默认走 P4 `observePrimary` 的真实契约（真正发出两条
+   * 固定读取）；外部回调仅作为**合成测试注入点**覆盖默认实现。
+   *
+   * S3-3（Codex 2026-10-10）：核对返回值逐字段/逐值净化，不让普通返回对象
+   * 里的任意文本进入报告。
    */
   if (!workerResult || workerResult.ok !== true || report.observationConfirmed !== true) {
     const mayHaveWritten = Boolean(workerResult && workerResult.resultUnknown) ||
@@ -904,50 +926,93 @@ async function executeOnce(options) {
     report.resultUnknown = mayHaveWritten;
     // 同批凭据是否仍可用（过期则不做核对，明确留待只读接续）
     const credentialUsable = Number.isFinite(snapshot.expiresAtMs) && snapshot.expiresAtMs > now();
-    if (mayHaveWritten && credentialUsable && typeof o.reconcileReadOnly === 'function') {
-      let rec = null;
+    if (mayHaveWritten && credentialUsable) {
+      let raw = null;
       try {
-        rec = await o.reconcileReadOnly({
-          snapshot, isolationDir,
+        raw = await runReadOnlyReconcile({
+          snapshot,
+          plan: boundPlan,
+          approval: boundApproval,
+          isolationDir,
           auditId: approvalCheck.auditId,
-          targetUserId: boundPlan.targetUserId
+          // 合成测试可注入实现（离线）；生产路径用默认 P4 两读
+          inject: o.reconcileReadOnly,
+          deps: o.reconcileDeps
         });
-      } catch (_) { rec = null; }
-      report.reconcile = rec;
+      } catch (_) { raw = null; }
+      // S3-3：净化后才进入报告 —— 合成回调返回的 `extra` 之类一律丢弃
+      report.reconcile = projectReconcile(raw, {
+        auditId: approvalCheck.auditId,
+        inputDigest: approvalCheck.planDigest
+      });
       report.reconcileAttempted = true;
-      if (rec && rec.ok === true && rec.state === 'present') {
+      // 如实表达「未确认」为 false，而不是 undefined（不谎称已确认）
+      report.reconcileConfirmed = false;
+      if (report.reconcile.state === 'present' &&
+        report.reconcile.auditId === approvalCheck.auditId &&
+        report.reconcile.primaryStatus === 'active') {
         report.observationConfirmed = true;
         report.reconcileConfirmed = true;
       }
     } else if (mayHaveWritten) {
       report.reconcileAttempted = false;
-      report.reconcileSkipReason = credentialUsable
-        ? 'NO_RECONCILE_CAPABILITY'
-        : 'CREDENTIAL_EXPIRED_NO_RECONCILE';
+      report.reconcileSkipReason = 'CREDENTIAL_EXPIRED_NO_RECONCILE';
     }
     report.stoppedAt = 'worker';
     report.errorCode = report.resultUnknown ? ERR.RESULT_UNKNOWN : ERR.WORKER_FAILED;
     report.incomplete.push(report.resultUnknown
       ? '事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。'
       : '写 worker 未成功完成；未重试初始化。');
-    // S3：结果未知**不保存为成功**
+    /**
+     * S3-2：结果未知**也要落盘**。「不保存为成功」不等于「不保存未知结果」。
+     * 上一版直接 return，执行事实、终止状态与核对结论会随进程丢失。
+     * 保存类型显式区分，不覆盖既有记录，不自动重试初始化。
+     */
+    if (typeof o.persistResult === 'function') {
+      let savedUnknown;
+      try {
+        savedUnknown = await o.persistResult({
+          roundId: round,
+          planDigest: approvalCheck.planDigest,
+          auditId: approvalCheck.auditId,
+          // 终态类型：未知结果**不是**成功
+          recordType: report.resultUnknown ? 'RESULT_UNKNOWN' : 'FAILED',
+          outcome: report.outcome,
+          initialized: report.initialized,
+          observationConfirmed: report.observationConfirmed,
+          resultUnknown: report.resultUnknown,
+          reconcileAttempted: report.reconcileAttempted === true,
+          reconcileConfirmed: report.reconcileConfirmed === true,
+          reconcile: report.reconcile,
+          workerProcess: report.workerProcess
+        });
+      } catch (_) {
+        savedUnknown = false;
+      }
+      report.unknownPersisted = savedUnknown === true;
+      if (savedUnknown !== true) {
+        report.incomplete.push('未知结果落盘未新建成功；保留 started 记录，禁止重试初始化。');
+      }
+    } else {
+      report.unknownPersisted = false;
+      report.incomplete.push('未提供结果保存能力，未知结果仅在内存中产出。');
+    }
     return report;
   }
 
   // 8) 结果保存：**新建**保存；失败则保留 started 并停止，不重试初始化
-  if (typeof o.persistResult !== 'function') {
-    report.status = STATUS.PLAN_READY;
-    report.incomplete.push('未提供结果保存能力；本轮仅在内存产出结论，未持久化。');
-    return report;
-  }
+  // （保存能力已在启动 worker 前确认存在，此处不再重复缺失分支）
   let saved;
   try {
     saved = await o.persistResult({
       roundId: round,
       planDigest: approvalCheck.planDigest,
       auditId: report.auditId,
+      // 终态类型：成功完成（未知结果走另一分支，绝不记为完成）
+      recordType: 'COMPLETED',
       outcome: report.outcome,
-      observationConfirmed: report.observationConfirmed
+      observationConfirmed: report.observationConfirmed,
+      initialized: report.initialized
     });
   } catch (_) {
     saved = false;
@@ -1157,6 +1222,13 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
   const out = Object.assign({}, base);
   // S3：worker 自己声明 resultUnknown:true 时**必须**保守合并，不能被父层 false 覆盖
   if (parsed.resultUnknown === true) out.resultUnknown = true;
+  /**
+   * S4（Codex 2026-10-10）：成功路径必须**提供且精确匹配**本计划的关键键/摘要。
+   * 顶层 `auditId` 与 `bootstrap` 的绑定都要匹配，否则不得升级为成功 ——
+   * 交给 executeOnce 进入保守只读核对，而不是仅把字段置 null 后照旧采信 `ok:true`。
+   */
+  out.auditId = (expected && typeof expected.auditId === 'string' &&
+    parsed.auditId === expected.auditId) ? expected.auditId : null;
   out.ok = parsed.ok === true && out.resultUnknown === false;
   if (typeof parsed.errorCode === 'string' && executionWorker.CORE_ERROR_CODES.has(parsed.errorCode)) {
     out.errorCode = parsed.errorCode;
@@ -1172,18 +1244,125 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
   out.granted = parsed.granted === true;
   out.initialized = parsed.initialized === true;
   out.observationConfirmed = parsed.observationConfirmed === true;
-  /**
-   * S4：顶层 auditId 必须是本计划的**精确**确定性键。
-   * 此前只查 startsWith 前缀 —— 同前缀的其它键会被当成有效审计键。
-   * `expected` 由 `executeOnce` 传入；缺预期时一律丢弃（不据worker 自述采信）。
-   */
-  out.auditId = (expected && typeof expected.auditId === 'string' &&
-    parsed.auditId === expected.auditId) ? expected.auditId : null;
+  // 绑定一致性：顶层审计键 + bootstrap 关键键/摘要都须精确匹配本计划
+  const bindingMatched = out.auditId !== null &&
+    (out.bootstrap ? out.bootstrap.bindingMatched === true : false);
+  if (!bindingMatched) {
+    // 不匹配或缺失 → 降级为未确认；**不**仅丢弃字段后仍判成功
+    out.ok = false;
+    out.observationConfirmed = false;
+    out.bindingMismatch = true;
+    if (out.errorCode === null) out.errorCode = ERR.RESULT_UNKNOWN;
+  }
+  return out;
+}
+
+/**
+ * S3-1：默认的**固定两条只读核对**接线。
+ *
+ * Codex 2026-10-10 指出：核对此前只是可选注入回调，超时样本同批凭据仍有效
+ * 却记 `NO_RECONCILE_CAPABILITY`、实际两读为 0 —— 核对路径事实上没接通。
+ *
+ * 现在默认实现复用 **P4 `observePrimary` 的真实契约**（同一身份核验、
+ * 同一计划/批准、两条固定读取），不新增云路由、不建通用恢复系统。
+ * `inject` 仅供离线合成测试覆盖；生产路径不传。
+ *
+ * @returns {Promise<object|null>} P4 观察结论的原始对象，或 null（无法核对）
+ */
+async function runReadOnlyReconcile(options) {
+  const o = options || {};
+  if (typeof o.inject === 'function') {
+    // 合成注入点：返回**未净化**的原始对象，由调用方 projectReconcile 净化
+    return o.inject({
+      snapshot: o.snapshot,
+      plan: o.plan,
+      approval: o.approval,
+      isolationDir: o.isolationDir,
+      auditId: o.auditId,
+      targetUserId: o.plan && o.plan.targetUserId
+    });
+  }
+  // 默认路径：同一批凭据 + 同一 SDK 适配层做只读核对
+  let adapter;
+  try {
+    const built = executionWorker.buildAdapter({
+      credential: o.snapshot,
+      targetUserId: o.plan && o.plan.targetUserId,
+      auditId: o.auditId,
+      // 仅离线合成测试注入；生产路径由适配层自建
+      db: (o.deps && o.deps.db) || null
+    });
+    // 当次主体核验已在 executeOnce 前完成且与批准绑定值精确一致
+    built.setCaller(true);
+    adapter = built.adapter;
+  } catch (_) {
+    return null;
+  }
+  try {
+    return await p4.observePrimary({
+      adapter,
+      plan: o.plan,
+      approval: o.approval,
+      nowMs: Date.now()
+    });
+  } catch (_) {
+    return null;
+  }
+}
+
+/**
+ * S3-3：核对结果**逐字段 + 逐值**净化。
+ *
+ * 此前 `report.reconcile = rec` 原样透传：合成回调返回
+ * `{ok:true,state:'present',extra:'SYNTH_PRIVATE_MARKER'}` 时标记原样进入报告，
+ * 并得到 `reconcileConfirmed=true`。普通返回对象不得替代核对事实。
+ *
+ * 固定形状：`state` 走枚举；`auditId` 必须精确等于本计划确定性键；
+ * 摘要须 32 位十六进制且与本计划一致；不含任何其它字段。
+ */
+function projectReconcile(rec, expected) {
+  const out = {
+    state: 'unconfirmed',
+    primaryPresent: null,
+    primaryStatus: null,
+    auditPresent: null,
+    auditId: null,
+    inputDigest: null,
+    errorCode: null
+  };
+  if (!isPlainObject(rec)) return out;
+  if (typeof rec.state === 'string' && PARENT_OBSERVED_STATES.indexOf(rec.state) !== -1) {
+    out.state = rec.state;
+  }
+  if (typeof rec.primaryPresent === 'boolean') out.primaryPresent = rec.primaryPresent;
+  if (typeof rec.auditPresent === 'boolean') out.auditPresent = rec.auditPresent;
+  if (typeof rec.primaryStatus === 'string' &&
+    PARENT_PRIMARY_STATUS.indexOf(rec.primaryStatus) !== -1) {
+    out.primaryStatus = rec.primaryStatus;
+  }
+  // 审计键与摘要：格式合法**且**与本计划精确一致才保留
+  if (expected && typeof expected.auditId === 'string' && rec.auditId === expected.auditId) {
+    out.auditId = expected.auditId;
+  }
+  if (expected && typeof expected.inputDigest === 'string' &&
+    typeof rec.inputDigest === 'string' && DIGEST_HEX_32.test(rec.inputDigest) &&
+    rec.inputDigest === expected.inputDigest) {
+    out.inputDigest = expected.inputDigest;
+  }
+  if (typeof rec.errorCode === 'string' && executionWorker.CORE_ERROR_CODES.has(rec.errorCode)) {
+    out.errorCode = rec.errorCode;
+  }
   return out;
 }
 
 /**
  * bootstrap 字段白名单投影（固定形状 + **值也限定**）。
+ *
+ * S4（Codex 2026-10-10 更正）：不匹配**不能只丢值后仍采信成功布尔**。
+ * 此前错误审计键/摘要被置 null 后，`ok/observationConfirmed` 保持不变，
+ * 于是「属于另一计划」的结果照样 `initialized=true/resultPersisted=true`。
+ * 现在不匹配时把该记录标记为 `bindingMatched=false`，
+ * 由 `projectWorkerOutput` 据此**降低**成功状态（见该函数）。
  *
  * S4：此前 `outcome`/`errorCode`/`inputDigest`/`requestIds`/`existingPrimary.status`
  * 只做了 `typeof === 'string'` 检查 —— 任意文本都能原样进入报告。
@@ -1211,7 +1390,10 @@ function projectBootstrap(b, expected) {
       ? b.errorCode : null,
     requestIds: Array.isArray(b.requestIds)
       ? b.requestIds.filter(v => typeof v === 'string' && REQUEST_ID_UUID_V4.test(v)).slice(0, 8)
-      : []
+      : [],
+    // S4：关键键/摘要是否与本计划**精确**匹配。缺期望值时为 false
+    // （不据worker 自述采信成功），由上层降低成功状态。
+    bindingMatched: false
   };
   // 摘要：格式合法，且（若有期望值）须与本计划一致
   if (typeof b.inputDigest === 'string' && DIGEST_HEX_32.test(b.inputDigest)) {
@@ -1222,6 +1404,11 @@ function projectBootstrap(b, expected) {
   if (expected && typeof expected.auditId === 'string' && b.auditId === expected.auditId) {
     out.auditId = expected.auditId;
   }
+  // S4：成功路径要求**两者都提供且精确匹配**；否则不算绑定成功
+  out.bindingMatched = Boolean(
+    expected && typeof expected.auditId === 'string' && typeof expected.inputDigest === 'string' &&
+    out.auditId === expected.auditId && out.inputDigest === expected.inputDigest
+  );
   return out;
 }
 
@@ -1260,6 +1447,8 @@ module.exports = Object.freeze({
   projectWorkerOutput,
   projectBootstrap,
   projectObserved,
+  projectReconcile,
+  runReadOnlyReconcile,
   CREDENTIAL_FAILURE_CODES,
   PARENT_OUTCOMES,
   PARENT_OBSERVED_STATES,
