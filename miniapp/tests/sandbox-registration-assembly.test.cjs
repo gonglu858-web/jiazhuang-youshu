@@ -1338,36 +1338,185 @@ test('C4 过期续建拒绝：合法半成品（无 manifest）在过期后不�
   } finally { cleanup(dir); cleanup(input.dir); }
 });
 
-test('C4 预检后过期则零写；写后过期则如实保留已写状态（不用 sleep 赌时序）', () => {
+/**
+ * 以**实际事件**推进时钟：在读取受审来源文件或写完首个输出文件的时刻，
+ * 把受控时钟推进到截止时刻。不使用 sleep，也不以恒定 nowMs 代替跨期。
+ *
+ * 关键：调用方**不传** nowMs，组装器必须自己在每个时效边界重新读取时钟；
+ * 若实现仍复用启动时刻，本例会误报成功而被断言捕获。
+ */
+function advanceClockAtEvent(operation, trigger, targetDir) {
+  let now = CAND_NOW_MS;
+  let reads = 0;
+  let fired = false;
+  const realDateNow = Date.now;
+  const realRead = fs.readFileSync;
+  const realWrite = fs.writeFileSync;
+  Date.now = () => { reads++; return now; };
+  const sourceFile = path.join(asm.MINIPROGRAM_SRC, 'app.js');
+  fs.readFileSync = function (p, ...rest) {
+    const buf = realRead.call(fs, p, ...rest);
+    if (trigger === 'source' && path.resolve(String(p)) === sourceFile) { now = Date.parse(CAND_EXPIRES); fired = true; }
+    return buf;
+  };
+  fs.writeFileSync = function (p, ...rest) {
+    const res = realWrite.call(fs, p, ...rest);
+    if (trigger === 'write' && path.resolve(String(p)).startsWith(targetDir + path.sep)) {
+      now = Date.parse(CAND_EXPIRES); fired = true;
+    }
+    return res;
+  };
+  let r;
+  try {
+    r = operation();
+  } finally {
+    Date.now = realDateNow;
+    fs.readFileSync = realRead;
+    fs.writeFileSync = realWrite;
+  }
+  assert.equal(fired, true, '事件屏障未命中：测试未真正推进时钟');
+  return { result: r, clockReads: reads, atDeadline: now === Date.parse(CAND_EXPIRES) };
+}
+
+test('C4 真实候选在每个时效边界重新读时钟：来源读取中到期即拒绝且零写', () => {
   const input = buildCandidateInput();
-  const expired = Date.parse(CAND_EXPIRES) + 1000;
-
-  // 1) 预检阶段即已过期 → 零写
-  const zeroDir = asm.resolveOutDir(freshId('candpre'));
+  const dir = asm.resolveOutDir(freshId('candpre'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
   try {
-    const before = snapshotTree(zeroDir);
-    const r = asm.buildAssembly({
-      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
-      outId: path.basename(zeroDir).slice(asm.OUT_DIR_PREFIX.length), nowMs: expired
-    });
-    assert.equal(r.ok, false, JSON.stringify(r));
-    assert.match(r.problems[0].code, new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(r.problems));
-    assert.equal(r.wroteFiles, false);
-    assert.equal(r.expiredAfterWrite, undefined);
-    assert.deepEqual(snapshotTree(zeroDir), before, '预检后过期必须零写');
-  } finally { cleanup(zeroDir); }
+    const before = snapshotTree(dir);
+    // 不传 nowMs：候选必须走 Date.now()，并在写前边界重新读取
+    const { result, clockReads, atDeadline } = advanceClockAtEvent(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      'source', dir
+    );
+    assert.equal(atDeadline, true, '时钟应推进到截止时刻');
+    assert.ok(clockReads >= 2, `应在多个边界读取时钟，实际 ${clockReads} 次`);
+    assert.equal(result.ok, false, '来源读取中到期必须拒绝：' + JSON.stringify(result));
+    assert.match(result.problems[0].code,
+      new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(result.problems));
+    assert.equal(result.wroteFiles, false, '过期拒绝必须零写');
+    assert.equal(result.expiredAfterWrite, undefined);
+    assert.deepEqual(snapshotTree(dir), before, '过期拒绝后目录快照不变');
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
 
-  // 2) 窗口有效 → 组装成功（写后复核与写前同一时钟，不制造竞态）
-  const okDir = asm.resolveOutDir(freshId('candpost'));
+test('C4 写后到期：保留已写产物、准确报告已写事实，不伪称零写', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('candpost'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
   try {
-    const r = asm.buildAssembly({
-      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
-      outId: path.basename(okDir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+    const { result, clockReads } = advanceClockAtEvent(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      'write', dir
+    );
+    assert.ok(clockReads >= 3, `写前/写后/返回前应各读一次时钟，实际 ${clockReads} 次`);
+    assert.equal(result.ok, false, '写后到期必须不报成功：' + JSON.stringify(result));
+    assert.match(result.problems[0].code,
+      new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(result.problems));
+    assert.equal(result.expiredAfterWrite, true, '应标记写后到期');
+    assert.equal(result.wroteFiles, true, '已写事实必须如实报告为 true');
+    assert.ok(Array.isArray(result.written) && result.written.length > 0, '应列出已写文件');
+    // 产物保留，不清理
+    assert.ok(fs.existsSync(path.join(dir, 'manifest.json')), '产物应保留供审查');
+    assert.equal(snapshotTree(dir).filter(x => !x.endsWith('/')).length, 49, '已写产物仍是 49 文件');
+    // 报告文本应说明保留与失效
+    assert.match(result.problems[0].detail, /保留|不可作为当前有效登记候选/);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C4 check 与复用路径同样在边界重读时钟', () => {
+  const input = buildCandidateInput();
+  const outId = freshId('candchk');
+  const dir = asm.resolveOutDir(outId);
+  try {
+    const built = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
     });
-    assert.equal(r.ok, true, JSON.stringify(r.problems));
-    assert.equal(r.wroteFiles, true);
-    assert.equal(snapshotTree(okDir).filter(x => !x.endsWith('/')).length, 49);
-  } finally { cleanup(okDir); cleanup(input.dir); }
+    assert.equal(built.ok, true, JSON.stringify(built.problems));
+    const beforeCheck = snapshotTree(dir);
+
+    // check：来源读取期间到期
+    const c = advanceClockAtEvent(
+      () => asm.checkAssembly({
+        inputDir: input.dir, outDir: dir, plan: input.plan, artifactKind: 'real-candidate'
+      }),
+      'source', dir
+    );
+    assert.equal(c.result.ok, false, 'check 期间到期必须拒绝');
+    assert.match(c.result.problems[0].code,
+      new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'));
+    assert.equal(c.result.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), beforeCheck, 'check 失败不得改动目录');
+
+    // 复用：来源读取期间到期
+    const u = advanceClockAtEvent(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      'source', dir
+    );
+    assert.equal(u.result.ok, false, '复用期间到期必须拒绝');
+    assert.equal(u.result.reused, undefined, '不得报告复用成功');
+    assert.equal(u.result.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), beforeCheck, '复用失败不得改动目录');
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C4 续建路径在补写前重读时钟，到期则不补任何文件', () => {
+  const input = buildCandidateInput();
+  const outId = freshId('candcont2');
+  const dir = asm.resolveOutDir(outId);
+  const rel = `${asm.REGISTRATION_ROOT}/miniprogram/app.wxss`;
+  try {
+    assert.equal(asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    }).ok, true);
+    // 构造合法半成品：删 manifest + 一个内容文件
+    fs.unlinkSync(path.join(dir, 'manifest.json'));
+    fs.unlinkSync(path.join(dir, rel));
+    const before = snapshotTree(dir);
+    const c = advanceClockAtEvent(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      'source', dir
+    );
+    assert.equal(c.result.ok, false, '续建期间到期必须拒绝');
+    assert.equal(c.result.wroteFiles, false, '过期续建不得补写');
+    assert.equal(fs.existsSync(path.join(dir, rel)), false, '缺文件不得被补上');
+    assert.equal(fs.existsSync(path.join(dir, 'manifest.json')), false, 'manifest 不得被补上');
+    assert.deepEqual(snapshotTree(dir), before, '过期续建目录快照不变');
+
+    // 未过期时同一半成品可合法续建（对照）
+    const again = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    });
+    assert.equal(again.ok, true, JSON.stringify(again.problems));
+    assert.deepEqual(again.written.slice().sort(), [rel, 'manifest.json'].sort());
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C4 边界相等（expires<=now）拒绝；未过期对照成功', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('candedge'));
+  try {
+    const before = snapshotTree(dir);
+    const atEdge = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+      outId: path.basename(dir).slice(asm.OUT_DIR_PREFIX.length), nowMs: Date.parse(CAND_EXPIRES)
+    });
+    assert.equal(atEdge.ok, false, '边界相等必须拒绝');
+    assert.equal(atEdge.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), before, '边界相等必须零写');
+
+    // 未过期对照
+    const okDir = asm.resolveOutDir(freshId('candok2'));
+    try {
+      const ok = asm.buildAssembly({
+        inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+        outId: path.basename(okDir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+      });
+      assert.equal(ok.ok, true, JSON.stringify(ok.problems));
+      assert.equal(ok.wroteFiles, true);
+      assert.equal(snapshotTree(okDir).filter(x => !x.endsWith('/')).length, 49);
+    } finally { cleanup(okDir); }
+  } finally { cleanup(dir); cleanup(input.dir); }
 });
 
 // C5 模式/schema/清单篡改
@@ -1507,36 +1656,133 @@ test('C6 候选目录不被合成模式认领，合成目录不被候选模式�
   } finally { cleanup(synthDir); cleanup(synthInput.dir); }
 });
 
-test('C6 历史 /1 合成包正常 check 与复用，且不重写 manifest', () => {
+/**
+ * 加载**真实旧版本**组装器源码（由外部从 Git 对象导出到 OLD_ASSM_SRC）。
+ * 用于生成真正的历史 `/1` 包 —— 不用当前版本自造"历史包"，也不手工拼清单。
+ */
+function loadReviewedOldAssembler() {
+  const src = process.env.OLD_ASM_SRC;
+  assert.ok(src && fs.existsSync(src), '需设置 OLD_ASM_SRC 指向旧版本组装器源码');
+  const asmPath = require.resolve('../scripts/assemble-sandbox-registration.cjs');
+  const m = new Module(asmPath, module);
+  m.filename = asmPath;
+  m.paths = Module._nodeModulePaths(path.dirname(asmPath));
+  m._compile(fs.readFileSync(src, 'utf8'), asmPath);
+  return m.exports;
+}
+
+test('C6 真实旧版本生成的 /1 包：新版 check 通过、复用成功、manifest 字节不变', () => {
+  const old = loadReviewedOldAssembler();
   const input = buildRegistrationInput();
-  const outId = freshId('candv1');
+  const outId = freshId('candold');
   const dir = asm.resolveOutDir(outId);
   try {
-    const built = asm.buildAssembly({
+    // 用旧版本模块生成真正的历史 /1 包
+    const built = old.buildAssembly({
       inputDir: input.dir, plan: input.plan, outId, nowMs: SYNTH_NOW_MS
     });
     assert.equal(built.ok, true, JSON.stringify(built.problems));
     const manifestPath = path.join(dir, 'manifest.json');
     const manifestBuf = fs.readFileSync(manifestPath);
     const manifest = JSON.parse(manifestBuf.toString('utf8'));
-    assert.equal(manifest.schema, asm.ASSEMBLY_MANIFEST_SCHEMA, '合成仍为 /1');
-    assert.equal(manifest.artifactKind, 'synthetic');
 
-    // /1 检查仍可复验（沿用 generatedAt 口径，不受真实候选限制影响）
+    // 旧受审 /1 契约：没有 artifactKind / verificationKind
+    assert.equal(manifest.schema, asm.ASSEMBLY_MANIFEST_SCHEMA, '旧包仍是 /1');
+    assert.equal(Object.prototype.hasOwnProperty.call(manifest, 'artifactKind'), false,
+      '旧受审 /1 契约不含 artifactKind');
+    assert.equal(Object.prototype.hasOwnProperty.call(manifest, 'verificationKind'), false,
+      '旧受审 /1 契约不含 verificationKind');
+
+    // 新版 check 旧包：应通过（不再要求新字段）
     const checked = asm.checkAssembly({ inputDir: input.dir, outDir: dir, plan: input.plan });
-    assert.equal(checked.ok, true, JSON.stringify(checked.problems));
+    assert.equal(checked.ok, true, '新版应能检查真实旧 /1 包：' + JSON.stringify(checked.problems));
 
-    // 复用不改 manifest 字节
+    // 新版完整复用：默认模式与显式 synthetic 都成立，manifest 零重写
     const before = snapshotTree(dir);
-    const reuse = asm.buildAssembly({
-      inputDir: input.dir, plan: input.plan, outId, nowMs: SYNTH_NOW_MS
-    });
-    assert.equal(reuse.ok, true);
-    assert.equal(reuse.reused, true);
-    assert.equal(reuse.wroteFiles, false);
-    assert.ok(fs.readFileSync(manifestPath).equals(manifestBuf), '/1 manifest 不得被重写');
-    assert.deepEqual(snapshotTree(dir), before);
+    for (const options of [{}, { artifactKind: 'synthetic' }]) {
+      const reuse = asm.buildAssembly(Object.assign({
+        inputDir: input.dir, plan: input.plan, outId, nowMs: SYNTH_NOW_MS
+      }, options));
+      assert.equal(reuse.ok, true,
+        '复用应成功（' + JSON.stringify(options) + '）：' + JSON.stringify(reuse.problems));
+      assert.equal(reuse.reused, true);
+      assert.equal(reuse.wroteFiles, false);
+      assert.ok(fs.readFileSync(manifestPath).equals(manifestBuf),
+        '旧包 manifest 不得被重写（' + JSON.stringify(options) + '）');
+      assert.deepEqual(snapshotTree(dir), before, '复用不得改动任何字节');
+    }
   } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C6 新版生成的 /1 与旧受审契约一致（不多不少字段），旧包篡改仍严格拒绝', () => {
+  const old = loadReviewedOldAssembler();
+  const input = buildRegistrationInput();
+  const oldId = freshId('candold2');
+  const oldDir = asm.resolveOutDir(oldId);
+  const newDir = asm.resolveOutDir(freshId('candnew1'));
+  try {
+    assert.equal(old.buildAssembly({
+      inputDir: input.dir, plan: input.plan, outId: oldId, nowMs: SYNTH_NOW_MS
+    }).ok, true);
+    assert.equal(asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan,
+      outId: path.basename(newDir).slice(asm.OUT_DIR_PREFIX.length), nowMs: SYNTH_NOW_MS
+    }).ok, true);
+
+    const manifestPath = path.join(oldDir, 'manifest.json');
+    const oldBytes = fs.readFileSync(manifestPath);
+    // 同输入、同 generatedAt 条件下，新版 /1 应与旧版逐字节相同
+    const newBytes = fs.readFileSync(path.join(newDir, 'manifest.json'));
+    assert.ok(oldBytes.equals(newBytes), '新版 /1 必须与旧受审契约逐字节一致');
+    // 且不含候选独有键
+    const parsed = JSON.parse(newBytes.toString('utf8'));
+    assert.equal('artifactKind' in parsed, false);
+    assert.equal('verificationKind' in parsed, false);
+
+    // 旧包篡改必需字段仍被严格拒绝（不是靠"容忍缺字段"兼容）
+    const tampered = JSON.parse(oldBytes.toString('utf8'));
+    tampered.plan.roundId = 'TAMPERED-ROUND';
+    fs.writeFileSync(manifestPath, JSON.stringify(tampered, null, 2) + '\n');
+    const before = snapshotTree(oldDir);
+    const r = asm.checkAssembly({ inputDir: input.dir, outDir: oldDir, plan: input.plan });
+    assert.equal(r.ok, false, '旧包篡改必须拒绝');
+    assert.equal(r.problems[0].code, asm.ERR.MANIFEST_MISMATCH);
+    assert.equal(r.wroteFiles, false);
+    assert.deepEqual(snapshotTree(oldDir), before, '检查失败不得修补旧包');
+    assert.ok(fs.readFileSync(manifestPath).toString('utf8').includes('TAMPERED-ROUND'),
+      '旧制品字节应保留原样，不由工具改写');
+  } finally { cleanup(oldDir); cleanup(newDir); cleanup(input.dir); }
+});
+
+test('C6 候选 /2 仍严格要求独有字段；/2 冒充 /1 仍被拒', async () => {
+  await withCandidateAssembly(async ({ input, dir }) => {
+    const manifestPath = path.join(dir, 'manifest.json');
+    const original = fs.readFileSync(manifestPath);
+    const manifest = JSON.parse(original.toString('utf8'));
+    // 候选 /2 确实带两个独有键
+    assert.equal(manifest.artifactKind, 'real-candidate');
+    assert.equal(manifest.verificationKind, asm.VERIFICATION_KIND);
+
+    // 删掉 artifactKind → 候选检查必须拒绝（严格，不靠完整比较兜底）
+    const missing = { ...manifest };
+    delete missing.artifactKind;
+    fs.writeFileSync(manifestPath, JSON.stringify(missing, null, 2) + '\n');
+    const r = checkCandidate(input, dir);
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.ARTIFACT_KIND_CONFLICT);
+    fs.writeFileSync(manifestPath, original);
+
+    // /2 冒充：把候选包当合成 /1 检查 → 拒绝。合成模式会先因计划的
+    // synthetic=false 被拒（ASM_PLAN_SYNTHETIC_ONLY），这比模式冲突更早且同样严格，
+    // 两者都属正确拒绝。
+    const asSynthetic = asm.checkAssembly({
+      inputDir: input.dir, outDir: dir, plan: input.plan, nowMs: CAND_NOW_MS
+    });
+    assert.equal(asSynthetic.ok, false, '候选包不得被合成模式认领');
+    assert.match(asSynthetic.problems[0].code,
+      new RegExp('^(' + asm.ERR.ARTIFACT_KIND_CONFLICT + '|' + asm.ERR.PLAN_SYNTHETIC_ONLY + ')$'),
+      JSON.stringify(asSynthetic.problems));
+  });
 });
 
 // C7 完整性与关闭包独立
