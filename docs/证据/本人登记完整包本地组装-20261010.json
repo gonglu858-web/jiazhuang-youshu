@@ -1,0 +1,529 @@
+{
+  "startedAt": "2026-10-10T09:44:23.932Z",
+  "baselineCommit": "61821b4",
+  "claims": {
+    "realSdkExecuted": false,
+    "platformExecuted": false,
+    "cloudWritten": false,
+    "previewedOrUploaded": false,
+    "deployed": false,
+    "note": "本轮仅本地组装与离线核验；wx/云函数/存储均为合成对象。"
+  },
+  "groups": [
+    {
+      "group": "1-文件集与逐字节来源",
+      "checks": [
+        {
+          "label": "登记项目文件数等于声明文件集",
+          "ok": true,
+          "detail": "24 vs 24"
+        },
+        {
+          "label": "关闭项目文件数等于声明文件集",
+          "ok": true,
+          "detail": "24 vs 24"
+        },
+        {
+          "label": "app.json 仅保留唯一页面",
+          "ok": true,
+          "detail": "[\"pages/schedule-sandbox/schedule-sandbox\"]"
+        },
+        {
+          "label": "窗口配置原样保留",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "仓库源九路由未改",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "project.config.json 固定 AppID",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "compileType=miniprogram",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "miniprogramRoot=miniprogram/",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "cloudfunctionRoot=cloudfunctions/",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "不含 private config",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "不含 project.private.config.json 文件",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "云函数目录名为 scheduleSandbox",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "服务端八文件各与正确输入逐字节匹配",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭包来自受审校验",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "前后端差异面恰为三项",
+          "ok": true,
+          "detail": "[\"miniprogram/config/schedule-sandbox-proof.js\",\"cloudfunctions/scheduleSandbox/gate.js\",\"cloudfunctions/scheduleSandbox/index.js\"]"
+        },
+        {
+          "label": "前端相对依赖全部在制品内可解析",
+          "ok": true,
+          "detail": "unresolved=0"
+        },
+        {
+          "label": "无前端 npm 依赖",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "passed": 17,
+      "total": 17
+    },
+    {
+      "group": "2-反例零写与合法续建复用",
+      "checks": [
+        {
+          "label": "不同字节半成品拒绝覆盖",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ARTIFACT_CONFLICT\",\"detail\":\"registration-project/miniprogram/app.js 已存在且字节不符，拒绝覆盖。\"}]"
+        },
+        {
+          "label": "冲突时零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "冲突时目录快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "额外空目录在写入前拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_EXTRA_ENTRY\",\"detail\":\"目录不在允许清单（含空目录）：unexpected-empty\"}]"
+        },
+        {
+          "label": "额外条目时零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "额外条目时目录快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实 junction 在写入前拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ENTRY_SYMLINK\",\"detail\":\"registration-project\"}]"
+        },
+        {
+          "label": "junction 情形零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "目标 sentinel 未被改动",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "已带 manifest 缺文件拒绝补写",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ARTIFACT_CONFLICT\",\"detail\":\"完整计划或字节不符，拒绝覆盖：ASM_ARTIFACT_INCOMPLETE: 已带 manifest 但缺文件，拒绝补写：registration-project/miniprogram/app.wxss\"}]"
+        },
+        {
+          "label": "缺文件时零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "缺文件时目录快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "合法半成品续建成功",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "续建只补缺项",
+          "ok": true,
+          "detail": "[\"registration-project/miniprogram/app.json\",\"closed-project/cloudfunctions/scheduleSandbox/index.js\",\"manifest.json\"]"
+        },
+        {
+          "label": "续建后检查通过",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "相同完整输入复用成功",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "复用零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "复用不改任何字节",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "自报新哈希仍被重算拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_MISMATCH\",\"detail\":\"manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。\"}]"
+        },
+        {
+          "label": "检查失败零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "检查失败目录快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "计划轮次变化拒绝复用",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_INPUT_REJECTED\",\"detail\":\"登记制品校验未通过：REG_MANIFEST_MISMATCH REG_MANIFEST_MISMATCH: manifest 完整契约不符。\"}]"
+        },
+        {
+          "label": "计划轮次变化时目录不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "计划窗口变化拒绝复用",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_INPUT_REJECTED\",\"detail\":\"登记制品校验未通过：REG_MANIFEST_MISMATCH REG_MANIFEST_MISMATCH: manifest 完整契约不符。\"}]"
+        },
+        {
+          "label": "计划窗口变化时目录不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "计划用户变化拒绝复用",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_INPUT_REJECTED\",\"detail\":\"登记制品校验未通过：REG_MANIFEST_MISMATCH REG_MANIFEST_MISMATCH: manifest 完整契约不符。\"}]"
+        },
+        {
+          "label": "计划用户变化时目录不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实计划被合成限定拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_PLAN_SYNTHETIC_ONLY\",\"detail\":\"本轮组装器只接受 synthetic=true 的合成演练计划，不生成真实执行批准。\"}]"
+        },
+        {
+          "label": "真实计划零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实计划目录不变",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "passed": 30,
+      "total": 30
+    },
+    {
+      "group": "3-真实应用代码合成调用链",
+      "checks": [
+        {
+          "label": "App 初始化固定云环境",
+          "ok": true,
+          "detail": "{\"env\":\"cloud1-d8gcq5ag39d847723\",\"traceUser\":false}"
+        },
+        {
+          "label": "App 初始化后无错误",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "登记版生命周期零业务请求",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "登记版生命周期不清缓存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "主动 identify 恰好一次",
+          "ok": true,
+          "detail": "calls=1"
+        },
+        {
+          "label": "固定函数名 scheduleSandbox",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "固定云环境",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "identify 无 projectId",
+          "ok": true,
+          "detail": "{\"action\":\"identify\",\"requestId\":\"sbx-1791625473200-eiqaslkw\"}"
+        },
+        {
+          "label": "页面仍保留动作选择器（单页≠单按钮）",
+          "ok": true,
+          "detail": "actions=17"
+        },
+        {
+          "label": "实际加载 Page/client/协调器/三配置",
+          "ok": true,
+          "detail": "app.js,config/cloud.js,pages/schedule-sandbox/schedule-sandbox.js,utils/schedule-sandbox-client.js,config/schedule-sandbox-proof.js,utils/env-gate.js,utils/sandbox-test-coordinator.js,config/sandbox-test-driver-proof.js,utils/sandbox-test-driver.js"
+        },
+        {
+          "label": "关闭版入口拒绝",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭版零业务发送",
+          "ok": true,
+          "detail": "calls=0"
+        },
+        {
+          "label": "关闭版不清缓存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "首次未知结果只发一次",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "未知结果给出停止/核对提示",
+          "ok": true,
+          "detail": "结果未知。该操作不改变项目业务状态，可安全重试。"
+        },
+        {
+          "label": "生命周期/微任务不自动重发",
+          "ok": true,
+          "detail": "calls=1"
+        },
+        {
+          "label": "未知结果不清缓存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "错 AppID 零发送",
+          "ok": true,
+          "detail": "calls=0"
+        },
+        {
+          "label": "旧前端驱动开关保持关闭",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "passed": 19,
+      "total": 19
+    }
+  ],
+  "protectedBaseline": {
+    "commit": "61821b4",
+    "commitExists": true,
+    "gitExecutable": "C:/Program Files/Git/cmd/git.exe",
+    "trackedFiles": 878,
+    "trackedFilesAvailable": true,
+    "changedByThisRun": [],
+    "missingAfter": [],
+    "addedByThisRun": [],
+    "note": "除本轮允许的 7 个文件外，接手时全部已跟踪文件应字节不变。"
+  },
+  "assembly": {
+    "inputDir": "artifacts/schedule-sandbox/registration-eviden-58e5b7ec1e73403f99f4",
+    "inputFiles": 11,
+    "outDir": "artifacts/schedule-sandbox/registration-full-synth-a5a53eddd86b4a22aaa4",
+    "registrationProject": "artifacts/schedule-sandbox/registration-full-synth-a5a53eddd86b4a22aaa4/registration-project",
+    "closedProject": "artifacts/schedule-sandbox/registration-full-synth-a5a53eddd86b4a22aaa4/closed-project",
+    "totalFiles": 49,
+    "manifestSha256": "bfb9f4750c84ee4cbfef40bae2e195e8c131678941457e811021ac1d1f7929b0",
+    "manifestSchema": "sandbox-registration-full-assembly/1",
+    "perProjectFileCount": 24,
+    "projectDelta": [
+      "cloudfunctions/scheduleSandbox/gate.js",
+      "cloudfunctions/scheduleSandbox/index.js",
+      "miniprogram/config/schedule-sandbox-proof.js"
+    ],
+    "dependencyClosure": {
+      "scope": "miniprogram 前端；云函数为 Node 侧平台依赖，本轮不安装",
+      "scannedFiles": 16,
+      "edges": 13,
+      "reachableFromAppAndPage": 9,
+      "externalRequires": 0,
+      "unresolved": 0,
+      "sortedFiles": [
+        "miniprogram/app.js",
+        "miniprogram/app.json",
+        "miniprogram/app.wxss",
+        "miniprogram/config/cloud.js",
+        "miniprogram/config/sandbox-test-driver-proof.js",
+        "miniprogram/config/schedule-entry-proof.js",
+        "miniprogram/config/schedule-sandbox-proof.js",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+        "miniprogram/utils/env-gate.js",
+        "miniprogram/utils/sandbox-test-coordinator.js",
+        "miniprogram/utils/sandbox-test-driver.js",
+        "miniprogram/utils/schedule-sandbox-client.js",
+        "project.config.json"
+      ]
+    },
+    "networkAttempts": 0,
+    "cloudCalled": false,
+    "synthetic": true,
+    "deploymentAuthorized": false,
+    "cloudExecuted": false,
+    "uploaded": false
+  },
+  "compilation": {
+    "attempted": true,
+    "compilerDir": "D:/微信web开发者工具/resources/app.asar.unpacked/node_modules/wcc-exec",
+    "compilerSha256": {
+      "wcc.exe": "2ec832ea823c5f53e264230960637290a8cc7694773016b4c232a439193c9179",
+      "wcsc.exe": "23914ded6433a178c184e4e0fcdb077b499502b4e5a784a1f44f3db55699ce31"
+    },
+    "timeoutMs": 60000,
+    "shellFalse": true,
+    "openedIde": false,
+    "simulatorOrPreview": false,
+    "results": [
+      {
+        "label": "registration/wxml",
+        "exe": "wcc.exe",
+        "args": [
+          "pages/schedule-sandbox/schedule-sandbox.wxml",
+          "-o",
+          "C:\\Users\\30591\\AppData\\Local\\Temp\\wx-asm-compile-jiQGVH\\registration\\wxml.js"
+        ],
+        "status": 0,
+        "signal": null,
+        "errorCode": null,
+        "stdout": "",
+        "stderr": "",
+        "timedOut": false,
+        "targets": [
+          "pages/schedule-sandbox/schedule-sandbox.wxml"
+        ]
+      },
+      {
+        "label": "registration/wxss",
+        "exe": "wcsc.exe",
+        "args": [
+          "app.wxss",
+          "pages/schedule-sandbox/schedule-sandbox.wxss",
+          "-o",
+          "C:\\Users\\30591\\AppData\\Local\\Temp\\wx-asm-compile-jiQGVH\\registration\\wxss.js"
+        ],
+        "status": 0,
+        "signal": null,
+        "errorCode": null,
+        "stdout": "",
+        "stderr": "",
+        "timedOut": false,
+        "targets": [
+          "app.wxss",
+          "pages/schedule-sandbox/schedule-sandbox.wxss"
+        ]
+      },
+      {
+        "label": "closed/wxml",
+        "exe": "wcc.exe",
+        "args": [
+          "pages/schedule-sandbox/schedule-sandbox.wxml",
+          "-o",
+          "C:\\Users\\30591\\AppData\\Local\\Temp\\wx-asm-compile-jiQGVH\\closed\\wxml.js"
+        ],
+        "status": 0,
+        "signal": null,
+        "errorCode": null,
+        "stdout": "",
+        "stderr": "",
+        "timedOut": false,
+        "targets": [
+          "pages/schedule-sandbox/schedule-sandbox.wxml"
+        ]
+      },
+      {
+        "label": "closed/wxss",
+        "exe": "wcsc.exe",
+        "args": [
+          "app.wxss",
+          "pages/schedule-sandbox/schedule-sandbox.wxss",
+          "-o",
+          "C:\\Users\\30591\\AppData\\Local\\Temp\\wx-asm-compile-jiQGVH\\closed\\wxss.js"
+        ],
+        "status": 0,
+        "signal": null,
+        "errorCode": null,
+        "stdout": "",
+        "stderr": "",
+        "timedOut": false,
+        "targets": [
+          "app.wxss",
+          "pages/schedule-sandbox/schedule-sandbox.wxss"
+        ]
+      }
+    ],
+    "allPassed": true,
+    "scope": "WXML/WXSS 模板与样式编译；不等于完整微信构建、真机或平台通过。"
+  },
+  "counts": {
+    "networkAttempts": 0,
+    "cloudCalls": 0,
+    "credentialsFetched": 0
+  },
+  "finishedAt": "2026-10-10T09:44:33.925Z",
+  "summary": {
+    "groups": 3,
+    "checks": 66,
+    "passed": 66,
+    "failed": 0,
+    "compilationPassed": true
+  }
+}
