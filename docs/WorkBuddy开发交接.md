@@ -1,12 +1,57 @@
 # WorkBuddy 开发交接
 
-## Codex 最新接续：N1/N2 仅剩两个局部收尾（2026-10-10）
+## Codex 复核 a883864：N1 异步等待 / N2 合法结果组合收尾完成（2026-10-10，待复核）
 
-- 审查 `117aeff`，按 [N1/N2 复核报告](Codex复核-首次管理员接线N1-N2收尾-20261010.md) §2、§3、§4 执行。实跑 **74/74、0 跳过**；独立证据 7 对照通过、5 遗漏样本、0 夹具错误。
-- N1 默认 P4 核对的每读与最终时效已通过，不重做；仅修异步注入回调漏 await，补有效/事件后过期/异步拒绝，不能让 Promise 直接进净化。
-- N2 错绑定两读/撤销自报事实及原 unconfirmed 矛盾已通过；仅补合法状态组合判定：observed 非 active/缺状态不可确认；UNKNOWN outcome 与 initialized=true 不可保存 COMPLETED。保留真正提交后回读失败事实及合法已有记录分支。
-- 随改测试 1110–1112 行旧 EBUSY 因果注释；R3-e 本轮已通过，不重做。限 host、相称测试、操作稿/记录/新证据；worker/P4/适配器/凭据/旧只读/业务/vendor/配置/打包器保持关闭。
-- 新证据不覆盖历史；暂存凭据扫描后保存 Git，注明自测数字、待 Codex 复核。保持本地，不联网/取真实凭据/初始化/建资源/部署/启用，不开始本人登记制品准备。
+N1 默认 P4 两读及执行期/收尾时效、N2 错绑定实际核对与原矛盾分支已通过关闭，
+本轮**不重做**；S1、worker S2、R3-e 实现、P4、适配器、凭据宿主、旧只读链、
+业务云函数、vendor、入口、打包器均未改动。本地离线自测
+**84 项：83 通过 / 0 失败 / 1 显式跳过**（上轮 74 项 73 通过 / 1 跳过）；
+新复现证据 **17 项：15 通过 / 0 失败 / 2 未验证、exit 0、幂等**。
+既有回归 40+54+133+53 = **280 项全通过**。
+
+**N1 异步注入回调必须 await**
+- 原实现 `injected = o.inject(...)` 未 await，async 函数**不会**自动等待返回对象
+  内部的 Promise：正常异步结果丢失（raw 仍是 Promise，净化后成 unconfirmed），
+  且后置时效检查发生在回调结束**之前**；同一try/catch 也捕获不到异步 rejection。
+- 现`await o.inject(...)`，成功与异步拒绝都纳入既有异常处理，随后再做
+  `AFTER_INJECTED_RECONCILE` 后置时效检查；并防御「await 后仍有 Promise 流入
+  净化层」。不扩大注入权限、不新增生产调用入口。
+- 实测三例：异步有效 present 被接受且可确认；回调内推进时钟越期 → 记
+  `reconcileExpiredAtStage`、不确认（事件屏障证明确实等待了回调）；
+  异步 rejection 被捕获、**零未处理拒绝**、不确认、保留未知终态。
+
+**N2 合法结果组合**
+- observed 的**资格状态**纳入成功条件：`observationConfirmed=true` 现在还要求
+  `primaryStatus` **存在且为 active**（新增
+  `OBSERVED_PRIMARY_STATUS_NOT_ACTIVE` / `OBSERVED_PRIMARY_STATUS_MISSING`）。
+  `projectReconcile` 的 STATUS_NOT_ACTIVE **不能替代**此处 —— 那是父进程核对
+  路径，本处是 worker 正常返回路径。
+- 按**合法结果组合统一定义**（新增 `legalOutcomeFor`），而不是继续堆叠不相干 if：
+  - `initialized` → initialized 必须成立，且 outcome 为 `initialized`
+  - `alreadyPresent` → **合法已有记录分支，不要求** initialized=true
+  - `auditAlreadyPresent` → 审计在而 primary 缺，不得声称已授予
+  - `UNKNOWN` / 缺失 → **不能承载「已初始化」的肯定事实**
+    （`INITIALIZED_WITH_UNKNOWN_OUTCOME` / `BOOTSTRAP_OUTCOME_UNKNOWN` /
+    `BOOTSTRAP_OUTCOME_MISMATCH` / `ALREADY_PRESENT_CLAIMS_INITIALIZED` /
+    `AUDIT_ONLY_CLAIMS_GRANT`）
+- 实测：disabled 与缺状态两例均不确认、不保存 COMPLETED，报告如实保留原状态；
+  UNKNOWN + initialized 不保存 COMPLETED；合法 alreadyPresent 分支不误伤；
+  正常 initialized + active present 不回归；**真实事务两写一提交后回读失败时
+  保留可绑定提交事实**（initialized=true、outcome=initialized、auditId 匹配），
+  不误判为未写、不重试、不保存 COMPLETED。
+
+**§4 残留文案已删除**：测试文件 R3-e 注释中「Codex 审查时装入的网络拒绝钩子
+连带使 spawnSync 返回 EBUSY，这是审查环境残留」的**无依据归因**已移除，
+改为如实记录「曾归因→无依据已撤回→该 EBUSY 原因至今未判定」。
+R3-e **实现未重做**。文中保留的 EBUSY 字样均为撤回说明本身。
+
+**R3-e 当前为显式跳过**：本宿主此刻 `spawnSync` 仍返回 EBUSY。如实记为「未验证」
+并附原始错误，未归因任何已知原因，未用替身冒充。需在可启动子进程的环境复验。
+（Codex 侧环境该项为通过；不同环境结果不互相替代。）
+
+**仍未结论化**：真实平台执行未发生（真实凭据获取、管理员初始化、本人登记、
+资源创建、部署、入口启用均未放行）；受控批准的**真实签发者**尚未存在；
+集合是否存在、IAM 写权限、平台事务行为仍待核实。
 
 ## Codex 复核 834de82：N1/N2 定点收尾完成（2026-10-10，待复核）
 

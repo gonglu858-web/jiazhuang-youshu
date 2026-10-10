@@ -1,0 +1,320 @@
+{
+  "observedAt": "2026-10-10T02:21:00.478Z",
+  "scope": "Codex 2026-10-10 三次复核 N1 异步等待与 N2 合法结果组合定点收尾；已通过部分保持关闭不重做",
+  "networkAttempts": 0,
+  "blockedProcesses": [],
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realInitializeExecuted": false,
+  "realDeploymentExecuted": false,
+  "readRealAuthStoreContent": false,
+  "wroteHistoricalOrBusinessFiles": false,
+  "syntheticTempDirsCreated": "per-case mkdtempSync (os.tmpdir)",
+  "historicalAndClosedFilesUnchanged": true,
+  "protectedHashes": {
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "cebd47640bfac79e",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "c12b791f2ae653b2",
+    "miniapp/tests/sandbox-primary-execution-host.test.cjs": "4852db85296308bd",
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc0206",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923e",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": "c5e93d81e0245471",
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb"
+  },
+  "summary": {
+    "total": 17,
+    "passed": 15,
+    "unverified": 2,
+    "failed": 0
+  },
+  "boundaries": {
+    "notNetworked": true,
+    "noRealCredentialFetch": true,
+    "noRealInitialize": true,
+    "noResourceCreation": true,
+    "noDeployment": true,
+    "noEntranceEnable": true,
+    "subprocessUsesExpiredSyntheticCredentialOnly": true,
+    "noHistoricalEvidenceOverwritten": true,
+    "clockReplacedOnlyInsideThisProcess": true,
+    "followsRealP4ObserveContract": "observePrimary 不返回 inputDigest；本证据不把摘要缺失当矛盾",
+    "note": "SDK 层替换静态 Db.reqClass 并注入已建好的 db；真实 CLI/SDK 转换本地执行，平台行为未验证"
+  },
+  "results": [
+    {
+      "id": "N1-async-valid-callback-awaits",
+      "pass": true,
+      "observed": {
+        "callbackFinished": true,
+        "reconcile": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "INJECTED",
+          "selfConsistent": true,
+          "contradiction": null
+        },
+        "reconcileConfirmed": true,
+        "reconcileExpiredAtStage": null
+      }
+    },
+    {
+      "id": "N1-async-expire-after-barrier",
+      "pass": true,
+      "observed": {
+        "barrierHit": true,
+        "reconcileExpiredAtStage": "AFTER_INJECTED_RECONCILE",
+        "reconcileConfirmed": false,
+        "observationConfirmed": false,
+        "reconcile": {
+          "state": "unconfirmed",
+          "primaryPresent": null,
+          "primaryStatus": null,
+          "auditPresent": null,
+          "auditId": null,
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "INJECTED",
+          "selfConsistent": false,
+          "contradiction": null
+        }
+      }
+    },
+    {
+      "id": "N1-async-rejection-handled",
+      "pass": true,
+      "observed": {
+        "unhandledRejections": [],
+        "reconcile": {
+          "state": "unconfirmed",
+          "primaryPresent": null,
+          "primaryStatus": null,
+          "auditPresent": null,
+          "auditId": null,
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "INJECTED",
+          "selfConsistent": false,
+          "contradiction": null
+        },
+        "reconcileConfirmed": false,
+        "resultUnknown": true,
+        "begin": 0
+      }
+    },
+    {
+      "id": "N2-observed-disabled-not-confirmed",
+      "pass": true,
+      "observed": {
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "disabled",
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "saveRecordType": "RESULT_UNKNOWN"
+      }
+    },
+    {
+      "id": "N2-observed-status-missing-not-confirmed",
+      "pass": true,
+      "observed": {
+        "observationConfirmed": false,
+        "status": "FAILED",
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": null,
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "saveRecordType": "RESULT_UNKNOWN"
+      }
+    },
+    {
+      "id": "N2-unknown-outcome-not-completed",
+      "pass": true,
+      "observed": {
+        "status": "FAILED",
+        "outcome": "UNKNOWN",
+        "initialized": false,
+        "saveRecordType": "RESULT_UNKNOWN",
+        "incomplete": [
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ]
+      }
+    },
+    {
+      "id": "N2-legal-outcome-enum",
+      "pass": true,
+      "observed": {
+        "legal": [
+          "initialized",
+          "alreadyPresent",
+          "auditAlreadyPresent"
+        ],
+        "illegalRejected": [
+          "UNKNOWN",
+          "rejected",
+          "present",
+          "",
+          null,
+          null,
+          123
+        ]
+      }
+    },
+    {
+      "id": "N2-already-present-not-harmed",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "outcome": "alreadyPresent",
+        "initialized": false,
+        "observationConfirmed": true,
+        "saveRecordType": "COMPLETED",
+        "incomplete": []
+      }
+    },
+    {
+      "id": "N2-normal-initialized-no-regression",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "initialized": true,
+        "granted": true,
+        "observationConfirmed": true,
+        "saveRecordType": "COMPLETED"
+      }
+    },
+    {
+      "id": "N2-real-commit-readback-failed-keeps-fact",
+      "pass": true,
+      "observed": {
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "begin": 1,
+          "commit": 1,
+          "abort": 0,
+          "readOnlyGet": 2
+        },
+        "initialized": true,
+        "outcome": "initialized",
+        "auditIdMatches": true,
+        "observationConfirmed": false,
+        "saveRecordType": "RESULT_UNKNOWN"
+      }
+    },
+    {
+      "id": "ebusy-attribution-removed",
+      "pass": true,
+      "observed": {
+        "stillAssertsCause": false,
+        "recordsRetraction": true
+      }
+    },
+    {
+      "id": "R3-e-original-path-subprocess-entry",
+      "pass": false,
+      "observed": {
+        "unverified": true,
+        "reason": "宿主此刻无法启动该子进程（原始错误如实记录，原因未判定）",
+        "rawError": "spawnSync C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe EBUSY"
+      },
+      "unverified": true
+    },
+    {
+      "id": "R3-e-missing-fields-rejected",
+      "pass": false,
+      "observed": {
+        "unverified": true,
+        "reason": "宿主此刻无法启动该子进程（原始错误如实记录，原因未判定）",
+        "rawError": "spawnSync C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe EBUSY"
+      },
+      "unverified": true
+    },
+    {
+      "id": "positive-chain-still-passes",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "outcome": "initialized",
+        "initialized": true,
+        "granted": true,
+        "observationConfirmed": true,
+        "resultPersisted": true,
+        "auditIdMatches": true,
+        "saveRecordType": "COMPLETED",
+        "sdkCounts": {
+          "userGet": 1,
+          "primaryGet": 1,
+          "auditGet": 1,
+          "primarySet": 1,
+          "auditSet": 1,
+          "begin": 1,
+          "commit": 1,
+          "abort": 0,
+          "readOnlyGet": 2
+        },
+        "credentialFetches": 1
+      }
+    },
+    {
+      "id": "S1-binding-still-closed",
+      "pass": true,
+      "observed": {
+        "status": "PLAN_READY",
+        "observationConfirmed": true,
+        "initialized": true
+      }
+    },
+    {
+      "id": "worker-S2-three-deadlines-still-closed",
+      "pass": true,
+      "observed": {
+        "counts": {
+          "userGet": 1,
+          "primaryGet": 0,
+          "auditGet": 0,
+          "primarySet": 0,
+          "auditSet": 0,
+          "begin": 1,
+          "commit": 0,
+          "abort": 1,
+          "readOnlyGet": 0
+        },
+        "flags": {
+          "ok": false,
+          "planExpiredDuringRun": true,
+          "credentialExpiredDuringRun": false,
+          "approvalExpiredDuringRun": false
+        }
+      }
+    },
+    {
+      "id": "default-entry-zero-external-actions",
+      "pass": true,
+      "observed": {
+        "status": "LOCAL_READY",
+        "credentialFetched": false,
+        "cloudCallAttempted": false,
+        "workerStarted": false
+      }
+    }
+  ]
+}

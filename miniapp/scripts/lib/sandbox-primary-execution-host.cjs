@@ -1219,6 +1219,13 @@ const CREDENTIAL_FAILURE_CODES = new Set(Object.values(credentialHost.ERR));
 
 /** S4：有限枚举（值白名单，与 worker 层同一套，不新增任意字符串放行规则）。 */
 const PARENT_OUTCOMES = Object.freeze(['initialized', 'alreadyPresent', 'auditAlreadyPresent']);
+/**
+ * N2 §3.2：判断一个 outcome 是否属于**合法**集合。
+ * `'UNKNOWN'` 与缺失**不**合法 —— 未知不能承载「已初始化」的肯定事实。
+ */
+function legalOutcomeFor(outcome) {
+  return typeof outcome === 'string' && PARENT_OUTCOMES.indexOf(outcome) !== -1;
+}
 const PARENT_OBSERVED_STATES = Object.freeze(['present', 'absent', 'inconsistent', 'unconfirmed']);
 const PARENT_PRIMARY_STATUS = Object.freeze(['active', 'disabled']);
 const DIGEST_HEX_32 = /^[0-9a-f]{32}$/;
@@ -1316,16 +1323,68 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
     if (out.outcome === 'initialized' && bs.outcome !== 'initialized') contradictions.push('OUTCOME_MISMATCH');
   }
   if (out.observationConfirmed === true) {
-    // 「已核对确认」必须由 observed 的 present + 两条存在性支撑
+    /**
+     * N2 §3.1：「已核对确认」必须由 observed **完整**支撑 ——
+     * state=present + 两条存在性 + **primaryStatus='active'**。
+     * 此前只检查前两项，`primaryStatus='disabled'` 或该字段缺失时仍被确认，
+     * 实测两例都 `resultPersisted=true` 且保存 COMPLETED。
+     *
+     * 说明：`projectReconcile` 已有 STATUS_NOT_ACTIVE 检查，但它**不能替代**
+     * 本处 —— 那是父进程核对路径，本处是 worker 正常返回路径。
+     */
     if (ob === null || ob.state !== 'present') contradictions.push('OBSERVED_NOT_PRESENT');
     else {
       if (ob.primaryPresent !== true) contradictions.push('OBSERVED_PRIMARY_ABSENT');
       if (ob.auditPresent !== true) contradictions.push('OBSERVED_AUDIT_ABSENT');
+      // 资格状态必须**存在且为 active**：缺失或非 active 都不得确认
+      if (typeof ob.primaryStatus !== 'string') contradictions.push('OBSERVED_PRIMARY_STATUS_MISSING');
+      else if (ob.primaryStatus !== 'active') contradictions.push('OBSERVED_PRIMARY_STATUS_NOT_ACTIVE');
     }
   }
   // 顶层 initialized 但 bootstrap 明确否认 → 不采信顶层自报
   if (bs !== null && bs.initialized === false && out.initialized === true) {
     contradictions.push('TOP_LEVEL_INITIALIZED_DENIED_BY_BOOTSTRAP');
+  }
+
+  /**
+   * N2 §3.2：按**合法结果组合**统一定义，而不是继续堆叠不相干的 if。
+   *
+   * 合法组合（依据 worker 自身的归一化契约
+   * `initialized = (outcome === 'initialized') && granted`，
+   * 以及 P4 `initializePrimary` 的三个真实 outcome）：
+   *
+   * | outcome             | initialized | granted | observationConfirmed |
+   * |---------------------|-------------|---------|----------------------|
+   * | initialized         | true        | true    | true（且 observed 全 active/present）|
+   * | alreadyPresent      | false       | 可为 true| 可为 true（观察既有记录）|
+   * | auditAlreadyPresent | false       | false   | false                |
+   * | UNKNOWN / 缺失      | false       | false   | false                |
+   *
+   * 要点：
+   *  - `UNKNOWN` 或缺失**不能承载「已初始化」的肯定事实** —— 实测顶层与
+   *    bootstrap.outcome 同时为 UNKNOWN、两层 initialized 仍 true 时被保存
+   *    COMPLETED；
+   *  - `alreadyPresent` 是合法分支，**不要求** initialized=true（不得一律要求）；
+   *  - `auditAlreadyPresent` 表示审计在而 primary 缺，不是成功初始化。
+   */
+  const legalOutcome = PARENT_OUTCOMES.indexOf(out.outcome) !== -1;
+  if (out.initialized === true) {
+    // 已初始化必须是合法 outcome 且为 'initialized'；UNKNOWN/缺失一律不承载
+    if (!legalOutcome) contradictions.push('INITIALIZED_WITH_UNKNOWN_OUTCOME');
+    else if (out.outcome !== 'initialized') contradictions.push('INITIALIZED_OUTCOME_NOT_INITIALIZED');
+    if (bs !== null && !legalOutcomeFor(bs.outcome)) {
+      contradictions.push('BOOTSTRAP_OUTCOME_UNKNOWN');
+    } else if (bs !== null && bs.outcome !== out.outcome) {
+      contradictions.push('BOOTSTRAP_OUTCOME_MISMATCH');
+    }
+  }
+  if (out.outcome === 'alreadyPresent' && out.initialized === true) {
+    // 合法已有记录分支：观察既有记录 ≠ 本轮初始化
+    contradictions.push('ALREADY_PRESENT_CLAIMS_INITIALIZED');
+  }
+  if (out.outcome === 'auditAlreadyPresent' &&
+    (out.initialized === true || out.granted === true)) {
+    contradictions.push('AUDIT_ONLY_CLAIMS_GRANT');
   }
 
   if (!bindingMatched) {
@@ -1422,7 +1481,20 @@ async function runReadOnlyReconcile(options) {
     }
     let injected = null;
     try {
-      injected = o.inject({
+      /**
+       * N1（Codex 2026-10-10 §2）：异步注入回调**必须 await**。
+       *
+       * 原实现 `injected = o.inject(...)` 没有 await，函数随即执行
+       * AFTER_INJECTED_RECONCILE 与 finalizeDeadline 并返回 —— async 函数
+       * **不会**自动等待返回对象内部的 Promise。后果有两项：
+       *  - 正常异步结果**丢失**（raw 仍是 Promise，净化后成 unconfirmed）；
+       *  - 后置时效检查发生在回调结束**之前**，越界无法被捕获。
+       * 此外同一 try/catch 也捕获不到异步 rejection。
+       *
+       * 现在：等待回调真正完成；成功与异步拒绝都纳入既有异常处理，
+       * 随后再做后置时效检查。不扩大注入权限、不新增生产调用入口。
+       */
+      injected = await o.inject({
         snapshot,
         plan: o.plan,
         approval: o.approval,
@@ -1430,8 +1502,19 @@ async function runReadOnlyReconcile(options) {
         auditId: o.auditId,
         targetUserId: o.plan && o.plan.targetUserId
       });
-    } catch (_) { injected = null; }
+    } catch (_) {
+      // 同步抛出与异步 rejection 走同一处理：不确认任何结论
+      injected = null;
+    }
+    /**
+     * 后置时效检查必须在回调**完成之后**。若回调内部推进了时钟越过凭据期限，
+     * 此处即停止后续确认（返回 raw:null + expiredAtStage）。
+     */
     if (!checkDeadline('AFTER_INJECTED_RECONCILE')) {
+      return { raw: null, expiredAtStage: finalizeDeadline() };
+    }
+    // 防御：await 之后不应再有 Promise 流入净化层
+    if (injected !== null && typeof injected.then === 'function') {
       return { raw: null, expiredAtStage: finalizeDeadline() };
     }
     return { raw: injected, expiredAtStage: finalizeDeadline() };
@@ -1655,6 +1738,7 @@ module.exports = Object.freeze({
   projectObserved,
   projectReconcile,
   runReadOnlyReconcile,
+  legalOutcomeFor,
   CREDENTIAL_FAILURE_CODES,
   PARENT_OUTCOMES,
   PARENT_OBSERVED_STATES,

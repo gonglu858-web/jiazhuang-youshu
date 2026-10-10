@@ -1107,12 +1107,18 @@ test('R3-d stdin 有界：超出字节上限即拒绝，不无界读取', async 
 /**
  * R3-e：worker 作为**真实子进程**可运行（有界 stdin → 单次 JSON 输出）。
  *
- * 本机当前**无法执行**该验证：Codex 审查时装入的 http/https/net/tls 网络拒绝钩子
- * 连带使 `spawnSync` 对**任意** node 可执行文件返回 EBUSY（实测：启动一个只写
- * `console.log(1)` 的临时脚本同样 EBUSY）。这是审查环境残留，不是 worker 代码问题。
+ * 直接运行原固定 worker 路径（保留其相对 `require`）。上一版曾把 worker 复制到
+ * 临时目录再启动，破坏了相对依赖，失败在**模块加载阶段**（`Cannot find module`），
+ * 并非 worker 业务路径失败 —— 该做法已纠正。
  *
- * 按「不冒充通过」原则：能跑就跑并全断言；跑不了就**显式 skip 并写明原因**，
- * 不用替身假装真实入口已验证。
+ * 曾把观察到的 EBUSY 归因为「Codex 审查时装入的网络拒绝钩子连带影响」——
+ * 该归因**无依据并已撤回**（钩子只在其自身 Node 进程内修改模块对象，
+ * 不改磁盘库、系统网络或全局 Node 配置）。**该EBUSY 的原因至今未判定。**
+ * 本宿主能否启动子进程是**逐次运行的环境条件**：不同环境结果不互相替代
+ * （有的环境 74/74 含本项通过，有的环境本项显式跳过）。
+ *
+ * 按「不冒充通过」原则：能跑就跑并全断言；跑不了就**显式 skip 并如实记录
+ * 该时点的原始错误**，不预设任何原因，不用替身假装真实入口已验证。
  */
 test('R3-e worker 作为真实子进程可运行（有界 stdin → 单次 JSON 输出）', (t) => {
   const { spawnSync } = require('node:child_process');
@@ -2646,4 +2652,456 @@ test('N2-e 真实 P4 present 正向不回归（executeOnce 贯穿对照）', asy
     assert.equal(saves[0].recordType, 'COMPLETED');
     assert.equal(saves[0].initialized, true);
   } finally { tr.restore(); }
+});
+// ══════════════════════════════════════════════════════════════════════
+// 第 6 组：Codex 2026-10-10 三次复核 N1 异步等待 / N2 合法结果组合
+// N1：异步注入回调必须 await（有效正向、事件屏障后过期、异步拒绝）
+// N2：observed 非 active/缺状态不得确认；UNKNOWN outcome 与 initialized 冲突
+//     不得保存 COMPLETED；合法已有记录分支与真实提交后回读失败须保留
+// ══════════════════════════════════════════════════════════════════════
+
+test('N1-c1 异步注入有效 present → 必须等待完成并可确认', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const boundAuditId = p4.auditId(plan, p4.inputDigest(plan));
+  const tr = installSyntheticSdkTransport({});
+  let callbackFinished = false;
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N1c1'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn([], {}, { hang: true }),
+      // 合法**异步** present 结果：此前未 await，结果被丢失
+      reconcileReadOnly: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        callbackFinished = true;
+        return {
+          state: 'present', primaryPresent: true, primaryStatus: 'active',
+          auditPresent: true, auditId: boundAuditId
+        };
+      },
+      persistRoundStarted: () => true,
+      persistResult: () => true,
+      workerLimits: { timeoutMs: 60, maxOutputBytes: 4096, closeGraceMs: 20 }
+    });
+    assert.equal(callbackFinished, true, '宿主必须等待回调真正完成');
+    // 合法异步结果不得被误丢
+    assert.equal(r.reconcile.state, 'present',
+      '异步 present 应被接受：' + JSON.stringify(r.reconcile));
+    assert.equal(r.reconcileConfirmed, true,
+      '合法异步 present 应可确认：' + JSON.stringify(r.reconcile));
+    assert.equal(r.reconcile.selfConsistent, true);
+    assert.equal(r.reconcileExpiredAtStage, undefined);
+  } finally { tr.restore(); }
+});
+
+test('N1-c2 异步回调内推进时钟越过期限 → 等待后做后置检查、停止确认', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const boundAuditId = p4.auditId(plan, p4.inputDigest(plan));
+  const tr = installSyntheticSdkTransport({});
+  let clockMs = Date.now();
+  let released = false;
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => clockMs, roundId: plan.roundId,
+      ...syntheticDirs('N1c2'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn([], {}, { hang: true }),
+      // 事件屏障：宿主若未 await，收尾检查会在回调结束前跑完（拿到 null）
+      reconcileReadOnly: async () => {
+        await new Promise((resolve) => {
+          released = true;
+          setTimeout(resolve, 5);
+        });
+        // 回调**内部**推进时钟越过凭据期限
+        clockMs += 3600000;
+        return {
+          state: 'present', primaryPresent: true, primaryStatus: 'active',
+          auditPresent: true, auditId: boundAuditId
+        };
+      },
+      persistRoundStarted: () => true,
+      persistResult: () => true,
+      workerLimits: { timeoutMs: 60, maxOutputBytes: 4096, closeGraceMs: 20 }
+    });
+    assert.equal(released, true, '屏障应被触发');
+    // 后置时效检查必须在回调完成之后 → 应记录过期阶段
+    assert.ok(r.reconcileExpiredAtStage,
+      '回调内越期必须被后置检查捕获：' + JSON.stringify(r.reconcile));
+    assert.equal(r.reconcileConfirmed, false, '过期不得确认');
+    assert.equal(r.observationConfirmed, false);
+    assert.equal(r.reconcile.state, 'unconfirmed');
+  } finally { tr.restore(); }
+});
+
+test('N1-c3 异步注入 rejection → 纳入异常处理，不产生未处理拒绝、不确认', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const tr = installSyntheticSdkTransport({});
+  const unhandled = [];
+  const onUnhandled = (reason) => { unhandled.push(reason); };
+  process.on('unhandledRejection', onUnhandled);
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N1c3'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn([], {}, { hang: true }),
+      // 异步拒绝：此前同一 try/catch 捕获不到
+      reconcileReadOnly: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        throw new Error('SYNTHETIC_ASYNC_REJECTION');
+      },
+      persistRoundStarted: () => true,
+      persistResult: () => true,
+      workerLimits: { timeoutMs: 60, maxOutputBytes: 4096, closeGraceMs: 20 }
+    });
+    // 让微任务队列排空，确认没有未处理拒绝
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    assert.equal(unhandled.length, 0,
+      '异步拒绝必须被捕获，不得成为未处理拒绝：' + JSON.stringify(unhandled.map(String)));
+    assert.equal(r.reconcileConfirmed, false, '拒绝后不得确认');
+    assert.equal(r.reconcile.state, 'unconfirmed');
+    assert.equal(r.observationConfirmed, false);
+    // 保留未知终态，不重写
+    assert.equal(r.resultUnknown, true);
+    assert.equal(tr.counts().begin, 0);
+  } finally {
+    process.removeListener('unhandledRejection', onUnhandled);
+    tr.restore();
+  }
+});
+
+test('N2-c1 observed.primaryStatus=disabled → 不得确认、不得保存 COMPLETED', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const auditKey = p4.auditId(plan, p4.inputDigest(plan));
+  const digest = p4.inputDigest(plan);
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N2c1'),
+      spawn: syntheticCliSpawn(captured),
+      // 键/摘要、bootstrap 与其余字段全沿用成功对照，**只**改 observed.primaryStatus
+      spawnWorker: (bin, argv, options) => {
+        const { EventEmitter } = require('node:events');
+        const c = new EventEmitter();
+        c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+        c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+        setImmediate(() => {
+          c.stdout.emit('data', Buffer.from(JSON.stringify({
+            ok: true, errorCode: null, resultUnknown: false,
+            outcome: 'initialized', granted: true, initialized: true,
+            observationConfirmed: true, auditId: auditKey,
+            bootstrap: {
+              ok: true, outcome: 'initialized', granted: true, initialized: true,
+              auditId: auditKey, inputDigest: digest, errorCode: null, requestIds: []
+            },
+            observed: { state: 'present', primaryPresent: true, primaryStatus: 'disabled',
+              auditPresent: true, writeAuthorized: false, errorCode: null },
+            observeFailed: false
+          })));
+          c.emit('exit', 0, null); c.emit('close', 0, null);
+        });
+        return c;
+      },
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    assert.equal(r.observationConfirmed, false,
+      'primaryStatus=disabled 不得确认：' + JSON.stringify(r.observed));
+    assert.equal(r.status, host.STATUS.FAILED);
+    assert.equal(saves.length, 1);
+    assert.notEqual(saves[0].recordType, 'COMPLETED',
+      'disabled 不得保存 COMPLETED：' + saves[0].recordType);
+    // 报告如实保留 disabled，不抹掉
+    assert.equal(r.observed.primaryStatus, 'disabled');
+  } finally { tr.restore(); }
+});
+
+test('N2-c2 observed 缺 primaryStatus → 不得确认、不得保存 COMPLETED', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const auditKey = p4.auditId(plan, p4.inputDigest(plan));
+  const digest = p4.inputDigest(plan);
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N2c2'),
+      spawn: syntheticCliSpawn(captured),
+      // **删除** observed.primaryStatus
+      spawnWorker: (bin, argv, options) => {
+        const { EventEmitter } = require('node:events');
+        const c = new EventEmitter();
+        c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+        c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+        setImmediate(() => {
+          c.stdout.emit('data', Buffer.from(JSON.stringify({
+            ok: true, errorCode: null, resultUnknown: false,
+            outcome: 'initialized', granted: true, initialized: true,
+            observationConfirmed: true, auditId: auditKey,
+            bootstrap: {
+              ok: true, outcome: 'initialized', granted: true, initialized: true,
+              auditId: auditKey, inputDigest: digest, errorCode: null, requestIds: []
+            },
+            observed: { state: 'present', primaryPresent: true,
+              auditPresent: true, writeAuthorized: false, errorCode: null },
+            observeFailed: false
+          })));
+          c.emit('exit', 0, null); c.emit('close', 0, null);
+        });
+        return c;
+      },
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    assert.equal(r.observationConfirmed, false,
+      '缺 primaryStatus 不得确认：' + JSON.stringify(r.observed));
+    assert.equal(r.status, host.STATUS.FAILED);
+    assert.notEqual(saves[0].recordType, 'COMPLETED',
+      '缺状态不得保存 COMPLETED：' + saves[0].recordType);
+    // 缺项如实呈现为 null，不伪造 active
+    assert.equal(r.observed.primaryStatus, null);
+  } finally { tr.restore(); }
+});
+
+test('N2-c3 outcome=UNKNOWN 且 initialized=true → 不得保存 COMPLETED', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const auditKey = p4.auditId(plan, p4.inputDigest(plan));
+  const digest = p4.inputDigest(plan);
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N2c3'),
+      spawn: syntheticCliSpawn(captured),
+      // 顶层与 bootstrap.outcome **同时**为 UNKNOWN，两层 initialized 仍 true
+      spawnWorker: (bin, argv, options) => {
+        const { EventEmitter } = require('node:events');
+        const c = new EventEmitter();
+        c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+        c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+        setImmediate(() => {
+          c.stdout.emit('data', Buffer.from(JSON.stringify({
+            ok: true, errorCode: null, resultUnknown: false,
+            outcome: 'UNKNOWN', granted: true, initialized: true,
+            observationConfirmed: true, auditId: auditKey,
+            bootstrap: {
+              ok: true, outcome: 'UNKNOWN', granted: true, initialized: true,
+              auditId: auditKey, inputDigest: digest, errorCode: null, requestIds: []
+            },
+            observed: { state: 'present', primaryPresent: true, primaryStatus: 'active',
+              auditPresent: true, writeAuthorized: false, errorCode: null },
+            observeFailed: false
+          })));
+          c.emit('exit', 0, null); c.emit('close', 0, null);
+        });
+        return c;
+      },
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    assert.equal(r.status, host.STATUS.FAILED,
+      'UNKNOWN outcome 不得判成功：' + r.status);
+    assert.equal(saves.length, 1);
+    assert.notEqual(saves[0].recordType, 'COMPLETED',
+      'UNKNOWN + initialized 冲突不得保存 COMPLETED：' + saves[0].recordType);
+  } finally { tr.restore(); }
+});
+
+test('N2-c4 合法已有记录分支 alreadyPresent → 不误伤（不要求 initialized=true）', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const auditKey = p4.auditId(plan, p4.inputDigest(plan));
+  const digest = p4.inputDigest(plan);
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N2c4'),
+      spawn: syntheticCliSpawn(captured),
+      // 合法已有记录：outcome=alreadyPresent、initialized=false、观察既有记录为 present
+      spawnWorker: (bin, argv, options) => {
+        const { EventEmitter } = require('node:events');
+        const c = new EventEmitter();
+        c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+        c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+        setImmediate(() => {
+          c.stdout.emit('data', Buffer.from(JSON.stringify({
+            ok: true, errorCode: null, resultUnknown: false,
+            outcome: 'alreadyPresent', granted: true, initialized: false,
+            observationConfirmed: true, auditId: auditKey,
+            bootstrap: {
+              ok: true, outcome: 'alreadyPresent', granted: true, initialized: false,
+              auditId: auditKey, inputDigest: digest, errorCode: null, requestIds: []
+            },
+            observed: { state: 'present', primaryPresent: true, primaryStatus: 'active',
+              auditPresent: true, writeAuthorized: false, errorCode: null },
+            observeFailed: false
+          })));
+          c.emit('exit', 0, null); c.emit('close', 0, null);
+        });
+        return c;
+      },
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    assert.equal(r.status, host.STATUS.PLAN_READY, JSON.stringify({
+      stoppedAt: r.stoppedAt, errorCode: r.errorCode, incomplete: r.incomplete
+    }));
+    assert.equal(r.outcome, 'alreadyPresent');
+    assert.equal(r.initialized, false, '已有记录分支本就不是本轮初始化');
+    assert.equal(r.observationConfirmed, true, '合法已有记录不应被误伤');
+    assert.equal(saves[0].recordType, 'COMPLETED');
+  } finally { tr.restore(); }
+});
+
+test('N2-c5 正常初始化（initialized + active present）→ 不回归', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const auditKey = p4.auditId(plan, p4.inputDigest(plan));
+  const digest = p4.inputDigest(plan);
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N2c5'),
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: (bin, argv, options) => {
+        const { EventEmitter } = require('node:events');
+        const c = new EventEmitter();
+        c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+        c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+        setImmediate(() => {
+          c.stdout.emit('data', Buffer.from(JSON.stringify({
+            ok: true, errorCode: null, resultUnknown: false,
+            outcome: 'initialized', granted: true, initialized: true,
+            observationConfirmed: true, auditId: auditKey,
+            bootstrap: {
+              ok: true, outcome: 'initialized', granted: true, initialized: true,
+              auditId: auditKey, inputDigest: digest, errorCode: null, requestIds: []
+            },
+            observed: { state: 'present', primaryPresent: true, primaryStatus: 'active',
+              auditPresent: true, writeAuthorized: false, errorCode: null },
+            observeFailed: false
+          })));
+          c.emit('exit', 0, null); c.emit('close', 0, null);
+        });
+        return c;
+      },
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    assert.equal(r.status, host.STATUS.PLAN_READY, JSON.stringify({
+      stoppedAt: r.stoppedAt, errorCode: r.errorCode, incomplete: r.incomplete
+    }));
+    assert.equal(r.initialized, true);
+    assert.equal(r.granted, true);
+    assert.equal(r.observationConfirmed, true);
+    assert.equal(saves[0].recordType, 'COMPLETED');
+  } finally { tr.restore(); }
+});
+
+test('N2-c6 真实提交后回读失败 → 保留可绑定的提交事实，不误判为未写', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const auditKey = p4.auditId(plan, p4.inputDigest(plan));
+  const digest = p4.inputDigest(plan);
+  // 事务两写一提交**真实发生**，随后只读回读失败 —— 提交事实必须保留。
+  // failIf 用 onAction 钩子实现：只在**非事务** database.getDocument
+  // （即只读核对的两条读取）时抛错；事务内的读写不受影响。
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: SYN_TARGET, status: 'active', openid: 'synthetic-offline-openid' }
+  }, null, {
+    onAction: (action, params) => {
+      if (action === 'database.getDocument' && !params.transactionId) {
+        throw Object.assign(new Error('SYNTHETIC_READBACK_FAILED'),
+          { code: 'SYNTHETIC_READBACK_FAILED' });
+      }
+    }
+  });
+  const saves = [];
+  try {
+    const r = await host.executeOnce({
+      plan, approval: syntheticApproval(),
+      approvalSource: syntheticApprovalSource(plan),
+      now: () => Date.now(), roundId: plan.roundId,
+      ...syntheticDirs('N2c6'),
+      spawn: syntheticCliSpawn(captured),
+      // 真实 worker 事务提交成功，但回读 unconfirmed（observeFailed=true）
+      spawnWorker: syntheticWorkerSpawn(tr.seen, [], { db: tr.db }),
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: () => true,
+      persistResult: (v) => { saves.push(v); return true; }
+    });
+    const c = tr.counts();
+    // 真实事务：两写一提交
+    assert.equal(c.primarySet, 1, '真实提交应保留：' + JSON.stringify(c));
+    assert.equal(c.auditSet, 1, JSON.stringify(c));
+    assert.equal(c.commit, 1, JSON.stringify(c));
+    // 提交事实保留（未被回读失败抹成零写）
+    assert.equal(r.initialized, true,
+      '回读失败不得抹去已发生的提交事实：' + JSON.stringify({
+        initialized: r.initialized, outcome: r.outcome
+      }));
+    assert.equal(r.outcome, 'initialized');
+    assert.equal(r.auditId, auditKey);
+    // 但回读未确认 → 不报成功、不保存完成
+    assert.equal(r.observationConfirmed, false,
+      '回读失败不得确认：' + JSON.stringify(r.observed));
+    assert.notEqual(saves.length ? saves[0].recordType : null, 'COMPLETED');
+    // 不重写
+    assert.equal(c.primarySet, 1, '不得重试初始化');
+  } finally { tr.restore(); }
+});
+
+test('N2-c7 legalOutcomeFor：只有三个真实 outcome 合法', () => {
+  for (const ok of ['initialized', 'alreadyPresent', 'auditAlreadyPresent']) {
+    assert.equal(host.legalOutcomeFor(ok), true, '应合法：' + ok);
+  }
+  for (const bad of ['UNKNOWN', 'rejected', 'present', '', null, undefined, 123]) {
+    assert.equal(host.legalOutcomeFor(bad), false,
+      '非法 outcome 须被拒：' + JSON.stringify(bad));
+  }
 });
