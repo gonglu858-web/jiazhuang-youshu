@@ -1,0 +1,1191 @@
+{
+  "observedAt": "2026-10-10T02:10:50.671Z",
+  "scope": "OFFLINE_SYNTHETIC_ONLY",
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "networkAttempts": 0,
+  "blockedProcesses": 0,
+  "syntheticTempDirsCreated": true,
+  "historicalAndClosedFilesUnchanged": true,
+  "protectedHashes": {
+    "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "miniapp/scripts/lib/cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5",
+    "miniapp/scripts/prepare-sandbox-primary.cjs": "608aa8854a4213fc81659f2892634cd29e4ba691db1253d34a8e66778c7046e4",
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb928f9f01839a90c21bec6bbd85762891d8692e1327e476ab",
+    "docs/证据/Codex首次管理员R1R6返修复核-20261009.cjs": "a5bd9052499aeed23b4b1ed7d29b412f1c8183bcfd8e6f36a8ba73f53990bd6f",
+    "docs/证据/Codex首次管理员R1R6返修复核-20261009.json": "514cb028564c546ddf7436f2ab0124b77a673ed814b71c063577e014522b2cdd",
+    "docs/证据/WorkBuddy首次管理员S1S4收尾复现-20261009.cjs": "0611d8ddda0cc1f132870d43b56914bcf05f0fc96af166133310ad5a40774b50",
+    "docs/证据/WorkBuddy首次管理员S1S4收尾复现-20261009.json": "54cb7999aa8f3da9941543ea5973f8fb2da1d00d8bf47166a3bee8c0fc113182",
+    "docs/证据/WorkBuddy首次管理员S2S3S4二次收尾复现-20261010.cjs": "0c227dccc39ea5ec3334c8f82f3534b972966e2d73a96f20856af20018a684be",
+    "docs/证据/WorkBuddy首次管理员S2S3S4二次收尾复现-20261010.json": "cb2799c98c1b6cd90e4d9427fe89cf1a7304dcb1489c86d2df09a8df56f931ed",
+    "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8",
+    "docs/证据/WorkBuddy首次管理员N1N2收尾复现-20261010.cjs": "83361b053b02e5c322aec25d5a382a0d4cd451b0ea9a22eadc67e203646432df",
+    "docs/证据/WorkBuddy首次管理员N1N2收尾复现-20261010.json": "2c6565c8de325859c0a1afa77b48133871ed47071f68dfe3d77c696a9657b9ca"
+  },
+  "summary": {
+    "total": 12,
+    "passedControls": 7,
+    "reproduced": 5,
+    "harnessErrors": 0
+  },
+  "rows": [
+    {
+      "id": "normal-chain",
+      "passed": true,
+      "report": {
+        "status": "PLAN_READY",
+        "stoppedAt": null,
+        "errorCode": null,
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck",
+          "worker",
+          "resultPersisted"
+        ],
+        "incomplete": [],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": {
+          "ok": true,
+          "outcome": "initialized",
+          "granted": true,
+          "initialized": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": "cd9455a672c954ca83280247e19b47a0",
+          "existingPrimary": null,
+          "errorCode": null,
+          "requestIds": [],
+          "bindingMatched": true
+        },
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "observeFailed": false,
+        "outcome": "initialized",
+        "granted": true,
+        "initialized": true,
+        "observationConfirmed": true,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": null,
+          "exitCode": 0,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        },
+        "resultPersisted": true
+      },
+      "counts": {
+        "userGet": 1,
+        "primaryGet": 2,
+        "auditGet": 2,
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1,
+        "abort": 0,
+        "begin": 1,
+        "readOnlyGet": 2
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "COMPLETED",
+          "outcome": "initialized",
+          "observationConfirmed": true,
+          "initialized": true,
+          "granted": true
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "auditApprovedBy": "SYNTHETIC_OPERATOR_OFFLINE_ONLY",
+      "auditOperatorRef": "SYNTHETIC_OPERATOR_OFFLINE_ONLY"
+    },
+    {
+      "id": "N1-first-read-expires",
+      "passed": true,
+      "hits": 1,
+      "report": {
+        "status": "FAILED",
+        "stoppedAt": "worker",
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck"
+        ],
+        "incomplete": [
+          "核对期间同批凭据已过期（AFTER_READ_ONLY）：停止后续读取、不确认结论；保留未知终态，待只读接续。",
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": null,
+        "observed": null,
+        "observeFailed": false,
+        "outcome": "UNKNOWN",
+        "granted": false,
+        "initialized": false,
+        "observationConfirmed": false,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": true,
+          "overflow": false,
+          "signal": null,
+          "exitCode": null,
+          "closeNotObserved": false,
+          "terminationRequested": true,
+          "terminationConfirmed": false
+        },
+        "resultUnknown": true,
+        "reconcile": {
+          "state": "unconfirmed",
+          "primaryPresent": null,
+          "primaryStatus": null,
+          "auditPresent": null,
+          "auditId": null,
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "P4_OBSERVE",
+          "selfConsistent": false,
+          "contradiction": null
+        },
+        "reconcileAttempted": true,
+        "reconcileConfirmed": false,
+        "reconcileExpiredAtStage": "AFTER_READ_ONLY",
+        "unknownPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 1,
+        "auditGet": 0,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 1
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "RESULT_UNKNOWN",
+          "outcome": "UNKNOWN",
+          "initialized": false,
+          "granted": false,
+          "observationConfirmed": false,
+          "resultUnknown": true,
+          "reconcileAttempted": true,
+          "reconcileConfirmed": false,
+          "reconcile": {
+            "state": "unconfirmed",
+            "primaryPresent": null,
+            "primaryStatus": null,
+            "auditPresent": null,
+            "auditId": null,
+            "inputDigest": null,
+            "errorCode": null,
+            "source": "P4_OBSERVE",
+            "selfConsistent": false,
+            "contradiction": null
+          },
+          "workerProcess": {
+            "spawnError": false,
+            "timedOut": true,
+            "overflow": false,
+            "signal": null,
+            "exitCode": null,
+            "closeNotObserved": false,
+            "terminationRequested": true,
+            "terminationConfirmed": false
+          }
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N1-valid-default-two-read-present",
+      "passed": true,
+      "report": {
+        "status": "FAILED",
+        "stoppedAt": "worker",
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck"
+        ],
+        "incomplete": [
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": null,
+        "observed": null,
+        "observeFailed": false,
+        "outcome": "UNKNOWN",
+        "granted": false,
+        "initialized": false,
+        "observationConfirmed": true,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": true,
+          "overflow": false,
+          "signal": null,
+          "exitCode": null,
+          "closeNotObserved": false,
+          "terminationRequested": true,
+          "terminationConfirmed": false
+        },
+        "resultUnknown": true,
+        "reconcile": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "P4_OBSERVE",
+          "selfConsistent": true,
+          "contradiction": null
+        },
+        "reconcileAttempted": true,
+        "reconcileConfirmed": true,
+        "unknownPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 1,
+        "auditGet": 1,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 2
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "RESULT_UNKNOWN",
+          "outcome": "UNKNOWN",
+          "initialized": false,
+          "granted": false,
+          "observationConfirmed": true,
+          "resultUnknown": true,
+          "reconcileAttempted": true,
+          "reconcileConfirmed": true,
+          "reconcile": {
+            "state": "present",
+            "primaryPresent": true,
+            "primaryStatus": "active",
+            "auditPresent": true,
+            "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+            "inputDigest": null,
+            "errorCode": null,
+            "source": "P4_OBSERVE",
+            "selfConsistent": true,
+            "contradiction": null
+          },
+          "workerProcess": {
+            "spawnError": false,
+            "timedOut": true,
+            "overflow": false,
+            "signal": null,
+            "exitCode": null,
+            "closeNotObserved": false,
+            "terminationRequested": true,
+            "terminationConfirmed": false
+          }
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N1-after-p4-before-finalize-expiry",
+      "passed": true,
+      "emitted": true,
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 1,
+        "auditGet": 1,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 2
+      },
+      "result": {
+        "raw": null,
+        "expiredAtStage": "AFTER_RECONCILE"
+      }
+    },
+    {
+      "id": "N2-wrong-binding-real-reconcile",
+      "passed": true,
+      "report": {
+        "status": "FAILED",
+        "stoppedAt": "worker",
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck"
+        ],
+        "incomplete": [
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": {
+          "ok": true,
+          "outcome": "initialized",
+          "granted": true,
+          "initialized": true,
+          "auditId": null,
+          "inputDigest": "cd9455a672c954ca83280247e19b47a0",
+          "existingPrimary": null,
+          "errorCode": null,
+          "requestIds": [],
+          "bindingMatched": false
+        },
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "observeFailed": false,
+        "outcome": "initialized",
+        "granted": false,
+        "initialized": false,
+        "observationConfirmed": false,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": null,
+          "exitCode": 0,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        },
+        "resultUnknown": true,
+        "reconcile": {
+          "state": "absent",
+          "primaryPresent": false,
+          "primaryStatus": null,
+          "auditPresent": false,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "P4_OBSERVE",
+          "selfConsistent": true,
+          "contradiction": null
+        },
+        "reconcileAttempted": true,
+        "reconcileConfirmed": false,
+        "unknownPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 1,
+        "auditGet": 1,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 2
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "RESULT_UNKNOWN",
+          "outcome": "initialized",
+          "initialized": false,
+          "granted": false,
+          "observationConfirmed": false,
+          "resultUnknown": true,
+          "reconcileAttempted": true,
+          "reconcileConfirmed": false,
+          "reconcile": {
+            "state": "absent",
+            "primaryPresent": false,
+            "primaryStatus": null,
+            "auditPresent": false,
+            "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+            "inputDigest": null,
+            "errorCode": null,
+            "source": "P4_OBSERVE",
+            "selfConsistent": true,
+            "contradiction": null
+          },
+          "workerProcess": {
+            "spawnError": false,
+            "timedOut": false,
+            "overflow": false,
+            "signal": null,
+            "exitCode": 0,
+            "closeNotObserved": false,
+            "terminationRequested": false,
+            "terminationConfirmed": true
+          }
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N2-old-unconfirmed-contradiction-rejected",
+      "passed": true,
+      "report": {
+        "status": "FAILED",
+        "stoppedAt": "worker",
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck"
+        ],
+        "incomplete": [
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": {
+          "ok": false,
+          "outcome": "initialized",
+          "granted": true,
+          "initialized": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": "cd9455a672c954ca83280247e19b47a0",
+          "existingPrimary": null,
+          "errorCode": null,
+          "requestIds": [],
+          "bindingMatched": true
+        },
+        "observed": {
+          "state": "unconfirmed",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "observeFailed": false,
+        "outcome": "initialized",
+        "granted": false,
+        "initialized": false,
+        "observationConfirmed": false,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": null,
+          "exitCode": 0,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        },
+        "resultUnknown": true,
+        "reconcile": {
+          "state": "absent",
+          "primaryPresent": false,
+          "primaryStatus": null,
+          "auditPresent": false,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "P4_OBSERVE",
+          "selfConsistent": true,
+          "contradiction": null
+        },
+        "reconcileAttempted": true,
+        "reconcileConfirmed": false,
+        "unknownPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 1,
+        "auditGet": 1,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 2
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "RESULT_UNKNOWN",
+          "outcome": "initialized",
+          "initialized": false,
+          "granted": false,
+          "observationConfirmed": false,
+          "resultUnknown": true,
+          "reconcileAttempted": true,
+          "reconcileConfirmed": false,
+          "reconcile": {
+            "state": "absent",
+            "primaryPresent": false,
+            "primaryStatus": null,
+            "auditPresent": false,
+            "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+            "inputDigest": null,
+            "errorCode": null,
+            "source": "P4_OBSERVE",
+            "selfConsistent": true,
+            "contradiction": null
+          },
+          "workerProcess": {
+            "spawnError": false,
+            "timedOut": false,
+            "overflow": false,
+            "signal": null,
+            "exitCode": 0,
+            "closeNotObserved": false,
+            "terminationRequested": false,
+            "terminationConfirmed": true
+          }
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N2-sync-reconcile-contradiction-rejected",
+      "passed": true,
+      "report": {
+        "status": "FAILED",
+        "stoppedAt": "worker",
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck"
+        ],
+        "incomplete": [
+          "核对结论组合矛盾（PRESENCE_CONTRADICTS_PRESENT）：已降级为未确认，不采信注入或矛盾字段。",
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": null,
+        "observed": null,
+        "observeFailed": false,
+        "outcome": "UNKNOWN",
+        "granted": false,
+        "initialized": false,
+        "observationConfirmed": false,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": true,
+          "overflow": false,
+          "signal": null,
+          "exitCode": null,
+          "closeNotObserved": false,
+          "terminationRequested": true,
+          "terminationConfirmed": false
+        },
+        "resultUnknown": true,
+        "reconcile": {
+          "state": "inconsistent",
+          "primaryPresent": false,
+          "primaryStatus": "active",
+          "auditPresent": false,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "INJECTED",
+          "selfConsistent": false,
+          "contradiction": "PRESENCE_CONTRADICTS_PRESENT"
+        },
+        "reconcileAttempted": true,
+        "reconcileConfirmed": false,
+        "unknownPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 0,
+        "auditGet": 0,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 0
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "RESULT_UNKNOWN",
+          "outcome": "UNKNOWN",
+          "initialized": false,
+          "granted": false,
+          "observationConfirmed": false,
+          "resultUnknown": true,
+          "reconcileAttempted": true,
+          "reconcileConfirmed": false,
+          "reconcile": {
+            "state": "inconsistent",
+            "primaryPresent": false,
+            "primaryStatus": "active",
+            "auditPresent": false,
+            "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+            "inputDigest": null,
+            "errorCode": null,
+            "source": "INJECTED",
+            "selfConsistent": false,
+            "contradiction": "PRESENCE_CONTRADICTS_PRESENT"
+          },
+          "workerProcess": {
+            "spawnError": false,
+            "timedOut": true,
+            "overflow": false,
+            "signal": null,
+            "exitCode": null,
+            "closeNotObserved": false,
+            "terminationRequested": true,
+            "terminationConfirmed": false
+          }
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N2-still-completed-disabled",
+      "defect": true,
+      "report": {
+        "status": "PLAN_READY",
+        "stoppedAt": null,
+        "errorCode": null,
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck",
+          "worker",
+          "resultPersisted"
+        ],
+        "incomplete": [],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": {
+          "ok": true,
+          "outcome": "initialized",
+          "granted": true,
+          "initialized": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": "cd9455a672c954ca83280247e19b47a0",
+          "existingPrimary": null,
+          "errorCode": null,
+          "requestIds": [],
+          "bindingMatched": true
+        },
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "disabled",
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "observeFailed": false,
+        "outcome": "initialized",
+        "granted": true,
+        "initialized": true,
+        "observationConfirmed": true,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": null,
+          "exitCode": 0,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        },
+        "resultPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 0,
+        "auditGet": 0,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 0
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "COMPLETED",
+          "outcome": "initialized",
+          "observationConfirmed": true,
+          "initialized": true,
+          "granted": true
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N2-still-completed-missing-status",
+      "defect": true,
+      "report": {
+        "status": "PLAN_READY",
+        "stoppedAt": null,
+        "errorCode": null,
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck",
+          "worker",
+          "resultPersisted"
+        ],
+        "incomplete": [],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": {
+          "ok": true,
+          "outcome": "initialized",
+          "granted": true,
+          "initialized": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": "cd9455a672c954ca83280247e19b47a0",
+          "existingPrimary": null,
+          "errorCode": null,
+          "requestIds": [],
+          "bindingMatched": true
+        },
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": null,
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "observeFailed": false,
+        "outcome": "initialized",
+        "granted": true,
+        "initialized": true,
+        "observationConfirmed": true,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": null,
+          "exitCode": 0,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        },
+        "resultPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 0,
+        "auditGet": 0,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 0
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "COMPLETED",
+          "outcome": "initialized",
+          "observationConfirmed": true,
+          "initialized": true,
+          "granted": true
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N2-still-completed-unknown-outcome",
+      "defect": true,
+      "report": {
+        "status": "PLAN_READY",
+        "stoppedAt": null,
+        "errorCode": null,
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck",
+          "worker",
+          "resultPersisted"
+        ],
+        "incomplete": [],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": {
+          "ok": true,
+          "outcome": "UNKNOWN",
+          "granted": true,
+          "initialized": true,
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "inputDigest": "cd9455a672c954ca83280247e19b47a0",
+          "existingPrimary": null,
+          "errorCode": null,
+          "requestIds": [],
+          "bindingMatched": true
+        },
+        "observed": {
+          "state": "present",
+          "primaryPresent": true,
+          "primaryStatus": "active",
+          "auditPresent": true,
+          "writeAuthorized": false,
+          "errorCode": null
+        },
+        "observeFailed": false,
+        "outcome": "UNKNOWN",
+        "granted": true,
+        "initialized": true,
+        "observationConfirmed": true,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": false,
+          "overflow": false,
+          "signal": null,
+          "exitCode": 0,
+          "closeNotObserved": false,
+          "terminationRequested": false,
+          "terminationConfirmed": true
+        },
+        "resultPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 0,
+        "auditGet": 0,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 0
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "COMPLETED",
+          "outcome": "UNKNOWN",
+          "observationConfirmed": true,
+          "initialized": true,
+          "granted": true
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    },
+    {
+      "id": "N1-async-injection-completes-too-early",
+      "defect": true,
+      "returnedBeforeCallback": true,
+      "rawIsPromise": true,
+      "expiredAtStage": null,
+      "finished": true,
+      "eventualState": "present",
+      "expiredAfterCallback": true
+    },
+    {
+      "id": "N1-async-valid-callback-result-lost",
+      "defect": true,
+      "report": {
+        "status": "FAILED",
+        "stoppedAt": "worker",
+        "errorCode": "RESULT_UNKNOWN",
+        "credentialFetched": true,
+        "cloudCallAttempted": true,
+        "workerStarted": true,
+        "stages": [
+          "approvalSource",
+          "fileFingerprint",
+          "credentialFetch",
+          "cliAssociation",
+          "callerSubject",
+          "roundStarted",
+          "implementationRecheck"
+        ],
+        "incomplete": [
+          "事务结果未知或核对未完成：保留轮次与审计 ID，待只读核对；不刷新凭据后重写。"
+        ],
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "isolationDirCreated": true,
+        "bootstrap": null,
+        "observed": null,
+        "observeFailed": false,
+        "outcome": "UNKNOWN",
+        "granted": false,
+        "initialized": false,
+        "observationConfirmed": false,
+        "workerProcess": {
+          "spawnError": false,
+          "timedOut": true,
+          "overflow": false,
+          "signal": null,
+          "exitCode": null,
+          "closeNotObserved": false,
+          "terminationRequested": true,
+          "terminationConfirmed": false
+        },
+        "resultUnknown": true,
+        "reconcile": {
+          "state": "unconfirmed",
+          "primaryPresent": null,
+          "primaryStatus": null,
+          "auditPresent": null,
+          "auditId": null,
+          "inputDigest": null,
+          "errorCode": null,
+          "source": "INJECTED",
+          "selfConsistent": true,
+          "contradiction": null
+        },
+        "reconcileAttempted": true,
+        "reconcileConfirmed": false,
+        "unknownPersisted": true
+      },
+      "counts": {
+        "userGet": 0,
+        "primaryGet": 0,
+        "auditGet": 0,
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0,
+        "abort": 0,
+        "begin": 0,
+        "readOnlyGet": 0
+      },
+      "saved": 1,
+      "saves": [
+        {
+          "roundId": "SYNTH-ROUND-0001",
+          "planDigest": "cd9455a672c954ca83280247e19b47a0",
+          "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa",
+          "recordType": "RESULT_UNKNOWN",
+          "outcome": "UNKNOWN",
+          "initialized": false,
+          "granted": false,
+          "observationConfirmed": false,
+          "resultUnknown": true,
+          "reconcileAttempted": true,
+          "reconcileConfirmed": false,
+          "reconcile": {
+            "state": "unconfirmed",
+            "primaryPresent": null,
+            "primaryStatus": null,
+            "auditPresent": null,
+            "auditId": null,
+            "inputDigest": null,
+            "errorCode": null,
+            "source": "INJECTED",
+            "selfConsistent": true,
+            "contradiction": null
+          },
+          "workerProcess": {
+            "spawnError": false,
+            "timedOut": true,
+            "overflow": false,
+            "signal": null,
+            "exitCode": null,
+            "closeNotObserved": false,
+            "terminationRequested": true,
+            "terminationConfirmed": false
+          }
+        }
+      ],
+      "started": {
+        "roundId": "SYNTH-ROUND-0001",
+        "planDigest": "cd9455a672c954ca83280247e19b47a0",
+        "auditId": "sbx-init-primary:e508dfe70aa5d81fd2558971cbaed5fa"
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4
+    }
+  ]
+}
