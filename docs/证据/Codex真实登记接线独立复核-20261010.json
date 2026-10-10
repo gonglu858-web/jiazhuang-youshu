@@ -1,0 +1,243 @@
+{
+  "reviewCommit": "f9a8f2c",
+  "baseline": "b274da4",
+  "verificationKind": "OFFLINE_CONTRACT_FIXTURE",
+  "cases": [
+    {
+      "id": "scope-source-EOL",
+      "pass": true,
+      "changed": [
+        "docs/WorkBuddy开发交接.md",
+        "docs/本人登记完整包本地组装说明-20261010.md",
+        "docs/证据/真实登记包最小接线-20261010.cjs",
+        "docs/证据/真实登记包最小接线-20261010.json",
+        "docs/进展与待办.md",
+        "miniapp/scripts/assemble-sandbox-registration.cjs",
+        "miniapp/tests/sandbox-registration-assembly.test.cjs"
+      ],
+      "endings": [
+        {
+          "path": "docs/进展与待办.md",
+          "historicalSuffixByteIdentical": true,
+          "diff": "69\t0\t\"docs/\\350\\277\\233\\345\\261\\225\\344\\270\\216\\345\\276\\205\\345\\212\\236.md\"",
+          "lfOnly": true
+        },
+        {
+          "path": "docs/WorkBuddy开发交接.md",
+          "historicalSuffixByteIdentical": true,
+          "diff": "69\t0\t\"docs/WorkBuddy\\345\\274\\200\\345\\217\\221\\344\\272\\244\\346\\216\\245.md\"",
+          "lfOnly": true
+        }
+      ],
+      "pins": [
+        "miniapp/miniprogram/app.js",
+        "miniapp/miniprogram/app.json",
+        "miniapp/miniprogram/app.wxss",
+        "miniapp/miniprogram/config/cloud.js",
+        "miniapp/project.config.json"
+      ]
+    },
+    {
+      "id": "current-positive-49files",
+      "pass": true,
+      "dir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxa-24748cbc9d89-3-out"
+    },
+    {
+      "id": "wrong-user",
+      "pass": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "problems": [
+          {
+            "code": "REG_PLAN_USER_INVALID",
+            "detail": "真实制品仅允许固定本人。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong-env",
+      "pass": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "problems": [
+          {
+            "code": "REG_PLAN_TARGET_MISMATCH",
+            "detail": "envId"
+          }
+        ]
+      }
+    },
+    {
+      "id": "source-drift",
+      "pass": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "problems": [
+          {
+            "code": "REG_PLAN_SOURCE_DRIFT",
+            "detail": "来源必须是受审 be413a0。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "preflight-conflict-zero-write",
+      "pass": true
+    },
+    {
+      "id": "valid-reuse-resume",
+      "pass": true
+    },
+    {
+      "id": "R1-prewrite-deadline",
+      "clockReads": 1,
+      "barrierHit": true,
+      "atDeadline": true,
+      "result": {
+        "ok": true,
+        "reused": false,
+        "wroteFiles": true,
+        "problems": []
+      },
+      "bugReproduced": true,
+      "filesAfter": 49
+    },
+    {
+      "id": "R1-postwrite-deadline",
+      "clockReads": 1,
+      "barrierHit": true,
+      "atDeadline": true,
+      "result": {
+        "ok": true,
+        "reused": false,
+        "wroteFiles": true,
+        "problems": []
+      },
+      "bugReproduced": true,
+      "filesAfter": 49
+    },
+    {
+      "id": "R1-check-deadline",
+      "clockReads": 1,
+      "barrierHit": true,
+      "atDeadline": true,
+      "result": {
+        "ok": true,
+        "wroteFiles": false,
+        "problems": []
+      },
+      "bugReproduced": true
+    },
+    {
+      "id": "R1-reuse-deadline",
+      "clockReads": 1,
+      "barrierHit": true,
+      "atDeadline": true,
+      "result": {
+        "ok": true,
+        "reused": true,
+        "wroteFiles": false,
+        "problems": []
+      },
+      "bugReproduced": true
+    },
+    {
+      "id": "R1-resume-deadline",
+      "clockReads": 1,
+      "barrierHit": true,
+      "atDeadline": true,
+      "result": {
+        "ok": true,
+        "reused": false,
+        "wroteFiles": true,
+        "problems": []
+      },
+      "bugReproduced": true
+    },
+    {
+      "id": "entry-expired-closed-independent",
+      "pass": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "problems": [
+          {
+            "code": "REG_PLAN_WINDOW_EXPIRED",
+            "detail": "真实窗口已过期。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R2-old-actual-schema1",
+      "oldGeneration": true,
+      "oldCheck": true,
+      "oldFields": [
+        "schema",
+        "generatedAt",
+        "synthetic",
+        "deploymentAuthorized",
+        "cloudExecuted",
+        "uploaded",
+        "previewed",
+        "networkAttempts",
+        "cloudFunctionName",
+        "onlyPage",
+        "plan",
+        "planDigest",
+        "input",
+        "controlledTransforms",
+        "projects",
+        "projectDelta",
+        "dependencyClosure",
+        "allowedDifferences",
+        "limitations"
+      ],
+      "newCheck": {
+        "ok": false,
+        "wroteFiles": false,
+        "problems": [
+          {
+            "code": "ASM_ARTIFACT_KIND_CONFLICT",
+            "detail": "清单 artifactKind 为 undefined，与本次 synthetic 模式不符。"
+          }
+        ]
+      },
+      "newReuse": {
+        "ok": false,
+        "wroteFiles": false,
+        "problems": [
+          {
+            "code": "ASM_ARTIFACT_CONFLICT",
+            "detail": "完整计划或字节不符，拒绝覆盖：ASM_ARTIFACT_KIND_CONFLICT: 清单 artifactKind 为 undefined，与本次 synthetic 模式不符。"
+          }
+        ]
+      },
+      "manifestUnchanged": true,
+      "bugReproduced": true
+    }
+  ],
+  "fixtures": [
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-cxa-24748cbc9d89-2-input",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxa-24748cbc9d89-3-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxa-24748cbc9d89-7-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxa-24748cbc9d89-8-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxa-24748cbc9d89-9-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-cxa-24748cbc9d89-11-input",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxa-24748cbc9d89-12-old-schema"
+  ],
+  "protected": {
+    "count": 890,
+    "drift": []
+  },
+  "networkAttempts": 0,
+  "summary": {
+    "groups": 14,
+    "positiveGroups": 8,
+    "defectPaths": 6
+  }
+}
