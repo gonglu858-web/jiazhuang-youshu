@@ -69,7 +69,7 @@ const CANDIDATE_USER_ID = 'u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4';
 const REGISTRATION_ALLOWED_ACTIONS = Object.freeze(['identify']);
 
 /** 登记制品独立 schema（**不**复用 closed 的 /2）。 */
-const REGISTRATION_MANIFEST_SCHEMA = 'sandbox-registration-candidate/1';
+const REGISTRATION_MANIFEST_SCHEMA = 'sandbox-registration-candidate/2';
 
 /** 登记输出目录名前缀与安全编号形态。 */
 const OUT_DIR_PREFIX = 'registration-';
@@ -98,6 +98,8 @@ const PLACEHOLDER_RE = /^(todo|tbd|pending|placeholder|changeme|xxx+|待定|待�
 
 // ── 固定错误码（不外传任意字符串） ────────────────────────────────────────
 const ERR = Object.freeze({
+  CLOSED_INVALID: 'REG_CLOSED_INVALID',
+  FRONTEND_SOURCE_DRIFT: 'REG_FRONTEND_SOURCE_DRIFT',
   MODE_INVALID: 'REG_MODE_INVALID',
   PLAN_MISSING: 'REG_PLAN_MISSING',
   PLAN_FIELD_UNKNOWN: 'REG_PLAN_FIELD_UNKNOWN',
@@ -165,114 +167,161 @@ function safeOutId(seed) {
   return SAFE_ID_RE.test(candidate) ? candidate : 'local';
 }
 
-// ── 计划校验（字段白名单 + 固定目标 + 窗口） ──────────────────────────────
-/**
- * 校验登记执行计划。**只接受白名单字段**，禁止任意环境/函数/集合/运行时/
- * 依赖/源码路径。
- *
- * @param {object} plan 合成或真实计划
- * @param {object} [options] `{ nowMs, synthetic }`
- * @returns {object} 归一化计划
- */
-function validatePlan(plan, options) {
-  const o = options || {};
-  const nowMs = typeof o.nowMs === 'number' && Number.isFinite(o.nowMs) ? o.nowMs : Date.now();
-  const synthetic = plan && plan.synthetic === true;
 
-  if (!isPlainObject(plan)) fail(ERR.PLAN_MISSING, '计划必须是对象。');
-
-  // 字段白名单：多一个键都拒绝
-  for (const key of Object.keys(plan)) {
-    if (PLAN_FIELDS.indexOf(key) === -1) fail(ERR.PLAN_FIELD_UNKNOWN, key);
+// 独立受审基线来自 be413a0 的 Git 对象；不是当前文件自报指纹。
+const REVIEWED_SOURCE_VERSION = "be413a0a29384cacec899bf9eb0eefcf281767a4";
+const FRONTEND_FILES = Object.freeze([
+  "pages/schedule-sandbox/schedule-sandbox.js",
+  "pages/schedule-sandbox/schedule-sandbox.json",
+  "pages/schedule-sandbox/schedule-sandbox.wxml",
+  "pages/schedule-sandbox/schedule-sandbox.wxss",
+  "utils/schedule-sandbox-client.js",
+  "utils/env-gate.js",
+  "utils/sandbox-test-driver.js",
+  "utils/sandbox-test-coordinator.js",
+  "config/schedule-sandbox-proof.js",
+  "config/schedule-entry-proof.js",
+  "config/sandbox-test-driver-proof.js"
+]);
+const PINNED_FACTS = Object.freeze({
+  "miniapp/cloudfunctions/scheduleSandbox/index.js": {
+    "bytes": 7752,
+    "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/gate.js": {
+    "bytes": 11484,
+    "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/collection-map.js": {
+    "bytes": 12303,
+    "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/project-guard.js": {
+    "bytes": 14668,
+    "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/package.json": {
+    "bytes": 303,
+    "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": {
+    "bytes": 26713,
+    "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js": {
+    "bytes": 73002,
+    "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+  },
+  "miniapp/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json": {
+    "bytes": 728,
+    "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830"
+  },
+  "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.js": {
+    "bytes": 31075,
+    "sha256": "fbb70b3cb2a9898fe1361804e354c096d457dbfb2cac4bf47e067d7e49e56cd3"
+  },
+  "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.json": {
+    "bytes": 59,
+    "sha256": "7713a1f63aec15f626eef5e42809b1a1cbdae561351d77c54856894ca1cd1609"
+  },
+  "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml": {
+    "bytes": 10032,
+    "sha256": "672f0f9e63d90762914035dc239cd957725221c2eec9599d2e839a03d52b3044"
+  },
+  "miniapp/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss": {
+    "bytes": 233,
+    "sha256": "d30ca2ab51a2ff15179ace61f1b83a5c8d7a9e8514046262260dd923b25a1eb1"
+  },
+  "miniapp/miniprogram/utils/schedule-sandbox-client.js": {
+    "bytes": 55947,
+    "sha256": "fde6107ef00c49b9c34cf8cff507e6c0c5f28ae6e7e9a0913e58dba194ec7409"
+  },
+  "miniapp/miniprogram/utils/env-gate.js": {
+    "bytes": 1546,
+    "sha256": "538ec49ec8270ad20fbfd20a5ec073c2cb252ee21daaaa8a36bcd3286ec60aef"
+  },
+  "miniapp/miniprogram/utils/sandbox-test-driver.js": {
+    "bytes": 70929,
+    "sha256": "940a89c2bdc3a9fb8143f8d51bff2f311b88c4f1d8bf19409f8312ee9b075bfb"
+  },
+  "miniapp/miniprogram/utils/sandbox-test-coordinator.js": {
+    "bytes": 36589,
+    "sha256": "9f17ae44713d58d4b13b021387240e535bbe0dca3b8ca3890acf792e09597c2f"
+  },
+  "miniapp/miniprogram/config/schedule-sandbox-proof.js": {
+    "bytes": 1348,
+    "sha256": "724bc3c16ca8d03b84d3d8498b06e011b2ad621599167fc78649b2b378c0cf33"
+  },
+  "miniapp/miniprogram/config/schedule-entry-proof.js": {
+    "bytes": 478,
+    "sha256": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13"
+  },
+  "miniapp/miniprogram/config/sandbox-test-driver-proof.js": {
+    "bytes": 7865,
+    "sha256": "15acb49fd8e6838950d56edb2ef0b22c6991103db7026cee817b9776fe59a348"
   }
+});
+const CLOSED_DIR = 'closed-20261005-r2fix';
+const CLOSED_MANIFEST_SHA256 = "8821a459b2f32be1c8d507ec3add0e8306162f84e41b796a875c6f0176ba0277";
 
-  // 必填
-  for (const key of ['purpose', 'appId', 'envId', 'region', 'functionName',
-    'allowedUserIds', 'roundId', 'windowStartsAt', 'windowExpiresAt', 'sourceVersion']) {
-    if (!(key in plan)) fail(ERR.PLAN_FIELD_MISSING, key);
-  }
-
-  // 固定目标：不可由计划改写环境/函数/地域
-  if (plan.appId !== FIXED_TARGET.appId ||
-    plan.envId !== FIXED_TARGET.envId ||
-    plan.region !== FIXED_TARGET.region ||
-    plan.functionName !== FIXED_TARGET.functionName) {
-    fail(ERR.PLAN_TARGET_MISMATCH, '目标必须等于固定 AppID/环境/地域/函数名。');
-  }
-
-  // 占位字符串不预填「已批准」
-  for (const key of ['purpose', 'roundId', 'sourceVersion']) {
-    if (typeof plan[key] !== 'string' || plan[key].trim() === '') {
-      fail(ERR.PLAN_FIELD_MISSING, key);
-    }
-    if (PLACEHOLDER_RE.test(plan[key].trim())) fail(ERR.PLAN_PLACEHOLDER, key);
-  }
-
-  // 允许用户：必须是**完整** userId 且唯一；登记不接受空名单
-  if (!Array.isArray(plan.allowedUserIds)) fail(ERR.PLAN_USER_INVALID, 'allowedUserIds 必须是数组。');
-  const users = plan.allowedUserIds.map((v) => (typeof v === 'string' ? v.trim() : ''));
-  if (users.length === 0) fail(ERR.PLAN_USER_INVALID, '登记窗口不接受空名单。');
-  for (const u of users) {
-    if (!/^u_[0-9a-f]{40}$/.test(u)) fail(ERR.PLAN_USER_INVALID, '必须是完整 userId 形态：' + u);
-  }
-  if (new Set(users).size !== users.length) fail(ERR.PLAN_USER_NOT_UNIQUE, '允许用户必须唯一。');
-
-  // 窗口：有效、未过期、且不超过操作上限
-  const startsAt = Date.parse(plan.windowStartsAt);
-  const expiresAt = Date.parse(plan.windowExpiresAt);
-  if (!Number.isFinite(startsAt) || !Number.isFinite(expiresAt)) {
-    fail(ERR.PLAN_WINDOW_INVALID, '窗口时间必须是可解析的 ISO 时间。');
-  }
-  if (expiresAt <= startsAt) fail(ERR.PLAN_WINDOW_INVALID, '截止必须晚于开始。');
-  if (expiresAt - startsAt > MAX_WINDOW_MS) {
-    fail(ERR.PLAN_WINDOW_TOO_LONG, '窗口超过 30 分钟操作上限。');
-  }
-  // 合成计划可用合成时钟；真实计划必须尚未过期
-  if (!synthetic && expiresAt <= nowMs) fail(ERR.PLAN_WINDOW_EXPIRED, '窗口已过期。');
-
-  return Object.freeze({
-    purpose: plan.purpose.trim(),
-    appId: plan.appId,
-    envId: plan.envId,
-    region: plan.region,
-    functionName: plan.functionName,
-    allowedUserIds: Object.freeze(users.slice()),
-    roundId: plan.roundId.trim(),
-    windowStartsAt: new Date(startsAt).toISOString(),
-    windowExpiresAt: new Date(expiresAt).toISOString(),
-    sourceVersion: plan.sourceVersion.trim(),
-    synthetic: synthetic === true
-  });
+function canonical(v) {
+  if(Array.isArray(v)) return '['+v.map(canonical).join(',')+']';
+  if(v && typeof v==='object') return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonical(v[k])).join(',')+'}';
+  return JSON.stringify(v);
 }
-
-// ── 受审源读取（复用旧打包器） ────────────────────────────────────────────
-/**
- * 读取并记录受审源文件的字节与哈希。**不修改源文件**。
- */
+const js=v=>JSON.stringify(v).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+function validatePlan(p,o={}) {
+  const now=o.nowMs===undefined?Date.now():o.nowMs;
+  if(!Number.isFinite(now)) fail(ERR.PLAN_WINDOW_INVALID,'时钟无效。');
+  if(!isPlainObject(p)) fail(ERR.PLAN_MISSING,'计划必须为对象。');
+  for(const k of Object.keys(p)) if(!PLAN_FIELDS.includes(k)) fail(ERR.PLAN_FIELD_UNKNOWN,k);
+  for(const k of PLAN_FIELDS) if(!(k in p)) fail(ERR.PLAN_FIELD_MISSING,k);
+  if(typeof p.synthetic!=='boolean') fail(ERR.PLAN_FIELD_MISSING,'synthetic 必须为布尔值。');
+  for(const [k,v] of Object.entries(FIXED_TARGET)) if(p[k]!==v) fail(ERR.PLAN_TARGET_MISMATCH,k);
+  for(const k of ['purpose','roundId','sourceVersion']) {
+    if(typeof p[k]!=='string'||!p[k].trim()) fail(ERR.PLAN_FIELD_MISSING,k);
+    if(PLACEHOLDER_RE.test(p[k].trim())) fail(ERR.PLAN_PLACEHOLDER,k);
+    if(p[k].length>200) fail(ERR.PLAN_FIELD_UNKNOWN,k+' 过长。');
+  }
+  if(p.sourceVersion!==REVIEWED_SOURCE_VERSION) fail(ERR.PLAN_SOURCE_DRIFT,'来源必须是受审 be413a0。');
+  if(!Array.isArray(p.allowedUserIds)||!p.allowedUserIds.length||
+    p.allowedUserIds.some(u=>typeof u!=='string'||!/^u_[0-9a-f]{40}$/.test(u))) fail(ERR.PLAN_USER_INVALID,'须为完整单一用户。');
+  if(p.allowedUserIds.length!==1) fail(ERR.PLAN_USER_NOT_UNIQUE,'仅允许一个用户。');
+  if(!p.synthetic&&p.allowedUserIds[0]!==CANDIDATE_USER_ID) fail(ERR.PLAN_USER_INVALID,'真实制品仅允许固定本人。');
+  const starts=Date.parse(p.windowStartsAt),expires=Date.parse(p.windowExpiresAt);
+  if(typeof p.windowStartsAt!=='string'||typeof p.windowExpiresAt!=='string'||
+    !Number.isFinite(starts)||!Number.isFinite(expires)||expires<=starts) fail(ERR.PLAN_WINDOW_INVALID,'窗口无效。');
+  if(expires-starts>MAX_WINDOW_MS) fail(ERR.PLAN_WINDOW_TOO_LONG,'窗口超过 30 分钟。');
+  if(!p.synthetic&&expires<=now) fail(ERR.PLAN_WINDOW_EXPIRED,'真实窗口已过期。');
+  return Object.freeze({purpose:p.purpose.trim(),...FIXED_TARGET,allowedUserIds:Object.freeze(p.allowedUserIds.slice()),
+    roundId:p.roundId.trim(),windowStartsAt:new Date(starts).toISOString(),windowExpiresAt:new Date(expires).toISOString(),
+    sourceVersion:REVIEWED_SOURCE_VERSION,synthetic:p.synthetic});
+}
+function assertReviewedSources(sources) {
+  if(!(sources instanceof Map)||sources.size!==PACKAGE_FILES.length) fail(ERR.PLAN_SOURCE_DRIFT,'来源集合无效。');
+  for(const r of PACKAGE_FILES) {
+    const e=sources.get(r),p=PINNED_FACTS['miniapp/cloudfunctions/scheduleSandbox/'+r];
+    if(!e||!Buffer.isBuffer(e.buf)||e.buf.length!==p.bytes||sha256Buffer(e.buf)!==p.sha256) fail(ERR.PLAN_SOURCE_DRIFT,r+' 来源漂移。');
+  }
+}
 function readReviewedSources() {
-  const out = new Map();
-  for (const rel of PACKAGE_FILES) {
-    // readSource 内部已做排除项 + 路径包含 + 真实路径校验
-    const buf = base.readSource(rel, SOURCE_DIR);
-    out.set(rel, { bytes: buf.length, sha256: sha256Buffer(buf), buf });
-  }
-  return out;
+  const sources=new Map(PACKAGE_FILES.map(r=>{
+    const buf=base.readSource(r,SOURCE_DIR);return [r,{buf,bytes:buf.length,sha256:sha256Buffer(buf)}];
+  }));
+  assertReviewedSources(sources);
+  base.verifyAgainstBaseline(PACKAGE_FILES.map(r=>({sourceKey:'miniapp/cloudfunctions/scheduleSandbox/'+r,sha256:sources.get(r).sha256})));
+  return sources;
 }
-
-/** 受审源整体指纹（用于计划 sourceVersion 漂移检测与 manifest 绑定）。 */
 function sourceSetDigest(sources) {
-  const parts = PACKAGE_FILES.map((rel) => {
-    const e = sources.get(rel);
-    return `${rel}:${e.sha256}`;
-  });
-  return sha256Buffer(Buffer.from(parts.join('\n'), 'utf8'));
+  return sha256Buffer(Buffer.from(PACKAGE_FILES.map(r=>r+':'+sha256Buffer(sources.get(r).buf)).join('\n')));
 }
-
-// ── 两处精确变换 ──────────────────────────────────────────────────────────
-/**
- * 构造 `index.js` 的 `SANDBOX_CONFIG` 源片段与目标片段。
- * 源片段必须与受审源**逐字节一致**且**唯一**出现。
- */
+function readFrontendSources() {
+  return {version:REVIEWED_SOURCE_VERSION,files:FRONTEND_FILES.map(r=>{
+    const buf=base.readSource(r,path.join(ROOT,'miniapp/miniprogram')),p=PINNED_FACTS['miniapp/miniprogram/'+r];
+    if(buf.length!==p.bytes||sha256Buffer(buf)!==p.sha256) fail(ERR.FRONTEND_SOURCE_DRIFT,r+' 前端来源漂移。');
+    return {rel:r,bytes:buf.length,sha256:sha256Buffer(buf)};
+  })};
+}
 function buildIndexTransform(normalizedPlan) {
   const anchorFrom = [
     'const SANDBOX_CONFIG = gate.readConfig({',
@@ -287,19 +336,19 @@ function buildIndexTransform(normalizedPlan) {
     "  projectReadyMarker: ''",
     '});'
   ].join('\n');
-  const users = normalizedPlan.allowedUserIds.map((u) => `    '${u}'`).join(',\n');
+  const users = normalizedPlan.allowedUserIds.map((u) => `    ${js(u)}`).join(',\n');
   const anchorTo = [
     'const SANDBOX_CONFIG = gate.readConfig({',
     '  enabled: true,',
-    `  appId: '${normalizedPlan.appId}',`,
-    `  envId: '${normalizedPlan.envId}',`,
+    `  appId: ${js(normalizedPlan.appId)},`,
+    `  envId: ${js(normalizedPlan.envId)},`,
     '  allowedUserIds: [',
     users,
     '  ],',
     '  // 登记不以创建项目为前置：项目字段保持为空。',
     "  projectId: '',",
-    `  roundId: '${normalizedPlan.roundId}',`,
-    `  expiresAt: '${normalizedPlan.windowExpiresAt}',`,
+    `  roundId: ${js(normalizedPlan.roundId)},`,
+    `  expiresAt: ${js(normalizedPlan.windowExpiresAt)},`,
     '  phase: gate.PHASE_PREPARE,',
     "  projectReadyMarker: ''",
     '});'
@@ -307,10 +356,6 @@ function buildIndexTransform(normalizedPlan) {
   return { file: 'index.js', from: anchorFrom, to: anchorTo, label: 'SANDBOX_CONFIG' };
 }
 
-/**
- * 构造 `gate.js` 的 `PREPARE_ALLOWED` 源片段与目标片段。
- * 目标精确收窄为 `['identify']`；**不触碰** EXECUTE_ALLOWED。
- */
 function buildGateTransform() {
   const actions = REGISTRATION_ALLOWED_ACTIONS;
   const fromList = [
@@ -335,519 +380,160 @@ function buildGateTransform() {
   return { file: 'gate.js', from: anchorFrom, to: anchorTo, label: 'PREPARE_ALLOWED' };
 }
 
-/**
- * 对单个文件执行一次**唯一**变换。
- * 先确认源完整哈希匹配受审记录，再确认片段唯一；否则停止。
- */
-function applyTransform(sources, transform, expectedSourceSha) {
-  const entry = sources.get(transform.file);
-  if (!entry) fail(ERR.SOURCE_MISSING, transform.file);
-  const actualSha = sha256Buffer(entry.buf);
-  if (expectedSourceSha && actualSha !== expectedSourceSha) {
-    fail(ERR.PLAN_SOURCE_DRIFT, `${transform.file} 源已变化。`);
-  }
-  const text = entry.buf.toString('utf8');
-  const occurrences = countOccurrences(text, transform.from);
-  if (occurrences === 0) fail(ERR.TRANSFORM_ANCHOR_MISSING, `${transform.file}/${transform.label}`);
-  if (occurrences > 1) fail(ERR.TRANSFORM_ANCHOR_AMBIGUOUS, `${transform.file}/${transform.label}`);
-  const idx = text.indexOf(transform.from);
-  const outText = text.slice(0, idx) + transform.to + text.slice(idx + transform.from.length);
-  const outBuf = Buffer.from(outText, 'utf8');
-  return {
-    file: transform.file,
-    buf: outBuf,
-    bytes: outBuf.length,
-    sha256: sha256Buffer(outBuf),
-    sourceSha256: actualSha
-  };
-}
 
-/**
- * 由受审源计算完整目标产物字节集（不写盘）。
- * 两个变换文件用变换结果，其余 6 个文件**逐字节一致**。
- */
-function computeArtifacts(sources, normalizedPlan) {
-  const transforms = [buildIndexTransform(normalizedPlan), buildGateTransform()];
-  const artifacts = [];
-  const differences = [];
-  for (const rel of PACKAGE_FILES) {
-    const entry = sources.get(rel);
-    if (!entry) fail(ERR.SOURCE_MISSING, rel);
-    const t = transforms.find((x) => x.file === rel);
-    if (t) {
-      const applied = applyTransform(sources, t, entry.sha256);
-      artifacts.push({ rel, buf: applied.buf, bytes: applied.bytes, sha256: applied.sha256 });
-      differences.push({
-        file: rel,
-        anchor: t.label,
-        sourceSha256: applied.sourceSha256,
-        artifactSha256: applied.sha256,
-        sourceBytes: entry.bytes,
-        artifactBytes: applied.bytes
-      });
-    } else {
-      // 其余文件：逐字节一致
-      artifacts.push({ rel, buf: entry.buf, bytes: entry.bytes, sha256: entry.sha256 });
+function applyTransform(sources,t,expectedSourceSha) {
+  const e=sources.get(t.file);if(!e) fail(ERR.SOURCE_MISSING,t.file);
+  const approved=PINNED_FACTS['miniapp/cloudfunctions/scheduleSandbox/'+t.file],sha=sha256Buffer(e.buf);
+  if(!approved||sha!==approved.sha256||(expectedSourceSha&&expectedSourceSha!==approved.sha256)) fail(ERR.PLAN_SOURCE_DRIFT,t.file+' 来源漂移。');
+  const text=e.buf.toString('utf8'),n=countOccurrences(text,t.from);
+  if(!n) fail(ERR.TRANSFORM_ANCHOR_MISSING,t.file);
+  if(n!==1) fail(ERR.TRANSFORM_ANCHOR_AMBIGUOUS,t.file);
+  const at=text.indexOf(t.from),buf=Buffer.from(text.slice(0,at)+t.to+text.slice(at+t.from.length));
+  return {file:t.file,buf,bytes:buf.length,sha256:sha256Buffer(buf),sourceSha256:sha};
+}
+function computeArtifacts(sources,p) {
+  assertReviewedSources(sources);
+  if(p.sourceVersion!==REVIEWED_SOURCE_VERSION) fail(ERR.PLAN_SOURCE_DRIFT,'版本不符。');
+  const transforms=[buildIndexTransform(p),buildGateTransform()],differences=[];
+  const artifacts=PACKAGE_FILES.map(r=>{
+    const e=sources.get(r),t=transforms.find(x=>x.file===r);
+    const a=t?applyTransform(sources,t):{buf:e.buf,bytes:e.buf.length,sha256:sha256Buffer(e.buf)};
+    if(t) differences.push({file:r,anchor:t.label,sourceSha256:sha256Buffer(e.buf),
+      artifactSha256:a.sha256,sourceBytes:e.buf.length,artifactBytes:a.bytes});
+    return {rel:r,buf:a.buf,bytes:a.bytes,sha256:a.sha256};
+  });
+  return {artifacts,differences};
+}
+// 计划动态值安全序列化；两份同目标、同轮次的覆盖文件。
+function buildFrontendOverride(p,version=REVIEWED_SOURCE_VERSION,enabled=true) {
+  if(version!==REVIEWED_SOURCE_VERSION||typeof enabled!=='boolean') fail(ERR.PLAN_SOURCE_DRIFT,'前端版本不符。');
+  const cfg={enabled,envId:p.envId,appId:p.appId,functionName:p.functionName,sandboxProjectId:'',
+    roundId:p.roundId,cachePrefix:'schtest_v1:',sourceVersion:version,synthetic:p.synthetic,
+    description:p.synthetic?'合成登记覆盖，仅离线验证。':'本人登记候选覆盖，未部署。'};
+  const body="// 本地覆盖文件，非完整预览包。合成制品不得作为真实候选复用。\n'use strict';\n"+
+    'module.exports = Object.freeze({\n'+Object.entries(cfg).map(([k,v])=>'  '+k+': '+js(v)+',').join('\n')+
+    "\n  allowedVersions: Object.freeze(['develop', 'trial'])\n});\n";
+  const buf=Buffer.from(body);
+  return {rel:(enabled?'frontend':'frontend-closed')+'/config/schedule-sandbox-proof.js',buf,bytes:buf.length,sha256:sha256Buffer(buf)};
+}
+function resolveOutDir(id,existingClosedDirs=[]) {
+  if(!SAFE_ID_RE.test(id)||['cloudfunctions','miniprogram','scripts','tests','config','artifacts'].includes(id)||
+    existingClosedDirs.includes(id)) fail(ERR.OUT_DIR_UNSAFE,'输出编号非法。');
+  const dir=path.resolve(ARTIFACTS_ROOT,OUT_DIR_PREFIX+id);base.assertTrustedOutDir(dir,SOURCE_DIR);return dir;
+}
+function checkedTarget(dir) {
+  const resolved=path.resolve(dir),name=path.basename(resolved),id=name.slice(OUT_DIR_PREFIX.length);
+  if(path.dirname(resolved)!==path.resolve(ARTIFACTS_ROOT)||!name.startsWith(OUT_DIR_PREFIX)||!SAFE_ID_RE.test(id)) fail(ERR.OUT_DIR_UNSAFE,'仅检查登记制品目录。');
+  base.assertTrustedOutDir(resolved,SOURCE_DIR);return resolved;
+}
+// 整棵树含空目录、链接和非普通文件，写入前完成检查。
+function inspectTree(dir,allowedFiles) {
+  base.assertTrustedRoot(dir,'制品根',{allowMissing:true});
+  const allowed=new Set(allowedFiles),dirs=new Set(),existing=new Map();
+  for(const r of allowed){let d=path.posix.dirname(r);while(d!=='.'){dirs.add(d);d=path.posix.dirname(d);}}
+  function walk(cur,prefix) {
+    for(const name of fs.readdirSync(cur)) {
+      const r=prefix?prefix+'/'+name:name,abs=base.resolveInside(dir,r,'制品条目'),st=fs.lstatSync(abs);
+      if(st.isSymbolicLink()) fail(ERR.ARTIFACT_SYMLINK,r);
+      if(st.isDirectory()){if(!dirs.has(r)) fail(ERR.ARTIFACT_EXTRA_FILE,r);walk(abs,r);}
+      else if(st.isFile()){if(!allowed.has(r)) fail(ERR.ARTIFACT_EXTRA_FILE,r);existing.set(r,base.safeReadPackageFile(dir,r).buffer);}
+      else fail(ERR.ARTIFACT_EXTRA_FILE,r+' 非普通文件。');
     }
   }
-  return { artifacts, differences };
+  if(fs.existsSync(dir)) walk(dir,'');
+  return existing;
 }
-
-// ── 前端覆盖文件（L2） ────────────────────────────────────────────────────
-/**
- * 生成前端 `config/schedule-sandbox-proof.js` 的**覆盖文件**。
- *
- * 边界（重要）：这不是完整可预览小程序包。
- *  - 复用既有页面/client/协调器，**不改**其逻辑、路由、缓存与 env-gate。
- *  - 仅登记覆盖文件 enabled=true；旧业务入口与专用测试驱动仍为 false。
- *  - `sandboxProjectId` 保持为空；**不新增**不存在的 phase 字段。
- *  - 列出所依赖的当前前端源码版本及哈希，供后续在独立构建目录组装。
- */
-function buildFrontendOverride(normalizedPlan, sourceVersion) {
-  const body = `// 本人登记候选制品：前端覆盖文件（${REGISTRATION_MANIFEST_SCHEMA}）
-//
-// **这不是完整可预览小程序包。**
-// 它只是对既有 config/schedule-sandbox-proof.js 的**覆盖文件**：
-// 未来必须在独立构建目录组装、编译并审查完整客户端包后才能预览。
-// 本文件不复制私有工作区、不生成二维码、不上传、不调用开发者工具。
-//
-// 复用既有 pages/schedule-sandbox、client 与协调器；
-// 不改页面逻辑、路由、缓存或 env-gate，也不指向 pages/access。
-
-'use strict';
-
-module.exports = Object.freeze({
-  // 仅登记窗口内开启；窗口外由服务端 gate 按 deadline 拒绝。
-  enabled: true,
-  // 固定目标：客户端不接受请求体或用户输入指定。
-  envId: '${normalizedPlan.envId}',
-  appId: '${normalizedPlan.appId}',
-  functionName: '${normalizedPlan.functionName}',
-  // 正式版与未识别版本不在其中。
-  allowedVersions: Object.freeze(['develop', 'trial']),
-  // 登记不以创建项目为前置：保持为空。
-  sandboxProjectId: '',
-  // 必须与服务端配置的轮次一致（未决请求按 环境 + 轮次 分键）。
-  roundId: '${normalizedPlan.roundId}',
-  // 独立缓存键前缀：不与旧缓存混用，也不清旧缓存。
-  cachePrefix: 'schtest_v1:',
-  // 所依赖的当前前端源码版本（组装完整客户端包时须核对）。
-  sourceVersion: '${sourceVersion}',
-  description: '本人微信身份登记候选覆盖文件（本地制品，未部署）。'
-});
-`;
-  const buf = Buffer.from(body, 'utf8');
-  return {
-    rel: 'frontend/config/schedule-sandbox-proof.js',
-    buf,
-    bytes: buf.length,
-    sha256: sha256Buffer(buf)
-  };
-}
-
-/**
- * 读取受审关闭包的内容摘要（**只引用/校验，不覆盖**）。
- * 关闭服务端使用受审 closed-20261005-r2fix（schema /2）8 文件。
- */
-function describeClosedPackage(dirName) {
-  const dir = path.join(ARTIFACTS_ROOT, dirName);
-  const files = [];
-  let totalBytes = 0;
-  const parts = [];
-  for (const rel of PACKAGE_FILES) {
-    const abs = path.join(dir, 'package', rel);
-    if (!fs.existsSync(abs)) {
-      files.push({ rel, present: false, bytes: null, sha256: null });
-      continue;
-    }
-    const buf = fs.readFileSync(abs);
-    const sha = sha256Buffer(buf);
-    totalBytes += buf.length;
-    parts.push(`${rel}:${sha}`);
-    files.push({ rel, present: true, bytes: buf.length, sha256: sha });
-  }
-  return {
-    dir: dirName,
-    present: files.every((f) => f.present),
-    files,
-    totalBytes,
-    setDigest: sha256Buffer(Buffer.from(parts.join('\n'), 'utf8'))
-  };
-}
-
-// ── manifest ──────────────────────────────────────────────────────────────
-function buildManifest(normalizedPlan, artifacts, differences, frontend, closed, sources) {
-  return {
-    schema: REGISTRATION_MANIFEST_SCHEMA,
-    // 仅为记录，不是安全授权句柄
-    deploymentAuthorized: false,
-    cloudExecuted: false,
-    synthetic: normalizedPlan.synthetic === true,
-    generatedAt: new Date().toISOString(),
-    plan: {
-      purpose: normalizedPlan.purpose,
-      appId: normalizedPlan.appId,
-      envId: normalizedPlan.envId,
-      region: normalizedPlan.region,
-      functionName: normalizedPlan.functionName,
-      allowedUserIds: normalizedPlan.allowedUserIds.slice(),
-      roundId: normalizedPlan.roundId,
-      windowStartsAt: normalizedPlan.windowStartsAt,
-      windowExpiresAt: normalizedPlan.windowExpiresAt,
-      sourceVersion: normalizedPlan.sourceVersion,
-      windowMaxMs: MAX_WINDOW_MS
-    },
-    // 有效动作面（服务端硬收口）
-    effectiveActions: REGISTRATION_ALLOWED_ACTIONS.slice(),
-    prepareAllowedSource: 'gate.js PREPARE_ALLOWED 收窄为 [identify]',
-    allowedUsers: normalizedPlan.allowedUserIds.slice(),
-    reviewedSource: {
-      setDigest: sourceSetDigest(sources),
-      files: PACKAGE_FILES.map((rel) => {
-        const e = sources.get(rel);
-        return { rel, bytes: e.bytes, sha256: e.sha256 };
-      })
-    },
-    artifacts: artifacts.map((a) => ({
-      rel: a.rel, bytes: a.bytes, sha256: a.sha256
-    })),
-    // 两处精确差异（不含 manifest 自身哈希，避免循环自哈希）
-    differences: differences.slice(),
-    frontendOverride: {
-      rel: frontend.rel, bytes: frontend.bytes, sha256: frontend.sha256,
-      note: '覆盖文件，非完整可预览小程序包；未来须在独立构建目录组装后审查'
-    },
-    closedPackage: {
-      dir: closed.dir, present: closed.present, totalBytes: closed.totalBytes,
-      setDigest: closed.setDigest,
-      files: closed.files,
-      note: '只引用/校验，不覆盖；不使用 /1 包冒充 /2'
-    },
-    limitations: [
-      '本 manifest 记录本地候选制品，不是云端部署证明',
-      'deploymentAuthorized=false 与 cloudExecuted=false 仅为记录，不构成安全授权',
-      '生成 enabled=true 的候选文件不等于云端已启用',
-      '前端覆盖文件不是完整可预览小程序包，未生成二维码、未上传',
-      'identify 首次会写测试 users 与 registerIdentity 审计；不写 primary、不取号、不建项目',
-      '真实时间窗口与最终制品留到执行包阶段生成并重新审查指纹'
-    ]
-  };
-}
-
-// ── 输出目录安全 ──────────────────────────────────────────────────────────
-/**
- * 校验输出目录：必须在 ARTIFACTS_ROOT 下、前缀为 registration-，
- * 且**不得**指向源目录、既有关闭目录或其祖先。
- */
-function resolveOutDir(outId, existingClosedDirs) {
-  if (!SAFE_ID_RE.test(outId)) fail(ERR.OUT_DIR_UNSAFE, '输出编号形态非法：' + outId);
-  // 保留名：不得占用源目录或既有关闭/候选目录的名字
-  const RESERVED = ['cloudfunctions', 'miniprogram', 'scripts', 'tests', 'config', 'artifacts'];
-  if (RESERVED.indexOf(outId) !== -1) fail(ERR.OUT_DIR_UNSAFE, '输出编号为保留名：' + outId);
-  for (const closed of existingClosedDirs || []) {
-    if (outId === closed) fail(ERR.OUT_DIR_UNSAFE, '不得使用既有目录名：' + outId);
-  }
-  const dir = path.resolve(ARTIFACTS_ROOT, OUT_DIR_PREFIX + outId);
-  // 复用旧打包器的可信根与真实路径校验
-  base.assertTrustedOutDir(dir, SOURCE_DIR);
-  // 必须在 artifacts 根之内
-  const realRoot = fs.realpathSync(path.resolve(ARTIFACTS_ROOT));
-  if (!dir.startsWith(realRoot + path.sep)) fail(ERR.OUT_DIR_UNSAFE, '输出目录越出 artifacts 根。');
-  // 不得是既有关闭目录或源目录
-  for (const closed of existingClosedDirs) {
-    const closedDir = path.resolve(ARTIFACTS_ROOT, closed);
-    if (dir === closedDir || dir.startsWith(closedDir + path.sep)) {
-      fail(ERR.OUT_DIR_UNSAFE, '不得指向既有关闭目录。');
-    }
-  }
-  if (dir === path.resolve(SOURCE_DIR) || dir.startsWith(path.resolve(SOURCE_DIR) + path.sep)) {
-    fail(ERR.OUT_DIR_UNSAFE, '不得指向源目录。');
-  }
-  return dir;
-}
-
-/** 目录内不得有链接（逐级检查）。 */
-function assertNoSymlink(dir) {
-  let cursor = path.resolve(dir);
-  for (;;) {
-    if (fs.existsSync(cursor)) {
-      const st = fs.lstatSync(cursor);
-      if (st.isSymbolicLink()) fail(ERR.ARTIFACT_SYMLINK, cursor);
-    }
-    const parent = path.dirname(cursor);
-    if (parent === cursor) break;
-    cursor = parent;
-  }
-}
-
-/** 列出目录内全部文件（相对路径），用于「额外文件」检查。 */
-function listAllFiles(dir) {
-  const out = [];
-  const walk = (cur, rel) => {
-    for (const name of fs.readdirSync(cur)) {
-      const abs = path.join(cur, name);
-      const st = fs.lstatSync(abs);
-      const relPath = rel ? `${rel}/${name}` : name;
-      if (st.isSymbolicLink()) fail(ERR.ARTIFACT_SYMLINK, relPath);
-      if (st.isDirectory()) walk(abs, relPath);
-      else out.push(relPath);
-    }
-  };
-  if (fs.existsSync(dir)) walk(dir, '');
-  return out.sort();
-}
-
-// ── 检查（默认模式：零写盘） ──────────────────────────────────────────────
-/**
- * 检查既有登记产物：重算产物与受审源转换结果的一致性，
- * **不信 manifest 自报「通过」**。
- *
- * @param {object} [options] `{ outDir }`
- */
-function checkRegistration(options) {
-  const o = options || {};
-  const problems = [];
-  let dir = o.outDir || null;
-  if (!dir) {
-    // 未指定：报告候选目录是否存在（只列缺项，不补文件）
-    const candidates = fs.existsSync(ARTIFACTS_ROOT)
-      ? fs.readdirSync(ARTIFACTS_ROOT).filter((n) => n.startsWith(OUT_DIR_PREFIX))
-      : [];
-    return {
-      ok: candidates.length === 0,
-      mode: 'check',
-      candidates,
-      problems: candidates.length === 0 ? [] : [{
-        code: ERR.ARTIFACT_EXISTS_DIFFERENT,
-        detail: '存在候选目录，请用 --target 指定后逐项核对：' + candidates.join(', ')
-      }],
-      wroteFiles: false,
-      cloudCalled: false
-    };
-  }
-  dir = path.resolve(dir);
-  assertNoSymlink(dir);
-  if (!fs.existsSync(dir)) {
-    return {
-      ok: false, mode: 'check', dir, problems: [{ code: ERR.ARTIFACT_INCOMPLETE, detail: '目录不存在' }],
-      wroteFiles: false, cloudCalled: false
-    };
-  }
-  const manifestPath = path.join(dir, 'manifest.json');
-  if (!fs.existsSync(manifestPath)) {
-    return {
-      ok: false, mode: 'check', dir,
-      problems: [{ code: ERR.MANIFEST_INVALID, detail: '缺 manifest.json' }],
-      wroteFiles: false, cloudCalled: false
-    };
-  }
-  let manifest;
+function describeClosedPackage(name=CLOSED_DIR) {
+  if(name!==CLOSED_DIR) fail(ERR.CLOSED_INVALID,'关闭引用不符。');
+  const dir=path.join(ARTIFACTS_ROOT,CLOSED_DIR);
   try {
-    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  } catch (_) {
-    return {
-      ok: false, mode: 'check', dir,
-      problems: [{ code: ERR.MANIFEST_INVALID, detail: 'manifest 不是合法 JSON' }],
-      wroteFiles: false, cloudCalled: false
-    };
-  }
-  if (!isPlainObject(manifest) || manifest.schema !== REGISTRATION_MANIFEST_SCHEMA) {
-    return {
-      ok: false, mode: 'check', dir,
-      problems: [{ code: ERR.MANIFEST_INVALID, detail: 'schema 不符' }],
-      wroteFiles: false, cloudCalled: false
-    };
-  }
-  // 由 manifest 的计划重建期望产物（不信任 manifest 的哈希自报）
-  let normalized;
-  try {
-    normalized = validatePlan({
-      purpose: manifest.plan.purpose,
-      appId: manifest.plan.appId,
-      envId: manifest.plan.envId,
-      region: manifest.plan.region,
-      functionName: manifest.plan.functionName,
-      allowedUserIds: manifest.plan.allowedUserIds,
-      roundId: manifest.plan.roundId,
-      windowStartsAt: manifest.plan.windowStartsAt,
-      windowExpiresAt: manifest.plan.windowExpiresAt,
-      sourceVersion: manifest.plan.sourceVersion,
-      synthetic: manifest.synthetic === true
-    }, { nowMs: Date.parse(manifest.generatedAt) });
-  } catch (error) {
-    return {
-      ok: false, mode: 'check', dir,
-      problems: [{ code: error.code || ERR.MANIFEST_INVALID, detail: String(error.detail || '') }],
-      wroteFiles: false, cloudCalled: false
-    };
-  }
-  // 受审源若已漂移，直接记录
-  let sources;
-  try {
-    sources = readReviewedSources();
-  } catch (error) {
-    problems.push({ code: ERR.SOURCE_MISSING, detail: String(error.detail || error.message) });
-    return { ok: false, mode: 'check', dir, problems, wroteFiles: false, cloudCalled: false };
-  }
-  const expected = computeArtifacts(sources, normalized);
-
-  // 实际文件集合：不得多、不得少。
-  // 期望集合 = 8 个服务端文件 + 前端覆盖文件（它也在 package/ 下，但不是服务端包成员）。
-  const actualFiles = listAllFiles(path.join(dir, 'package'));
-  const expectedRels = expected.artifacts.map((a) => a.rel).sort();
-  const frontendRel = 'frontend/config/schedule-sandbox-proof.js';
-  const allowedRels = expectedRels.concat([frontendRel]).sort();
-  const extra = actualFiles.filter((f) => allowedRels.indexOf(f) === -1);
-  if (extra.length > 0) {
-    problems.push({ code: ERR.ARTIFACT_EXTRA_FILE, detail: extra.join(', ') });
-  }
-  const missing = allowedRels.filter((f) => actualFiles.indexOf(f) === -1);
-  if (missing.length > 0) {
-    problems.push({ code: ERR.ARTIFACT_INCOMPLETE, detail: missing.join(', ') });
-  }
-  // 逐个重算字节并比对
-  for (const a of expected.artifacts) {
-    const abs = path.join(dir, 'package', a.rel);
-    if (!fs.existsSync(abs)) continue;
-    const buf = fs.readFileSync(abs);
-    const sha = sha256Buffer(buf);
-    if (sha !== a.sha256) {
-      problems.push({ code: ERR.MANIFEST_MISMATCH, detail: `${a.rel} 字节与受审源转换结果不一致` });
-      continue;
-    }
-    // manifest 自报也必须一致（防伪造）
-    const claimed = (manifest.artifacts || []).find((x) => x.rel === a.rel);
-    if (!claimed || claimed.sha256 !== sha) {
-      problems.push({ code: ERR.MANIFEST_MISMATCH, detail: `${a.rel} manifest 记录与实际不符` });
-    }
-  }
-  // 前端覆盖文件
-  const frontendAbs = path.join(dir, 'package', 'frontend', 'config', 'schedule-sandbox-proof.js');
-  if (fs.existsSync(frontendAbs)) {
-    const sha = sha256Buffer(fs.readFileSync(frontendAbs));
-    const claimed = manifest.frontendOverride;
-    if (!claimed || claimed.sha256 !== sha) {
-      problems.push({ code: ERR.MANIFEST_MISMATCH, detail: '前端覆盖文件与 manifest 不符' });
-    }
-  } else {
-    problems.push({ code: ERR.ARTIFACT_INCOMPLETE, detail: '缺前端覆盖文件' });
-  }
-
-  return {
-    ok: problems.length === 0,
-    mode: 'check',
-    dir,
-    differences: expected.differences,
-    problems,
-    wroteFiles: false,
-    cloudCalled: false
-  };
+    const existing=inspectTree(dir,['manifest.json',...PACKAGE_FILES.map(r=>'package/'+r)]);
+    if(existing.size!==PACKAGE_FILES.length+1) fail(ERR.CLOSED_INVALID,'关闭包不完整。');
+    if(sha256Buffer(existing.get('manifest.json'))!==CLOSED_MANIFEST_SHA256) fail(ERR.CLOSED_INVALID,'关闭 manifest 漂移。');
+    const checked=base.buildPackage({outDir:dir,checkOnly:true});
+    if(checked.mode!=='check'||checked.entryState.enabled!==false) fail(ERR.CLOSED_INVALID,'未关闭。');
+    const files=PACKAGE_FILES.map(r=>{
+      const buf=existing.get('package/'+r),p=PINNED_FACTS['miniapp/cloudfunctions/scheduleSandbox/'+r];
+      if(buf.length!==p.bytes||sha256Buffer(buf)!==p.sha256) fail(ERR.CLOSED_INVALID,r+' 漂移。');
+      return {rel:r,present:true,bytes:buf.length,sha256:sha256Buffer(buf)};
+    });
+    return {dir:CLOSED_DIR,schema:base.MANIFEST_SCHEMA,present:true,manifestSha256:CLOSED_MANIFEST_SHA256,
+      totalBytes:files.reduce((n,f)=>n+f.bytes,0),setDigest:sha256Buffer(Buffer.from(files.map(f=>f.rel+':'+f.sha256).join('\n'))),
+      files,entryState:checked.entryState,verification:'旧工具 checkOnly + 独立受审字节'};
+  }catch(e){fail(ERR.CLOSED_INVALID,'关闭包校验失败：'+String(e.message).slice(0,180));}
 }
-
-// ── 生成（必须显式 --mode build + 完整计划） ──────────────────────────────
-/**
- * 生成登记候选制品。
- *
- * 预检失败 → **零新文件**；真实写盘失败 → **保留半成品**并明确未完成，
- * **不递归清理**。
- *
- * @param {object} plan 执行计划
- * @param {object} [options] `{ outId, nowMs }`
- */
-function buildRegistration(plan, options) {
-  const o = options || {};
-  const nowMs = typeof o.nowMs === 'number' && Number.isFinite(o.nowMs) ? o.nowMs : Date.now();
-  const outId = safeOutId(o.outId || (plan && plan.roundId) || 'local');
-
-  const existingClosedDirs = fs.existsSync(ARTIFACTS_ROOT)
-    ? fs.readdirSync(ARTIFACTS_ROOT).filter((n) => !n.startsWith(OUT_DIR_PREFIX))
-    : [];
-  const dir = resolveOutDir(outId, existingClosedDirs);
-
-  // 预检：全部成功后才写盘
-  const normalized = validatePlan(plan, { nowMs });
-  const sources = readReviewedSources();
-  const computed = computeArtifacts(sources, normalized);
-  const frontend = buildFrontendOverride(normalized, normalized.sourceVersion);
-  const closed = describeClosedPackage('closed-20261005-r2fix');
-  const manifest = buildManifest(normalized, computed.artifacts, computed.differences, frontend, closed, sources);
-
-  // 复用判定：**同一目录 + 同一计划 + 同内容**才可复用；不同内容拒绝覆盖。
-  // 注意：不能只靠 checkRegistration（它按 manifest 自报的计划重建，永远自洽），
-  // 必须先把 manifest 记录的计划与**本次请求的计划**逐项比较。
-  const reuse = { reused: false, dir };
-  if (fs.existsSync(path.join(dir, 'manifest.json'))) {
-    let existing = null;
-    try {
-      existing = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
-    } catch (_) {
-      existing = null;
-    }
-    const samePlan = isPlainObject(existing) && isPlainObject(existing.plan) &&
-      existing.plan.roundId === normalized.roundId &&
-      existing.plan.purpose === normalized.purpose &&
-      existing.plan.windowExpiresAt === normalized.windowExpiresAt &&
-      existing.plan.sourceVersion === normalized.sourceVersion &&
-      JSON.stringify(existing.plan.allowedUserIds || []) ===
-        JSON.stringify(normalized.allowedUserIds.slice());
-    if (!samePlan) {
-      // 内容不同 → 拒绝覆盖（不递归删除，保留原目录）
-      fail(ERR.ARTIFACT_EXISTS_DIFFERENT, `目录已存在且计划不同，拒绝覆盖：${dir}`);
-    }
-    const existing_check = checkRegistration({ outDir: dir });
-    if (existing_check.ok) {
-      reuse.reused = true;
-      return {
-        ok: true, mode: 'build', ...reuse, manifest: existing,
-        differences: computed.differences, wroteFiles: false, cloudCalled: false
-      };
-    }
-    // 计划相同但字节被改动 → 同样拒绝覆盖（不静默修复）
-    fail(ERR.ARTIFACT_EXISTS_DIFFERENT,
-      `目录已存在且内容与受审源转换结果不一致，拒绝覆盖：${dir}`);
+const factsOf=a=>({rel:a.rel,bytes:a.bytes,sha256:a.sha256});
+function buildManifest(p,artifacts,differences,front,closed,sources,frontClosed,deps,generatedAt) {
+  return {schema:REGISTRATION_MANIFEST_SCHEMA,deploymentAuthorized:false,cloudExecuted:false,synthetic:p.synthetic,
+    generatedAt,plan:{...p,allowedUserIds:Array.from(p.allowedUserIds),windowMaxMs:MAX_WINDOW_MS},
+    effectiveActions:['identify'],prepareAllowedSource:'gate.js PREPARE_ALLOWED 收窄为 [identify]',allowedUsers:Array.from(p.allowedUserIds),
+    reviewedSource:{version:REVIEWED_SOURCE_VERSION,setDigest:sourceSetDigest(sources),
+      files:PACKAGE_FILES.map(r=>({rel:r,...PINNED_FACTS['miniapp/cloudfunctions/scheduleSandbox/'+r]}))},
+    artifacts:artifacts.map(factsOf),differences,frontendOverride:factsOf(front),frontendClosedOverride:factsOf(frontClosed),
+    frontendDependencies:deps,closedPackage:closed,
+    limitations:['仅本地候选清单，不构成部署授权或云端证明。','合成制品不得复用为真实制品。',
+      '两份前端覆盖文件均非完整可预览包。','真实应用代码＋合成SDK/数据库；平台、部署、登记未验证未放行。',
+      'identify 首次写测试 users 与 registerIdentity 审计；不写 primary、不取号、不建项目。']};
+}
+function expectedBundle(plan,nowMs) {
+  const p=validatePlan(plan,{nowMs}),sources=readReviewedSources(),computed=computeArtifacts(sources,p),deps=readFrontendSources();
+  const front=buildFrontendOverride(p),frontClosed=buildFrontendOverride(p,REVIEWED_SOURCE_VERSION,false),closed=describeClosedPackage();
+  const expected=new Map([...computed.artifacts,front,frontClosed].map(a=>['package/'+a.rel,a.buf]));
+  return {normalized:p,computed,expected,manifestAt:at=>buildManifest(p,computed.artifacts,computed.differences,front,closed,sources,frontClosed,deps,at)};
+}
+function planFromManifest(m) {
+  if(!isPlainObject(m)||!isPlainObject(m.plan)) fail(ERR.MANIFEST_INVALID,'计划无效。');
+  const p={...m.plan};delete p.windowMaxMs;return p;
+}
+function verifyExisting(existing,bundle,complete) {
+  for(const [r,b] of existing) if(r!=='manifest.json'&&(!bundle.expected.has(r)||!b.equals(bundle.expected.get(r)))) fail(ERR.MANIFEST_MISMATCH,r+' 字节不符。');
+  if(complete) for(const r of bundle.expected.keys()) if(!existing.has(r)) fail(ERR.ARTIFACT_INCOMPLETE,r);
+}
+function validateManifest(existing,bundle) {
+  let m;try{m=JSON.parse(existing.get('manifest.json'));}catch(_){fail(ERR.MANIFEST_INVALID,'manifest 无效。');}
+  if(!isPlainObject(m)) fail(ERR.MANIFEST_INVALID,'manifest 必须是对象。');
+  if(typeof m.generatedAt!=='string'||!Number.isFinite(Date.parse(m.generatedAt))||
+    new Date(Date.parse(m.generatedAt)).toISOString()!==m.generatedAt) fail(ERR.MANIFEST_INVALID,'生成时间无效。');
+  if(canonical(m)!==canonical(bundle.manifestAt(m.generatedAt))) fail(ERR.MANIFEST_MISMATCH,'manifest 完整契约不符。');
+  verifyExisting(existing,bundle,true);return m;
+}
+function checkRegistration(o={}) {
+  if(!o.outDir){
+    const candidates=fs.existsSync(ARTIFACTS_ROOT)?fs.readdirSync(ARTIFACTS_ROOT).filter(n=>n.startsWith(OUT_DIR_PREFIX)):[];
+    return {ok:candidates.length===0,mode:'check',candidates,problems:candidates.length?
+      [{code:ERR.ARTIFACT_EXISTS_DIFFERENT,detail:'请指定 --target 逐项检查。'}]:[],wroteFiles:false,cloudCalled:false};
   }
-
-  // 写盘：逐文件；失败保留半成品
-  const written = [];
+  let dir;try {
+    dir=checkedTarget(o.outDir);
+    const existing=inspectTree(dir,['manifest.json',...PACKAGE_FILES.map(r=>'package/'+r),
+      'package/frontend/config/schedule-sandbox-proof.js','package/frontend-closed/config/schedule-sandbox-proof.js']);
+    if(!existing.has('manifest.json')) fail(ERR.MANIFEST_INVALID,'缺 manifest。');
+    let m;try{m=JSON.parse(existing.get('manifest.json'));}catch(_){fail(ERR.MANIFEST_INVALID,'非法 JSON。');}
+    const bundle=expectedBundle(o.plan||planFromManifest(m),o.nowMs);validateManifest(existing,bundle);
+    return {ok:true,mode:'check',dir,differences:bundle.computed.differences,problems:[],wroteFiles:false,cloudCalled:false};
+  }catch(e){return {ok:false,mode:'check',dir,problems:[{code:e.code||ERR.MANIFEST_INVALID,detail:String(e.message).slice(0,200)}],wroteFiles:false,cloudCalled:false};}
+}
+function buildRegistration(plan,o={}) {
+  const now=o.nowMs===undefined?Date.now():o.nowMs,id=o.outId===undefined?safeOutId(plan&&plan.roundId):o.outId;
+  const dir=resolveOutDir(id,[CLOSED_DIR]),bundle=expectedBundle(plan,now);
+  const existing=inspectTree(dir,['manifest.json',...bundle.expected.keys()]);
+  if(existing.has('manifest.json')){
+    let m;try{m=validateManifest(existing,bundle);}catch(e){fail(ERR.ARTIFACT_EXISTS_DIFFERENT,'完整计划/字节不符：'+e.message);}
+    return {ok:true,mode:'build',dir,reused:true,manifest:m,differences:bundle.computed.differences,wroteFiles:false,cloudCalled:false};
+  }
+  verifyExisting(existing,bundle,false);
+  const manifest=bundle.manifestAt(new Date(now).toISOString()),written=[];
+  const missing=new Map([...bundle.expected].filter(([r])=>!existing.has(r)));
+  missing.set('manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
   try {
-    const pkgDir = path.join(dir, 'package');
-    fs.mkdirSync(pkgDir, { recursive: true });
-    for (const a of computed.artifacts) {
-      const abs = base.resolveInside(pkgDir, a.rel, '登记产物条目');
-      fs.mkdirSync(path.dirname(abs), { recursive: true });
-      fs.writeFileSync(abs, a.buf);
-      written.push(a.rel);
+    for(const [r,b] of missing){
+      const abs=base.resolveInside(dir,r,'登记文件',{allowMissingBase:true});
+      fs.mkdirSync(path.dirname(abs),{recursive:true});base.resolveInside(dir,r,'登记写点');
+      fs.writeFileSync(abs,b,{flag:'wx'});written.push(r);
     }
-    const frontendAbs = base.resolveInside(pkgDir, frontend.rel, '前端覆盖文件');
-    fs.mkdirSync(path.dirname(frontendAbs), { recursive: true });
-    fs.writeFileSync(frontendAbs, frontend.buf);
-    written.push(frontend.rel);
-    fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
-    written.push('manifest.json');
-  } catch (error) {
-    // 保留半成品、明确未完成，不递归清理
-    return {
-      ok: false, mode: 'build', dir, incomplete: true,
-      written,
-      problems: [{
-        code: ERR.WRITE_FAILED,
-        detail: `写盘失败，已保留半成品（${written.length} 个文件），未递归清理：${String(error.message).slice(0, 200)}`
-      }],
-      wroteFiles: written.length > 0,
-      cloudCalled: false
-    };
-  }
-
-  return {
-    ok: true,
-    mode: 'build',
-    dir,
-    reused: false,
-    manifest,
-    differences: computed.differences,
-    wroteFiles: true,
-    cloudCalled: false
-  };
+  }catch(e){return {ok:false,mode:'build',dir,incomplete:true,written,problems:[{code:ERR.WRITE_FAILED,detail:'写入期 I/O 失败，半成品保留，未递归清理。'}],wroteFiles:written.length>0,cloudCalled:false};}
+  return {ok:true,mode:'build',dir,reused:false,manifest,differences:bundle.computed.differences,written,
+    reusedFiles:Array.from(existing.keys()),wroteFiles:true,cloudCalled:false};
 }
 
 // ── CLI（无 shell 拼接、无 deploy/execute/login） ─────────────────────────
@@ -930,41 +616,11 @@ function main(argv) {
   process.stdout.write(JSON.stringify(r, null, 2) + '\n');
   return r.ok ? 0 : 1;
 }
-
-module.exports = Object.freeze({
-  ROOT,
-  SOURCE_DIR,
-  ARTIFACTS_ROOT,
-  PACKAGE_FILES,
-  OUT_DIR_ALLOWED_TOP,
-  FIXED_TARGET,
-  CANDIDATE_USER_ID,
-  REGISTRATION_ALLOWED_ACTIONS,
-  REGISTRATION_MANIFEST_SCHEMA,
-  MAX_WINDOW_MS,
-  PLAN_FIELDS,
-  ERR,
-  RegistrationError,
-  validatePlan,
-  readReviewedSources,
-  sourceSetDigest,
-  buildIndexTransform,
-  buildGateTransform,
-  applyTransform,
-  computeArtifacts,
-  buildFrontendOverride,
-  describeClosedPackage,
-  buildManifest,
-  resolveOutDir,
-  checkRegistration,
-  buildRegistration,
-  safeOutId,
-  sha256Buffer,
-  countOccurrences,
-  parseArgs,
-  main
-});
-
-if (require.main === module) {
-  process.exit(main(process.argv.slice(2)));
-}
+module.exports=Object.freeze({ROOT,SOURCE_DIR,ARTIFACTS_ROOT,PACKAGE_FILES,OUT_DIR_ALLOWED_TOP,
+ FIXED_TARGET,CANDIDATE_USER_ID,REGISTRATION_ALLOWED_ACTIONS,REGISTRATION_MANIFEST_SCHEMA,
+ MAX_WINDOW_MS,PLAN_FIELDS,ERR,RegistrationError,REVIEWED_SOURCE_VERSION,FRONTEND_FILES,PINNED_FACTS,
+ CLOSED_DIR,CLOSED_MANIFEST_SHA256,validatePlan,readReviewedSources,assertReviewedSources,readFrontendSources,
+ sourceSetDigest,buildIndexTransform,buildGateTransform,applyTransform,computeArtifacts,buildFrontendOverride,
+ describeClosedPackage,buildManifest,resolveOutDir,checkRegistration,buildRegistration,safeOutId,sha256Buffer,
+ countOccurrences,parseArgs,main});
+if(require.main===module)process.exit(main(process.argv.slice(2)));

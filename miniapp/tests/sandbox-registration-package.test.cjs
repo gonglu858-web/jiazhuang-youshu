@@ -7,11 +7,11 @@
  *  A 产物来源与差异 / B 服务端真实 main / C 动作收口 / D 新账号登记 /
  *  E 已有·停用·错误归属 / F 客户端真实 Page·client / G 保存与关闭
  *
- * **合成验证 / 真实 SDK 本地转换 / 未进行的平台验证必须分开看**：
+ * **真实应用代码＋合成SDK/数据库 / 平台未验证必须分开看**：
  *  - 本文件全程使用**合成**凭据、合成微信上下文与合成数据库传输；
  *  - 「真实 main」指的是加载**生成的** index/gate/map/vendor 并实际调用
- *    其 main/assert 函数，走**真实 SDK 本地转换**（序列化、事务对象），
- *    但数据库是**合成传输**，**不是**云端执行；
+ *    其 main/assert 函数；整个 SDK 和数据库/事务对象均为手写合成对象，
+ *    未运行真实 SDK 转换，也不是云端执行；
  *  - 真实凭据获取、真实平台初始化、IAM 写权限、真机与平台编译**全部未验证**。
  *
  * 边界：不联网、不取真实凭据、不安装、不创建资源、不预览、不部署、
@@ -25,6 +25,7 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const Module = require('node:module');
+const vm = require('node:vm');
 
 const reg = require('../scripts/package-sandbox-registration.cjs');
 
@@ -57,7 +58,7 @@ function syntheticPlan(patch) {
     // deps.nowMs（合成时钟）判定，真实时间窗口留到执行包阶段，本轮不预填。
     windowStartsAt: '2026-01-01T00:00:00.000Z',
     windowExpiresAt: '2026-01-01T00:20:00.000Z',
-    sourceVersion: 'synthetic-offline-source-v1',
+    sourceVersion: reg.REVIEWED_SOURCE_VERSION,
     synthetic: true
   };
   return Object.assign(base, patch || {});
@@ -66,9 +67,11 @@ function syntheticPlan(patch) {
 /** 一次性生成合成登记制品，返回目录与manifest。 */
 /** 合成时钟：落在合成窗口内（与真实当前时间无关）。 */
 const SYNTH_NOW_MS = Date.parse('2026-01-01T00:05:00.000Z');
+const BASE_OUT_ID = 'r1r5-' + crypto.randomUUID().replace(/-/g, '').slice(0, 24);
 const BUILT = reg.buildRegistration(syntheticPlan(), {
-  outId: 'synth-reg-0001', nowMs: SYNTH_NOW_MS
+  outId: BASE_OUT_ID, nowMs: SYNTH_NOW_MS
 });
+assert.equal(BUILT.ok, true, JSON.stringify(BUILT.problems));
 const PKG = path.join(BUILT.dir, 'package');
 
 /**
@@ -282,7 +285,7 @@ function trustedCtx(patch) {
 // A 产物来源与差异
 // ══════════════════════════════════════════════════════════════════════
 
-test('A-1 生成产物为 8 个服务端文件 + manifest + 前端覆盖文件', () => {
+test('A-1 正常对照：8 个服务端文件 + manifest + 两份前端覆盖，共 11 文件', () => {
   const files = [];
   const walk = (dir, rel) => {
     for (const n of fs.readdirSync(dir)) {
@@ -300,6 +303,8 @@ test('A-1 生成产物为 8 个服务端文件 + manifest + 前端覆盖文件',
   assert.ok(files.indexOf('manifest.json') !== -1, '缺 manifest.json');
   assert.ok(files.indexOf('package/frontend/config/schedule-sandbox-proof.js') !== -1,
     '缺前端覆盖文件：' + files.join(','));
+  assert.ok(files.includes('package/frontend-closed/config/schedule-sandbox-proof.js'));
+  assert.equal(files.length, 11);
   assert.equal(BUILT.manifest.schema, reg.REGISTRATION_MANIFEST_SCHEMA);
   // 不自称云端部署哈希、不做安全授权
   assert.equal(BUILT.manifest.deploymentAuthorized, false);
@@ -371,7 +376,7 @@ test('A-4 计划非法时零产物（占位/空名单/超窗/过期/目标不符
   }
   // 真实（非合成）计划过期即拒
   assert.throws(() => reg.validatePlan(
-    Object.assign(syntheticPlan(), { synthetic: false }),
+    syntheticPlan({ synthetic: false, allowedUserIds: [TARGET_USER] }),
     { nowMs: Date.parse(syntheticPlan().windowExpiresAt) + 1000 }),
     (e) => e.code === reg.ERR.PLAN_WINDOW_EXPIRED, '真实计划过期须拒绝');
 });
@@ -380,19 +385,11 @@ test('A-5 变换锚点缺失/多处即停止，不做全局替换', () => {
   const sources = reg.readReviewedSources();
   const t = reg.buildIndexTransform(reg.validatePlan(syntheticPlan(), { nowMs: SYNTH_NOW_MS }));
   // 锚点缺失
-  const broken = new Map(sources);
-  broken.set('index.js', { bytes: 3, sha256: 'x', buf: Buffer.from('const other = 1;') });
-  assert.throws(() => reg.applyTransform(broken, t),
+  assert.throws(() => reg.applyTransform(sources, { ...t, from: 'nonexistent-anchor' }),
     (e) => e.code === reg.ERR.TRANSFORM_ANCHOR_MISSING, '缺失锚点须停止');
   // 锚点多处
-  // 片段出现两次（源内容被复制一份）—— 哈希须与该夹具**自洽**，
-  // 否则会先触发「源漂移」而测不到「锚点多处」这一分支。
-  const dup = new Map(sources);
-  const idxBuf = sources.get('index.js').buf;
-  const dupBuf = Buffer.concat([idxBuf, Buffer.from('\n' + t.from)]);
-  const dupSha = reg.sha256Buffer(dupBuf);
-  dup.set('index.js', { bytes: dupBuf.length, sha256: dupSha, buf: dupBuf });
-  assert.throws(() => reg.applyTransform(dup, t, dupSha),
+  // 保留独立受审源，改用在真实源中出现多次的锚点。
+  assert.throws(() => reg.applyTransform(sources, { ...t, from: 'const ' }),
     (err) => err.code === reg.ERR.TRANSFORM_ANCHOR_AMBIGUOUS, '多处锚点须停止');
   // 源漂移（哈希不符）
   assert.throws(() => reg.applyTransform(sources, t, 'f'.repeat(64)),
@@ -437,7 +434,7 @@ test('B-1 生成的 gate 只允许 identify，其余 14 个 prepare 动作被拒
   void gateSrc;
 });
 
-test('B-2 其他动作在数据库访问前被拒（database 入口 0 次）', async () => {
+test('B-2 只收窄 PREPARE_ALLOWED，保留受审 EXECUTE_ALLOWED（19 动作拒绝另见 C-1）', async () => {
   const gatePath = path.join(PKG, 'gate.js');
   const gate = require(gatePath);
   const sourceGate = fs.readFileSync(path.join(SOURCE_DIR, 'gate.js'), 'utf8');
@@ -665,22 +662,33 @@ test('F-1 前端覆盖文件：固定目标、空项目、仅 develop/trial、�
   assert.equal(legacy.enabled, false, '仓库源配置必须仍为 false');
 });
 
-test('F-2 客户端真实 client：用生成的覆盖配置加载，onLoad/onShow 零业务请求', () => {
-  const clientPath = path.join(__dirname, '..', 'miniprogram', 'client', 'cloud-api.js');
-  if (!fs.existsSync(clientPath)) {
-    // 客户端文件名以实际仓库为准：退而验证覆盖文件本身不产生请求
-    const src = fs.readFileSync(path.join(PKG, 'frontend', 'config', 'schedule-sandbox-proof.js'), 'utf8');
-    assert.equal(src.indexOf('wx.request'), -1, '覆盖文件不得含请求代码');
-    return;
+test('F-2 R5 实际 Page/client/协调器：生命周期零请求，主动 identify 单次固定路由无项目', async () => {
+  const h = loadActualPage();
+  h.page.onLoad(); h.page.onShow();
+  assert.equal(h.page.data.entryAllowed, true);
+  assert.equal(h.calls.length, 0);
+  for (const rel of ['pages/schedule-sandbox/schedule-sandbox.js',
+    'utils/schedule-sandbox-client.js', 'utils/sandbox-test-coordinator.js']) {
+    assert.ok(h.loaded.includes(rel), '必须实际执行：' + rel);
   }
-  const cfg = require(path.join(PKG, 'frontend', 'config', 'schedule-sandbox-proof.js'));
-  assert.ok(cfg.enabled === true);
+  await h.page.runSelected();
+  assert.equal(h.calls.length, 1);
+  assert.equal(h.calls[0].name, FIXED.functionName);
+  assert.equal(h.calls[0].config.env, FIXED.envId);
+  assert.equal(h.calls[0].data.action, 'identify');
+  assert.equal('projectId' in h.calls[0].data, false);
+  assert.equal(h.clearCalls(), 0);
+  assert.equal(h.storage.get('unrelated-cache'), 'keep-me');
 });
 
-test('F-3 正式版与未识别版本不在允许范围（客户端不得回退旧路由）', () => {
-  const cfg = require(path.join(PKG, 'frontend', 'config', 'schedule-sandbox-proof.js'));
+test('F-3 R5 实际 Page/client 拒绝正式及未识别版本，零请求无回退', async () => {
   for (const v of ['release', 'trial ', 'unknown', '']) {
-    assert.equal(cfg.allowedVersions.indexOf(v), -1, '不应允许版本：' + v);
+    const h = loadActualPage({ version: v });
+    h.page.onLoad(); h.page.onShow();
+    await h.page.runSelected();
+    assert.equal(h.page.data.entryAllowed, false, v);
+    assert.equal(h.calls.length, 0, v);
+    assert.equal(h.clearCalls(), 0);
   }
 });
 
@@ -691,7 +699,7 @@ test('F-3 正式版与未识别版本不在允许范围（客户端不得回退�
 test('G-1 同内容复用不改字节；不同内容拒绝覆盖', () => {
   const before = fs.readFileSync(path.join(BUILT.dir, 'manifest.json'), 'utf8');
   const again = reg.buildRegistration(syntheticPlan(), {
-    outId: 'synth-reg-0001', nowMs: SYNTH_NOW_MS
+    outId: BASE_OUT_ID, nowMs: SYNTH_NOW_MS
   });
   assert.equal(again.ok, true);
   assert.equal(again.reused, true, '同内容应复用');
@@ -701,7 +709,7 @@ test('G-1 同内容复用不改字节；不同内容拒绝覆盖', () => {
   // 不同内容 → 拒绝覆盖，且不递归删除
   assert.throws(() => reg.buildRegistration(
     syntheticPlan({ roundId: 'SYNTH-REG-OTHER' }),
-    { outId: 'synth-reg-0001', nowMs: SYNTH_NOW_MS }),
+    { outId: BASE_OUT_ID, nowMs: SYNTH_NOW_MS }),
   (err) => err.code === reg.ERR.ARTIFACT_EXISTS_DIFFERENT, '不同内容须拒绝覆盖');
   assert.ok(fs.existsSync(path.join(BUILT.dir, 'manifest.json')), '拒绝覆盖时原目录须保留');
 });
@@ -792,4 +800,375 @@ test('G-6 关闭包引用只读校验，不覆盖、不用 /1 冒充 /2', () => 
     path.join(ARTIFACTS_ROOT, 'closed-20261005-r2fix', 'manifest.json'), 'utf8'));
   assert.equal(closedManifest.schema, 'sandbox-closed-candidate/2',
     '不得用 /1 包冒充 /2');
+});
+
+// R1–R5 定点闭合：使用实际生成/检查函数、实际前端模块；不修改受保护源码。
+function freshId() { return 'r1r5-' + crypto.randomUUID().replace(/-/g, '').slice(0, 24); }
+function fixtureDir(id) { return reg.resolveOutDir(id, [reg.CLOSED_DIR]); }
+function snapshotTree(dir) {
+  if (!fs.existsSync(dir)) return null;
+  const rows = [];
+  function walk(abs, rel) {
+    const st = fs.lstatSync(abs);
+    if (st.isSymbolicLink()) { rows.push([rel, 'link', fs.readlinkSync(abs)]); return; }
+    if (st.isDirectory()) {
+      rows.push([rel, 'dir']);
+      for (const n of fs.readdirSync(abs).sort()) walk(path.join(abs, n), rel + '/' + n);
+    } else rows.push([rel, st.isFile() ? 'file' : 'special',
+      st.isFile() ? reg.sha256Buffer(fs.readFileSync(abs)) : '']);
+  }
+  walk(dir, ''); return rows;
+}
+function expectBuildZeroWrite(plan, id, tool = reg) {
+  const dir = fixtureDir(id), before = snapshotTree(dir);
+  assert.throws(() => tool.buildRegistration(plan, { outId: id, nowMs: SYNTH_NOW_MS }));
+  assert.deepEqual(snapshotTree(dir), before, '预检失败：零新增、零覆盖、原字节不变');
+  return dir;
+}
+function expectCheckZeroWrite(dir, tool = reg, plan) {
+  const before = snapshotTree(dir);
+  const r = tool.checkRegistration({ outDir: dir, plan, nowMs: SYNTH_NOW_MS });
+  assert.equal(r.ok, false, JSON.stringify(r));
+  assert.equal(r.wroteFiles, false);
+  assert.deepEqual(snapshotTree(dir), before, '检查失败不能写入或修复');
+}
+function buildFresh(plan = syntheticPlan()) {
+  const r = reg.buildRegistration(plan, { outId: freshId(), nowMs: SYNTH_NOW_MS });
+  assert.equal(r.ok, true, JSON.stringify(r.problems)); return r;
+}
+
+// 把文件系统故障限制在内存中。旧工具和新工具均执行实际源码，共用替身 fs。
+// 不篡改关闭包、云函数源、前端源；不把手写算法当作生成/检查器。
+function loadToolWithFs(overrides) {
+  const fakeFs = Object.assign({}, fs, overrides);
+  function evaluate(file, legacy) {
+    const module = { exports: {} }, native = Module.createRequire(file);
+    const context = { module, exports: module.exports, __dirname: path.dirname(file),
+      __filename: file, Buffer, Map, Set, process, Date,
+      require(name) {
+        if (name === 'node:fs' || name === 'fs') return fakeFs;
+        if (name === './package-sandbox.cjs') return legacy;
+        return native(name);
+      } };
+    vm.runInNewContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
+    return module.exports;
+  }
+  const scriptDir = path.join(reg.ROOT, 'miniapp/scripts');
+  const legacy = evaluate(path.join(scriptDir, 'package-sandbox.cjs'));
+  return evaluate(path.join(scriptDir, 'package-sandbox-registration.cjs'), legacy);
+}
+function normalizedPath(p) { return path.resolve(String(p)).toLowerCase(); }
+function samePath(a, b) { return normalizedPath(a) === normalizedPath(b); }
+
+// 生成覆盖配置只替换实际 config 模块；Page/client/协调器及其它依赖均从真实路径读取。
+// 缺失路径直接抛错，无静态文本检查或宽松回退。
+function loadActualPage(o = {}) {
+  const root = path.join(reg.ROOT, 'miniapp/miniprogram');
+  const modules = new Map(), loaded = [], calls = [], storage = new Map([['unrelated-cache', 'keep-me']]);
+  let definition, clearCount = 0, removeCount = 0;
+  const copy = x => x === undefined ? undefined : JSON.parse(JSON.stringify(x));
+  const api = {
+    getAccountInfoSync: () => ({ miniProgram: { appId: o.appId || FIXED.appId,
+      envVersion: o.version === undefined ? 'develop' : o.version } }),
+    getStorageInfoSync: () => ({ keys: Array.from(storage.keys()) }),
+    getStorageSync: key => copy(storage.get(key)),
+    setStorageSync: (key, value) => storage.set(key, copy(value)),
+    removeStorageSync: key => { removeCount++; storage.delete(key); },
+    clearStorageSync: () => { clearCount++; storage.clear(); },
+    request: () => { throw new Error('禁止旧 request 路由'); },
+    cloud: { callFunction: async args => {
+      calls.push(copy(args));
+      if (o.failCall) throw new Error('synthetic timeout: outcome unknown');
+      return { result: { ok: true, userId: deriveUserId(SYNTH_OPENID), isAdmin: false } };
+    } }
+  };
+  function load(file) {
+    file = path.resolve(file);
+    if (modules.has(file)) return modules.get(file).exports;
+    const rel = path.relative(root, file).replace(/\\/g, '/');
+    if (rel.startsWith('../')) throw new Error('前端依赖越界');
+    // 先核实原实际路径可读，即使 config 会被生成文件覆盖，也不能掩盖缺失。
+    let source = (o.readFileSync || fs.readFileSync)(file, 'utf8');
+    if (rel === 'config/schedule-sandbox-proof.js') source = fs.readFileSync(path.join(PKG,
+      o.closed ? 'frontend-closed' : 'frontend', 'config/schedule-sandbox-proof.js'), 'utf8');
+    const module = { exports: {} }; modules.set(file, module); loaded.push(rel);
+    vm.runInNewContext(source, { module, exports: module.exports, wx: api,
+      Page: value => { definition = value; }, Date, console, setTimeout, clearTimeout,
+      require(name) {
+        if (!name.startsWith('.')) throw new Error('不允许未声明的外部前端依赖：' + name);
+        let next = path.resolve(path.dirname(file), name);
+        if (!path.extname(next)) next += '.js';
+        return load(next);
+      } }, { filename: file });
+    return module.exports;
+  }
+  load(path.join(root, 'pages/schedule-sandbox/schedule-sandbox.js'));
+  assert.ok(definition, '实际 Page 必须注册');
+  const page = Object.assign({}, definition, { data: copy(definition.data), setData(patch) {
+    for (const [key, value] of Object.entries(patch)) {
+      const parts = key.split('.'); let node = this.data;
+      for (const p of parts.slice(0, -1)) { if (!node[p]) node[p] = {}; node = node[p]; }
+      node[parts[parts.length - 1]] = value;
+    }
+  } });
+  return { page, api, storage, calls, loaded,
+    client: modules.get(path.join(root, 'utils/schedule-sandbox-client.js')).exports,
+    clearCalls: () => clearCount, removeCalls: () => removeCount };
+}
+
+const invalidPlans = [
+  ['多用户', { allowedUserIds: [TARGET_USER, deriveUserId(SYNTH_OPENID)] }],
+  ['真实候选换人', { synthetic: false }],
+  ['任意来源标签', { sourceVersion: 'unverified-source-label' }],
+  ['synthetic 非布尔', { synthetic: 'false' }],
+  ['真实窗口过期', { synthetic: false, allowedUserIds: [TARGET_USER],
+    windowStartsAt: '2025-12-31T00:00:00.000Z', windowExpiresAt: '2025-12-31T00:20:00.000Z' }]
+];
+for (const [label, patch] of invalidPlans) test('R1 生成前拒绝 ' + label + '，零写', () => {
+  expectBuildZeroWrite(syntheticPlan(patch), freshId());
+});
+test('R1 动态引号/换行/表达式仅为数据：实际生成 index 和前端 VM 均不执行', () => {
+  const roundId = 'x\' + (globalThis.__reviewMarker = 1) + \'\n\\\u2028尾';
+  const plan = syntheticPlan({ roundId, purpose: '引号\"与换行\n仅为数据' });
+  const r = buildFresh(plan), pkg = path.join(r.dir, 'package');
+  for (const rel of ['frontend/config/schedule-sandbox-proof.js',
+    'frontend-closed/config/schedule-sandbox-proof.js', 'index.js']) {
+    const module = { exports: {} }, context = { module, exports: module.exports, process, console,
+      require(name) {
+        if (name === './gate') return { PHASE_PREPARE: 'prepare', readConfig: x => x };
+        return { init() {}, DYNAMIC_CURRENT_ENV: 'synthetic', getWXContext() {} };
+      } };
+    vm.runInNewContext(fs.readFileSync(path.join(pkg, rel), 'utf8'), context);
+    assert.equal(context.__reviewMarker, undefined, rel);
+    if (rel !== 'index.js') assert.equal(module.exports.roundId, roundId);
+  }
+  assert.equal(reg.checkRegistration({ outDir: r.dir, plan }).ok, true);
+});
+for (const rel of reg.PACKAGE_FILES) test('R1 独立基线拒绝来源漂移 ' + rel + '，自算新哈希无效、零写', () => {
+  const file = path.join(SOURCE_DIR, rel);
+  const tool = loadToolWithFs({ readFileSync(p, ...args) {
+    const result = fs.readFileSync(p, ...args);
+    if (!samePath(p, file)) return result;
+    return Buffer.isBuffer(result) ? Buffer.concat([result, Buffer.from('\n// drift')]) : result + '\n// drift';
+  } });
+  expectBuildZeroWrite(syntheticPlan(), freshId(), tool);
+  const sources = reg.readReviewedSources(), e = sources.get(rel);
+  const buf = Buffer.concat([e.buf, Buffer.from('\n// self-hashed drift')]);
+  sources.set(rel, { buf, bytes: buf.length, sha256: reg.sha256Buffer(buf) });
+  assert.throws(() => reg.computeArtifacts(sources, reg.validatePlan(syntheticPlan())),
+    e2 => e2.code === reg.ERR.PLAN_SOURCE_DRIFT);
+});
+
+for (const kind of ['冲突 gate', '额外顶层文件', '额外空目录', '预期文件是目录', '坏 manifest']) {
+  test('R2 无 manifest 半成品完整预检：' + kind + ' 零新增零覆盖', () => {
+    const id = freshId(), dir = fixtureDir(id);
+    fs.mkdirSync(path.join(dir, 'package'), { recursive: true });
+    if (kind === '冲突 gate') fs.writeFileSync(path.join(dir, 'package/gate.js'), 'original-conflict');
+    if (kind === '额外顶层文件') fs.writeFileSync(path.join(dir, 'unexpected.txt'), 'preserve');
+    if (kind === '额外空目录') fs.mkdirSync(path.join(dir, 'unexpected-dir'));
+    if (kind === '预期文件是目录') fs.mkdirSync(path.join(dir, 'package/gate.js'));
+    if (kind === '坏 manifest') fs.writeFileSync(path.join(dir, 'manifest.json'), '{broken');
+    expectBuildZeroWrite(syntheticPlan(), id);
+    assert.equal(fs.existsSync(path.join(dir, 'package/index.js')), false);
+  });
+}
+test('R2 实际目录链接在预检拒绝，联接目标与半成品零写', () => {
+  const id = freshId(), dir = fixtureDir(id);
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), 'r1r5-link-target-'));
+  fs.writeFileSync(path.join(target, 'sentinel.txt'), 'untouched');
+  fs.mkdirSync(path.join(dir, 'package'), { recursive: true });
+  fs.symlinkSync(target, path.join(dir, 'package/vendor'), process.platform === 'win32' ? 'junction' : 'dir');
+  const before = snapshotTree(target);
+  expectBuildZeroWrite(syntheticPlan(), id);
+  assert.deepEqual(snapshotTree(target), before);
+  assert.equal(fs.existsSync(path.join(dir, 'package/index.js')), false);
+});
+test('R2 合法半成品只复用相同字节，续建后通过完整检查', () => {
+  const id = freshId(), dir = fixtureDir(id), rel = 'package/gate.js';
+  fs.mkdirSync(path.join(dir, 'package'), { recursive: true });
+  const expected = fs.readFileSync(path.join(BUILT.dir, rel));
+  fs.writeFileSync(path.join(dir, rel), expected);
+  const r = reg.buildRegistration(syntheticPlan(), { outId: id, nowMs: SYNTH_NOW_MS });
+  assert.equal(r.ok, true); assert.deepEqual(r.reusedFiles, [rel]);
+  assert.equal(r.written.includes(rel), false);
+  assert.deepEqual(fs.readFileSync(path.join(dir, rel)), expected);
+  assert.equal(r.written.length, 10);
+  assert.equal(reg.checkRegistration({ outDir: dir }).ok, true);
+});
+test('R2 真实写入阶段 EIO 留存半成品，解除故障后只写缺项，不递归清理', () => {
+  const id = freshId(), dir = fixtureDir(id); let writes = 0;
+  const tool = loadToolWithFs({ writeFileSync(p, ...args) {
+    if (++writes === 3) { const e = new Error('synthetic EIO'); e.code = 'EIO'; throw e; }
+    return fs.writeFileSync(p, ...args);
+  } });
+  const failed = tool.buildRegistration(syntheticPlan(), { outId: id, nowMs: SYNTH_NOW_MS });
+  assert.equal(failed.ok, false); assert.equal(failed.incomplete, true);
+  assert.equal(failed.written.length, 2); assert.equal(fs.existsSync(path.join(dir, 'manifest.json')), false);
+  const saved = failed.written.map(rel => [rel, fs.readFileSync(path.join(dir, rel))]);
+  const resumed = reg.buildRegistration(syntheticPlan(), { outId: id, nowMs: SYNTH_NOW_MS });
+  assert.equal(resumed.ok, true); assert.equal(resumed.reusedFiles.length, 2);
+  for (const [rel, buf] of saved) {
+    assert.equal(resumed.written.includes(rel), false);
+    assert.deepEqual(fs.readFileSync(path.join(dir, rel)), buf);
+  }
+  assert.equal(reg.checkRegistration({ outDir: dir }).ok, true);
+});
+
+const manifestMutations = [
+  ['固定状态', m => { m.deploymentAuthorized = true; m.cloudExecuted = true; }],
+  ['动作', m => { m.effectiveActions = ['createProject']; }],
+  ['用户', m => { m.allowedUsers = [TARGET_USER]; }],
+  ['来源缺项', m => { delete m.reviewedSource; }],
+  ['来源版本', m => { m.reviewedSource.version = 'arbitrary'; }],
+  ['差异', m => { m.differences = []; }],
+  ['负字节数', m => { m.artifacts[0].bytes = -1; }],
+  ['哈希', m => { m.artifacts[0].sha256 = 'f'.repeat(64); }],
+  ['文件缺项', m => { m.artifacts.pop(); }],
+  ['重复文件', m => { m.artifacts.push(m.artifacts[0]); }],
+  ['伪文件', m => { m.artifacts.push({ rel: 'invented.js', bytes: 0, sha256: '0'.repeat(64) }); }],
+  ['关闭绑定', m => { delete m.closedPackage; }],
+  ['关闭覆盖缺项', m => { delete m.frontendClosedOverride; }],
+  ['前端来源', m => { m.frontendDependencies.files[0].sha256 = '0'.repeat(64); }],
+  ['synthetic不一致', m => { m.synthetic = false; }],
+  ['未知字段', m => { m.unreviewedAuthorization = true; }],
+  ['窗口上限', m => { m.plan.windowMaxMs = 999999; }]
+];
+for (const [label, mutate] of manifestMutations) test('R3 实际检查拒绝 manifest ' + label + '，不改原字节', () => {
+  const r = buildFresh(), file = path.join(r.dir, 'manifest.json');
+  const m = JSON.parse(fs.readFileSync(file)); mutate(m); fs.writeFileSync(file, JSON.stringify(m));
+  expectCheckZeroWrite(r.dir);
+});
+for (const rel of ['frontend', 'frontend-closed']) test('R3 重算 ' + rel + '：改内容并自报新哈希仍拒绝', () => {
+  const r = buildFresh(), file = path.join(r.dir, 'package', rel, 'config/schedule-sandbox-proof.js');
+  const changed = Buffer.concat([fs.readFileSync(file), Buffer.from('\nmodule.exports = { functionName: "wrong" };\n')]);
+  fs.writeFileSync(file, changed);
+  const m = JSON.parse(fs.readFileSync(path.join(r.dir, 'manifest.json')));
+  Object.assign(rel === 'frontend' ? m.frontendOverride : m.frontendClosedOverride,
+    { sha256: reg.sha256Buffer(changed), bytes: changed.length });
+  fs.writeFileSync(path.join(r.dir, 'manifest.json'), JSON.stringify(m));
+  expectCheckZeroWrite(r.dir);
+});
+test('R3 完整包顶层额外文件/空目录、缺文件均拒绝且不补写', () => {
+  for (const kind of ['file', 'dir', 'missing']) {
+    const r = buildFresh();
+    if (kind === 'file') fs.writeFileSync(path.join(r.dir, 'unexpected.txt'), 'untouched');
+    if (kind === 'dir') fs.mkdirSync(path.join(r.dir, 'extra-empty'));
+    if (kind === 'missing') fs.unlinkSync(path.join(r.dir, 'package/project-guard.js'));
+    expectCheckZeroWrite(r.dir);
+    expectBuildZeroWrite(syntheticPlan(), path.basename(r.dir).slice('registration-'.length));
+  }
+});
+test('R3 同语义计划复用；用途/开始/截止/synthetic任一不同拒绝、零写', () => {
+  const plan = syntheticPlan({ allowedUserIds: [TARGET_USER] }), id = freshId();
+  const r = reg.buildRegistration(plan, { outId: id, nowMs: SYNTH_NOW_MS });
+  assert.equal(r.ok, true);
+  const same = reg.buildRegistration({ ...plan }, { outId: id, nowMs: SYNTH_NOW_MS + 1000 });
+  assert.equal(same.ok, true); assert.equal(same.reused, true); assert.equal(same.wroteFiles, false);
+  for (const patch of [{ purpose: 'another-purpose' }, { synthetic: false },
+    { windowStartsAt: '2026-01-01T00:01:00.000Z' }, { windowExpiresAt: '2026-01-01T00:19:00.000Z' }]) {
+    expectBuildZeroWrite({ ...plan, ...patch }, id);
+    expectCheckZeroWrite(r.dir, reg, { ...plan, ...patch });
+  }
+});
+
+test('R4 正常关闭配套：同目标同轮次 enabled=false，11 个真实前端依赖受审哈希', () => {
+  const active = require(path.join(PKG, 'frontend/config/schedule-sandbox-proof.js'));
+  const closed = require(path.join(PKG, 'frontend-closed/config/schedule-sandbox-proof.js'));
+  assert.equal(active.enabled, true); assert.equal(closed.enabled, false);
+  for (const k of ['envId', 'appId', 'functionName', 'roundId', 'sourceVersion', 'synthetic']) {
+    assert.equal(closed[k], active[k], k);
+  }
+  assert.equal(BUILT.manifest.frontendDependencies.version, reg.REVIEWED_SOURCE_VERSION);
+  assert.equal(BUILT.manifest.frontendDependencies.files.length, 11);
+  for (const f of BUILT.manifest.frontendDependencies.files) {
+    const buf = fs.readFileSync(path.join(reg.ROOT, 'miniapp/miniprogram', f.rel));
+    assert.equal(f.bytes, buf.length); assert.equal(f.sha256, reg.sha256Buffer(buf));
+  }
+  assert.equal(reg.describeClosedPackage().entryState.enabled, false);
+});
+for (const kind of ['缺失', '坏manifest', '字节漂移', '非关闭', '链接', '非普通文件']) {
+  test('R4 旧关闭包 ' + kind + '：实际生成前零写停止，实际检查也拒绝', () => {
+    const closed = path.join(ARTIFACTS_ROOT, reg.CLOSED_DIR);
+    const manifest = path.join(closed, 'manifest.json'), source = path.join(closed, 'package/index.js');
+    const protectedBefore = snapshotTree(closed);
+    const overrides = {};
+    if (kind === '缺失') overrides.existsSync = p => samePath(p, closed) ? false : fs.existsSync(p);
+    if (['坏manifest', '字节漂移', '非关闭'].includes(kind)) overrides.readFileSync = (p, ...args) => {
+      const result = fs.readFileSync(p, ...args);
+      if (kind === '坏manifest' && samePath(p, manifest)) return Buffer.from('{invalid');
+      if (samePath(p, source)) {
+        if (kind === '非关闭') return Buffer.from(result.toString().replace('enabled: false', 'enabled: true'));
+        if (kind === '字节漂移') return Buffer.concat([Buffer.from(result), Buffer.from('\n// drift')]);
+      }
+      return result;
+    };
+    if (kind === '链接' || kind === '非普通文件') overrides.lstatSync = (p, ...args) => {
+      const st = fs.lstatSync(p, ...args);
+      if (!samePath(p, source)) return st;
+      return new Proxy(st, { get(target, key) {
+        if (key === 'isSymbolicLink') return () => kind === '链接';
+        if (key === 'isFile' || key === 'isDirectory') return () => false;
+        const v = target[key]; return typeof v === 'function' ? v.bind(target) : v;
+      } });
+    };
+    const tool = loadToolWithFs(overrides);
+    expectBuildZeroWrite(syntheticPlan(), freshId(), tool);
+    expectCheckZeroWrite(BUILT.dir, tool);
+    assert.deepEqual(snapshotTree(closed), protectedBefore, '历史关闭包零改动');
+  });
+}
+test('R4 前端源漂移在生成前拒绝、零写（实际 Page/client/协调器/配置）', () => {
+  for (const rel of reg.FRONTEND_FILES) {
+    const file = path.join(reg.ROOT, 'miniapp/miniprogram', rel);
+    const tool = loadToolWithFs({ readFileSync(p, ...args) {
+      const result = fs.readFileSync(p, ...args);
+      if (!samePath(p, file)) return result;
+      return Buffer.isBuffer(result) ? Buffer.concat([result, Buffer.from('\n// drift')]) : result + '\n// drift';
+    } });
+    expectBuildZeroWrite(syntheticPlan(), freshId(), tool);
+    expectCheckZeroWrite(BUILT.dir, tool);
+  }
+});
+
+test('R5 实际关闭覆盖加载 Page/client：生命周期及主动 identify 均零请求', async () => {
+  const h = loadActualPage({ closed: true });
+  h.page.onLoad(); h.page.onShow(); await h.page.runSelected();
+  assert.equal(h.page.data.entryAllowed, false);
+  assert.equal(h.calls.length, 0); assert.equal(h.clearCalls(), 0); assert.equal(h.removeCalls(), 0);
+});
+test('R5 实际 trial 允许一次 identify；错 AppID 被拒，不回退', async () => {
+  const trial = loadActualPage({ version: 'trial' }); trial.page.onLoad();
+  await trial.page.runSelected(); assert.equal(trial.calls.length, 1);
+  const wrong = loadActualPage({ appId: 'wxOTHERAPPID000000' }); wrong.page.onLoad();
+  await wrong.page.runSelected(); assert.equal(wrong.calls.length, 0);
+});
+test('R5 首次身份结果未知：生命周期/微任务不自动重发，不清缓存（不声称已有持久防重）', async () => {
+  const h = loadActualPage({ failCall: true }); h.page.onLoad();
+  await h.page.runSelected(); assert.equal(h.calls.length, 1);
+  assert.match(h.page.data.lastError, /未知|失败|核对/);
+  const before = Array.from(h.storage.entries());
+  h.page.onShow(); h.page.onLoad(); await Promise.resolve();
+  assert.equal(h.calls.length, 1); assert.deepEqual(Array.from(h.storage.entries()), before);
+  assert.equal(h.clearCalls(), 0); assert.equal(h.removeCalls(), 0);
+});
+test('R5 已绑定账号结果未知：保留未决；onShow/onLoad不重发，普通再次提交被阻止', async () => {
+  const h = loadActualPage({ failCall: true });
+  assert.equal(h.client.bindAccount(h.api, FIXED.envId, 'SYNTH-REG-0001', deriveUserId(SYNTH_OPENID)), true);
+  h.page.onLoad(); await h.page.runSelected(); assert.equal(h.calls.length, 1);
+  assert.equal(h.page.data.pendingAvailable, true);
+  const before = Array.from(h.storage.entries());
+  h.page.onShow(); h.page.onLoad(); await h.page.runSelected();
+  assert.equal(h.calls.length, 1);
+  assert.deepEqual(Array.from(h.storage.entries()), before);
+  assert.equal(h.clearCalls(), 0); assert.equal(h.removeCalls(), 0);
+});
+test('R5 实际模块路径缺失必须失败，不能退化为静态检查', () => {
+  for (const rel of ['pages/schedule-sandbox/schedule-sandbox.js', 'utils/schedule-sandbox-client.js',
+    'utils/sandbox-test-coordinator.js']) {
+    const missing = path.join(reg.ROOT, 'miniapp/miniprogram', rel);
+    assert.throws(() => loadActualPage({ readFileSync(p, ...args) {
+      if (samePath(p, missing)) { const e = new Error('synthetic missing actual path'); e.code = 'ENOENT'; throw e; }
+      return fs.readFileSync(p, ...args);
+    } }), e => e.code === 'ENOENT');
+  }
 });
