@@ -1,0 +1,34 @@
+{
+  "kind": "BOUNDED_LOCAL_ARCHITECTURE_OBSERVATION",
+  "observedAt": "2026-10-10T14:57:43.955Z",
+  "sources": {
+    "miniapp/miniprogram/pages/schedule/schedule.js": "745a47410212adf380f95964cb7c01582501b63169dbb2ca4736064887f1ddd0",
+    "miniapp/miniprogram/utils/schedule-client.js": "08487e194788750c47aca9a3afeb0639fced2a32df36c0303ed9e7d5dc880bd5",
+    "miniapp/cloudfunctions/memberAccess/service.js": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+    "miniapp/cloudfunctions/memberAccess/schedule-service.js": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+    "miniapp/miniprogram/config/schedule-entry-proof.js": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13",
+    "miniapp/miniprogram/config/schedule-sandbox-proof.js": "724bc3c16ca8d03b84d3d8498b06e011b2ad621599167fc78649b2b378c0cf33"
+  },
+  "sourceUnchanged": true,
+  "networkAttempts": 0,
+  "ordinaryPage": {
+    "samePageRetryKeepsRequestId": true,
+    "reopenedPageHasPending": false,
+    "reopenedSubmissionUsesDifferentId": true,
+    "syntheticWriteCalls": 3,
+    "storageWrites": 0,
+    "limitation": "只证明页面丢失未决状态并允许新编号发送；未模拟提交成功或证明云端重复记录。"
+  },
+  "listQuery": {
+    "matchedSyntheticRows": 250,
+    "requestedPageSize": 1,
+    "firstPageQueryCount": 3,
+    "secondPageQueryCount": 3,
+    "limitation": "真实服务+合成查询，不是平台耗时、费用或索引性能实测。"
+  },
+  "gates": { "oldEnabled": false, "sandboxEnabled": false },
+  "cloudExecuted": false,
+  "businessSourceModified": false,
+  "sdkExecuted": false,
+  "deploymentAuthorized": false
+}
