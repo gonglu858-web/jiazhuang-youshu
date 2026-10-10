@@ -23,16 +23,23 @@
  *  - 不存在 deploy / execute / login / upload / preview 等操作，**无 shell 拼接**。
  *  - 输出限定 `artifacts/schedule-sandbox/registration-full-<安全编号>/`，
  *    不得指向源目录、任何既有制品目录或其祖先；不得与输入登记制品重叠。
- *  - **本轮只接受 synthetic=true 的合成计划**，不接受真实执行批准；不同内容
- *    **拒绝覆盖**。缺文件、额外文件、空目录、路径逃逸、链接、伪造 manifest
+ *  - **两种本地制品分类**（`artifactKind`，仅为本地标签，不是权限凭据）：
+ *      · `synthetic`（默认）：只接受 synthetic=true 合成演练计划，沿用 `/1` 清单契约；
+ *      · `real-candidate`：必须**显式**选择，只接受严格 synthetic=false 的完整真实目标
+ *        计划，采用**独立** `/2` 清单契约，且 build/check/复用/续建一律按**当前时钟**
+ *        判定窗口有效性 —— 不用 generatedAt、文件时间或历史证据时间替代。
+ *    两种模式不能互相认领同一目录；不提供跳过检查、改目标或时钟覆盖的绕过开关。
+ *  - 不同内容**拒绝覆盖**；缺文件、额外文件、空目录、路径逃逸、链接、伪造 manifest
  *    一律在**任何写入之前**拒绝。**不递归删除**；写入期 I/O 失败保留半成品。
- *  - `deploymentAuthorized=false` / `cloudExecuted=false` / `uploaded=false`
- *    只是**记录**，**不是**安全授权句柄。
+ *  - `deploymentAuthorized=false` / `cloudExecuted=false` 只是**记录**，
+ *    **不是**安全授权句柄。真实候选清单同样不表示允许部署、本人已确认或管理员已初始化。
  *
  * 用法：
  *   node scripts/assemble-sandbox-registration.cjs --check --input <登记制品目录>
  *   node scripts/assemble-sandbox-registration.cjs --mode build --plan <plan.json> --input <登记制品目录>
  *   node scripts/assemble-sandbox-registration.cjs --check --input <目录> --target <组装目录>
+ *   node scripts/assemble-sandbox-registration.cjs --mode build --artifact-kind real-candidate \
+ *        --plan <真实计划.json> --input <登记制品目录>
  */
 'use strict';
 
@@ -55,8 +62,24 @@ const REVIEWED_SOURCE_VERSION = reg.REVIEWED_SOURCE_VERSION;
 const CLOSED_DIR = reg.CLOSED_DIR;
 const sha256Buffer = reg.sha256Buffer;
 
-/** 组装清单独立 schema（不复用登记 `/2`，也不复用 closed `/2`）。 */
+/**
+ * 组装清单 schema：合成沿用已验收的 /1；真实候选采用**独立** /2。
+ * 不原地改 /1 契约，历史合成包继续按 /1 检查与复用。
+ */
 const ASSEMBLY_MANIFEST_SCHEMA = 'sandbox-registration-full-assembly/1';
+const ASSEMBLY_MANIFEST_SCHEMA_REAL = 'sandbox-registration-full-assembly/2';
+
+/**
+ * 制品分类（本地标签，**不是**权限凭据）：
+ *  - synthetic：默认，只接受 synthetic=true 的合成演练计划；
+ *  - real-candidate：必须显式选择，只接受严格 synthetic=false 的完整真实目标计划。
+ * 枚举之外的取值、缺参数值、重复或相互矛盾的选项一律在写入前拒绝。
+ */
+const ARTIFACT_KINDS = Object.freeze(['synthetic', 'real-candidate']);
+const DEFAULT_ARTIFACT_KIND = 'synthetic';
+
+/** 离线夹具的核验性质标记：即使走 synthetic=false 分支也不构成真实执行包签发。 */
+const VERIFICATION_KIND = 'OFFLINE_CONTRACT_FIXTURE';
 
 /** 输出目录前缀与安全编号形态。 */
 const OUT_DIR_PREFIX = 'registration-full-';
@@ -116,6 +139,13 @@ const PINNED_APP_FILES = Object.freeze({
 const ERR = Object.freeze({
   PLAN_MISSING: 'ASM_PLAN_MISSING',
   PLAN_SYNTHETIC_ONLY: 'ASM_PLAN_SYNTHETIC_ONLY',
+  PLAN_SYNTHETIC_IN_REAL: 'ASM_PLAN_SYNTHETIC_IN_REAL',
+  ARTIFACT_KIND_UNKNOWN: 'ASM_ARTIFACT_KIND_UNKNOWN',
+  ARTIFACT_KIND_DUPLICATE: 'ASM_ARTIFACT_KIND_DUPLICATE',
+  ARTIFACT_KIND_MISSING_VALUE: 'ASM_ARTIFACT_KIND_MISSING_VALUE',
+  ARTIFACT_KIND_CONFLICT: 'ASM_ARTIFACT_KIND_CONFLICT',
+  PLAN_REQUIRED_FOR_REAL: 'ASM_PLAN_REQUIRED_FOR_REAL',
+  WINDOW_EXPIRED: 'ASM_WINDOW_EXPIRED',
   INPUT_MISSING: 'ASM_INPUT_MISSING',
   INPUT_INVALID: 'ASM_INPUT_INVALID',
   INPUT_OVERLAP: 'ASM_INPUT_OVERLAP',
@@ -577,9 +607,16 @@ function resolveInputDir(inputDir) {
   return resolved;
 }
 
-/** 登记制品 → 服务端八文件 + 两份前端覆盖（读取受审安全读点）。 */
-function readRegistrationInput(inputDir, plan) {
-  const checked = reg.checkRegistration({ outDir: inputDir, plan });
+/**
+ * 登记制品 → 服务端八文件 + 两份前端覆盖（读取受审安全读点）。
+ *
+ * 时钟：真实候选分支必须把**当前时钟**传给生成器，使已过期的登记输入在
+ * 第一次输出写入之前就被拒绝；合成模式不传，保持既有可复验行为。
+ */
+function readRegistrationInput(inputDir, plan, options = {}) {
+  const checkOptions = { outDir: inputDir, plan };
+  if (options.nowMs !== undefined) checkOptions.nowMs = options.nowMs;
+  const checked = reg.checkRegistration(checkOptions);
   if (!checked.ok) {
     const first = checked.problems && checked.problems[0];
     fail(ERR.INPUT_REJECTED, `登记制品校验未通过：${first ? first.code : 'unknown'} ${first ? first.detail : ''}`.slice(0, 220));
@@ -634,14 +671,60 @@ function readClosedInput() {
 }
 
 // ── 计划 ────────────────────────────────────────────────────────────────────
+/**
+ * 校验制品分类。未知取值、缺值、非字符串一律拒绝。
+ * `artifactKind` 只是本地制品分类，不是权限凭据，也不代表部署批准。
+ */
+function normalizeArtifactKind(value) {
+  if (value === undefined || value === null) return DEFAULT_ARTIFACT_KIND;
+  if (typeof value !== 'string' || value === '') {
+    fail(ERR.ARTIFACT_KIND_MISSING_VALUE, 'artifactKind 必须是非空字符串。');
+  }
+  if (!ARTIFACT_KINDS.includes(value)) {
+    fail(ERR.ARTIFACT_KIND_UNKNOWN, `artifactKind 仅允许 ${ARTIFACT_KINDS.join(' / ')}。`);
+  }
+  return value;
+}
+
+/**
+ * 按模式校验完整计划。**不放宽**生成器的任何契约：
+ * 仍调用真实 `reg.validatePlan`（固定目标、单一本人、来源版本、≤30 分钟窗口）。
+ *  - synthetic（默认）：只接受 synthetic=true，保留 ASM_PLAN_SYNTHETIC_ONLY 防线；
+ *  - real-candidate：只接受严格 synthetic=false，合成计划不得改标记后默许通过。
+ */
 function normalizeAssemblyPlan(plan, options = {}) {
   if (!isPlainObject(plan)) fail(ERR.PLAN_MISSING, '计划必须为对象。');
-  // 与生成器同一校验，并支持注入时钟以便离线复跑（真实写入阶段仍用真实时间）
+  const kind = normalizeArtifactKind(options.artifactKind);
+  // 与生成器同一校验，并支持注入时钟以便离线复跑（生产命令行取 Date.now()）
   const normalized = reg.validatePlan(plan, options.nowMs === undefined ? {} : { nowMs: options.nowMs });
-  if (normalized.synthetic !== true) {
-    fail(ERR.PLAN_SYNTHETIC_ONLY, '本轮组装器只接受 synthetic=true 的合成演练计划，不生成真实执行批准。');
+  if (kind === 'synthetic') {
+    if (normalized.synthetic !== true) {
+      fail(ERR.PLAN_SYNTHETIC_ONLY,
+        '默认合成模式只接受 synthetic=true 的合成演练计划；真实候选须显式选择 real-candidate 模式。');
+    }
+  } else if (normalized.synthetic !== false) {
+    fail(ERR.PLAN_SYNTHETIC_IN_REAL,
+      'real-candidate 模式只接受严格 synthetic=false 的完整计划，不接受合成计划。');
   }
-  return normalized;
+  return { kind, plan: normalized };
+}
+
+/**
+ * 当前时效复核（仅真实候选分支）。
+ *
+ * **不得**用 generatedAt、文件时间或历史证据时间替代当前时钟 —— 那样会让已过期
+ * 的候选包通过检查。真实候选的 build / check / 复用 / 续建一律按调用时刻判定：
+ * `expires <= now` 即失效。合成模式不启用本函数，保持既有可复验逻辑。
+ */
+function assertCandidateNotExpired(plan, nowMs, stage) {
+  if (!Number.isFinite(nowMs)) fail(ERR.WINDOW_EXPIRED, `${stage}：时钟无效。`);
+  const expires = Date.parse(plan.windowExpiresAt);
+  if (!Number.isFinite(expires)) fail(ERR.WINDOW_EXPIRED, `${stage}：窗口截止无效。`);
+  if (expires <= nowMs) {
+    fail(ERR.WINDOW_EXPIRED,
+      `${stage}：登记候选窗口已于 ${plan.windowExpiresAt} 截止（当前 ${new Date(nowMs).toISOString()}），不再有效。`);
+  }
+  return true;
 }
 
 // ── 项目文件集装配 ──────────────────────────────────────────────────────────
@@ -746,16 +829,27 @@ function assertProjectSemantics(files, variant) {
 }
 
 // ── 清单 ────────────────────────────────────────────────────────────────────
-function buildManifest(ctx, plan, projects, closure, delta, generatedAt) {
-  return {
-    schema: ASSEMBLY_MANIFEST_SCHEMA,
+/**
+ * 组装清单。合成沿用已验收的 /1 契约与字段；真实候选采用独立 /2 并显式记录
+ * `artifactKind=real-candidate`、`synthetic=false`。
+ *
+ * 两种模式的清单都**不包含**"允许部署""本人已确认""管理员已初始化"这类断言；
+ * `deploymentAuthorized/cloudExecuted/uploaded/previewed` 恒为 false。
+ * `verificationKind` 标明这是离线契约夹具核验，不是真实执行包签发。
+ */
+function buildManifest(ctx, plan, projects, closure, delta, generatedAt, kind = DEFAULT_ARTIFACT_KIND) {
+  const isReal = kind === 'real-candidate';
+  const base = {
+    schema: isReal ? ASSEMBLY_MANIFEST_SCHEMA_REAL : ASSEMBLY_MANIFEST_SCHEMA,
     generatedAt,
-    synthetic: true,
+    synthetic: isReal ? false : true,
     deploymentAuthorized: false,
     cloudExecuted: false,
     uploaded: false,
     previewed: false,
     networkAttempts: 0,
+    artifactKind: kind,
+    verificationKind: VERIFICATION_KIND,
     cloudFunctionName: CLOUD_FUNCTION_NAME,
     onlyPage: ONLY_PAGE,
     plan: { ...plan, allowedUserIds: Array.from(plan.allowedUserIds) },
@@ -819,7 +913,16 @@ function buildManifest(ctx, plan, projects, closure, delta, generatedAt) {
       'cloudfunctions/scheduleSandbox/index.js 与 gate.js：登记服务端为受控变换产物；其余六文件与关闭版逐字节相同。',
       '两份项目其余文件逐字节相同；app.json 两份完全相同（同一受控变换）。'
     ],
-    limitations: [
+    limitations: (isReal ? [
+      '真实候选模式：本地文件契约有效，**不是**部署授权、云端证明、本人身份复核或真实执行批准。',
+      '本清单不表示允许部署、本人已确认或管理员已初始化；检查通过仅说明本时点字节与计划一致且窗口未过期。',
+      '窗口过期只否定登记候选当前可用，**不代表关闭包失效**；关闭依据独立受审关闭制品与实际字节回读。',
+      '关闭包不靠重新开启登记窗口获得使用资格。',
+      'windowStartsAt 不是服务端的「未到时不可调用」守卫；启用时间须由未来部署流程控制，本轮未改 gate。',
+      '未安装 wx-server-sdk、无 node_modules；依赖安装与平台运行时留作后续具体执行包。',
+      '未部署、未预览、未上传、未联网、未取凭据、未本人登记、未初始化管理员。',
+      '首次尚未绑定账号的 identify 未知结果无持久防重：只证明不自动重发，必须停止并核对。'
+    ] : [
       '本地组装结果，不是部署授权、云端证明或真实执行批准。',
       '本轮只接受 synthetic=true 合成计划；合成包不得转为真实包或上传。',
       '未安装 wx-server-sdk、无 node_modules、依赖安装与平台运行时留作后续具体执行包。',
@@ -829,8 +932,9 @@ function buildManifest(ctx, plan, projects, closure, delta, generatedAt) {
       '首次尚未绑定账号的 identify 未知结果无持久防重：只证明不自动重发，必须停止并核对。',
       'WXML/WXSS 本机编译通过不等于完整微信构建、真机或平台通过。',
       '云函数目录名即函数名，部署时不得提交名为 package 的目录。'
-    ]
+    ])
   };
+  return base;
 }
 
 function computeDelta(projects) {
@@ -864,8 +968,8 @@ function computeDelta(projects) {
 
 // ── 期望内容（check 与 build 共用，从受审来源与完整输入重算） ────────────────
 function computeExpected(plan, inputDir, options = {}) {
-  const normalized = normalizeAssemblyPlan(plan, options);
-  const registration = readRegistrationInput(inputDir, normalized);
+  const { kind, plan: normalized } = normalizeAssemblyPlan(plan, options);
+  const registration = readRegistrationInput(inputDir, normalized, { nowMs: options.nowMs });
   const closed = readClosedInput();
   const appJson = buildAppJson(readPinnedSource('miniapp/miniprogram/app.json'));
   const projectConfig = buildProjectConfig(readPinnedSource('miniapp/project.config.json'));
@@ -892,8 +996,8 @@ function computeExpected(plan, inputDir, options = {}) {
   for (const [root, files] of [[REGISTRATION_ROOT, projects.registration], [CLOSED_ROOT, projects.closed]]) {
     for (const [rel, buf] of files) expected.set(`${root}/${rel}`, buf);
   }
-  const manifestAt = at => buildManifest(ctx, normalized, projects, closure, delta, at);
-  return { normalized, ctx, projects, closure, delta, expected, manifestAt };
+  const manifestAt = at => buildManifest(ctx, normalized, projects, closure, delta, at, kind);
+  return { kind, normalized, ctx, projects, closure, delta, expected, manifestAt };
 }
 
 function verifyExisting(existing, bundle, complete) {
@@ -910,6 +1014,10 @@ function verifyExisting(existing, bundle, complete) {
   }
 }
 
+/**
+ * 清单校验：按**本次调用的模式**校验，不接受磁盘 manifest 自报模式。
+ * 合成模式只认 /1；真实候选只认 /2。模式/schema/计划不一致一律拒绝。
+ */
 function validateManifest(existing, bundle) {
   let m;
   try { m = JSON.parse(existing.get('manifest.json').toString('utf8')); }
@@ -920,8 +1028,23 @@ function validateManifest(existing, bundle) {
     fail(ERR.MANIFEST_INVALID, '生成时间无效。');
   }
   if (m.deploymentAuthorized !== false || m.cloudExecuted !== false || m.uploaded !== false
-    || m.previewed !== false || m.synthetic !== true || m.networkAttempts !== 0) {
-    fail(ERR.MANIFEST_INVALID, '清单的未部署/合成标记被改动。');
+    || m.previewed !== false || m.networkAttempts !== 0) {
+    fail(ERR.MANIFEST_INVALID, '清单的未部署标记被改动。');
+  }
+  // 模式与 schema 必须与本次调用一致：候选与合成不能互相认领同一目录
+  const isReal = bundle.kind === 'real-candidate';
+  const expectedSchema = isReal ? ASSEMBLY_MANIFEST_SCHEMA_REAL : ASSEMBLY_MANIFEST_SCHEMA;
+  if (m.schema !== expectedSchema) {
+    fail(ERR.ARTIFACT_KIND_CONFLICT,
+      `清单 schema 为 ${m.schema}，与本次 ${bundle.kind} 模式要求的 ${expectedSchema} 不符。`);
+  }
+  const declaredKind = isReal ? 'real-candidate' : 'synthetic';
+  if (m.artifactKind !== declaredKind) {
+    fail(ERR.ARTIFACT_KIND_CONFLICT,
+      `清单 artifactKind 为 ${m.artifactKind}，与本次 ${bundle.kind} 模式不符。`);
+  }
+  if (m.synthetic !== (isReal ? false : true)) {
+    fail(ERR.MANIFEST_INVALID, '清单的合成标记与模式不符。');
   }
   if (canonical(m) !== canonical(bundle.manifestAt(m.generatedAt))) {
     fail(ERR.MANIFEST_MISMATCH, 'manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。');
@@ -931,9 +1054,28 @@ function validateManifest(existing, bundle) {
 }
 
 // ── 对外 API ────────────────────────────────────────────────────────────────
-/** 本地检查：零写入、零云调用、零网络。从受审来源与完整输入重算内容。 */
+/**
+ * 本地检查：零写入、零云调用、零网络。从受审来源与完整输入重算内容。
+ *
+ * 时钟口径：
+ *  - 合成：沿用 manifest.generatedAt（仅用于可复验的历史合成包），可被显式覆盖；
+ *  - 真实候选：**必须**用当前时钟，且**必须**由调用方提供外部完整 plan
+ *    （不只取 manifest.plan 自证）。生成后回拨 generatedAt 不能救活过期包。
+ */
 function checkAssembly(options = {}) {
   const netState = options.networkGuard === undefined ? null : options.networkGuard;
+  const kind = (() => {
+    try { return normalizeArtifactKind(options.artifactKind); }
+    catch (error) {
+      return {
+        ok: false, mode: 'check', wroteFiles: false, cloudCalled: false,
+        networkAttempts: netState ? netState.attempts.length : 0,
+        problems: [{ code: error.code || ERR.FAILED, detail: String(error.detail || error.message).slice(0, 220) }]
+      };
+    }
+  })();
+  if (typeof kind === 'object') return kind;
+  const isReal = kind === 'real-candidate';
   let dir;
   try {
     const inputDir = resolveInputDir(options.inputDir);
@@ -944,17 +1086,29 @@ function checkAssembly(options = {}) {
     let m;
     try { m = JSON.parse(existing.get('manifest.json').toString('utf8')); }
     catch (_) { fail(ERR.MANIFEST_INVALID, 'manifest 不是合法 JSON。'); }
-    const plan = options.plan || (isPlainObject(m.plan) ? { ...m.plan } : null);
+    // 候选检查必须提供外部完整计划；不能由磁盘 manifest 自报模式或计划开启
+    let plan = options.plan || null;
+    if (isReal && !isPlainObject(plan)) {
+      fail(ERR.PLAN_REQUIRED_FOR_REAL, '真实候选检查必须由调用方提供外部完整 plan，不接受仅凭 manifest.plan 自证。');
+    }
+    if (!plan) plan = isPlainObject(m.plan) ? { ...m.plan } : null;
     if (!plan) fail(ERR.MANIFEST_INVALID, '无法确定完整计划。');
-    // 合成计划不受窗口过期影响；此处仍显式沿用清单生成时刻作为检查基准，
-    // 使 check 在任何机器上都可复现同一结论。
-    const checkNowMs = options.nowMs === undefined
-      ? Date.parse(m.generatedAt)
-      : options.nowMs;
-    const bundle = computeExpected(plan, inputDir, { nowMs: checkNowMs });
+
+    // 时钟：候选用当前时钟；合成沿用生成时刻以保持历史可复验
+    const nowMs = options.nowMs === undefined ? Date.now() : options.nowMs;
+    const checkNowMs = isReal ? nowMs
+      : (options.nowMs === undefined ? Date.parse(m.generatedAt) : options.nowMs);
+
+    const bundle = computeExpected(plan, inputDir, { nowMs: checkNowMs, artifactKind: kind });
+    // 第一次复核：来源检查与整树预检之后
+    if (isReal) assertCandidateNotExpired(bundle.normalized, nowMs, '检查（预检后）');
     validateManifest(existing, bundle);
+    // 返回成功前再复核一次
+    if (isReal) assertCandidateNotExpired(bundle.normalized, nowMs, '检查（返回前）');
     return {
-      ok: true, mode: 'check', dir, inputDir,
+      ok: true, mode: 'check', dir, inputDir, artifactKind: kind,
+      schema: bundle.kind === 'real-candidate' ? ASSEMBLY_MANIFEST_SCHEMA_REAL : ASSEMBLY_MANIFEST_SCHEMA,
+      checkedAt: new Date(nowMs).toISOString(),
       projects: {
         registration: { files: bundle.projects.registration.size, root: REGISTRATION_ROOT },
         closed: { files: bundle.projects.closed.size, root: CLOSED_ROOT }
@@ -966,20 +1120,40 @@ function checkAssembly(options = {}) {
     };
   } catch (error) {
     return {
-      ok: false, mode: 'check', dir, wroteFiles: false, cloudCalled: false,
+      ok: false, mode: 'check', dir, artifactKind: kind, wroteFiles: false, cloudCalled: false,
       networkAttempts: netState ? netState.attempts.length : 0,
       problems: [{ code: error.code || ERR.FAILED, detail: String(error.detail || error.message).slice(0, 220) }]
     };
   }
 }
 
-/** 本地组装：全部可预知失败发生在任何写入之前。 */
+/**
+ * 本地组装：全部可预知失败发生在任何写入之前。
+ *
+ * 真实候选的时效复核共三次：
+ *  1. 来源检查与整树预检之后、**第一次写输出之前**；
+ *  2. 写入完成之后（此时过期则保留已写产物，如实报告，不删目录、不伪称零写）；
+ *  3. 返回成功之前。
+ */
 function buildAssembly(options = {}) {
   const now = options.nowMs === undefined ? Date.now() : options.nowMs;
   const netState = options.networkGuard === undefined ? null : options.networkGuard;
+  let kind;
+  try { kind = normalizeArtifactKind(options.artifactKind); }
+  catch (error) {
+    return {
+      ok: false, mode: 'build', wroteFiles: false, cloudCalled: false,
+      networkAttempts: netState ? netState.attempts.length : 0,
+      problems: [{ code: error.code || ERR.FAILED, detail: String(error.detail || error.message).slice(0, 220) }]
+    };
+  }
+  const isReal = kind === 'real-candidate';
   let dir;
   try {
     const inputDir = resolveInputDir(options.inputDir);
+    if (isReal && !isPlainObject(options.plan)) {
+      fail(ERR.PLAN_REQUIRED_FOR_REAL, '真实候选组装必须由调用方提供外部完整 plan。');
+    }
     // 输出编号必须**唯一**：同一轮次重复组装不应命中历史目录。
     // 轮次只作为可读前缀，真正区分靠调用方显式 outId 或随机后缀。
     const id = (options.outId === undefined || options.outId === null)
@@ -987,15 +1161,18 @@ function buildAssembly(options = {}) {
       : options.outId;
     dir = resolveOutDir(id);
     assertNoOverlap(dir, inputDir);
-    const bundle = computeExpected(options.plan, inputDir, { nowMs: now });
+    const bundle = computeExpected(options.plan, inputDir, { nowMs: now, artifactKind: kind });
     const existing = inspectTree(dir, ASSEMBLY_FILES);
+    // 第一次复核：预检后、写入前
+    if (isReal) assertCandidateNotExpired(bundle.normalized, now, '组装（写入前）');
 
     if (existing.has('manifest.json')) {
       let m;
       try { m = validateManifest(existing, bundle); }
       catch (error) { fail(ERR.CONFLICT, '完整计划或字节不符，拒绝覆盖：' + error.message); }
+      if (isReal) assertCandidateNotExpired(bundle.normalized, now, '复用（返回前）');
       return {
-        ok: true, mode: 'build', dir, inputDir, reused: true, manifest: m,
+        ok: true, mode: 'build', dir, inputDir, reused: true, manifest: m, artifactKind: kind,
         projectDelta: bundle.delta.map(d => d.rel), dependencyClosure: bundle.closure,
         problems: [], wroteFiles: false, cloudCalled: false,
         networkAttempts: netState ? netState.attempts.length : 0
@@ -1004,6 +1181,7 @@ function buildAssembly(options = {}) {
 
     // 无 manifest 的合法半成品：只补缺项
     verifyExisting(existing, bundle, false);
+    if (isReal) assertCandidateNotExpired(bundle.normalized, now, '续建（写入前）');
 
     const written = [];
     const missing = new Map();
@@ -1027,15 +1205,33 @@ function buildAssembly(options = {}) {
       written.push('manifest.json');
     } catch (error) {
       return {
-        ok: false, mode: 'build', dir, inputDir, incomplete: true, written,
+        ok: false, mode: 'build', dir, inputDir, incomplete: true, written, artifactKind: kind,
         problems: [{ code: ERR.WRITE_FAILED, detail: '写入期 I/O 失败，半成品保留供审查，未递归清理。' }],
         wroteFiles: written.length > 0, cloudCalled: false,
         networkAttempts: netState ? netState.attempts.length : 0
       };
     }
 
+    // 第二次复核：写入后若已过期，保留产物并如实报告，不删目录、不伪称零写
+    if (isReal) {
+      try {
+        assertCandidateNotExpired(bundle.normalized, now, '组装（写后）');
+      } catch (error) {
+        return {
+          ok: false, mode: 'build', dir, inputDir, artifactKind: kind, expiredAfterWrite: true,
+          written, wroteFiles: true, cloudCalled: false,
+          networkAttempts: netState ? netState.attempts.length : 0,
+          problems: [{
+            code: error.code || ERR.WINDOW_EXPIRED,
+            detail: String(error.detail || error.message).slice(0, 220)
+              + ' 产物已写入并保留（未删除、未清理），不可作为当前有效登记候选。'
+          }]
+        };
+      }
+    }
+
     return {
-      ok: true, mode: 'build', dir, inputDir, reused: false,
+      ok: true, mode: 'build', dir, inputDir, reused: false, artifactKind: kind,
       manifest: bundle.manifestAt(new Date(now).toISOString()),
       written, reusedFiles: Array.from(existing.keys()).sort(),
       projectDelta: bundle.delta.map(d => d.rel), dependencyClosure: bundle.closure,
@@ -1052,8 +1248,15 @@ function buildAssembly(options = {}) {
 }
 
 // ── CLI（无 shell 拼接、无 deploy/execute/login/upload/preview） ────────────
+/**
+ * 参数解析。默认 synthetic；候选必须显式 `--artifact-kind real-candidate` 且带 `--plan`。
+ * 不提供 --force / 跳过检查 / 改目标 / 时钟覆盖等绕过开关。
+ */
 function parseArgs(argv) {
-  const out = { mode: 'check', planPath: null, input: null, target: null, outId: null };
+  const out = {
+    mode: 'check', planPath: null, input: null, target: null, outId: null,
+    artifactKind: DEFAULT_ARTIFACT_KIND, artifactKindSeen: false
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--check') out.mode = 'check';
@@ -1062,12 +1265,29 @@ function parseArgs(argv) {
     else if (a === '--input') { out.input = argv[i + 1]; i++; }
     else if (a === '--target') { out.target = argv[i + 1]; i++; }
     else if (a === '--out-id') { out.outId = argv[i + 1]; i++; }
+    else if (a === '--artifact-kind') {
+      // 重复、缺值与未知取值一律在写入前拒绝；不接受相互矛盾或隐式开启
+      if (out.artifactKindSeen) fail(ERR.ARTIFACT_KIND_DUPLICATE, '--artifact-kind 不得重复指定。');
+      const value = argv[i + 1];
+      if (value === undefined || value === '' || value.startsWith('--')) {
+        fail(ERR.ARTIFACT_KIND_MISSING_VALUE, '--artifact-kind 必须紧跟取值。');
+      }
+      out.artifactKind = value;
+      out.artifactKindSeen = true;
+      i++;
+    }
     else fail(ERR.PLAN_MISSING, '未知参数：' + a);
   }
   if (out.mode !== 'check' && out.mode !== 'build') fail(ERR.PLAN_MISSING, 'mode 仅允许 check 或 build。');
+  // 显式校验模式取值；默认 synthetic，候选必须显式选择
+  out.artifactKind = normalizeArtifactKind(out.artifactKind);
+  if (out.artifactKind === 'real-candidate' && !out.planPath) {
+    // 候选 check/build 都必须提供外部完整计划，不允许只靠 manifest 自证
+    fail(ERR.PLAN_REQUIRED_FOR_REAL, 'real-candidate 模式必须提供 --plan <plan.json>。');
+  }
   for (const a of argv) {
-    if (/^--(deploy|execute|login|upload|preview|install|init)$/.test(a)) {
-      fail(ERR.PLAN_MISSING, '本工具不含部署/执行/登录/上传/预览/安装/初始化操作。');
+    if (/^--(deploy|execute|login|upload|preview|install|init|force|skip-verify|override-clock|set-time)$/.test(a)) {
+      fail(ERR.PLAN_MISSING, '本工具不含部署/执行/登录/上传/预览/安装/初始化或跳过检查/时钟覆盖操作。');
     }
   }
   return out;
@@ -1103,7 +1323,10 @@ function main(argv) {
   }
   let result;
   if (args.mode === 'check') {
-    result = checkAssembly({ inputDir: args.input, outDir: args.target, plan, networkGuard: netState });
+    result = checkAssembly({
+      inputDir: args.input, outDir: args.target, plan,
+      artifactKind: args.artifactKind, networkGuard: netState
+    });
   } else {
     if (!plan) {
       restoreNetworkGuard(netState);
@@ -1114,7 +1337,11 @@ function main(argv) {
       }, null, 2) + '\n');
       return 1;
     }
-    result = buildAssembly({ inputDir: args.input, outDir: null, outId: args.outId, plan, nowMs: Date.now(), networkGuard: netState });
+    // 候选分支使用当前时钟（Date.now()），不开放 CLI 时钟覆盖
+    result = buildAssembly({
+      inputDir: args.input, outDir: null, outId: args.outId, plan,
+      artifactKind: args.artifactKind, nowMs: Date.now(), networkGuard: netState
+    });
   }
   restoreNetworkGuard(netState);
   process.stdout.write(JSON.stringify(result, null, 2) + '\n');
@@ -1123,7 +1350,8 @@ function main(argv) {
 
 module.exports = Object.freeze({
   ROOT, SOURCE_DIR, ARTIFACTS_ROOT, MINIPROGRAM_SRC, PACKAGE_FILES, FRONTEND_FILES,
-  REVIEWED_SOURCE_VERSION, CLOSED_DIR, ASSEMBLY_MANIFEST_SCHEMA, OUT_DIR_PREFIX,
+  REVIEWED_SOURCE_VERSION, CLOSED_DIR, ASSEMBLY_MANIFEST_SCHEMA, ASSEMBLY_MANIFEST_SCHEMA_REAL,
+  ARTIFACT_KINDS, DEFAULT_ARTIFACT_KIND, VERIFICATION_KIND, OUT_DIR_PREFIX,
   CLOUD_FUNCTION_NAME, ONLY_PAGE, SOURCE_PAGES, FIXED_APP_ID, FIXED_COMPILE_TYPE,
   FIXED_MINIPROGRAM_ROOT, FIXED_CLOUDFUNCTION_ROOT, PROJECT_SETTING_KEYS, PINNED_APP_FILES,
   PROJECT_FRONTEND_FILES, PROJECT_CLOUD_FILES, PROJECT_FILES, ASSEMBLY_FILES,
@@ -1131,6 +1359,7 @@ module.exports = Object.freeze({
   installNetworkGuard, restoreNetworkGuard, readPinnedSource, buildAppJson, buildProjectConfig,
   scanDependencyClosure, inspectTree, resolveOutDir, checkedTarget, assertNoOverlap,
   resolveInputDir, readRegistrationInput, readClosedInput, normalizeAssemblyPlan,
+  normalizeArtifactKind, assertCandidateNotExpired,
   buildProjectFiles, assertProjectSemantics, computeDelta, computeExpected, validateManifest,
   buildManifest, checkAssembly, buildAssembly, parseArgs, main, canonical, sha256Buffer, safeOutId, uniqueOutId
 });

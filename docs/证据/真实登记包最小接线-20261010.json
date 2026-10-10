@@ -1,0 +1,720 @@
+{
+  "startedAt": "2026-10-10T12:45:37.629Z",
+  "baselineCommit": "b274da4",
+  "nature": {
+    "localWiringOnly": true,
+    "producesRealExecutionPackage": false,
+    "deploymentAuthorized": false,
+    "verificationKind": "OFFLINE_CONTRACT_FIXTURE",
+    "note": "synthetic=false 是被测计划契约；时钟、wx 与存储仍为受控合成，候选清单不是部署授权或批准签发。"
+  },
+  "controlledClock": {
+    "candidateNow": "2026-03-01T12:00:00.000Z",
+    "candidateWindow": [
+      "2026-03-01T12:00:00.000Z",
+      "2026-03-01T12:20:00.000Z"
+    ],
+    "syntheticNow": "2026-01-01T00:05:00.000Z",
+    "syntheticWindow": [
+      "2026-01-01T00:00:00.000Z",
+      "2026-01-01T00:20:00.000Z"
+    ],
+    "note": "受控历史时钟仅用于离线夹具复跑；不代表实际登记轮次或真实窗口。"
+  },
+  "groups": [
+    {
+      "group": "1-模式分离与默认合成防线",
+      "total": 19,
+      "passed": 19,
+      "checks": [
+        {
+          "label": "候选与合成使用独立 schema 常量",
+          "ok": true,
+          "detail": "sandbox-registration-full-assembly/1 vs sandbox-registration-full-assembly/2"
+        },
+        {
+          "label": "artifactKind 枚举恰为 synthetic / real-candidate",
+          "ok": true,
+          "detail": "[\"synthetic\",\"real-candidate\"]"
+        },
+        {
+          "label": "默认模式为 synthetic",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "ASM_PLAN_SYNTHETIC_ONLY 防线仍存在",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "默认模式拒绝真实计划",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_PLAN_SYNTHETIC_ONLY\",\"detail\":\"默认合成模式只接受 synthetic=true 的合成演练计划；真实候选须显式选择 real-candidate 模式。\"}]"
+        },
+        {
+          "label": "默认模式拒绝时零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选模式拒绝合成计划",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_PLAN_SYNTHETIC_IN_REAL\",\"detail\":\"real-candidate 模式只接受严格 synthetic=false 的完整计划，不接受合成计划。\"}]"
+        },
+        {
+          "label": "候选拒绝合成时零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "未知/非字符串模式值一律拒绝",
+          "ok": true,
+          "detail": "[\"ASM_ARTIFACT_KIND_UNKNOWN\",\"ASM_ARTIFACT_KIND_UNKNOWN\",\"ASM_ARTIFACT_KIND_UNKNOWN\",\"ASM_ARTIFACT_KIND_MISSING_VALUE\",\"ASM_ARTIFACT_KIND_MISSING_VALUE\",\"ASM_ARTIFACT_KIND_MISSING_VALUE\",\"ASM_ARTIFACT_KIND_MISSING_VALUE\"]"
+        },
+        {
+          "label": "未指定时回落默认 synthetic",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "null 视为未指定并回落默认",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "合法模式值原样返回",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "CLI 拒绝 --artifact-kind real-candidate --artifact-kind synthetic",
+          "ok": true,
+          "detail": "实际=ASM_ARTIFACT_KIND_DUPLICATE"
+        },
+        {
+          "label": "CLI 拒绝 --artifact-kind",
+          "ok": true,
+          "detail": "实际=ASM_ARTIFACT_KIND_MISSING_VALUE"
+        },
+        {
+          "label": "CLI 拒绝 --artifact-kind --plan",
+          "ok": true,
+          "detail": "实际=ASM_ARTIFACT_KIND_MISSING_VALUE"
+        },
+        {
+          "label": "CLI 拒绝 --artifact-kind nope",
+          "ok": true,
+          "detail": "实际=ASM_ARTIFACT_KIND_UNKNOWN"
+        },
+        {
+          "label": "CLI 拒绝 --artifact-kind real-candidate",
+          "ok": true,
+          "detail": "实际=ASM_PLAN_REQUIRED_FOR_REAL"
+        },
+        {
+          "label": "CLI 默认 artifactKind=synthetic",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "不提供绕过检查/时钟覆盖开关",
+          "ok": true,
+          "detail": "rejected=4"
+        }
+      ]
+    },
+    {
+      "group": "2-候选完整正向与来源字节",
+      "total": 23,
+      "passed": 23,
+      "checks": [
+        {
+          "label": "总文件数 49",
+          "ok": true,
+          "detail": "49"
+        },
+        {
+          "label": "登记项目 24 文件",
+          "ok": true,
+          "detail": "24"
+        },
+        {
+          "label": "登记项目唯一页面入口",
+          "ok": true,
+          "detail": "[\"pages/schedule-sandbox/schedule-sandbox\"]"
+        },
+        {
+          "label": "登记项目固定 AppID/双根",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "登记项目云函数目录名为 scheduleSandbox",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "登记项目不含 access/旧业务页面",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭项目 24 文件",
+          "ok": true,
+          "detail": "24"
+        },
+        {
+          "label": "关闭项目唯一页面入口",
+          "ok": true,
+          "detail": "[\"pages/schedule-sandbox/schedule-sandbox\"]"
+        },
+        {
+          "label": "关闭项目固定 AppID/双根",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭项目云函数目录名为 scheduleSandbox",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭项目不含 access/旧业务页面",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "服务端八文件各与正确输入逐字节匹配",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭包来自受审校验且为关闭态",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "前后端差异恰为三类文件",
+          "ok": true,
+          "detail": "[\"miniprogram/config/schedule-sandbox-proof.js\",\"cloudfunctions/scheduleSandbox/gate.js\",\"cloudfunctions/scheduleSandbox/index.js\"]"
+        },
+        {
+          "label": "前端覆盖：登记 enabled=true / 关闭 enabled=false",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "旧前端驱动开关保持关闭",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选 schema 为独立 /2",
+          "ok": true,
+          "detail": "sandbox-registration-full-assembly/2"
+        },
+        {
+          "label": "候选 artifactKind=real-candidate 且 synthetic=false",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选标注离线契约核验",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选明确未获部署授权",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选限制声明含否定式授权表述",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选限制声明写明过期不影响关闭包",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选限制声明写明 windowStartsAt 非服务端守卫",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "group": "3-反例零写快照",
+      "total": 17,
+      "passed": 17,
+      "checks": [
+        {
+          "label": "非法计划[错账号] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_USER_INVALID\",\"detail\":\"真实制品仅允许固定本人。\"}]"
+        },
+        {
+          "label": "非法计划[多账号] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_USER_NOT_UNIQUE\",\"detail\":\"仅允许一个用户。\"}]"
+        },
+        {
+          "label": "非法计划[错环境] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_TARGET_MISMATCH\",\"detail\":\"envId\"}]"
+        },
+        {
+          "label": "非法计划[错 AppID] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_TARGET_MISMATCH\",\"detail\":\"appId\"}]"
+        },
+        {
+          "label": "非法计划[错地域] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_TARGET_MISMATCH\",\"detail\":\"region\"}]"
+        },
+        {
+          "label": "非法计划[错函数名] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_TARGET_MISMATCH\",\"detail\":\"functionName\"}]"
+        },
+        {
+          "label": "非法计划[轮次占位符] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_PLACEHOLDER\",\"detail\":\"roundId\"}]"
+        },
+        {
+          "label": "非法计划[来源漂移] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_SOURCE_DRIFT\",\"detail\":\"来源必须是受审 be413a0。\"}]"
+        },
+        {
+          "label": "非法计划[窗口超 30 分钟] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_TOO_LONG\",\"detail\":\"窗口超过 30 分钟。\"}]"
+        },
+        {
+          "label": "非法计划[窗口倒置] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_INVALID\",\"detail\":\"窗口无效。\"}]"
+        },
+        {
+          "label": "非法计划[synthetic 非布尔] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_FIELD_MISSING\",\"detail\":\"synthetic 必须为布尔值。\"}]"
+        },
+        {
+          "label": "非法计划[多余计划字段] 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_FIELD_UNKNOWN\",\"detail\":\"approved\"}]"
+        },
+        {
+          "label": "输入漂移拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_INPUT_REJECTED\",\"detail\":\"登记制品校验未通过：REG_MANIFEST_MISMATCH REG_MANIFEST_MISMATCH: package/gate.js 字节不符。\"}]"
+        },
+        {
+          "label": "无清单冲突字节拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ARTIFACT_CONFLICT\",\"detail\":\"registration-project/miniprogram/app.wxss 已存在且字节不符，拒绝覆盖。\"}]"
+        },
+        {
+          "label": "额外空目录拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_EXTRA_ENTRY\",\"detail\":\"目录不在允许清单（含空目录）：unexpected-empty\"}]"
+        },
+        {
+          "label": "真实 junction 拒绝且零写",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ENTRY_SYMLINK\",\"detail\":\"registration-project\"}]"
+        },
+        {
+          "label": "junction 目标 sentinel 未被改动",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "group": "4-当前时钟时效与过期拒绝",
+      "total": 11,
+      "passed": 11,
+      "checks": [
+        {
+          "label": "过期复用拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_EXPIRED\",\"detail\":\"真实窗口已过期。\"}]"
+        },
+        {
+          "label": "过期复用零写且快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "过期 check 拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_EXPIRED\",\"detail\":\"真实窗口已过期。\"}]"
+        },
+        {
+          "label": "过期 check 零写且快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "篡改 generatedAt 不能让过期包通过",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_EXPIRED\",\"detail\":\"真实窗口已过期。\"}]"
+        },
+        {
+          "label": "篡改 generatedAt 的检查零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "未过期时同一目录复用成功且零写",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "候选 check 缺外部 plan 拒绝",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_PLAN_REQUIRED_FOR_REAL\",\"detail\":\"真实候选检查必须由调用方提供外部完整 plan，不接受仅凭 manifest.plan 自证。\"}]"
+        },
+        {
+          "label": "缺外部 plan 零写且快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "过期续建拒绝且不补写",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_EXPIRED\",\"detail\":\"真实窗口已过期。\"}]"
+        },
+        {
+          "label": "未过期时同一半成品可合法续建且只补缺项",
+          "ok": true,
+          "detail": "[\"registration-project/miniprogram/app.wxss\",\"manifest.json\"]"
+        }
+      ]
+    },
+    {
+      "group": "5-篡改拒绝、复用与 /1 兼容",
+      "total": 17,
+      "passed": 17,
+      "checks": [
+        {
+          "label": "候选拒绝[改成 /1 合成 schema]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ARTIFACT_KIND_CONFLICT\",\"detail\":\"清单 schema 为 sandbox-registration-full-assembly/1，与本次 real-candidate 模式要求的 sandbox-registration-full-assembly/2 不符。\"}]"
+        },
+        {
+          "label": "候选拒绝[改 artifactKind]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_ARTIFACT_KIND_CONFLICT\",\"detail\":\"清单 artifactKind 为 synthetic，与本次 real-candidate 模式不符。\"}]"
+        },
+        {
+          "label": "候选拒绝[改 synthetic 标记]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_INVALID\",\"detail\":\"清单的合成标记与模式不符。\"}]"
+        },
+        {
+          "label": "候选拒绝[部署标记改真]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_INVALID\",\"detail\":\"清单的未部署标记被改动。\"}]"
+        },
+        {
+          "label": "候选拒绝[云执行标记改真]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_INVALID\",\"detail\":\"清单的未部署标记被改动。\"}]"
+        },
+        {
+          "label": "候选拒绝[上传标记改真]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_INVALID\",\"detail\":\"清单的未部署标记被改动。\"}]"
+        },
+        {
+          "label": "候选拒绝[换计划轮次]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_MISMATCH\",\"detail\":\"manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。\"}]"
+        },
+        {
+          "label": "候选拒绝[换计划用户]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_MISMATCH\",\"detail\":\"manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。\"}]"
+        },
+        {
+          "label": "候选拒绝[删除限制声明]",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_MISMATCH\",\"detail\":\"manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。\"}]"
+        },
+        {
+          "label": "候选拒绝改字节并自报新哈希",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_MANIFEST_MISMATCH\",\"detail\":\"manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。\"}]"
+        },
+        {
+          "label": "还原后候选检查通过",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "候选目录不被合成模式认领",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_PLAN_SYNTHETIC_ONLY\",\"detail\":\"默认合成模式只接受 synthetic=true 的合成演练计划；真实候选须显式选择 real-candidate 模式。\"}]"
+        },
+        {
+          "label": "合成目录不被候选模式认领",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_PLAN_SYNTHETIC_IN_REAL\",\"detail\":\"real-candidate 模式只接受严格 synthetic=false 的完整计划，不接受合成计划。\"}]"
+        },
+        {
+          "label": "合成包仍为 /1 且 artifactKind=synthetic",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "/1 合成包检查仍通过",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "/1 合成包复用成功且零写",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "/1 manifest 字节未被重写",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "group": "6-关闭包独立于登记窗口",
+      "total": 6,
+      "passed": 6,
+      "checks": [
+        {
+          "label": "关闭制品独立校验通过",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭制品为关闭态",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭制品八文件齐全",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "关闭制品 manifest 字节与受审哈希一致",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "登记候选此时确已过期",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "登记过期不影响关闭制品独立校验",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "group": "7-实际 App/Page/client 合成链（非真实 SDK）",
+      "total": 17,
+      "passed": 17,
+      "checks": [
+        {
+          "label": "候选登记版 App 初始化固定云环境",
+          "ok": true,
+          "detail": "{\"env\":\"cloud1-d8gcq5ag39d847723\",\"traceUser\":false}"
+        },
+        {
+          "label": "候选登记版初始化无错误",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选登记版生命周期零业务发送",
+          "ok": true,
+          "detail": "calls=0"
+        },
+        {
+          "label": "候选登记版生命周期不清缓存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选登记版主动 identify 恰好一次",
+          "ok": true,
+          "detail": "calls=1"
+        },
+        {
+          "label": "候选登记版 identify 固定函数与环境",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选登记版 identify 不带 projectId",
+          "ok": true,
+          "detail": "{\"action\":\"identify\",\"requestId\":\"sbx-1791636363924-7dw0v1ks\"}"
+        },
+        {
+          "label": "候选登记版页面仍保留动作选择器（单页≠单按钮）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "实际加载 App/Page/client/协调器/两份配置",
+          "ok": true,
+          "detail": "app.js,config/cloud.js,pages/schedule-sandbox/schedule-sandbox.js,utils/schedule-sandbox-client.js,config/schedule-sandbox-proof.js,utils/env-gate.js,utils/sandbox-test-coordinator.js,config/sandbox-test-driver-proof.js,utils/sandbox-test-driver.js"
+        },
+        {
+          "label": "候选关闭版入口拒绝",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "候选关闭版零业务发送",
+          "ok": true,
+          "detail": "calls=0"
+        },
+        {
+          "label": "候选关闭版不清缓存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "首次未知 identify 只发一次",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "首次未知给出停止/核对提示",
+          "ok": true,
+          "detail": "结果未知。该操作不改变项目业务状态，可安全重试。"
+        },
+        {
+          "label": "首次未知不自动重发",
+          "ok": true,
+          "detail": "calls=1"
+        },
+        {
+          "label": "首次未知不清缓存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "错 AppID 零发送",
+          "ok": true,
+          "detail": "calls=0"
+        }
+      ]
+    }
+  ],
+  "protectedBaseline": {
+    "commit": "b274da4",
+    "commitExists": true,
+    "gitExecutable": "C:/Program Files/Git/cmd/git.exe",
+    "trackedFiles": 888,
+    "trackedFilesAvailable": true,
+    "changedByThisRun": [],
+    "missingAfter": [],
+    "addedByThisRun": [],
+    "note": "接手时全部已跟踪文件运行前后应字节不变；提交范围另由 git diff 核对，两者不混称。"
+  },
+  "networkGuard": {
+    "installedPoints": [
+      "http.request",
+      "https.request",
+      "net.connect",
+      "net.createConnection",
+      "dns.lookup",
+      "dns.resolve"
+    ],
+    "scope": "本进程内 Node 模块拦截点；不是系统级网络审计，也不覆盖原生编译器内部调用。",
+    "sensitivityCheck": {
+      "httpsRequestBlocked": true,
+      "dnsLookupBlocked": true,
+      "netConnectBlocked": true,
+      "attemptsAfterProbe": 3,
+      "note": "探针刻意触发拦截以证明计数非硬写；这些调用在拦截点被拒绝，未发出真实请求。"
+    },
+    "attemptsDuringWork": 0
+  },
+  "counts": {
+    "networkAttempts": 0,
+    "cloudCalls": 0,
+    "credentialsFetched": 0,
+    "realSdkExecuted": 0
+  },
+  "unverified": [
+    "真实 SDK 转换、平台事务、IAM 写权限、当前费用与额度。",
+    "依赖安装（wx-server-sdk 未安装、无 node_modules）与实际受支持运行时。",
+    "远端云函数代码字节回读能力。",
+    "完整微信构建、真机与平台部署。",
+    "本人微信登记、管理员初始化与批准签发者。",
+    "实际登记轮次、开始时间与截止时间（本轮只实现能力，不产出当次真实执行包）。",
+    "windowStartsAt 是否真在服务端形成「未到时不可调用」守卫（本轮未改 gate，不作此宣称）。",
+    "首次尚未绑定账号的 identify 未知结果仍无持久防重：只证明不自动重发，必须停止核对。"
+  ],
+  "assembly": {
+    "inputDir": "artifacts/schedule-sandbox/registration-evcand-d21c6abfc84d4628852b",
+    "outDir": "artifacts/schedule-sandbox/registration-full-evcandfull-7f774ec52e5b43b9b14f",
+    "registrationProject": "artifacts/schedule-sandbox/registration-full-evcandfull-7f774ec52e5b43b9b14f/registration-project",
+    "closedProject": "artifacts/schedule-sandbox/registration-full-evcandfull-7f774ec52e5b43b9b14f/closed-project",
+    "totalFiles": 49,
+    "perProjectFileCount": 24,
+    "projectDelta": [
+      "cloudfunctions/scheduleSandbox/gate.js",
+      "cloudfunctions/scheduleSandbox/index.js",
+      "miniprogram/config/schedule-sandbox-proof.js"
+    ],
+    "dependencyClosure": {
+      "scope": "miniprogram 前端；云函数为 Node 侧平台依赖，本轮不安装",
+      "scannedFiles": 16,
+      "edges": 13,
+      "reachableFromAppAndPage": 9,
+      "externalRequires": 0,
+      "unresolved": 0,
+      "sortedFiles": [
+        "miniprogram/app.js",
+        "miniprogram/app.json",
+        "miniprogram/app.wxss",
+        "miniprogram/config/cloud.js",
+        "miniprogram/config/sandbox-test-driver-proof.js",
+        "miniprogram/config/schedule-entry-proof.js",
+        "miniprogram/config/schedule-sandbox-proof.js",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+        "miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+        "miniprogram/utils/env-gate.js",
+        "miniprogram/utils/sandbox-test-coordinator.js",
+        "miniprogram/utils/sandbox-test-driver.js",
+        "miniprogram/utils/schedule-sandbox-client.js",
+        "project.config.json"
+      ]
+    },
+    "networkAttempts": 0,
+    "cloudCalled": false
+  },
+  "manifestSha256": "9edc036676a1c058d2980c03747e4b6c84ba4588147de3d8e9f6aa156efc0ff6",
+  "finishedAt": "2026-10-10T12:46:06.479Z",
+  "summary": {
+    "groups": 7,
+    "checks": 110,
+    "passed": 110,
+    "failed": 0
+  }
+}

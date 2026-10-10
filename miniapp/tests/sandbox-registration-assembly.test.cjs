@@ -1005,3 +1005,672 @@ test('L5 合成计划不得被当作真实写批准：清单标记与限制声�
     assert.match(text, /无持久防重/);
   });
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 分组 C：真实候选模式（real-candidate）
+//
+// 本组用**受控历史时钟**与**离线夹具**验证真实候选契约：
+//  - synthetic=false 是被测计划契约，测试传输与时钟仍合成；
+//  - 不确定实际登记轮次/窗口，不产出可交给用户操作的当次真实执行包；
+//  - 不以任意真实账号替代固定目标来绕过校验（仍用受控固定目标 ID）；
+//  - 夹具 purpose/roundId 标明 offline-fixture，放在新忽略目录。
+// ═══════════════════════════════════════════════════════════════════════════
+const FIXED_TARGET_USER = 'u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4';
+/** 受控历史时钟：2026-03-01T12:00:00Z，窗口 12:00–12:20（≤30 分钟）。 */
+const CAND_NOW_MS = Date.parse('2026-03-01T12:00:00.000Z');
+const CAND_START = '2026-03-01T12:00:00.000Z';
+const CAND_EXPIRES = '2026-03-01T12:20:00.000Z';
+
+function candidatePlan(patch = {}) {
+  return {
+    purpose: 'offline-fixture real-candidate contract verification',
+    appId: FIXED.appId,
+    envId: FIXED.envId,
+    region: FIXED.region,
+    functionName: FIXED.functionName,
+    allowedUserIds: [FIXED_TARGET_USER],
+    roundId: 'OFFLINE-FIXTURE-CAND-0001',
+    windowStartsAt: CAND_START,
+    windowExpiresAt: CAND_EXPIRES,
+    sourceVersion: reg.REVIEWED_SOURCE_VERSION,
+    synthetic: false,
+    ...patch
+  };
+}
+
+/** 用原生成器在受控历史时钟下产出候选输入登记制品。 */
+function buildCandidateInput(plan = candidatePlan()) {
+  const outId = freshId('candin');
+  const r = reg.buildRegistration(plan, { outId, nowMs: CAND_NOW_MS });
+  assert.equal(r.ok, true, JSON.stringify(r.problems));
+  return { dir: r.dir, plan, outId };
+}
+
+function assembleCandidate(input, options = {}) {
+  return asm.buildAssembly({
+    inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+    nowMs: options.nowMs === undefined ? CAND_NOW_MS : options.nowMs,
+    outId: options.outId, networkGuard: options.networkGuard
+  });
+}
+
+function checkCandidate(input, dir, options = {}) {
+  return asm.checkAssembly({
+    inputDir: input.dir, outDir: dir, plan: input.plan, artifactKind: 'real-candidate',
+    nowMs: options.nowMs === undefined ? CAND_NOW_MS : options.nowMs,
+    networkGuard: options.networkGuard
+  });
+}
+
+/** 完整候选组装一次；结束自动清理本轮自建目录。 */
+async function withCandidateAssembly(fn, options = {}) {
+  const input = buildCandidateInput(options.plan);
+  const outId = options.outId || freshId('candfull');
+  const result = assembleCandidate(input, Object.assign({ outId }, options));
+  assert.equal(result.ok, true, JSON.stringify(result.problems));
+  const registration = path.join(result.dir, asm.REGISTRATION_ROOT);
+  const closed = path.join(result.dir, asm.CLOSED_ROOT);
+  try {
+    return await fn({ input, result, registration, closed, dir: result.dir, outId });
+  } finally {
+    cleanup(result.dir);
+    cleanup(input.dir);
+  }
+}
+
+// C1 默认仍拒绝真实计划；候选模式拒绝合成与未知模式
+test('C1 默认合成模式仍拒绝真实计划，零写；候选模式拒绝合成计划', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('candzero'));
+  try {
+    const before = snapshotTree(dir);
+    // 未显式选择模式 → 默认 synthetic → ASM_PLAN_SYNTHETIC_ONLY
+    const r = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, outId: path.basename(dir).slice(asm.OUT_DIR_PREFIX.length),
+      nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.PLAN_SYNTHETIC_ONLY);
+    assert.equal(r.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), before, '默认模式拒绝真实计划必须零写');
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C1 候选模式拒绝合成计划（不得改标记后默许通过）', () => {
+  const synthInput = buildRegistrationInput();
+  const dir = asm.resolveOutDir(freshId('candsyn'));
+  try {
+    const before = snapshotTree(dir);
+    const r = asm.buildAssembly({
+      inputDir: synthInput.dir, plan: synthInput.plan, artifactKind: 'real-candidate',
+      outId: path.basename(dir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.PLAN_SYNTHETIC_IN_REAL);
+    assert.equal(r.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), before);
+  } finally { cleanup(dir); cleanup(synthInput.dir); }
+});
+
+test('C1 未知模式值、缺值与重复选项均在写入前拒绝', () => {
+  // 模块级
+  // null/undefined 视为未指定 → 回落默认 synthetic（随后由计划的 synthetic=false 拒绝）
+  for (const bad of ['real', 'REAL-CANDIDATE', 'production', '', 7, {}, []]) {
+    const input = buildCandidateInput();
+    const dir = asm.resolveOutDir(freshId('candkind'));
+    try {
+      const before = snapshotTree(dir);
+      const r = asm.buildAssembly({
+        inputDir: input.dir, plan: input.plan, artifactKind: bad,
+        outId: path.basename(dir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+      });
+      assert.equal(r.ok, false, JSON.stringify(r));
+      assert.match(r.problems[0].code,
+        new RegExp('^(' + asm.ERR.ARTIFACT_KIND_UNKNOWN + '|' + asm.ERR.ARTIFACT_KIND_MISSING_VALUE + ')$'),
+        'bad=' + JSON.stringify(bad) + ' → ' + JSON.stringify(r.problems));
+      assert.equal(r.wroteFiles, false);
+      assert.deepEqual(snapshotTree(dir), before);
+    } finally { cleanup(dir); cleanup(input.dir); }
+  }
+  // CLI 级：重复 / 缺值 / 未知 / 候选缺 plan
+  const cliCases = [
+    [['--artifact-kind', 'real-candidate', '--artifact-kind', 'synthetic'], asm.ERR.ARTIFACT_KIND_DUPLICATE],
+    [['--artifact-kind'], asm.ERR.ARTIFACT_KIND_MISSING_VALUE],
+    [['--artifact-kind', '--plan'], asm.ERR.ARTIFACT_KIND_MISSING_VALUE],
+    [['--artifact-kind', 'nope'], asm.ERR.ARTIFACT_KIND_UNKNOWN],
+    [['--artifact-kind', 'real-candidate'], asm.ERR.PLAN_REQUIRED_FOR_REAL]
+  ];
+  for (const [extra, expected] of cliCases) {
+    assert.throws(() => asm.parseArgs(['--mode', 'build', '--input', 'x'].concat(extra)),
+      new RegExp(expected), JSON.stringify(extra));
+  }
+  // 默认值与合法值
+  assert.equal(asm.parseArgs(['--check']).artifactKind, 'synthetic');
+  assert.equal(asm.parseArgs(['--mode', 'build', '--plan', 'p.json', '--artifact-kind', 'real-candidate']).artifactKind,
+    'real-candidate');
+  // 不提供绕过开关
+  for (const banned of ['--force', '--skip-verify', '--override-clock', '--set-time']) {
+    assert.throws(() => asm.parseArgs(['--mode', 'build', banned]), /ASM_PLAN_MISSING/, banned);
+  }
+});
+
+// C2 真实候选完整正向
+test('C2 真实候选完整正向：两项目各 24 文件共 49，候选 schema 为独立 /2', async () => {
+  await withCandidateAssembly(async ({ result, registration, closed }) => {
+    assert.equal(result.artifactKind, 'real-candidate');
+    const total = snapshotTree(result.dir).filter(r => !r.endsWith('/'));
+    assert.equal(total.length, 49, '总文件数');
+    for (const root of [registration, closed]) {
+      const files = snapshotTree(root).filter(r => !r.endsWith('/'));
+      assert.equal(files.length, asm.PROJECT_FILES.length, '每项目文件数');
+      const appJson = JSON.parse(fs.readFileSync(path.join(root, 'miniprogram/app.json'), 'utf8'));
+      assert.deepEqual(appJson.pages, [asm.ONLY_PAGE], '唯一页面');
+    }
+    const manifest = JSON.parse(fs.readFileSync(path.join(result.dir, 'manifest.json'), 'utf8'));
+    assert.equal(manifest.schema, asm.ASSEMBLY_MANIFEST_SCHEMA_REAL);
+    assert.notEqual(manifest.schema, asm.ASSEMBLY_MANIFEST_SCHEMA, '候选不得沿用 /1');
+    assert.equal(manifest.artifactKind, 'real-candidate');
+    assert.equal(manifest.synthetic, false);
+    assert.equal(manifest.verificationKind, asm.VERIFICATION_KIND);
+    assert.equal(manifest.plan.synthetic, false);
+    // 候选明确未获部署授权
+    assert.equal(manifest.deploymentAuthorized, false);
+    assert.equal(manifest.cloudExecuted, false);
+    assert.equal(manifest.uploaded, false);
+    assert.equal(manifest.previewed, false);
+    const text = manifest.limitations.join(' ');
+    assert.match(text, /不是.*部署授权/);
+    assert.match(text, /不代表关闭包失效/);
+    // 只允许否定式表述（"不表示允许部署…"），不得出现肯定授权语句
+    assert.match(text, /不表示允许部署、本人已确认或管理员已初始化/);
+    assert.doesNotMatch(text, /(已获|准予|可以)部署/);
+  });
+});
+
+test('C2 真实候选检查通过且外部完整计划与输入输出一致', async () => {
+  await withCandidateAssembly(async ({ input, dir }) => {
+    const r = checkCandidate(input, dir);
+    assert.equal(r.ok, true, JSON.stringify(r.problems));
+    assert.equal(r.artifactKind, 'real-candidate');
+    assert.equal(r.schema, asm.ASSEMBLY_MANIFEST_SCHEMA_REAL);
+    assert.equal(r.projects.registration.files, 24);
+    assert.equal(r.projects.closed.files, 24);
+    assert.equal(r.wroteFiles, false);
+  });
+});
+
+test('C2 候选检查必须提供外部完整 plan，不接受仅凭 manifest.plan 自证', async () => {
+  await withCandidateAssembly(async ({ input, dir }) => {
+    const before = snapshotTree(dir);
+    const r = asm.checkAssembly({
+      inputDir: input.dir, outDir: dir, artifactKind: 'real-candidate', nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.PLAN_REQUIRED_FOR_REAL);
+    assert.equal(r.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), before, '缺外部计划不得写入');
+  });
+});
+
+// C3 非法计划与输入漂移零写
+test('C3 候选模式拒绝错账号/多账号/错环境/AppID/轮次/来源/超长窗口，零写', () => {
+  const invalid = [
+    ['错账号', candidatePlan({ allowedUserIds: [deriveUserId('someone-else')] })],
+    ['多账号', candidatePlan({ allowedUserIds: [FIXED_TARGET_USER, deriveUserId('second')] })],
+    ['错环境', candidatePlan({ envId: 'cloud-other-env' })],
+    ['错 AppID', candidatePlan({ appId: 'wxOTHERAPPID000000' })],
+    ['错地域', candidatePlan({ region: 'ap-guangzhou' })],
+    ['错函数名', candidatePlan({ functionName: 'otherFunction' })],
+    ['轮次占位符', candidatePlan({ roundId: '待定' })],
+    ['来源漂移', candidatePlan({ sourceVersion: 'unverified-source-label' })],
+    ['窗口超 30 分钟', candidatePlan({ windowExpiresAt: '2026-03-01T13:00:00.000Z' })],
+    ['窗口倒置', candidatePlan({ windowStartsAt: CAND_EXPIRES, windowExpiresAt: CAND_START })],
+    ['synthetic 非布尔', candidatePlan({ synthetic: 'false' })]
+  ];
+  for (const [label, plan] of invalid) {
+    const input = buildCandidateInput();
+    const dir = asm.resolveOutDir(freshId('candinv'));
+    try {
+      const before = snapshotTree(dir);
+      const r = asm.buildAssembly({
+        inputDir: input.dir, plan, artifactKind: 'real-candidate',
+        outId: path.basename(dir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+      });
+      assert.equal(r.ok, false, label + ' 应拒绝：' + JSON.stringify(r));
+      assert.equal(r.wroteFiles, false, label);
+      assert.match(r.problems[0].code, /^(ASM_|REG_)/, label + ' → ' + JSON.stringify(r.problems));
+      assert.deepEqual(snapshotTree(dir), before, label + ' 必须零写');
+    } finally { cleanup(dir); cleanup(input.dir); }
+  }
+});
+
+test('C3 候选输入漂移（登记制品被改字节）零写拒绝', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('canddrift'));
+  try {
+    const target = path.join(input.dir, 'package/gate.js');
+    const original = fs.readFileSync(target);
+    fs.writeFileSync(target, Buffer.concat([original, Buffer.from('\n// drift')]));
+    const before = snapshotTree(dir);
+    const r = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+      outId: path.basename(dir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.INPUT_REJECTED);
+    assert.equal(r.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), before, '输入漂移必须零写');
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+// C4 过期一律按当前时钟拒绝
+test('C4 过期候选 build/check/复用/续建均拒绝；篡改 generatedAt 不能救活', async () => {
+  const input = buildCandidateInput();
+  const outId = freshId('candexp');
+  const dir = asm.resolveOutDir(outId);
+  try {
+    // 未过期时先成功组装
+    const okBuild = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+      outId, nowMs: CAND_NOW_MS
+    });
+    assert.equal(okBuild.ok, true, JSON.stringify(okBuild.problems));
+
+    // 推进时钟到窗口之后
+    const afterWindow = Date.parse(CAND_EXPIRES) + 1000;
+
+    // 1) build 复用（过期）
+    const reuse = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+      outId, nowMs: afterWindow
+    });
+    assert.equal(reuse.ok, false, JSON.stringify(reuse));
+    assert.match(reuse.problems[0].code, new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(reuse.problems));
+    assert.equal(reuse.wroteFiles, false);
+
+    // 2) check（过期）
+    const checked = checkCandidate(input, dir, { nowMs: afterWindow });
+    assert.equal(checked.ok, false, JSON.stringify(checked));
+    assert.match(checked.problems[0].code, new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(checked.problems));
+    assert.equal(checked.wroteFiles, false);
+
+    // 3) 篡改 generatedAt 也救不活（外部 plan 与输入都不变）
+    const manifestPath = path.join(dir, 'manifest.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.generatedAt = CAND_START;
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+    const rescued = checkCandidate(input, dir, { nowMs: afterWindow });
+    assert.equal(rescued.ok, false, '篡改 generatedAt 不得让过期包通过：' + JSON.stringify(rescued.problems));
+    assert.equal(rescued.wroteFiles, false);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C4 过期续建拒绝：合法半成品（无 manifest）在过期后不补写', async () => {
+  const input = buildCandidateInput();
+  const outId = freshId('candcont');
+  const dir = asm.resolveOutDir(outId);
+  try {
+    assert.equal(asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    }).ok, true);
+    // 构造**合法半成品**：删掉 manifest 与一个内容文件，其余字节完全正确。
+    // 注意：保留 manifest 只删文件属于既有「带 manifest 缺文件拒绝补写」契约，
+    // 不是续建路径（该行为由 C5/L3 其它用例覆盖），此处不混用。
+    const rel = `${asm.REGISTRATION_ROOT}/miniprogram/app.wxss`;
+    fs.unlinkSync(path.join(dir, 'manifest.json'));
+    fs.unlinkSync(path.join(dir, rel));
+    const afterWindow = Date.parse(CAND_EXPIRES) + 1000;
+    const before = snapshotTree(dir);
+    const r = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: afterWindow
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.match(r.problems[0].code, new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(r.problems));
+    assert.equal(r.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), before, '过期续建不得补写');
+    // 恢复后（未过期）同一半成品可合法续建，且只补缺项
+    const again = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    });
+    assert.equal(again.ok, true, JSON.stringify(again.problems));
+    assert.deepEqual(again.written.slice().sort(), [rel, 'manifest.json'].sort());
+    assert.equal(checkCandidate(input, dir).ok, true);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('C4 预检后过期则零写；写后过期则如实保留已写状态（不用 sleep 赌时序）', () => {
+  const input = buildCandidateInput();
+  const expired = Date.parse(CAND_EXPIRES) + 1000;
+
+  // 1) 预检阶段即已过期 → 零写
+  const zeroDir = asm.resolveOutDir(freshId('candpre'));
+  try {
+    const before = snapshotTree(zeroDir);
+    const r = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+      outId: path.basename(zeroDir).slice(asm.OUT_DIR_PREFIX.length), nowMs: expired
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.match(r.problems[0].code, new RegExp('^(' + asm.ERR.WINDOW_EXPIRED + '|REG_PLAN_WINDOW_EXPIRED)$'), JSON.stringify(r.problems));
+    assert.equal(r.wroteFiles, false);
+    assert.equal(r.expiredAfterWrite, undefined);
+    assert.deepEqual(snapshotTree(zeroDir), before, '预检后过期必须零写');
+  } finally { cleanup(zeroDir); }
+
+  // 2) 窗口有效 → 组装成功（写后复核与写前同一时钟，不制造竞态）
+  const okDir = asm.resolveOutDir(freshId('candpost'));
+  try {
+    const r = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+      outId: path.basename(okDir).slice(asm.OUT_DIR_PREFIX.length), nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, true, JSON.stringify(r.problems));
+    assert.equal(r.wroteFiles, true);
+    assert.equal(snapshotTree(okDir).filter(x => !x.endsWith('/')).length, 49);
+  } finally { cleanup(okDir); cleanup(input.dir); }
+});
+
+// C5 模式/schema/清单篡改
+test('C5 候选模式拒绝 /1 合成清单与篡改 schema/模式/字节并自报哈希', async () => {
+  await withCandidateAssembly(async ({ input, dir }) => {
+    const manifestPath = path.join(dir, 'manifest.json');
+    const original = fs.readFileSync(manifestPath);
+
+    // 1) 改成 /1 合成 schema → 候选不接受
+    let m = JSON.parse(original.toString('utf8'));
+    m.schema = asm.ASSEMBLY_MANIFEST_SCHEMA;
+    m.artifactKind = 'synthetic';
+    m.synthetic = true;
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    let r = checkCandidate(input, dir);
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.ARTIFACT_KIND_CONFLICT);
+
+    // 2) 保留 /2 但改 artifactKind → 拒绝
+    m = JSON.parse(original.toString('utf8'));
+    m.artifactKind = 'synthetic';
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    r = checkCandidate(input, dir);
+    assert.equal(r.ok, false);
+    assert.equal(r.problems[0].code, asm.ERR.ARTIFACT_KIND_CONFLICT);
+
+    // 3) 改 synthetic 标记 → 拒绝
+    m = JSON.parse(original.toString('utf8'));
+    m.synthetic = true;
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    r = checkCandidate(input, dir);
+    assert.equal(r.ok, false);
+    assert.equal(r.problems[0].code, asm.ERR.MANIFEST_INVALID);
+
+    // 4) 部署标记改真 → 拒绝
+    m = JSON.parse(original.toString('utf8'));
+    m.deploymentAuthorized = true;
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    r = checkCandidate(input, dir);
+    assert.equal(r.ok, false);
+    assert.equal(r.problems[0].code, asm.ERR.MANIFEST_INVALID);
+
+    // 5) 改计划（换轮次）并自报新哈希 → 拒绝
+    m = JSON.parse(original.toString('utf8'));
+    m.plan.roundId = 'OFFLINE-FIXTURE-CAND-9999';
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    r = checkCandidate(input, dir);
+    assert.equal(r.ok, false);
+    assert.equal(r.problems[0].code, asm.ERR.MANIFEST_MISMATCH);
+
+    // 6) 改文件字节并自报新哈希 → 仍被重算拒绝
+    fs.writeFileSync(manifestPath, original);
+    const rel = `${asm.CLOSED_ROOT}/miniprogram/app.wxss`;
+    const abs = path.join(dir, rel);
+    const tampered = Buffer.concat([fs.readFileSync(abs), Buffer.from('\n.tampered{}')]);
+    fs.writeFileSync(abs, tampered);
+    m = JSON.parse(original.toString('utf8'));
+    const entry = m.projects.closed.files.find(f => f.rel === 'miniprogram/app.wxss');
+    entry.bytes = tampered.length;
+    entry.sha256 = asm.sha256Buffer(tampered);
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    r = checkCandidate(input, dir);
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.equal(r.problems[0].code, asm.ERR.MANIFEST_MISMATCH);
+    assert.equal(r.wroteFiles, false);
+  });
+});
+
+test('C5 候选冲突目录快照不变；有效窗口下合法续建与完整复用成功', async () => {
+  const input = buildCandidateInput();
+  const outId = freshId('candreuse');
+  const dir = asm.resolveOutDir(outId);
+  try {
+    assert.equal(asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    }).ok, true);
+    // 完整复用：零写、manifest 不重写
+    const manifestBefore = fs.readFileSync(path.join(dir, 'manifest.json'));
+    const beforeReuse = snapshotTree(dir);
+    const reuse = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    });
+    assert.equal(reuse.ok, true);
+    assert.equal(reuse.reused, true);
+    assert.equal(reuse.wroteFiles, false);
+    assert.ok(fs.readFileSync(path.join(dir, 'manifest.json')).equals(manifestBefore));
+    assert.deepEqual(snapshotTree(dir), beforeReuse);
+
+    // 合法半成品续建：只补缺项
+    const dropped = ['manifest.json', `${asm.REGISTRATION_ROOT}/miniprogram/app.json`];
+    for (const rel of dropped) fs.unlinkSync(path.join(dir, rel));
+    const cont = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    });
+    assert.equal(cont.ok, true, JSON.stringify(cont.problems));
+    assert.deepEqual(cont.written.slice().sort(), dropped.slice().sort());
+    assert.equal(checkCandidate(input, dir).ok, true);
+
+    // 冲突：不同字节拒绝且快照不变
+    const conflictRel = `${asm.CLOSED_ROOT}/miniprogram/app.wxss`;
+    fs.writeFileSync(path.join(dir, conflictRel), '// 冲突内容\n');
+    const beforeConflict = snapshotTree(dir);
+    const conflict = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS
+    });
+    assert.equal(conflict.ok, false, JSON.stringify(conflict));
+    assert.equal(conflict.problems[0].code, asm.ERR.CONFLICT);
+    assert.equal(conflict.wroteFiles, false);
+    assert.deepEqual(snapshotTree(dir), beforeConflict);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+// C6 候选与合成不能互相认领；/1 兼容
+test('C6 候选目录不被合成模式认领，合成目录不被候选模式认领', async () => {
+  // 候选产物用合成模式检查 → 拒绝
+  await withCandidateAssembly(async ({ input, dir }) => {
+    const r = asm.checkAssembly({
+      inputDir: input.dir, outDir: dir, plan: input.plan, nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.match(r.problems[0].code, /^ASM_/, JSON.stringify(r.problems));
+  });
+  // 合成产物用候选模式检查 → 拒绝（且候选模式要求外部 plan）
+  const synthInput = buildRegistrationInput();
+  const synthDir = asm.resolveOutDir(freshId('candmix'));
+  try {
+    assert.equal(asm.buildAssembly({
+      inputDir: synthInput.dir, plan: synthInput.plan, outId: path.basename(synthDir).slice(asm.OUT_DIR_PREFIX.length),
+      nowMs: SYNTH_NOW_MS
+    }).ok, true);
+    const r = asm.checkAssembly({
+      inputDir: synthInput.dir, outDir: synthDir, plan: synthInput.plan,
+      artifactKind: 'real-candidate', nowMs: CAND_NOW_MS
+    });
+    assert.equal(r.ok, false, JSON.stringify(r));
+    assert.match(r.problems[0].code, /^ASM_/, JSON.stringify(r.problems));
+  } finally { cleanup(synthDir); cleanup(synthInput.dir); }
+});
+
+test('C6 历史 /1 合成包正常 check 与复用，且不重写 manifest', () => {
+  const input = buildRegistrationInput();
+  const outId = freshId('candv1');
+  const dir = asm.resolveOutDir(outId);
+  try {
+    const built = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, outId, nowMs: SYNTH_NOW_MS
+    });
+    assert.equal(built.ok, true, JSON.stringify(built.problems));
+    const manifestPath = path.join(dir, 'manifest.json');
+    const manifestBuf = fs.readFileSync(manifestPath);
+    const manifest = JSON.parse(manifestBuf.toString('utf8'));
+    assert.equal(manifest.schema, asm.ASSEMBLY_MANIFEST_SCHEMA, '合成仍为 /1');
+    assert.equal(manifest.artifactKind, 'synthetic');
+
+    // /1 检查仍可复验（沿用 generatedAt 口径，不受真实候选限制影响）
+    const checked = asm.checkAssembly({ inputDir: input.dir, outDir: dir, plan: input.plan });
+    assert.equal(checked.ok, true, JSON.stringify(checked.problems));
+
+    // 复用不改 manifest 字节
+    const before = snapshotTree(dir);
+    const reuse = asm.buildAssembly({
+      inputDir: input.dir, plan: input.plan, outId, nowMs: SYNTH_NOW_MS
+    });
+    assert.equal(reuse.ok, true);
+    assert.equal(reuse.reused, true);
+    assert.equal(reuse.wroteFiles, false);
+    assert.ok(fs.readFileSync(manifestPath).equals(manifestBuf), '/1 manifest 不得被重写');
+    assert.deepEqual(snapshotTree(dir), before);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+// C7 完整性与关闭包独立
+test('C7 候选两份项目：关闭八文件正确、前端关闭覆盖正确、仅三类文件差异', async () => {
+  await withCandidateAssembly(async ({ input, registration, closed }) => {
+    const closedDesc = reg.describeClosedPackage();
+    assert.equal(closedDesc.entryState.enabled, false);
+    for (const rel of reg.PACKAGE_FILES) {
+      const closedBytes = fs.readFileSync(path.join(closed, 'cloudfunctions/scheduleSandbox', rel));
+      const pinned = reg.PINNED_FACTS['miniapp/cloudfunctions/scheduleSandbox/' + rel];
+      assert.equal(closedBytes.length, pinned.bytes, rel);
+      assert.equal(asm.sha256Buffer(closedBytes), pinned.sha256, rel);
+      const regBytes = fs.readFileSync(path.join(registration, 'cloudfunctions/scheduleSandbox', rel));
+      assert.ok(regBytes.equals(fs.readFileSync(path.join(input.dir, 'package', rel))), '登记版服务端：' + rel);
+    }
+    // 前端覆盖：登记 enabled=true / 关闭 enabled=false
+    assert.match(fs.readFileSync(path.join(registration, 'miniprogram/config/schedule-sandbox-proof.js'), 'utf8'),
+      /enabled:\s*true/);
+    assert.match(fs.readFileSync(path.join(closed, 'miniprogram/config/schedule-sandbox-proof.js'), 'utf8'),
+      /enabled:\s*false/);
+    // 差异面
+    const differing = asm.PROJECT_FILES.filter(rel =>
+      !fs.readFileSync(path.join(registration, rel)).equals(fs.readFileSync(path.join(closed, rel))));
+    assert.deepEqual(differing.slice().sort(), [
+      'cloudfunctions/scheduleSandbox/gate.js',
+      'cloudfunctions/scheduleSandbox/index.js',
+      'miniprogram/config/schedule-sandbox-proof.js'
+    ]);
+  });
+});
+
+test('C7 登记候选过期不影响独立关闭制品检查（关闭不依赖登记窗口）', () => {
+  // 直接调用受审关闭包校验：与登记计划/窗口无关
+  const before = Date.now();
+  const desc = reg.describeClosedPackage();
+  assert.equal(desc.present, true);
+  assert.equal(desc.entryState.enabled, false);
+  assert.equal(desc.files.length, reg.PACKAGE_FILES.length);
+  assert.ok(Date.now() - before < 60000);
+  // 关闭包目录字节不受候选状态影响
+  const closedManifest = path.join(asm.ARTIFACTS_ROOT, asm.CLOSED_DIR, 'manifest.json');
+  assert.ok(fs.existsSync(closedManifest));
+  assert.equal(asm.sha256Buffer(fs.readFileSync(closedManifest)), reg.CLOSED_MANIFEST_SHA256);
+});
+
+// C8 实际 App/Page/client 链
+test('C8 候选两份完整项目：生命周期零发送、主动 identify 一次无 projectId、关闭版零发送', async () => {
+  await withCandidateAssembly(async ({ registration, closed }) => {
+    // 登记版
+    let initArgs = null;
+    const h = loadActualApp(registration, { initSpy: a => { initArgs = JSON.parse(JSON.stringify(a)); } });
+    h.app.onLaunch.call(h.appInstance);
+    assert.equal(initArgs.env, FIXED.envId, 'App 初始化固定云环境');
+    assert.equal(initArgs.traceUser, false);
+    h.page.onLoad(); h.page.onShow();
+    assert.equal(h.calls.length, 0, '生命周期零业务请求');
+    assert.equal(h.clearCalls(), 0); assert.equal(h.removeCalls(), 0);
+    await h.page.runSelected();
+    assert.equal(h.calls.length, 1, '主动 identify 恰好一次');
+    assert.equal(h.calls[0].name, asm.CLOUD_FUNCTION_NAME);
+    assert.equal(h.calls[0].config.env, FIXED.envId);
+    assert.equal(h.calls[0].data.action, 'identify');
+    assert.equal(h.calls[0].data.projectId, undefined, 'identify 不带 projectId');
+
+    // 关闭版
+    const c = loadActualApp(closed);
+    c.app.onLaunch.call(c.appInstance);
+    c.page.onLoad(); c.page.onShow();
+    await c.page.runSelected();
+    assert.equal(c.page.data.entryAllowed, false);
+    assert.equal(c.calls.length, 0, '关闭版零业务发送');
+    assert.equal(c.clearCalls(), 0); assert.equal(c.removeCalls(), 0);
+  });
+});
+
+test('C8 候选登记版首次未知 identify 停止且不自动重发、不清缓存', async () => {
+  await withCandidateAssembly(async ({ registration }) => {
+    const h = loadActualApp(registration, { failCall: true });
+    h.app.onLaunch.call(h.appInstance);
+    h.page.onLoad();
+    await h.page.runSelected();
+    assert.equal(h.calls.length, 1, '只发一次');
+    assert.match(String(h.page.data.lastError), /未知|失败|核对/);
+    const before = Array.from(h.storage.entries());
+    h.page.onShow(); h.page.onLoad(); await Promise.resolve(); await Promise.resolve();
+    assert.equal(h.calls.length, 1, '不得自动重发');
+    assert.deepEqual(Array.from(h.storage.entries()), before, '不得清缓存');
+    assert.equal(h.clearCalls(), 0); assert.equal(h.removeCalls(), 0);
+  });
+});
+
+test('C8 候选包不含 access/旧业务页面，前端驱动开关保持关闭', async () => {
+  await withCandidateAssembly(async ({ registration }) => {
+    assert.equal(fs.existsSync(path.join(registration, 'miniprogram/pages/access')), false);
+    assert.deepEqual(fs.readdirSync(path.join(registration, 'miniprogram/pages')).sort(), ['schedule-sandbox']);
+    assert.match(
+      fs.readFileSync(path.join(registration, 'miniprogram/config/sandbox-test-driver-proof.js'), 'utf8'),
+      /enabled:\s*false/);
+  });
+});
+
+// C9 网络拦截
+test('C9 候选组装与检查网络拦截计数为 0，且实测调用会被拒绝并计数', async () => {
+  const state = asm.installNetworkGuard({});
+  try {
+    const input = buildCandidateInput();
+    const outId = freshId('candnet');
+    const dir = asm.resolveOutDir(outId);
+    try {
+      const built = asm.buildAssembly({
+        inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate',
+        outId, nowMs: CAND_NOW_MS, networkGuard: state
+      });
+      assert.equal(built.ok, true, JSON.stringify(built.problems));
+      assert.equal(state.attempts.length, 0, '候选组装不得有网络调用');
+      assert.equal(built.networkAttempts, 0);
+      assert.equal(built.cloudCalled, false);
+
+      const checked = checkCandidate(input, built.dir, { networkGuard: state });
+      assert.equal(checked.ok, true, JSON.stringify(checked.problems));
+      assert.equal(state.attempts.length, 0, '候选检查不得有网络调用');
+
+      // 敏感性检查：拦截确实生效
+      assert.throws(() => require('node:https').request('https://example.invalid'), /禁止网络访问/);
+      assert.equal(state.attempts.length, 1);
+      assert.throws(() => require('node:dns').lookup('example.invalid'), /禁止网络访问/);
+      assert.equal(state.attempts.length, 2);
+      // 候选清单如实记录未部署状态
+      const manifest = JSON.parse(fs.readFileSync(path.join(built.dir, 'manifest.json'), 'utf8'));
+      assert.equal(manifest.deploymentAuthorized, false);
+      assert.equal(manifest.cloudExecuted, false);
+      assert.equal(manifest.uploaded, false);
+      assert.equal(manifest.previewed, false);
+      assert.equal(manifest.verificationKind, asm.VERIFICATION_KIND);
+    } finally { cleanup(dir); cleanup(input.dir); }
+  } finally { asm.restoreNetworkGuard(state); }
+});
