@@ -1,0 +1,103 @@
+{
+  "runId": "codex-9f50a30388f64600",
+  "observedAt": "2026-10-10T05:22:32.054Z",
+  "verificationKind": "OFFLINE_REAL_BUILDER_WITH_ISOLATED_FILES_AND_SELECTED_MEMORY_FIXTURES",
+  "networkCalls": 0,
+  "credentialFetches": 0,
+  "cloudCalls": 0,
+  "protectedFilesUnchanged": true,
+  "wroteSyntheticArtifacts": true,
+  "historicalEvidenceOverwritten": false,
+  "rows": [
+    {
+      "name": "positive-current-artifact",
+      "controlPassed": true
+    },
+    {
+      "name": "R1-multiple-real-targets",
+      "defectObserved": true
+    },
+    {
+      "name": "R1-other-real-target",
+      "defectObserved": true
+    },
+    {
+      "name": "R1-plan-string-executed-as-code",
+      "defectObserved": true,
+      "executedOnlyInIsolatedVm": true
+    },
+    {
+      "name": "R1-source-drift-outside-anchor",
+      "defectObserved": true,
+      "sourceDiskChanged": false
+    },
+    {
+      "name": "R2-unmanifested-conflict-overwritten",
+      "defectObserved": true,
+      "indexCreated": true
+    },
+    {
+      "name": "R2-link-detected-after-writes",
+      "defectObserved": true,
+      "rejected": true,
+      "junctionTargetUnwritten": true
+    },
+    {
+      "name": "R3-frontend-self-reported-hash",
+      "defectObserved": true
+    },
+    {
+      "name": "R3-manifest-critical-metadata",
+      "defectObserved": true
+    },
+    {
+      "name": "R3-extra-top-level-file",
+      "defectObserved": true
+    },
+    {
+      "name": "R3-incomplete-plan-reuse",
+      "defectObserved": true
+    },
+    {
+      "name": "R4-missing-closed-package-does-not-block",
+      "defectObserved": true,
+      "historicalClosedPackageChanged": false
+    },
+    {
+      "name": "R4-missing-closed-frontend-and-dependency-hashes",
+      "defectObserved": true,
+      "frontendFileNames": [
+        "schedule-sandbox-proof.js"
+      ],
+      "manifestKeys": [
+        "schema",
+        "deploymentAuthorized",
+        "cloudExecuted",
+        "synthetic",
+        "generatedAt",
+        "plan",
+        "effectiveActions",
+        "prepareAllowedSource",
+        "allowedUsers",
+        "reviewedSource",
+        "artifacts",
+        "differences",
+        "frontendOverride",
+        "closedPackage",
+        "limitations"
+      ]
+    },
+    {
+      "name": "R5-client-test-fallback",
+      "defectObserved": true,
+      "actualPageExists": true,
+      "actualClientExists": true
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "defectsObserved": 13,
+    "harnessErrors": 0,
+    "unverified": 0
+  }
+}
