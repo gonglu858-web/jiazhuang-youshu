@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-10-10T00:16:55.323Z",
+  "probe": {
+    "exitCode": 0,
+    "error": null,
+    "stdout": "1"
+  },
+  "actualWorkerEntry": {
+    "exitCode": 2,
+    "error": null,
+    "output": {
+      "ok": false,
+      "errorCode": "WORKER_STDIN_INVALID"
+    },
+    "stderrBytes": 0
+  },
+  "realCloudCalls": 0,
+  "realCredentialFetches": 0
+}
