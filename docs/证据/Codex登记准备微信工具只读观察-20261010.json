@@ -1,0 +1,62 @@
+{
+  "kind": "REGISTRATION_IDE_READONLY_INSPECTION",
+  "observedAt": "2026-10-10T16:33:33.6979620+08:00",
+  "evidenceKind": "CODEX_COMMAND_OBSERVATIONS_AND_LOCAL_REGISTRY",
+  "appId": "wxfb4db1615ac15531",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "status": {
+    "success": true,
+    "loginExpired": false,
+    "cliTokenRequired": false,
+    "versionRelation": "equal",
+    "skillVersion": "0.3.11"
+  },
+  "functionInfo": {
+    "name": "scheduleSandbox",
+    "toolOk": true,
+    "resourceErrorCode": "ResourceNotFound.Function",
+    "codeDownloaded": false,
+    "codeHashVerified": false
+  },
+  "files": [
+    {
+      "path": "D:/微信web开发者工具/resources/app.asar.unpacked/wechatide-skill/SKILL.md",
+      "exists": true,
+      "sha256": "ca52735c502cee495380eae4ba2679931320d5c326c077c1b11fa90930578805"
+    },
+    {
+      "path": "D:/微信web开发者工具/resources/app.asar.unpacked/wechatide-skill/wechatide-tools/references/tools.yaml",
+      "exists": true,
+      "sha256": "05ac2dfaeac22b9881e03a33003397e15729fe5c6e86d78d47a251dee28142e9"
+    },
+    {
+      "path": "D:/微信web开发者工具/resources/app.asar.unpacked/node_modules/wcc-exec/wcc.exe",
+      "exists": true,
+      "sha256": "2ec832ea823c5f53e264230960637290a8cc7694773016b4c232a439193c9179"
+    },
+    {
+      "path": "D:/微信web开发者工具/resources/app.asar.unpacked/node_modules/wcc-exec/wcsc.exe",
+      "exists": true,
+      "sha256": "23914ded6433a178c184e4e0fcdb077b499502b4e5a784a1f44f3db55699ce31"
+    }
+  ],
+  "localRegistryTools": [
+    "cloud_fn_deploy",
+    "cloud_fn_inc_deploy",
+    "cloud_fn_info",
+    "cloud_fn_list",
+    "create_preview_qrcode",
+    "compile_wxml",
+    "compile_wxss"
+  ],
+  "limitations": [
+    "命令输出在内存中投影，未保存含登录用户信息的原始响应。",
+    "cloud_fn_list 已返回 ok 封装但本次未将列表内容作为结论。",
+    "详情查询仅该时点返回函数不存在；不证明部署权限、关闭包可部署或运行时与依赖支持。",
+    "工具注册表提供部署入口不等于取得云端代码下载或逐文件回读能力。",
+    "编译器文件存在并取得哈希；本次尚未编译完整登记包。"
+  ],
+  "cloudWrites": 0,
+  "deploymentExecuted": false,
+  "previewExecuted": false
+}

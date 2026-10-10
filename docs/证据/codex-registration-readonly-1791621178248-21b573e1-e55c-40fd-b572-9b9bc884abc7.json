@@ -1,0 +1,284 @@
+{
+  "runId": "codex-registration-readonly-1791621178248-21b573e1-e55c-40fd-b572-9b9bc884abc7",
+  "startedAt": "2026-10-10T08:32:58.250Z",
+  "scriptSha256": "31f6b0a267f737edd1454105e4c6fd11c89a2622ba288851ba1cd466de3d0b68",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "writeAuthorized": false,
+  "stages": [
+    {
+      "key": "billing",
+      "action": "DescribeBillingInfo",
+      "startedAt": "2026-10-10T08:33:05.952Z",
+      "validated": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "31086d99-1fc6-4da5-a10e-474347e1e2a5",
+      "finishedAt": "2026-10-10T08:33:07.427Z"
+    },
+    {
+      "key": "cycle",
+      "action": "DescribeEnvAccountCircle",
+      "startedAt": "2026-10-10T08:33:07.427Z",
+      "validated": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "ca973689-86ee-4457-8d11-06ae686577cc",
+      "finishedAt": "2026-10-10T08:33:08.989Z"
+    },
+    {
+      "key": "DbSizepkg",
+      "action": "DescribeQuotaData",
+      "startedAt": "2026-10-10T08:33:08.989Z",
+      "validated": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "1e0cd50c-09fb-4ad8-a389-290e665f2427",
+      "finishedAt": "2026-10-10T08:33:10.566Z"
+    },
+    {
+      "key": "DbReadpkg",
+      "action": "DescribeQuotaData",
+      "startedAt": "2026-10-10T08:33:10.566Z",
+      "validated": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "8e37a20c-268e-42db-8228-501d9a69bb57",
+      "finishedAt": "2026-10-10T08:33:12.110Z"
+    },
+    {
+      "key": "DbWritepkg",
+      "action": "DescribeQuotaData",
+      "startedAt": "2026-10-10T08:33:12.110Z",
+      "validated": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "requestId": "50dc7301-4200-45b4-9c1e-05a30b95f6f5",
+      "finishedAt": "2026-10-10T08:33:13.883Z"
+    }
+  ],
+  "observations": {
+    "billing": {
+      "EnvId": "cloud1-d8gcq5ag39d847723",
+      "PackageId": "baas_personal",
+      "PackageName": "个人版",
+      "PayMode": "PREPAYMENT",
+      "Status": "NORMAL",
+      "ExpireTime": "2027-04-04 23:59:59",
+      "IsAutoRenew": true,
+      "EnableOverrun": false
+    },
+    "cycle": {
+      "StartTime": "2026-10-04 20:33:33",
+      "EndTime": "2026-11-04 23:59:59"
+    },
+    "DbSizepkg": {
+      "MetricName": "DbSizepkg",
+      "Value": 0,
+      "SubValue": ""
+    },
+    "DbReadpkg": {
+      "MetricName": "DbReadpkg",
+      "Value": 0,
+      "SubValue": ""
+    },
+    "DbWritepkg": {
+      "MetricName": "DbWritepkg",
+      "Value": 0,
+      "SubValue": ""
+    }
+  },
+  "limitations": [
+    "非原子分次观测；不证明现实微信操作者归属、写权限或平台事务。",
+    "DbSizepkg 是容量用量；DbReadpkg/DbWritepkg 是平台该指标用量，不直接换算月剩余额度或余额。",
+    "官方凭据获取可能刷新官方登录缓存；不保存凭据、原始响应和错误文本。",
+    "包装层只取一批凭据、不重试；SDK内部请求重试未单独计数。"
+  ],
+  "fetch": {
+    "diagnostics": {
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "spawnFailed": false,
+      "stdoutBytes": 769,
+      "stderrBytes": 0
+    }
+  },
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "7983f090-935d-4508-ae53-e8bc5d278777",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "0194",
+          "principalIdTail": "5386",
+          "requestId": "7983f090-935d-4508-ae53-e8bc5d278777"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "6d175069-125a-4820-b247-bba1b0fa8e4a",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "6d175069-125a-4820-b247-bba1b0fa8e4a"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "371a11de-66fc-4c2a-87df-594ec24b6638",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "371a11de-66fc-4c2a-87df-594ec24b6638"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "7983f090-935d-4508-ae53-e8bc5d278777",
+      "describeEnvs": "6d175069-125a-4820-b247-bba1b0fa8e4a",
+      "describeEnvInfo": "371a11de-66fc-4c2a-87df-594ec24b6638"
+    }
+  },
+  "worker": {
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "spawnFailed": false,
+    "inputFailed": false
+  },
+  "records": [
+    {
+      "id": "oldPrimary",
+      "collection": "app_admins",
+      "key": "primary",
+      "status": "OBSERVED",
+      "requestId": null,
+      "active": true,
+      "keyMatches": true,
+      "targetMatches": true,
+      "openidDerivationMatches": null
+    },
+    {
+      "id": "oldUser",
+      "collection": "users",
+      "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "status": "OBSERVED",
+      "requestId": null,
+      "active": true,
+      "keyMatches": true,
+      "targetMatches": true,
+      "openidDerivationMatches": true
+    },
+    {
+      "id": "testUser",
+      "collection": "schtest_v1_users",
+      "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+      "status": "NOT_FOUND",
+      "requestId": null,
+      "active": null,
+      "keyMatches": null,
+      "targetMatches": null,
+      "openidDerivationMatches": null
+    },
+    {
+      "id": "testPrimary",
+      "collection": "schtest_v1_app_admins",
+      "key": "primary",
+      "status": "NOT_FOUND",
+      "requestId": null,
+      "active": null,
+      "keyMatches": null,
+      "targetMatches": null,
+      "openidDerivationMatches": null
+    }
+  ],
+  "status": "READONLY_OBSERVATIONS_OBTAINED",
+  "finishedAt": "2026-10-10T08:33:13.884Z",
+  "dependenciesUnchanged": true
+}
