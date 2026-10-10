@@ -1,0 +1,117 @@
+{
+  "reviewedCommit": "f38adc04c55abe27d9ac1f1d394d7fb7f09235ee",
+  "runId": "review-df6f1317b68a42fa",
+  "observedAt": "2026-10-10T07:58:48.730Z",
+  "evidenceKind": "REAL_APPLICATION_CODE_WITH_SYNTHETIC_SDK_STORAGE_AND_FILESYSTEM_FAULTS",
+  "rows": [
+    {
+      "name": "control-generate-check-reuse",
+      "passed": true
+    },
+    {
+      "name": "R1-targets-and-version-zero-write",
+      "passed": true
+    },
+    {
+      "name": "R1-eight-source-drifts-zero-write",
+      "passed": true,
+      "sources": 8
+    },
+    {
+      "name": "R1-generated-string-is-data",
+      "passed": true
+    },
+    {
+      "name": "R2-conflict-preserved-zero-write",
+      "passed": true
+    },
+    {
+      "name": "R2-junction-preserved-zero-write",
+      "passed": true
+    },
+    {
+      "name": "R2-partial-resume-reuses-bytes",
+      "passed": true
+    },
+    {
+      "name": "R2-write-fault-retained-then-resumed",
+      "passed": true
+    },
+    {
+      "name": "R3-both-frontends-cannot-self-hash",
+      "passed": true
+    },
+    {
+      "name": "R3-manifest-full-contract",
+      "passed": true,
+      "mutations": 9
+    },
+    {
+      "name": "R3-top-extra-and-complete-missing",
+      "passed": true
+    },
+    {
+      "name": "R3-complete-plan-reuse",
+      "passed": true
+    },
+    {
+      "name": "R4-closed-source-missing-and-corrupt",
+      "passed": true
+    },
+    {
+      "name": "R4-frontends-and-dependencies",
+      "passed": true
+    },
+    {
+      "name": "R5-real-page-single-identify",
+      "passed": true,
+      "loadedModules": [
+        "pages/schedule-sandbox/schedule-sandbox.js",
+        "utils/schedule-sandbox-client.js",
+        "config/schedule-sandbox-proof.js",
+        "utils/env-gate.js",
+        "utils/sandbox-test-coordinator.js",
+        "config/sandbox-test-driver-proof.js",
+        "utils/sandbox-test-driver.js"
+      ]
+    },
+    {
+      "name": "R5-closed-and-release-zero-send",
+      "passed": true
+    },
+    {
+      "name": "R5-first-unbound-unknown-no-auto-retry",
+      "passed": true,
+      "persistentDeduplicationClaimed": false,
+      "operatorMustStop": true
+    },
+    {
+      "name": "R5-bound-unknown-blocks-resubmit",
+      "passed": true
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "protectedFiles": {
+    "count": 866,
+    "unchanged": true,
+    "factsSha256": "566a3677798be18c591571526a4a8dbd96f48583620b86ebb6ae9a9a1416271b"
+  },
+  "boundaries": {
+    "network": false,
+    "credentialFetch": false,
+    "platform": false,
+    "actualSdk": false,
+    "deploy": false,
+    "registration": false,
+    "initialization": false,
+    "historicalEvidenceOverwritten": false
+  },
+  "limitations": [
+    "首次未绑定 identify 未知结果仅证明不自动重发；须停止人工核对，不证明持久防重或平台幂等。",
+    "读写仅限新建忽略夹具；源/关闭包故障为局部内存 fs 替身。"
+  ]
+}
