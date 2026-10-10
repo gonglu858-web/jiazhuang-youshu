@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-10T10:01:10.844Z",
+  "reviewedCommit": "0a5dc6d",
+  "tests": [
+    {
+      "name": "独立Git来源及提交范围",
+      "passed": true
+    },
+    {
+      "name": "独立24文件清单与两组八文件字节",
+      "passed": true
+    },
+    {
+      "name": "非法计划与错误来源零写",
+      "passed": true
+    },
+    {
+      "name": "输入漂移零写",
+      "passed": true
+    },
+    {
+      "name": "半成品冲突和额外空目录零写",
+      "passed": true
+    },
+    {
+      "name": "合法续建与显式编号复用",
+      "passed": true
+    },
+    {
+      "name": "带清单缺文件拒绝且不补",
+      "passed": true
+    },
+    {
+      "name": "清单变异及字节自报哈希不能通过",
+      "passed": true
+    },
+    {
+      "name": "真实Windows junction拒绝且目标不改",
+      "passed": true
+    },
+    {
+      "name": "默认编号独立与合成限定",
+      "passed": true
+    },
+    {
+      "name": "实际App/Page链登记关闭未知与版本",
+      "passed": true
+    }
+  ],
+  "summary": {
+    "groups": 11,
+    "passed": 11
+  },
+  "trackedFilesProtected": 883,
+  "trackedDrift": [],
+  "networkAttempts": 0,
+  "artifact": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-review-normal-34a2f7b16be29b",
+  "limitations": [
+    "仅本地实际应用代码与合成wx/存储；未运行真实SDK或云端。",
+    "夹具保留在新的忽略目录；历史文件不改。",
+    "网络计数限本进程已安装拦截点，非系统级网络审计。"
+  ]
+}
