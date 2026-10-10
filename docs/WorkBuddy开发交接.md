@@ -1,12 +1,53 @@
 # WorkBuddy 开发交接
 
-## Codex 最新接续：S2/R3-e 关闭，仅收尾 N1/N2（2026-10-10）
+## Codex 复核 834de82：N1/N2 定点收尾完成（2026-10-10，待复核）
 
-- 审查交付 `e6c40fc`，依据 [本轮复核报告](Codex复核-首次管理员接线S2-S4二次收尾-20261010.md) 第 2、3、5 节。实跑 **66/66**，新独立证据 **8 通过对照 + 4 问题复现、0 夹具错误**。
-- N1：父进程 `runReadOnlyReconcile` 每读前后及收尾复核凭据；事件触发过期必须停止且不确认。worker 的 S2 已关闭，不重做。
-- N2：绑定不匹配真正进入保守核对，不保留未经验证的 initialized/granted；顶层成功必须与 bootstrap/observed 一致；reconcile 存在性/状态矛盾不得确认。按真实 P4 返回契约处理（observePrimary 不输出 inputDigest），不得为收紧净化而阻断正常两读正向。
-- 限 execution-host、相称测试、操作稿与记录/新证据；随改测试头部“当前 53 项”过时文案。S1/S2/R3-e、P4/适配器/凭据/旧只读/业务/vendor/配置/打包器保持关闭。不联网、不取真实凭据、不初始化/部署/启用。
-- 新反例须贯穿 executeOnce、实际两读与保存载荷，保留正常链对照；新证据不覆盖历史。完成后逐文件扫描暂存凭据、保存本地 Git，注明自测数字、待 Codex 复核与未放行范围。当前不开始本人登记制品准备。
+S2 与 R3-e 已通过关闭，本轮**不重做**；S1、worker 的 S2 三期限与异步边界、
+P4、SDK 适配器、凭据宿主、旧只读链、业务云函数、vendor、入口、打包器均未改动。
+本地离线自测 **74 项：73 通过 / 0 失败 / 1 显式跳过**（上轮 66 项 65 通过 /
+1 跳过）；新复现证据 **14 项：12 通过 / 0 失败 / 2 未验证、exit 0、幂等**。
+既有回归 40+54+133+53 = **280 项全通过**。
+
+**N1 父进程核对时效**
+- `runReadOnlyReconcile` 在**每次读前/读后及收尾**复核同批凭据有效期，
+  并把时钟统一传入（此前只在核对前查一次，自建 adapter 时也没传deadlineCheck，
+  且核对完成后不复核）。
+- 过期即停止后续读取、**不确认**；保留 worker 进程事实、既有提交事实与未知终态，
+  不重新取凭据、不重新初始化。
+- **注入路径同样受时效约束** —— 否则受控注入可用过期凭据伪造核对结论。
+- 实测：第一读事件过期 → 只读 1 条、`reconcileConfirmed=false`、记
+  `reconcileExpiredAtStage`；凭据有效 → 真实两条读取并按真实记录判定确认。
+
+**N2 绑定与状态聚合**
+- **遵守真实 P4 `observePrimary` 返回契约**：实测核心返回
+  `{state, reason, primaryPresent, primaryUserId, primaryStatus, auditId,
+  auditPresent, writeAuthorized, note}`，**不返回 inputDigest**（摘要在核心内部
+  校验审计记录后体现为 state）。因此 `inputDigest` **不是必填**，缺失不算矛盾，
+  也不引入「P4 必须输出摘要」的要求去误拒真实正向路径。
+- 新增 `source` 区分结论来源（`P4_OBSERVE` / `INJECTED`），作为聚合依据之一。
+- **组合矛盾不得确认**：`state='present'` 必须在存在性上自洽
+（`primaryPresent`/`auditPresent` 均 true、`primaryStatus='active'`），
+  否则降级为 `inconsistent` 并记 `contradiction`。
+- **一个明确的聚合点**判定成功：顶层成功必须与已净化的 bootstrap/observed
+  相互一致（`BOOTSTRAP_NOT_OK`、`INITIALIZED_NOT_IN_BOOTSTRAP`、
+  `OBSERVED_NOT_PRESENT` 等）；不匹配或缺项一律降级。
+- **错误绑定真正进入保守核对**：绑定不匹配/组合矛盾时 `resultUnknown=true`，
+  撤销未经验证的 `initialized`/`granted`（保留 `rawSelfReportedInitialized`
+  以如实记录回执自报过），并纳入 `mayHaveWritten` → 走同批上下文的固定两读核对。
+  实测：他计划键 → 两读、`saveRecordType≠COMPLETED`、保存载荷不声称已初始化。
+- 保存载荷补 `granted`，与 `initialized` 成对出现，避免落盘记录与报告互相矛盾。
+
+**测试头部文案**已从「53 项 / 52 通过 / 1 跳过」更新为当前事实，并说明
+R3-e 的子进程可启动性是**逐次运行的环境条件**：不能启动时显式 skip 并
+**如实记录该时点原始错误**，不预设任何原因。
+
+**R3-e 当前为显式跳过**：本宿主此刻 `spawnSync` 返回 EBUSY（实测 3/3 复现，
+对 `node -e` 探针同样如此）。按 Codex §5，如实记为「未验证」并附原始错误，
+**未**归因为任何已知原因，也未用替身冒充通过。需在可启动子进程的环境复验。
+
+**仍未结论化**：真实平台执行未发生（真实凭据获取、管理员初始化、本人登记、
+资源创建、部署、入口启用均未放行）；受控批准的**真实签发者**尚未存在；
+集合是否存在、IAM 写权限、平台事务行为仍待核实。
 
 ## Codex 复核 S2/S3/S4 剩余项已收尾完成（2026-10-10，待复核）
 

@@ -915,21 +915,35 @@ async function executeOnce(options) {
    * 里的任意文本进入报告。
    */
   if (!workerResult || workerResult.ok !== true || report.observationConfirmed !== true) {
-    const mayHaveWritten = Boolean(workerResult && workerResult.resultUnknown) ||
-      report.observeFailed === true ||
-      (workerResult && workerResult.processFacts
-        ? (workerResult.processFacts.timedOut || workerResult.processFacts.signal !== null ||
-           workerResult.processFacts.closeNotObserved ||
-           workerResult.processFacts.terminationRequested === true ||
-           workerResult.processFacts.terminationConfirmed === false)
-        : false);
-    report.resultUnknown = mayHaveWritten;
+    /**
+   * N2（Codex 2026-10-10 §3.1）：`mayHaveWritten` 的判定。
+   *
+   * 绑定不匹配（他计划键/摘要）或组合矛盾时，回执属**不可信结果**：
+   * 执行**可能**已发生（只是回执无法绑定本计划），因此必须进入同批上下文的
+   * 保守只读核对。此前这两项**未**纳入本判定 → 跳过核对，
+   * 却声称「进入保守核对」（实测 readOnlyGet=0）。
+   *
+   * 注意：worker 进程事实本身干净（正常退出、无信号）时，
+   * 仍按不可信处理 —— 干净退出只说明进程结束，不说明数据库提交结果。
+   */
+  const mayHaveWritten = Boolean(workerResult && workerResult.resultUnknown) ||
+    report.observeFailed === true ||
+    (workerResult && workerResult.bindingMismatch === true) ||
+    (workerResult && Array.isArray(workerResult.stateContradictions) &&
+      workerResult.stateContradictions.length > 0) ||
+    (workerResult && workerResult.processFacts
+      ? (workerResult.processFacts.timedOut || workerResult.processFacts.signal !== null ||
+         workerResult.processFacts.closeNotObserved ||
+         workerResult.processFacts.terminationRequested === true ||
+         workerResult.processFacts.terminationConfirmed === false)
+      : false);
+  report.resultUnknown = mayHaveWritten;
     // 同批凭据是否仍可用（过期则不做核对，明确留待只读接续）
     const credentialUsable = Number.isFinite(snapshot.expiresAtMs) && snapshot.expiresAtMs > now();
     if (mayHaveWritten && credentialUsable) {
-      let raw = null;
+      let rec = null;
       try {
-        raw = await runReadOnlyReconcile({
+        rec = await runReadOnlyReconcile({
           snapshot,
           plan: boundPlan,
           approval: boundApproval,
@@ -937,22 +951,44 @@ async function executeOnce(options) {
           auditId: approvalCheck.auditId,
           // 合成测试可注入实现（离线）；生产路径用默认 P4 两读
           inject: o.reconcileReadOnly,
-          deps: o.reconcileDeps
+          deps: o.reconcileDeps,
+          // N1：统一时钟（测试可在读取事件上推进）
+          now
         });
-      } catch (_) { raw = null; }
-      // S3-3：净化后才进入报告 —— 合成回调返回的 `extra` 之类一律丢弃
-      report.reconcile = projectReconcile(raw, {
+      } catch (_) { rec = null; }
+      const expiredAtStage = rec && typeof rec.expiredAtStage === 'string'
+        ? rec.expiredAtStage : null;
+      // S3-3：净化后才进入报告 —— 合成回调返回的 `extra` 之类一律丢弃。
+      // N2：按真实来源标记，并要求组合自洽（不靠单个 state 放行）。
+      report.reconcile = projectReconcile(rec ? rec.raw : null, {
         auditId: approvalCheck.auditId,
         inputDigest: approvalCheck.planDigest
+      }, {
+        source: o.reconcileReadOnly ? 'INJECTED' : 'P4_OBSERVE'
       });
       report.reconcileAttempted = true;
       // 如实表达「未确认」为 false，而不是 undefined（不谎称已确认）
       report.reconcileConfirmed = false;
-      if (report.reconcile.state === 'present' &&
+      /**
+       * N1：核对期间同批凭据过期 → **不确认**。
+       * 保留 worker 进程事实、既有提交事实与未知终态；
+       * 不重新取凭据、不重新初始化、不重写。
+       */
+      if (expiredAtStage !== null) {
+        report.reconcileExpiredAtStage = expiredAtStage;
+        report.reconcile.state = 'unconfirmed';
+        report.incomplete.push('核对期间同批凭据已过期（' + expiredAtStage +
+          '）：停止后续读取、不确认结论；保留未知终态，待只读接续。');
+      } else if (report.reconcile.selfConsistent === true &&
+        report.reconcile.state === 'present' &&
         report.reconcile.auditId === approvalCheck.auditId &&
         report.reconcile.primaryStatus === 'active') {
         report.observationConfirmed = true;
         report.reconcileConfirmed = true;
+      } else if (report.reconcile.contradiction !== null) {
+        // N2：组合矛盾（如 state=present 但存在性为 false）不确认
+        report.incomplete.push('核对结论组合矛盾（' + report.reconcile.contradiction +
+          '）：已降级为未确认，不采信注入或矛盾字段。');
       }
     } else if (mayHaveWritten) {
       report.reconcileAttempted = false;
@@ -979,6 +1015,7 @@ async function executeOnce(options) {
           recordType: report.resultUnknown ? 'RESULT_UNKNOWN' : 'FAILED',
           outcome: report.outcome,
           initialized: report.initialized,
+          granted: report.granted,
           observationConfirmed: report.observationConfirmed,
           resultUnknown: report.resultUnknown,
           reconcileAttempted: report.reconcileAttempted === true,
@@ -1012,7 +1049,10 @@ async function executeOnce(options) {
       recordType: 'COMPLETED',
       outcome: report.outcome,
       observationConfirmed: report.observationConfirmed,
-      initialized: report.initialized
+      // N2（§3.2）：保存载荷与报告状态保持一致 —— 授予事实与初始化事实
+      // 必须成对出现，避免落盘记录与报告互相矛盾。
+      initialized: report.initialized,
+      granted: report.granted
     });
   } catch (_) {
     saved = false;
@@ -1244,15 +1284,83 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
   out.granted = parsed.granted === true;
   out.initialized = parsed.initialized === true;
   out.observationConfirmed = parsed.observationConfirmed === true;
-  // 绑定一致性：顶层审计键 + bootstrap 关键键/摘要都须精确匹配本计划
-  const bindingMatched = out.auditId !== null &&
-    (out.bootstrap ? out.bootstrap.bindingMatched === true : false);
+
+  /**
+   * N2（Codex 2026-10-10 §3.1/§3.2）：**一个明确的聚合点**判定成功。
+   *
+   * 字段各自合法不等于组合结论成立。此前顶层 `ok/initialized/granted/
+   * observationConfirmed` 被独立采信，实测两种漏检：
+   *  - 他计划键+ 摘要 → 只把键置 null，`initialized/granted` 仍为 true，
+   *    且 `bindingMismatch` **未**纳入 mayHaveWritten → 跳过核对
+   *    （实测 readOnlyGet=0，却声称「进入保守核对」）；
+   *  - 键/摘要精确匹配但 `bootstrap.ok/initialized/granted=false`、
+   *    `observed.state=unconfirmed`、存在性全 false → 顶层自报成功仍被接受，
+   *    实测保存为 COMPLETED。
+   *
+   * 现在：顶层成功必须与**已净化的 bootstrap / observed 相互一致**；
+   * 不一致或缺项一律降级，并把「绑定不匹配」当作**不可信结果**
+   * （可能已执行 → 交 executeOnce 做保守只读核对），而不是确定未写。
+   * 同时撤销未经核实的 initialized/granted —— 不把回执自报当成已证实事实。
+   */
+  const bs = out.bootstrap;
+  const ob = out.observed;
+  const topLevelBinding = out.auditId !== null;
+  const bindingMatched = topLevelBinding && bs !== null && bs.bindingMatched === true;
+
+  // 组合一致性：顶层声称的每件事都必须在 bootstrap/observed 里有对应支撑
+  const contradictions = [];
+  if (bindingMatched) {
+    if (bs.ok !== true) contradictions.push('BOOTSTRAP_NOT_OK');
+    if (out.initialized === true && bs.initialized !== true) contradictions.push('INITIALIZED_NOT_IN_BOOTSTRAP');
+    if (out.granted === true && bs.granted !== true) contradictions.push('GRANTED_NOT_IN_BOOTSTRAP');
+    if (out.outcome === 'initialized' && bs.outcome !== 'initialized') contradictions.push('OUTCOME_MISMATCH');
+  }
+  if (out.observationConfirmed === true) {
+    // 「已核对确认」必须由 observed 的 present + 两条存在性支撑
+    if (ob === null || ob.state !== 'present') contradictions.push('OBSERVED_NOT_PRESENT');
+    else {
+      if (ob.primaryPresent !== true) contradictions.push('OBSERVED_PRIMARY_ABSENT');
+      if (ob.auditPresent !== true) contradictions.push('OBSERVED_AUDIT_ABSENT');
+    }
+  }
+  // 顶层 initialized 但 bootstrap 明确否认 → 不采信顶层自报
+  if (bs !== null && bs.initialized === false && out.initialized === true) {
+    contradictions.push('TOP_LEVEL_INITIALIZED_DENIED_BY_BOOTSTRAP');
+  }
+
   if (!bindingMatched) {
-    // 不匹配或缺失 → 降级为未确认；**不**仅丢弃字段后仍判成功
+    // 绑定不匹配 = **不可信结果**：可能已执行（他计划/坏回执自报成功），
+    // 交 executeOnce 在同批上下文做保守核对；不声称已初始化。
     out.ok = false;
     out.observationConfirmed = false;
     out.bindingMismatch = true;
+    // N2（Codex §3.1）：干净退出只说明进程结束，不说明数据库提交结果。
+    // 绑定不匹配时**必须**视为「结果未知」，否则 executeOnce 会跳过保守核对
+    // （实测 readOnlyGet=0 却声称进入核对）。
+    out.resultUnknown = true;
+    // 撤销未经验证的授予/初始化事实（保留「回执自报过」这一原始形态）
+    out.rawSelfReportedInitialized = parsed.initialized === true;
+    out.rawSelfReportedGranted = parsed.granted === true;
+    out.initialized = false;
+    out.granted = false;
     if (out.errorCode === null) out.errorCode = ERR.RESULT_UNKNOWN;
+  }
+
+  if (contradictions.length > 0) {
+    out.ok = false;
+    out.observationConfirmed = false;
+    out.stateContradictions = Object.freeze(contradictions.slice(0, 8));
+    // 组合矛盾同样意味着「无法确证是否已提交」
+    out.resultUnknown = true;
+    out.initialized = false;
+    out.granted = false;
+    if (out.errorCode === null) out.errorCode = ERR.RESULT_UNKNOWN;
+  }
+  // 结果未知必须有固定错误码（此前此分支可能仍是 WORKER_FAILED）
+  if (out.resultUnknown === true && out.errorCode !== ERR.RESULT_UNKNOWN &&
+    (out.bindingMismatch === true ||
+      (Array.isArray(out.stateContradictions) && out.stateContradictions.length > 0))) {
+    out.errorCode = ERR.RESULT_UNKNOWN;
   }
   return out;
 }
@@ -1271,43 +1379,107 @@ function projectWorkerOutput(parsed, facts, unknown, reason, expected) {
  */
 async function runReadOnlyReconcile(options) {
   const o = options || {};
+  const clock = typeof o.now === 'function' ? o.now : () => Date.now();
+  const snapshot = o.snapshot || {};
+  /**
+   * N1：核对期间的**同批凭据**时效。
+   *
+   * worker 的期限守卫已关闭，但父层这条新增路径此前**没有**等效保护：
+   * 只在核对前检查一次凭据，自建 adapter 时也没传 deadlineCheck，
+   * 且核对完成后不复查 —— 实测在第一条 primary 读取事件推进时钟越过期限后，
+   * 仍读第二条并 `reconcileConfirmed=true`。
+   *
+   * 现在：在**每次读前 / 读后 / 收尾**三个边界复核同批凭据；
+   * 越界即停止后续读取、不确认。保留 worker 进程事实、既有提交事实与
+   * 未知终态，不重新取凭据、不重新初始化。
+   *
+   * 不重做已关闭的 worker 守卫、P4 与 SDK 适配器。
+   */
+  const credentialDeadlineMs = snapshot.expiresAtMs;
+  let expiredStage = null;
+  const checkDeadline = (stage) => {
+    if (expiredStage !== null) return false;
+    if (Number.isFinite(credentialDeadlineMs) && credentialDeadlineMs <= clock()) {
+      expiredStage = stage;
+      return false;
+    }
+    return true;
+  };
+  /** 收尾复核：最后一读完成到父层判定之间过期也不确认。 */
+  const finalizeDeadline = () => {
+    if (expiredStage === null &&
+      Number.isFinite(credentialDeadlineMs) && credentialDeadlineMs <= clock()) {
+      expiredStage = 'AFTER_RECONCILE';
+    }
+    return expiredStage;
+  };
+
   if (typeof o.inject === 'function') {
-    // 合成注入点：返回**未净化**的原始对象，由调用方 projectReconcile 净化
-    return o.inject({
-      snapshot: o.snapshot,
-      plan: o.plan,
-      approval: o.approval,
-      isolationDir: o.isolationDir,
-      auditId: o.auditId,
-      targetUserId: o.plan && o.plan.targetUserId
-    });
+    // 合成注入点：返回**未净化**的原始对象，由调用方 projectReconcile 净化。
+    // 注入路径同样受时效约束（否则注入可用过期凭据伪造核对结论）。
+    if (!checkDeadline('BEFORE_INJECTED_RECONCILE')) {
+      return { raw: null, expiredAtStage: finalizeDeadline() };
+    }
+    let injected = null;
+    try {
+      injected = o.inject({
+        snapshot,
+        plan: o.plan,
+        approval: o.approval,
+        isolationDir: o.isolationDir,
+        auditId: o.auditId,
+        targetUserId: o.plan && o.plan.targetUserId
+      });
+    } catch (_) { injected = null; }
+    if (!checkDeadline('AFTER_INJECTED_RECONCILE')) {
+      return { raw: null, expiredAtStage: finalizeDeadline() };
+    }
+    return { raw: injected, expiredAtStage: finalizeDeadline() };
   }
+
   // 默认路径：同一批凭据 + 同一 SDK 适配层做只读核对
   let adapter;
   try {
     const built = executionWorker.buildAdapter({
-      credential: o.snapshot,
+      credential: snapshot,
       targetUserId: o.plan && o.plan.targetUserId,
       auditId: o.auditId,
       // 仅离线合成测试注入；生产路径由适配层自建
-      db: (o.deps && o.deps.db) || null
+      db: (o.deps && o.deps.db) || null,
+      // N1：把同批凭据时效接到适配层边界守卫（每次 readOnlyGet 前后）
+      deadlineCheck: (stage, forObservation) => {
+        if (stage === 'BEFORE_READ_ONLY' || stage === 'AFTER_READ_ONLY') {
+          return !checkDeadline(stage);
+        }
+        // 写入类边界在只读核对中不应触发；仍按凭据时效保守处理
+        return !checkDeadline(String(stage || 'RECONCILE_BOUNDARY'));
+      }
     });
-    // 当次主体核验已在 executeOnce 前完成且与批准绑定值精确一致
+    // 当次主体核验已在executeOnce 前完成且与批准绑定值精确一致
     built.setCaller(true);
     adapter = built.adapter;
   } catch (_) {
-    return null;
+    return { raw: null, expiredAtStage: finalizeDeadline() };
   }
+  if (!checkDeadline('BEFORE_RECONCILE')) {
+    return { raw: null, expiredAtStage: finalizeDeadline() };
+  }
+  let observed = null;
   try {
-    return await p4.observePrimary({
+    observed = await p4.observePrimary({
       adapter,
       plan: o.plan,
       approval: o.approval,
-      nowMs: Date.now()
+      nowMs: clock()
     });
   } catch (_) {
-    return null;
+    observed = null;
   }
+  if (!checkDeadline('AFTER_RECONCILE')) {
+    // 过期：保留「读到过什么」由净化层归一为未确认，不确认任何结论
+    return { raw: null, expiredAtStage: finalizeDeadline() };
+  }
+  return { raw: observed, expiredAtStage: finalizeDeadline() };
 }
 
 /**
@@ -1317,10 +1489,21 @@ async function runReadOnlyReconcile(options) {
  * `{ok:true,state:'present',extra:'SYNTH_PRIVATE_MARKER'}` 时标记原样进入报告，
  * 并得到 `reconcileConfirmed=true`。普通返回对象不得替代核对事实。
  *
- * 固定形状：`state` 走枚举；`auditId` 必须精确等于本计划确定性键；
- * 摘要须 32 位十六进制且与本计划一致；不含任何其它字段。
+ * N2（Codex 2026-10-10 §3.3）：**遵守真实 P4 `observePrimary` 返回契约**。
+ * 实测核心返回 `{state, reason, primaryPresent, primaryUserId, primaryStatus,
+ * auditId, auditPresent, writeAuthorized, note}` —— **不返回 inputDigest**
+ * （摘要在核心内部校验审计记录后体现为 state）。
+ * 因此：
+ *  - `inputDigest` 不是必填，缺失**不**导致正常结果被拒；
+ *  - `source` 记录结论来源（`P4_OBSERVE` / `INJECTED`），用于区分
+ *    「实际两读形成的结论」与「注入对象」——这是聚合判断的依据之一；
+ *  - **自洽校验**：`state='present'` 必须在存在性上自洽
+ *    （primaryPresent 与 auditPresent 都为 true、primaryStatus 为 active）。
+ *    字段各自合法但组合矛盾（如 state=present 却 primaryPresent=false）
+ *    一律降级为 `inconsistent`，不得据以确认。
  */
-function projectReconcile(rec, expected) {
+function projectReconcile(rec, expected, meta) {
+  const m = meta || {};
   const out = {
     state: 'unconfirmed',
     primaryPresent: null,
@@ -1328,7 +1511,10 @@ function projectReconcile(rec, expected) {
     auditPresent: null,
     auditId: null,
     inputDigest: null,
-    errorCode: null
+    errorCode: null,
+    source: m.source === 'INJECTED' ? 'INJECTED' : 'P4_OBSERVE',
+    selfConsistent: false,
+    contradiction: null
   };
   if (!isPlainObject(rec)) return out;
   if (typeof rec.state === 'string' && PARENT_OBSERVED_STATES.indexOf(rec.state) !== -1) {
@@ -1340,17 +1526,37 @@ function projectReconcile(rec, expected) {
     PARENT_PRIMARY_STATUS.indexOf(rec.primaryStatus) !== -1) {
     out.primaryStatus = rec.primaryStatus;
   }
-  // 审计键与摘要：格式合法**且**与本计划精确一致才保留
+  // 审计键：格式合法**且**与本计划精确一致才保留
   if (expected && typeof expected.auditId === 'string' && rec.auditId === expected.auditId) {
     out.auditId = expected.auditId;
   }
+  // 摘要：**可选**。真实 P4 不返回它；仅当提供了且合法且与本计划一致时保留。
+  // 不把它当必填 —— 否则真实正向路径会被误拒。
   if (expected && typeof expected.inputDigest === 'string' &&
-    typeof rec.inputDigest === 'string' && DIGEST_HEX_32.test(rec.inputDigest) &&
-    rec.inputDigest === expected.inputDigest) {
-    out.inputDigest = expected.inputDigest;
+    typeof rec.inputDigest === 'string' && DIGEST_HEX_32.test(rec.inputDigest)) {
+    out.inputDigest = rec.inputDigest === expected.inputDigest ? expected.inputDigest : null;
+    if (out.inputDigest === null) out.contradiction = 'INPUT_DIGEST_MISMATCH';
   }
   if (typeof rec.errorCode === 'string' && executionWorker.CORE_ERROR_CODES.has(rec.errorCode)) {
     out.errorCode = rec.errorCode;
+  }
+
+  /**
+   * 自洽校验：字段各自合法不等于组合结论成立（N2 §3.3）。
+   * 只在「已实际执行两读」的路径上要求存在性自洽；注入路径同样要求，
+   * 否则受控注入可凭组合矛盾的对象骗取确认。
+   */
+  if (out.state === 'present') {
+    if (out.primaryPresent !== true || out.auditPresent !== true) {
+      out.contradiction = out.contradiction || 'PRESENCE_CONTRADICTS_PRESENT';
+    } else if (out.primaryStatus !== 'active') {
+      out.contradiction = out.contradiction || 'STATUS_NOT_ACTIVE';
+    }
+  }
+  out.selfConsistent = out.contradiction === null;
+  // 矛盾时状态降级为 inconsistent —— 不让 `state=present` 单独放行
+  if (!out.selfConsistent && out.state === 'present') {
+    out.state = 'inconsistent';
   }
   return out;
 }
