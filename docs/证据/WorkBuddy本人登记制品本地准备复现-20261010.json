@@ -1,0 +1,420 @@
+{
+  "observedAt": "2026-10-10T05:12:10.276Z",
+  "scope": "本人登记制品本地准备 L1/L2/L3：独立生成/检查工具、前端覆盖与关闭绑定、相称离线验证",
+  "networkAttempts": 0,
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realInitializeExecuted": false,
+  "realDeploymentExecuted": false,
+  "realWechatRegistrationExecuted": false,
+  "installedPackages": 0,
+  "resourceCreated": false,
+  "previewGenerated": false,
+  "entranceEnabled": false,
+  "cacheCleared": false,
+  "syntheticArtifacts": {
+    "dir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-synth-reg-0001",
+    "note": "合成制品目录，manifest 标记 synthetic=true；artifacts 不纳入提交"
+  },
+  "historicalEvidenceOverwritten": false,
+  "protectedHashes": {
+    "miniapp/scripts/package-sandbox.cjs": "3e1274c70cf5bbbb",
+    "miniapp/cloudfunctions/scheduleSandbox/gate.js": "712b6e92b606c321",
+    "miniapp/cloudfunctions/scheduleSandbox/index.js": "1bec56a38fcec9da",
+    "miniapp/cloudfunctions/scheduleSandbox/collection-map.js": "09c5aa9bea3c779a",
+    "miniapp/cloudfunctions/scheduleSandbox/project-guard.js": "c8a2d6f28747bbd3",
+    "miniapp/cloudfunctions/scheduleSandbox/package.json": "8ffc87ea85fd9767",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js": "c5e93d81e0245471",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js": "da302a7412bb08ce",
+    "miniapp/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json": "cd711e548e99abf7",
+    "miniapp/miniprogram/config/schedule-sandbox-proof.js": "724bc3c16ca8d03b",
+    "miniapp/scripts/lib/sandbox-primary-execution-host.cjs": "dc1881e8d7daa8ca"
+  },
+  "summary": {
+    "total": 29,
+    "passed": 29,
+    "unverified": 0,
+    "failed": 0
+  },
+  "verificationKinds": {
+    "synthetic": "合成计划 + 合成凭据上下文 + 合成微信上下文 + 合成数据库传输",
+    "realSdkLocalTransform": "加载生成的 index/gate/map/vendor 并实际调用 main/assert，走真实 SDK 本地转换（配置解析、动作门控、身份派生、事务对象）；数据库为合成传输",
+    "notPerformed": "真实凭据获取、真实平台初始化、平台事务、IAM 写权限、真机与平台编译、前端完整包组装与预览，全部未验证"
+  },
+  "boundaries": {
+    "notNetworked": true,
+    "noRealCredentialFetch": true,
+    "noRealInitialize": true,
+    "noWechatRegistration": true,
+    "noResourceCreation": true,
+    "noInstall": true,
+    "noPreview": true,
+    "noDeployment": true,
+    "noEntranceEnable": true,
+    "noCacheClear": true,
+    "syntheticMarkedInManifest": true,
+    "note": "生成 enabled=true 的候选文件只存在于隔离 artifacts 目录，不等于云端启用"
+  },
+  "results": [
+    {
+      "id": "L1-check-mode-zero-side-effects",
+      "pass": true,
+      "observed": {
+        "ok": false,
+        "candidates": [
+          "registration-synth-reg-0001"
+        ],
+        "wroteFiles": false,
+        "cloudCalled": false
+      }
+    },
+    {
+      "id": "L1-build-synthetic-package",
+      "pass": true,
+      "observed": {
+        "ok": true,
+        "reused": true,
+        "differences": [
+          {
+            "file": "index.js",
+            "anchor": "SANDBOX_CONFIG",
+            "sourceSha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+            "artifactSha256": "f22cf8d4c9f6e47a0368fe919ea73cbf25826a7dc74f34d913f534e62fa62cf5"
+          },
+          {
+            "file": "gate.js",
+            "anchor": "PREPARE_ALLOWED",
+            "sourceSha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+            "artifactSha256": "11222f02eed4eeeb3e705ff56d84ec755a3681f8667395c311ee8c0ba28ec00a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "L1-exactly-two-transforms",
+      "pass": true,
+      "observed": {
+        "diffFiles": [
+          "gate.js",
+          "index.js"
+        ]
+      }
+    },
+    {
+      "id": "L1-other-six-byte-identical",
+      "pass": true,
+      "observed": {
+        "identical": [
+          {
+            "rel": "collection-map.js",
+            "same": true,
+            "sha256": "09c5aa9bea3c779a"
+          },
+          {
+            "rel": "project-guard.js",
+            "same": true,
+            "sha256": "c8a2d6f28747bbd3"
+          },
+          {
+            "rel": "package.json",
+            "same": true,
+            "sha256": "8ffc87ea85fd9767"
+          },
+          {
+            "rel": "vendor/service.js",
+            "same": true,
+            "sha256": "c5e93d81e0245471"
+          },
+          {
+            "rel": "vendor/schedule-service.js",
+            "same": true,
+            "sha256": "da302a7412bb08ce"
+          },
+          {
+            "rel": "vendor/MANIFEST.json",
+            "same": true,
+            "sha256": "cd711e548e99abf7"
+          }
+        ]
+      }
+    },
+    {
+      "id": "L1-prepare-allowed-narrowed-to-identify",
+      "pass": true,
+      "observed": {
+        "prepareAllowed": [
+          "identify"
+        ]
+      }
+    },
+    {
+      "id": "L1-execute-allowed-untouched",
+      "pass": true,
+      "observed": {
+        "executeAllowedCount": 15
+      }
+    },
+    {
+      "id": "L1-other-actions-rejected-before-db",
+      "pass": true,
+      "observed": {
+        "actions": 19,
+        "rejected": 19,
+        "dbAccessTotal": 0,
+        "txTotal": 0,
+        "commitTotal": 0
+      }
+    },
+    {
+      "id": "L1-first-registration-writes-users-and-audit-only",
+      "pass": true,
+      "observed": {
+        "result": {
+          "ok": true,
+          "userId": "u_8a3fa1e579a553477138d3d3590dc6b57e00badb"
+        },
+        "writes": [
+          "schtest_v1_users/add",
+          "schtest_v1_audit_events/add"
+        ],
+        "readsPrimary": true,
+        "commits": 1
+      }
+    },
+    {
+      "id": "L1-registration-no-openid-or-credential-in-output",
+      "pass": true,
+      "observed": {
+        "outputKeys": [
+          "ok",
+          "sandbox",
+          "userId",
+          "isAdmin"
+        ]
+      }
+    },
+    {
+      "id": "L1-existing-account-zero-new-writes",
+      "pass": true,
+      "observed": {
+        "ok": true,
+        "writes": [],
+        "tx": 0
+      }
+    },
+    {
+      "id": "L1-disabled-account-rejected-not-overwritten",
+      "pass": true,
+      "observed": {
+        "rejected": true,
+        "status": "disabled"
+      }
+    },
+    {
+      "id": "L1-wrong-openid-owner-rejected-not-overwritten",
+      "pass": true,
+      "observed": {
+        "rejected": true,
+        "openid": "synthetic-other"
+      }
+    },
+    {
+      "id": "L1-outsider-rejected-before-db",
+      "pass": true,
+      "observed": {
+        "rejected": true,
+        "dbAccess": 0,
+        "code": "SANDBOX_ACCOUNT_NOT_ALLOWED"
+      }
+    },
+    {
+      "id": "L1-bad-appid-or-missing-wxcontext-rejected",
+      "pass": true,
+      "observed": {
+        "rejected": 3,
+        "dbAccess": 0
+      }
+    },
+    {
+      "id": "L1-invalid-plans-rejected",
+      "pass": true,
+      "observed": {
+        "planResults": [
+          {
+            "label": "placeholder",
+            "expected": "REG_PLAN_PLACEHOLDER",
+            "got": "REG_PLAN_PLACEHOLDER"
+          },
+          {
+            "label": "empty-allowlist",
+            "expected": "REG_PLAN_USER_INVALID",
+            "got": "REG_PLAN_USER_INVALID"
+          },
+          {
+            "label": "short-userid",
+            "expected": "REG_PLAN_USER_INVALID",
+            "got": "REG_PLAN_USER_INVALID"
+          },
+          {
+            "label": "dup-user",
+            "expected": "REG_PLAN_USER_NOT_UNIQUE",
+            "got": "REG_PLAN_USER_NOT_UNIQUE"
+          },
+          {
+            "label": "window-too-long",
+            "expected": "REG_PLAN_WINDOW_TOO_LONG",
+            "got": "REG_PLAN_WINDOW_TOO_LONG"
+          },
+          {
+            "label": "env-mismatch",
+            "expected": "REG_PLAN_TARGET_MISMATCH",
+            "got": "REG_PLAN_TARGET_MISMATCH"
+          },
+          {
+            "label": "function-mismatch",
+            "expected": "REG_PLAN_TARGET_MISMATCH",
+            "got": "REG_PLAN_TARGET_MISMATCH"
+          },
+          {
+            "label": "unknown-field",
+            "expected": "REG_PLAN_FIELD_UNKNOWN",
+            "got": "REG_PLAN_FIELD_UNKNOWN"
+          }
+        ],
+        "expiredCode": "REG_PLAN_WINDOW_EXPIRED"
+      }
+    },
+    {
+      "id": "L1-transform-anchor-and-drift-guards",
+      "pass": true,
+      "observed": {
+        "anchorMissing": "REG_TRANSFORM_ANCHOR_MISSING",
+        "anchorDup": "REG_TRANSFORM_ANCHOR_AMBIGUOUS",
+        "drift": "REG_PLAN_SOURCE_DRIFT"
+      }
+    },
+    {
+      "id": "L1-reuse-same-content-no-overwrite",
+      "pass": true,
+      "observed": {
+        "reused": true,
+        "wroteFiles": false,
+        "manifestUnchanged": true,
+        "overwriteCode": "REG_ARTIFACT_EXISTS_DIFFERENT"
+      }
+    },
+    {
+      "id": "L1-check-recomputes-not-trusting-manifest",
+      "pass": true,
+      "observed": {
+        "tamperDetected": true,
+        "restoredOk": true
+      }
+    },
+    {
+      "id": "L1-extra-file-rejected",
+      "pass": true,
+      "observed": {
+        "extraDetected": true
+      }
+    },
+    {
+      "id": "L1-out-dir-safety",
+      "pass": true,
+      "observed": {
+        "unsafeRejected": 8
+      }
+    },
+    {
+      "id": "L1-no-deploy-execute-login",
+      "pass": true,
+      "observed": {
+        "deployRejected": 5
+      }
+    },
+    {
+      "id": "L2-frontend-override-shape",
+      "pass": true,
+      "observed": {
+        "enabled": true,
+        "appId": "wxfb4db1615ac15531",
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "functionName": "scheduleSandbox",
+        "sandboxProjectId": "",
+        "allowedVersions": [
+          "develop",
+          "trial"
+        ],
+        "hasPhaseField": false,
+        "frozen": true
+      }
+    },
+    {
+      "id": "L2-legacy-frontend-still-disabled",
+      "pass": true,
+      "observed": {
+        "legacyEnabled": false
+      }
+    },
+    {
+      "id": "L2-override-is-not-full-previewable-package",
+      "pass": true,
+      "observed": {
+        "hasRequestCode": false,
+        "declaresNotPreviewable": true
+      }
+    },
+    {
+      "id": "L2-closed-package-bound-readonly",
+      "pass": true,
+      "observed": {
+        "dir": "closed-20261005-r2fix",
+        "present": true,
+        "files": 8,
+        "schema": "sandbox-closed-candidate/2",
+        "boundDigest": "7c194471008ea8c53f54dc023e69a36a84fc0690b950f487a2faea0337d2759b"
+      }
+    },
+    {
+      "id": "L2-closed-package-main-rejects",
+      "pass": true,
+      "observed": {
+        "result": {
+          "ok": false,
+          "code": "SANDBOX_DISABLED",
+          "message": "施工安排测试副本未开启。"
+        }
+      }
+    },
+    {
+      "id": "manifest-not-deployment-authorization",
+      "pass": true,
+      "observed": {
+        "schema": "sandbox-registration-candidate/1",
+        "deploymentAuthorized": false,
+        "cloudExecuted": false,
+        "synthetic": true,
+        "hasSelfHash": false
+      }
+    },
+    {
+      "id": "manifest-records-effective-action-surface",
+      "pass": true,
+      "observed": {
+        "effectiveActions": [
+          "identify"
+        ]
+      }
+    },
+    {
+      "id": "subprocess-availability-recorded-honestly",
+      "pass": true,
+      "observed": {
+        "subprocessProbe": {
+          "available": false,
+          "error": "spawnSync C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe EBUSY"
+        }
+      }
+    }
+  ]
+}

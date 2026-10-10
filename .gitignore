@@ -33,3 +33,7 @@ Thumbs.db
 database_export*.json
 credentials.json
 secrets.json
+
+# 本地生成的登记候选制品：合成/真实窗口产物不入库
+# （已验收的关闭包 closed-20261005* 是历史交付，仍在版本控制内）
+/artifacts/schedule-sandbox/registration-*
