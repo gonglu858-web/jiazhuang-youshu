@@ -1,0 +1,304 @@
+{
+  "schema": "specific-registration-local-preparation/1",
+  "preparedAt": "2026-10-11T11:14:24.694Z",
+  "scriptSha256": "577a29dafdc6e50b8c8f78df41757e755e1bc64c0001809f754689236ddf7cbf",
+  "plan": {
+    "purpose": "本人微信一次登记，匹配固定名单后登记并立即关闭，不授予管理员权限",
+    "appId": "wxfb4db1615ac15531",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "region": "ap-shanghai",
+    "functionName": "scheduleSandbox",
+    "allowedUserIds": [
+      "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4"
+    ],
+    "roundId": "self-1791717263921-4e2a401ebdc04447",
+    "windowStartsAt": "2026-10-11T11:14:23.921Z",
+    "windowExpiresAt": "2026-10-11T11:44:23.921Z",
+    "sourceVersion": "be413a0a29384cacec899bf9eb0eefcf281767a4",
+    "synthetic": false
+  },
+  "planPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791717263921-4e2a401ebdc04447\\plan.json",
+  "planSha256": "2487c2850b60e50e918abf50772ff087cccaf80292ba94a9883b411bb5130b26",
+  "inputDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-self-1791717263921-4e2a401ebdc04447",
+  "assemblyDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-self-1791717263921-4e2a401ebdc04447",
+  "configs": {
+    "registration": {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791717263921-4e2a401ebdc04447\\registration.cloudbaserc.json",
+      "sha256": "53402260d45c26441b1a53a4324697b45c52fe3218ff13c4287c2d56cad2c7da"
+    },
+    "closed": {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791717263921-4e2a401ebdc04447\\closed.cloudbaserc.json",
+      "sha256": "3f83963d9816317e37c7b8e4704aeefe0c0424702f61cc3d296a7f35e1694d0b"
+    }
+  },
+  "files": [
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/gate.js",
+      "bytes": 11484,
+      "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/index.js",
+      "bytes": 7752,
+      "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+    },
+    {
+      "path": "closed-project/cloudfunctions/scheduleSandbox/vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55"
+    },
+    {
+      "path": "closed-project/miniprogram/app.js",
+      "bytes": 663,
+      "sha256": "26ac78fd5a7bd8f852c5c65231b4cb703b6f09e102e9b27991ac1ca1a8c3382d"
+    },
+    {
+      "path": "closed-project/miniprogram/app.json",
+      "bytes": 257,
+      "sha256": "f18fe4aa170d112d4287667792ed34adebd57a154eefcbfdddd5ed119fb4ec97"
+    },
+    {
+      "path": "closed-project/miniprogram/app.wxss",
+      "bytes": 3360,
+      "sha256": "b548fcaca01f773161315084c6a527eed53338b372af51ae179412811080fd23"
+    },
+    {
+      "path": "closed-project/miniprogram/config/cloud.js",
+      "bytes": 95,
+      "sha256": "4c2a31031ed9e4df513522fdaf7163652b0bdab1896edf49361a1d109d305e93"
+    },
+    {
+      "path": "closed-project/miniprogram/config/sandbox-test-driver-proof.js",
+      "bytes": 7865,
+      "sha256": "15acb49fd8e6838950d56edb2ef0b22c6991103db7026cee817b9776fe59a348"
+    },
+    {
+      "path": "closed-project/miniprogram/config/schedule-entry-proof.js",
+      "bytes": 478,
+      "sha256": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13"
+    },
+    {
+      "path": "closed-project/miniprogram/config/schedule-sandbox-proof.js",
+      "bytes": 561,
+      "sha256": "be327e6b89cbe1505d54e1aea177158b73f0650897a633c5fd335852d21d2bd8"
+    },
+    {
+      "path": "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+      "bytes": 31075,
+      "sha256": "fbb70b3cb2a9898fe1361804e354c096d457dbfb2cac4bf47e067d7e49e56cd3"
+    },
+    {
+      "path": "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+      "bytes": 59,
+      "sha256": "7713a1f63aec15f626eef5e42809b1a1cbdae561351d77c54856894ca1cd1609"
+    },
+    {
+      "path": "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "bytes": 10032,
+      "sha256": "672f0f9e63d90762914035dc239cd957725221c2eec9599d2e839a03d52b3044"
+    },
+    {
+      "path": "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+      "bytes": 233,
+      "sha256": "d30ca2ab51a2ff15179ace61f1b83a5c8d7a9e8514046262260dd923b25a1eb1"
+    },
+    {
+      "path": "closed-project/miniprogram/utils/env-gate.js",
+      "bytes": 1546,
+      "sha256": "538ec49ec8270ad20fbfd20a5ec073c2cb252ee21daaaa8a36bcd3286ec60aef"
+    },
+    {
+      "path": "closed-project/miniprogram/utils/sandbox-test-coordinator.js",
+      "bytes": 36589,
+      "sha256": "9f17ae44713d58d4b13b021387240e535bbe0dca3b8ca3890acf792e09597c2f"
+    },
+    {
+      "path": "closed-project/miniprogram/utils/sandbox-test-driver.js",
+      "bytes": 70929,
+      "sha256": "940a89c2bdc3a9fb8143f8d51bff2f311b88c4f1d8bf19409f8312ee9b075bfb"
+    },
+    {
+      "path": "closed-project/miniprogram/utils/schedule-sandbox-client.js",
+      "bytes": 55947,
+      "sha256": "fde6107ef00c49b9c34cf8cff507e6c0c5f28ae6e7e9a0913e58dba194ec7409"
+    },
+    {
+      "path": "closed-project/project.config.json",
+      "bytes": 834,
+      "sha256": "4f983d509904f660fcac8eed13dd6e99cd1a01907493203b8f06a74e7be00675"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 17706,
+      "sha256": "dd021feac34e1e8abb491e3d88b65aed3462794033918df9b1d538ae7f477a3e"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/gate.js",
+      "bytes": 11344,
+      "sha256": "11222f02eed4eeeb3e705ff56d84ec755a3681f8667395c311ee8c0ba28ec00a"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/index.js",
+      "bytes": 7973,
+      "sha256": "84e40a9f6c5cbd86df4ac7f3afce7b4105c521fb1bf234f9b81975e5bbc4729b"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+    },
+    {
+      "path": "registration-project/cloudfunctions/scheduleSandbox/vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55"
+    },
+    {
+      "path": "registration-project/miniprogram/app.js",
+      "bytes": 663,
+      "sha256": "26ac78fd5a7bd8f852c5c65231b4cb703b6f09e102e9b27991ac1ca1a8c3382d"
+    },
+    {
+      "path": "registration-project/miniprogram/app.json",
+      "bytes": 257,
+      "sha256": "f18fe4aa170d112d4287667792ed34adebd57a154eefcbfdddd5ed119fb4ec97"
+    },
+    {
+      "path": "registration-project/miniprogram/app.wxss",
+      "bytes": 3360,
+      "sha256": "b548fcaca01f773161315084c6a527eed53338b372af51ae179412811080fd23"
+    },
+    {
+      "path": "registration-project/miniprogram/config/cloud.js",
+      "bytes": 95,
+      "sha256": "4c2a31031ed9e4df513522fdaf7163652b0bdab1896edf49361a1d109d305e93"
+    },
+    {
+      "path": "registration-project/miniprogram/config/sandbox-test-driver-proof.js",
+      "bytes": 7865,
+      "sha256": "15acb49fd8e6838950d56edb2ef0b22c6991103db7026cee817b9776fe59a348"
+    },
+    {
+      "path": "registration-project/miniprogram/config/schedule-entry-proof.js",
+      "bytes": 478,
+      "sha256": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13"
+    },
+    {
+      "path": "registration-project/miniprogram/config/schedule-sandbox-proof.js",
+      "bytes": 560,
+      "sha256": "04bf98e5bdb363917771f501fc5c156e0b1483462f2ba6fc5dbe7bd621d9f4a3"
+    },
+    {
+      "path": "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+      "bytes": 31075,
+      "sha256": "fbb70b3cb2a9898fe1361804e354c096d457dbfb2cac4bf47e067d7e49e56cd3"
+    },
+    {
+      "path": "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+      "bytes": 59,
+      "sha256": "7713a1f63aec15f626eef5e42809b1a1cbdae561351d77c54856894ca1cd1609"
+    },
+    {
+      "path": "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "bytes": 10032,
+      "sha256": "672f0f9e63d90762914035dc239cd957725221c2eec9599d2e839a03d52b3044"
+    },
+    {
+      "path": "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+      "bytes": 233,
+      "sha256": "d30ca2ab51a2ff15179ace61f1b83a5c8d7a9e8514046262260dd923b25a1eb1"
+    },
+    {
+      "path": "registration-project/miniprogram/utils/env-gate.js",
+      "bytes": 1546,
+      "sha256": "538ec49ec8270ad20fbfd20a5ec073c2cb252ee21daaaa8a36bcd3286ec60aef"
+    },
+    {
+      "path": "registration-project/miniprogram/utils/sandbox-test-coordinator.js",
+      "bytes": 36589,
+      "sha256": "9f17ae44713d58d4b13b021387240e535bbe0dca3b8ca3890acf792e09597c2f"
+    },
+    {
+      "path": "registration-project/miniprogram/utils/sandbox-test-driver.js",
+      "bytes": 70929,
+      "sha256": "940a89c2bdc3a9fb8143f8d51bff2f311b88c4f1d8bf19409f8312ee9b075bfb"
+    },
+    {
+      "path": "registration-project/miniprogram/utils/schedule-sandbox-client.js",
+      "bytes": 55947,
+      "sha256": "fde6107ef00c49b9c34cf8cff507e6c0c5f28ae6e7e9a0913e58dba194ec7409"
+    },
+    {
+      "path": "registration-project/project.config.json",
+      "bytes": 834,
+      "sha256": "4f983d509904f660fcac8eed13dd6e99cd1a01907493203b8f06a74e7be00675"
+    }
+  ],
+  "checks": {
+    "registrationBuilt": true,
+    "assemblyBuilt": true,
+    "currentTimeCheckPassed": true,
+    "fileCount": 49,
+    "networkAttempts": 0
+  },
+  "toolStateObserved": {
+    "success": true,
+    "loginExpired": false,
+    "versionRelation": "equal",
+    "cliTokenRequired": false,
+    "source": "本轮只读微信工具状态安全字段投影"
+  },
+  "deploymentAuthorized": false,
+  "registrationAuthorized": false,
+  "cloudExecuted": false,
+  "limitations": [
+    "真实候选生成/check通过不是部署授权。",
+    "本轮没有扫码、预览或真实SDK业务调用。",
+    "首次未绑定identify未知结果仍无持久防重，必须停止，不重发。",
+    "实际窗口已开始计时，到期停止并重新准备，不能改时钟或覆盖历史证据。"
+  ]
+}
