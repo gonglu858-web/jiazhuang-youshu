@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-10-11T11:07:31.952487+00:00",
+  "source": "Codex tool output transcription and separately labeled user report",
+  "userReport": {
+    "developerToolWasNotOpenDuringPreviousAttempt": true,
+    "openedNowNoErrorDialog": true,
+    "previousAbortCauseConfirmed": false
+  },
+  "statusCheck": {
+    "success": true,
+    "loginExpired": false,
+    "versionRelation": "equal",
+    "cliTokenRequired": false
+  },
+  "preview": {
+    "tool": "create_preview_qrcode",
+    "project": "artifacts/schedule-sandbox/registration-full-self-1791710621422-cf0d50cb875f8e4f/closed-project",
+    "pagePath": "pages/schedule-sandbox/schedule-sandbox",
+    "qrFormat": "window",
+    "attemptsThisClosedPreview": 1,
+    "success": true,
+    "totalBytes": 323061
+  },
+  "phoneOpenedConfirmed": false,
+  "registrationEnabled": false,
+  "cloudDeploymentThisTurn": false,
+  "businessInvocationByAssistant": false,
+  "limitations": [
+    "工具返回成功不代表用户已经扫码或手机页面已验证。",
+    "前次code10原因仍未证明。",
+    "旧登记窗口已过期，不复用登记版。"
+  ]
+}
