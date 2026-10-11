@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-11T11:03:02.344277+00:00",
+  "source": "Codex tool output transcription",
+  "tool": "create_preview_qrcode",
+  "client": "Codex",
+  "project": "artifacts/schedule-sandbox/registration-full-self-1791710621422-cf0d50cb875f8e4f/registration-project",
+  "pagePath": "pages/schedule-sandbox/schedule-sandbox",
+  "qrFormat": "window",
+  "attempts": 1,
+  "result": {
+    "ok": false,
+    "errorType": "MCP_TOOL_ERROR",
+    "message": "错误 Error: aborted (code 10)",
+    "code": "10",
+    "source": "mcp_business"
+  },
+  "usableQrObtained": false,
+  "retryPerformed": false,
+  "causeConfirmed": false,
+  "userSubmissionRequested": false,
+  "followup": "restored closed function and verified remote eight files; records read back"
+}

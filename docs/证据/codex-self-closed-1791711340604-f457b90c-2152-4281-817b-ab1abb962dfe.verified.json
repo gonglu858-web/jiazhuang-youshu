@@ -1,0 +1,68 @@
+{
+  "runId": "codex-self-closed-1791711340604-f457b90c-2152-4281-817b-ab1abb962dfe",
+  "mode": "closed",
+  "observedAt": "2026-10-11T11:02:07.559419+00:00",
+  "archiveSha256": "526a901b9b4d176232933c18594cc523ce8977d8b5d4181ad3a9aaadecec3550",
+  "files": [
+    {
+      "path": "collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+      "matched": true
+    },
+    {
+      "path": "gate.js",
+      "bytes": 11484,
+      "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+      "matched": true
+    },
+    {
+      "path": "index.js",
+      "bytes": 7752,
+      "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+      "matched": true
+    },
+    {
+      "path": "package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84",
+      "matched": true
+    },
+    {
+      "path": "project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687",
+      "matched": true
+    },
+    {
+      "path": "vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830",
+      "matched": true
+    },
+    {
+      "path": "vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+      "matched": true
+    },
+    {
+      "path": "vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+      "matched": true
+    }
+  ],
+  "matched": 8,
+  "wxServerSdk": "3.0.1",
+  "symlinksInspected": [
+    "node_modules/.bin/semver",
+    "node_modules/.bin/sshpk-conv",
+    "node_modules/.bin/sshpk-sign",
+    "node_modules/.bin/sshpk-verify",
+    "node_modules/.bin/uuid"
+  ],
+  "status": "REMOTE_EIGHT_FILES_MATCH_APPROVED_INPUT",
+  "extracted": false,
+  "downloadedCodeExecuted": false
+}

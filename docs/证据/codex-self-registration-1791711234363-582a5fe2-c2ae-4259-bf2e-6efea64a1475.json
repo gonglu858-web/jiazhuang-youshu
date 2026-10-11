@@ -1,0 +1,242 @@
+{
+  "runId": "codex-self-registration-1791711234363-582a5fe2-c2ae-4259-bf2e-6efea64a1475",
+  "mode": "registration",
+  "roundId": "self-1791710621422-cf0d50cb875f8e4f",
+  "startedAt": "2026-10-11T09:33:54.365Z",
+  "scriptSha256": "064d793b18b9ed673c92797a4883f6616a820c5d2de0ca1ad06b7b4a7a271b86",
+  "deploymentAttempts": 1,
+  "businessInvocations": 0,
+  "stages": [
+    {
+      "stage": "GetFunctionAddress",
+      "startedAt": "2026-10-11T09:34:00.569Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T09:34:02.378Z"
+    },
+    {
+      "stage": "deploy",
+      "startedAt": "2026-10-11T09:34:03.344Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T09:34:24.620Z"
+    },
+    {
+      "stage": "GetFunction",
+      "startedAt": "2026-10-11T09:34:24.620Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T09:34:26.541Z"
+    },
+    {
+      "stage": "GetFunctionAddress",
+      "startedAt": "2026-10-11T09:34:26.542Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T09:34:28.297Z"
+    }
+  ],
+  "status": "REMOTE_ZIP_OBTAINED_NEEDS_BYTE_VERIFICATION",
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "aa385229-cba4-4149-848a-f7cd3a322b26",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "3596",
+          "principalIdTail": "5386",
+          "requestId": "aa385229-cba4-4149-848a-f7cd3a322b26"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "ae482605-315c-45fe-ba98-27cc8d895282",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "ae482605-315c-45fe-ba98-27cc8d895282"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "1ace1ea7-ab5d-424b-96c8-2f835df90682",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "1ace1ea7-ab5d-424b-96c8-2f835df90682"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "aa385229-cba4-4149-848a-f7cd3a322b26",
+      "describeEnvs": "ae482605-315c-45fe-ba98-27cc8d895282",
+      "describeEnvInfo": "1ace1ea7-ab5d-424b-96c8-2f835df90682"
+    }
+  },
+  "closedBaselineSha256": "847c85276747ab1e969b04258033959c2f3fae98771a1d4c5831ddcc2cf7d126",
+  "recordsBefore": {
+    "at": "2026-10-11T09:34:03.333Z",
+    "four": [
+      {
+        "id": "oldPrimary",
+        "collection": "app_admins",
+        "key": "primary",
+        "status": "OBSERVED",
+        "active": true,
+        "keyMatches": true,
+        "targetMatches": true,
+        "openidDerivationMatches": null,
+        "requestId": null
+      },
+      {
+        "id": "oldUser",
+        "collection": "users",
+        "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "status": "OBSERVED",
+        "active": true,
+        "keyMatches": true,
+        "targetMatches": true,
+        "openidDerivationMatches": true,
+        "requestId": null
+      },
+      {
+        "id": "testUser",
+        "collection": "schtest_v1_users",
+        "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "status": "NOT_FOUND",
+        "active": null,
+        "keyMatches": null,
+        "targetMatches": null,
+        "openidDerivationMatches": null,
+        "requestId": null
+      },
+      {
+        "id": "testPrimary",
+        "collection": "schtest_v1_app_admins",
+        "key": "primary",
+        "status": "NOT_FOUND",
+        "active": null,
+        "keyMatches": null,
+        "targetMatches": null,
+        "openidDerivationMatches": null,
+        "requestId": null
+      }
+    ],
+    "audit": {
+      "complete": true,
+      "rows": [],
+      "pages": 1
+    }
+  },
+  "deploymentProcess": {
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "spawnFailed": false,
+    "processExited": true,
+    "terminationConfirmed": true
+  },
+  "functionDetail": {
+    "FunctionName": "scheduleSandbox",
+    "Namespace": "cloud1-d8gcq5ag39d847723",
+    "Runtime": "Nodejs20.19",
+    "MemorySize": 256,
+    "Timeout": 3,
+    "Type": "Event",
+    "Handler": "index.main",
+    "Status": "Active"
+  },
+  "archive": {
+    "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791710621422-cf0d50cb875f8e4f\\codex-self-registration-1791711234363-582a5fe2-c2ae-4259-bf2e-6efea64a1475.zip",
+    "sha256": "ddc6a032a4350c69557157d80bfc43634bd5cb6dbee4346b6e1dcf53e747847e",
+    "bytes": 4929905,
+    "platformCodeSha256": "ddc6a032a4350c69557157d80bfc43634bd5cb6dbee4346b6e1dcf53e747847e"
+  },
+  "finishedAt": "2026-10-11T09:34:29.016Z"
+}
