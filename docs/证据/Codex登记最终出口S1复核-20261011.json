@@ -1,0 +1,110 @@
+{
+  "commit": "3a9d90c",
+  "cases": [
+    {
+      "mode": "expired",
+      "filesAtEvent": 49,
+      "clockReads": 6,
+      "factsPreserved": true,
+      "reason": "final-check",
+      "clockInvalid": false,
+      "expiredAfterWrite": true,
+      "problems": [
+        {
+          "code": "ASM_WINDOW_EXPIRED",
+          "detail": "组装（返回前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（返回前）复核未通过），不可作为当前有效登记候选。"
+        }
+      ],
+      "outstandingClockClassification": false
+    },
+    {
+      "mode": "nan",
+      "filesAtEvent": 49,
+      "clockReads": 6,
+      "factsPreserved": true,
+      "reason": "final-check",
+      "clockInvalid": true,
+      "expiredAfterWrite": true,
+      "problems": [
+        {
+          "code": "ASM_WINDOW_EXPIRED",
+          "detail": "组装（返回前）：时钟快照无效（读到 NaN）。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（返回前）复核未通过），不可作为当前有效登记候选。"
+        }
+      ],
+      "outstandingClockClassification": false
+    },
+    {
+      "mode": "throw",
+      "filesAtEvent": 49,
+      "clockReads": 6,
+      "factsPreserved": true,
+      "reason": "final-check",
+      "clockInvalid": false,
+      "expiredAfterWrite": true,
+      "problems": [
+        {
+          "code": "ASM_WINDOW_EXPIRED",
+          "detail": "synthetic clock unavailable 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（返回前）复核未通过），不可作为当前有效登记候选。"
+        }
+      ],
+      "outstandingClockClassification": true
+    },
+    {
+      "mode": "outer-catch",
+      "filesAtEvent": 49,
+      "clockReads": 6,
+      "factsPreserved": true,
+      "reason": "outer-catch",
+      "clockInvalid": null,
+      "expiredAfterWrite": null,
+      "problems": [
+        {
+          "code": "ASM_FAILED",
+          "detail": "synthetic result projection failure"
+        }
+      ],
+      "outstandingClockClassification": false
+    },
+    {
+      "mode": "delivered-nan-event",
+      "filesAtEvent": 49,
+      "clockReads": 5,
+      "factsPreserved": true,
+      "reason": "post-write-check",
+      "clockInvalid": true,
+      "expiredAfterWrite": true,
+      "problems": [
+        {
+          "code": "ASM_WINDOW_EXPIRED",
+          "detail": "组装（写后）：时钟快照无效（读到 NaN）。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（写后）复核未通过），不可作为当前有效登记候选。"
+        }
+      ],
+      "outstandingClockClassification": false
+    }
+  ],
+  "fixtures": [
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-cx-s1-9b6a61f8d9-2-input",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cx-s1-9b6a61f8d9-3-expired",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cx-s1-9b6a61f8d9-4-nan",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cx-s1-9b6a61f8d9-5-throw",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cx-s1-9b6a61f8d9-6-outer-catch",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cx-s1-9b6a61f8d9-7-delivered-nan-event",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cx-s1-9b6a61f8d9-8-control"
+  ],
+  "realSdk": false,
+  "cloudExecuted": false,
+  "controls": {
+    "normalBuild": true,
+    "checkZeroWrite": true,
+    "reuseZeroWrite": true,
+    "resumeExactlyTwoNewFiles": true,
+    "precheckZeroWrite": true
+  },
+  "networkAttempts": 0,
+  "summary": {
+    "writeFactPathsPassed": 5,
+    "controlsPassed": 5,
+    "remainingImplementationIssues": 1,
+    "deliveredNanActuallyReaches": "post-write-check"
+  }
+}
