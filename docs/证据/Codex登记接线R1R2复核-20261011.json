@@ -1,0 +1,336 @@
+{
+  "reviewCommit": "c6d40b9",
+  "cases": [
+    {
+      "id": "prewrite",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "组装（写入前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。"
+          }
+        ]
+      },
+      "clockReads": 2,
+      "barrierHit": true,
+      "filesAtEvent": null,
+      "filesAfter": 0
+    },
+    {
+      "id": "postwrite",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": true,
+        "expiredAfterWrite": true,
+        "written": [
+          "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+          "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+          "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+          "registration-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+          "registration-project/miniprogram/utils/schedule-sandbox-client.js",
+          "registration-project/miniprogram/utils/env-gate.js",
+          "registration-project/miniprogram/utils/sandbox-test-driver.js",
+          "registration-project/miniprogram/utils/sandbox-test-coordinator.js",
+          "registration-project/miniprogram/config/schedule-entry-proof.js",
+          "registration-project/miniprogram/config/sandbox-test-driver-proof.js",
+          "registration-project/miniprogram/config/schedule-sandbox-proof.js",
+          "registration-project/miniprogram/app.js",
+          "registration-project/miniprogram/app.wxss",
+          "registration-project/miniprogram/config/cloud.js",
+          "registration-project/miniprogram/app.json",
+          "registration-project/project.config.json",
+          "registration-project/cloudfunctions/scheduleSandbox/index.js",
+          "registration-project/cloudfunctions/scheduleSandbox/gate.js",
+          "registration-project/cloudfunctions/scheduleSandbox/collection-map.js",
+          "registration-project/cloudfunctions/scheduleSandbox/project-guard.js",
+          "registration-project/cloudfunctions/scheduleSandbox/package.json",
+          "registration-project/cloudfunctions/scheduleSandbox/vendor/service.js",
+          "registration-project/cloudfunctions/scheduleSandbox/vendor/schedule-service.js",
+          "registration-project/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json",
+          "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.js",
+          "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.json",
+          "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxml",
+          "closed-project/miniprogram/pages/schedule-sandbox/schedule-sandbox.wxss",
+          "closed-project/miniprogram/utils/schedule-sandbox-client.js",
+          "closed-project/miniprogram/utils/env-gate.js",
+          "closed-project/miniprogram/utils/sandbox-test-driver.js",
+          "closed-project/miniprogram/utils/sandbox-test-coordinator.js",
+          "closed-project/miniprogram/config/schedule-entry-proof.js",
+          "closed-project/miniprogram/config/sandbox-test-driver-proof.js",
+          "closed-project/miniprogram/config/schedule-sandbox-proof.js",
+          "closed-project/miniprogram/app.js",
+          "closed-project/miniprogram/app.wxss",
+          "closed-project/miniprogram/config/cloud.js",
+          "closed-project/miniprogram/app.json",
+          "closed-project/project.config.json",
+          "closed-project/cloudfunctions/scheduleSandbox/index.js",
+          "closed-project/cloudfunctions/scheduleSandbox/gate.js",
+          "closed-project/cloudfunctions/scheduleSandbox/collection-map.js",
+          "closed-project/cloudfunctions/scheduleSandbox/project-guard.js",
+          "closed-project/cloudfunctions/scheduleSandbox/package.json",
+          "closed-project/cloudfunctions/scheduleSandbox/vendor/service.js",
+          "closed-project/cloudfunctions/scheduleSandbox/vendor/schedule-service.js",
+          "closed-project/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json",
+          "manifest.json"
+        ],
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "组装（写后）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。 产物已写入并保留（未删除、未清理），本次已写 49 个文件，不可作为当前有效登记候选。"
+          }
+        ]
+      },
+      "clockReads": 5,
+      "barrierHit": true,
+      "filesAtEvent": null,
+      "filesAfter": 49
+    },
+    {
+      "id": "check",
+      "passed": true,
+      "unchanged": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "检查（预检后）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。"
+          }
+        ]
+      },
+      "clockReads": 2,
+      "barrierHit": true,
+      "filesAtEvent": null,
+      "filesAfter": 49
+    },
+    {
+      "id": "reuse",
+      "passed": true,
+      "unchanged": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "组装（写入前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。"
+          }
+        ]
+      },
+      "clockReads": 2,
+      "barrierHit": true,
+      "filesAtEvent": null,
+      "filesAfter": 49
+    },
+    {
+      "id": "resume-expired",
+      "passed": true,
+      "unchanged": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "组装（写入前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。"
+          }
+        ]
+      },
+      "clockReads": 2,
+      "barrierHit": true,
+      "filesAtEvent": null,
+      "filesAfter": 47
+    },
+    {
+      "id": "valid-resume-and-equal-deadline",
+      "passed": true,
+      "resumedFiles": [
+        "registration-project/miniprogram/app.wxss",
+        "manifest.json"
+      ]
+    },
+    {
+      "id": "final-deadline",
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "组装（返回前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。"
+          }
+        ]
+      },
+      "clockReads": 6,
+      "barrierHit": true,
+      "filesAtEvent": 49,
+      "filesAfter": 49,
+      "writtenFactLost": true
+    },
+    {
+      "id": "final-clock-invalid",
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_WINDOW_EXPIRED",
+            "detail": "组装（返回前）：时钟快照无效（读到 NaN）。"
+          }
+        ]
+      },
+      "clockReads": 6,
+      "barrierHit": true,
+      "filesAtEvent": 49,
+      "filesAfter": 49,
+      "writtenFactLost": true
+    },
+    {
+      "id": "actual-historical-schema1",
+      "passed": true,
+      "gitBlob": "6724cd8422daf21016633fb194ac0976ab9b698b",
+      "fields": 19,
+      "defaultAndExplicitReuse": true,
+      "byteIdentical": true
+    },
+    {
+      "id": "old-required-field",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_MANIFEST_MISMATCH",
+            "detail": "manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。"
+          }
+        ]
+      },
+      "unchanged": true
+    },
+    {
+      "id": "old-extra-candidate-field",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_MANIFEST_MISMATCH",
+            "detail": "manifest 完整契约不符（改轮次/目标/窗口/合成标记等均拒绝）。"
+          }
+        ]
+      },
+      "unchanged": true
+    },
+    {
+      "id": "candidate-missing-artifactKind",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_ARTIFACT_KIND_CONFLICT",
+            "detail": "候选清单 artifactKind 为 undefined，与本次 real-candidate 模式不符。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "candidate-missing-verificationKind",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_MANIFEST_INVALID",
+            "detail": "候选清单缺少正确的 verificationKind 标记。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "/1-to-/2",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_PLAN_SYNTHETIC_IN_REAL",
+            "detail": "real-candidate 模式只接受严格 synthetic=false 的完整计划，不接受合成计划。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "/2-to-/1",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "wroteFiles": false,
+        "expiredAfterWrite": false,
+        "written": null,
+        "problems": [
+          {
+            "code": "ASM_PLAN_SYNTHETIC_ONLY",
+            "detail": "默认合成模式只接受 synthetic=true 的合成演练计划；真实候选须显式选择 real-candidate 模式。"
+          }
+        ]
+      }
+    }
+  ],
+  "fixtures": [
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-cxr-cb005378-2-input",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-3-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-4-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-5-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-6-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-7-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-8-out",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-cxr-cb005378-10-input",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-11-old",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-cxr-cb005378-12-new"
+  ],
+  "cloudExecuted": false,
+  "sdkExecuted": false,
+  "protected": {
+    "count": 899,
+    "drift": []
+  },
+  "networkAttempts": 0,
+  "summary": {
+    "cases": 15,
+    "passed": 13,
+    "writtenFactLossReproduced": 2
+  }
+}
