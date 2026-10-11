@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-11T11:31:52.538570+00:00",
+  "source": "user report plus sanitized tool-output transcription",
+  "userReport": "登录面板已消失",
+  "status": {
+    "ok": true,
+    "loginExpired": false,
+    "versionRelation": "equal",
+    "cliTokenRequired": false
+  },
+  "project": "artifacts/schedule-sandbox/registration-full-self-1791717263921-4e2a401ebdc04447/registration-project",
+  "openProject": {
+    "success": true,
+    "type": "newopen",
+    "winId": "s1"
+  },
+  "currentPage": {
+    "ok": false,
+    "errorType": "MCP_TOOL_ERROR",
+    "message": "Cannot destructure property 'rawPath' of 't.getPageMetaByWebviewId(...)' as it is null."
+  },
+  "console": {
+    "ok": false,
+    "code": "APPID_ERROR",
+    "message": "aborted"
+  },
+  "projectConfigAppId": "wxfb4db1615ac15531",
+  "getUserAppids": {
+    "success": true,
+    "appIdFieldsObserved": 2,
+    "fixedAppIdPresent": true,
+    "otherAppIdsNotRetained": true
+  },
+  "assemblyVerification": {
+    "expectedFileChanges": [],
+    "additionalPaths": []
+  },
+  "previewRepeated": false,
+  "cloudDeployment": false,
+  "credentialFetch": false,
+  "businessSubmission": false,
+  "rootCauseConfirmed": false,
+  "limitations": [
+    "目标出现在可管理列表不证明全部预览/上传权限。",
+    "页面元数据失败与APPID_ERROR均为工具返回，不直接等于业务代码缺陷。",
+    "本轮未重新回读云端；沿用19:21关闭证据。"
+  ],
+  "nextStep": "user screenshot of newly opened registration project; keep server closed"
+}
