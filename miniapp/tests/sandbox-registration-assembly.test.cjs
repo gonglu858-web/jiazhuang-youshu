@@ -1,4 +1,4 @@
-'use strict';
+'use strict';
 /**
  * 本人登记完整测试包与关闭包：本地组装器测试
  * =============================================
@@ -2004,49 +2004,149 @@ test('D1 最终返回前检查到期：拒绝成功、保留产物、准确返�
   } finally { cleanup(dir); cleanup(input.dir); }
 });
 
-test('D1 最终返回前检查时钟无效：同样保留已写事实，且如实区分原因', () => {
-  const input = buildCandidateInput();
-  const dir = asm.resolveOutDir(freshId('d1invalid'));
-  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
-  let reads = 0, fired = false, filesAtFire = 0;
+/**
+ * 让**写后检查先取得有效快照**，在 manifest 写完（写后检查已取过快照）之后，
+ * 才让**下一次**读取（最终返回前检查）降级。
+ *
+ * 关键：manifest 出现后的**第一次**时钟读取属于「组装（写后）」，
+ * **第二次**才是「组装（返回前）」。因此按「出现后的读取次数」区分两个守卫，
+ * 而不是靠调用总数、阶段猜测或 sleep。
+ *
+ * mode: 'final-expired' 仅最终检查到期 | 'final-nan' 仅最终检查 NaN
+ *       | 'final-throw' 仅最终检查抛错 | 'post-nan' 写后检查即 NaN（对照）
+ */
+function runWithStageDegradedClock(operation, dir, mode) {
+  let manifestSeen = false, readsAfterManifest = 0, filesAtFire = 0, fired = false;
+  const degradeOn = mode.indexOf('post-') === 0 ? 1 : 2;
+  const bad = mode.slice(-3) === 'nan' ? 'nan'
+    : mode.slice(-5) === 'throw' ? 'throw'
+      : 'expired';
   const realDateNow = Date.now;
-  try {
-    // 待写入完成后，让时钟返回 NaN（模拟时钟异常）
-    Date.now = () => {
-      reads++;
-      if (fs.existsSync(path.join(dir, 'manifest.json'))) {
-        if (!fired) {
-          (function walk(d) {
-            for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-              if (e.isDirectory()) walk(path.join(d, e.name));
-              else filesAtFire++;
-            }
-          })(dir);
-          fired = true;
+  Date.now = () => {
+    if (!manifestSeen && fs.existsSync(path.join(dir, 'manifest.json'))) {
+      manifestSeen = true;
+      (function walk(d) {
+        for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+          if (e.isDirectory()) walk(path.join(d, e.name));
+          else filesAtFire++;
         }
-        return NaN;
-      }
-      return CAND_NOW_MS;
-    };
-    const r = asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId });
+      })(dir);
+      fired = true;
+    }
+    if (!manifestSeen) return CAND_NOW_MS;
+    readsAfterManifest++;
+    if (readsAfterManifest < degradeOn) return CAND_NOW_MS;
+    if (bad === 'nan') return NaN;
+    if (bad === 'throw') throw new Error('synthetic clock unavailable');
+    return Date.parse(CAND_EXPIRES);
+  };
+  let r;
+  try { r = operation(); } finally { Date.now = realDateNow; }
+  return { r, fired, filesAtFire, readsAfterManifest };
+}
+
+/** 磁盘实际文件（相对路径，已排序）。 */
+function diskFiles(dir) {
+  return snapshotTree(dir).filter(x => !x.endsWith('/')).map(x => x.split(':')[0]).sort();
+}
+
+test('D1 最终返回前检查时钟为 NaN：真正命中 final-check，保留已写事实与未知时钟标记', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('d1nan'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
+  try {
+    const { r, fired, filesAtFire, readsAfterManifest } = runWithStageDegradedClock(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      dir, 'final-nan');
     assert.equal(fired, true, '事件屏障未命中');
     assert.equal(filesAtFire, 49, '推进时应已写满 49 个文件');
-    assert.ok(reads >= 4, `最终检查路径应多次读时钟，实际 ${reads} 次`);
+    assert.ok(readsAfterManifest >= 1, '应至少经历一次写后守卫读取');
 
-    assert.equal(r.ok, false, '时钟无效必须拒绝成功');
+    assert.equal(r.ok, false, '时钟 NaN 必须拒绝成功');
+    assert.equal(r.reason, 'final-check', '必须命中最终返回前检查，实际=' + r.reason);
     assert.equal(r.wroteFiles, true, '磁盘已写 49 文件，不能报零写');
     assert.equal(r.written.length, 49, '必须返回 49 项已写清单');
-    assert.equal(snapshotTree(dir).filter(x => !x.endsWith('/')).length, 49, '产物应保留');
-    // 原因如实区分：时钟无效，不得描述成已证明的真实截止时间
-    assert.equal(r.clockInvalid, true, '应标明时钟无效');
-    assert.equal(r.problems[0].code, asm.ERR.WINDOW_EXPIRED);
-    assert.match(r.problems[0].detail, /时钟/, '应说明是时钟问题：' + r.problems[0].detail);
-    assert.doesNotMatch(r.problems[0].detail, /已于.*截止/, '未知时钟不得声称已证明截止：' + r.problems[0].detail);
-  } finally {
-    Date.now = realDateNow;
-    cleanup(dir);
-    cleanup(input.dir);
-  }
+    assert.deepEqual(r.written.slice().sort(), diskFiles(dir), 'written 必须与磁盘实际文件完全一致');
+    assert.equal(r.clockInvalid, true, '应标记时钟未知');
+    assert.equal(r.expiryProven, false, '时间未知，不得宣称已证明到期');
+    assert.match(r.problems[0].detail, /时间未知|未能取得当前时钟/, r.problems[0].detail);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('D1 最终返回前检查时钟读取抛错：同样保留已写事实并标记时钟未知', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('d1throw'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
+  try {
+    const { r, fired, filesAtFire } = runWithStageDegradedClock(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      dir, 'final-throw');
+    assert.equal(fired, true, '事件屏障未命中');
+    assert.equal(filesAtFire, 49, '推进时应已写满 49 个文件');
+
+    assert.equal(r.ok, false, '时钟抛错必须拒绝成功');
+    assert.equal(r.reason, 'final-check', '必须命中最终返回前检查，实际=' + r.reason);
+    assert.equal(r.wroteFiles, true, '磁盘已写 49 文件，不能报零写');
+    assert.equal(r.written.length, 49, '必须返回 49 项已写清单');
+    assert.deepEqual(r.written.slice().sort(), diskFiles(dir), 'written 必须与磁盘实际文件完全一致');
+
+    // S1-a 核心：抛错时钟也必须显式识别为时钟未知，
+    // 且**不依赖错误文字是否包含「时钟」**（此处注入的异常文字为英文）。
+    assert.equal(r.clockInvalid, true, '抛错时钟必须标记为未知，实际=' + r.clockInvalid);
+    assert.equal(r.expiryProven, false, '时间未知，不得宣称已证明到期');
+    assert.match(r.problems[0].detail, /时间未知|未能取得当前时钟/, r.problems[0].detail);
+    assert.doesNotMatch(r.problems[0].detail, /已于.*截止/, '未知时钟不得声称已证明截止');
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('D1 对照：写后检查即降级应标为 post-write-check，与最终检查可区分', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('d1post'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
+  try {
+    const { r, fired, filesAtFire } = runWithStageDegradedClock(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      dir, 'post-nan');
+    assert.equal(fired, true, '事件屏障未命中');
+    assert.equal(filesAtFire, 49, '推进时应已写满 49 个文件');
+    assert.equal(r.ok, false);
+    assert.equal(r.reason, 'post-write-check', '应命中写后检查，实际=' + r.reason);
+    assert.equal(r.clockInvalid, true, '写后检查的时钟未知同样被标记');
+    assert.equal(r.wroteFiles, true);
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('D1 对照：仅最终检查到期时 expiryProven=true（时钟有效可证明到期）', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('d1fexp'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
+  try {
+    const { r, fired, filesAtFire } = runWithStageDegradedClock(
+      () => asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId }),
+      dir, 'final-expired');
+    assert.equal(fired, true, '事件屏障未命中');
+    assert.equal(filesAtFire, 49, '推进时应已写满 49 个文件');
+    assert.equal(r.ok, false);
+    assert.equal(r.reason, 'final-check', '必须命中最终检查，实际=' + r.reason);
+    assert.equal(r.clockInvalid, false, '时钟有效，不应标为未知');
+    assert.equal(r.expiryProven, true, '时钟有效且已过期，应为已证明到期');
+    assert.equal(r.wroteFiles, true);
+    assert.deepEqual(r.written.slice().sort(), diskFiles(dir));
+  } finally { cleanup(dir); cleanup(input.dir); }
+});
+
+test('D1 正常最终检查（未降级）仍标记 expiryProven=true', () => {
+  const input = buildCandidateInput();
+  const dir = asm.resolveOutDir(freshId('d1ok'));
+  const outId = path.basename(dir).slice(asm.OUT_DIR_PREFIX.length);
+  try {
+    // 不注入任何异常：正常成功
+    const r = asm.buildAssembly({ inputDir: input.dir, plan: input.plan, artifactKind: 'real-candidate', outId, nowMs: CAND_NOW_MS });
+    assert.equal(r.ok, true, JSON.stringify(r.problems));
+    assert.equal(r.wroteFiles, true);
+    assert.equal(r.written.length, 49);
+    assert.equal(r.expiredAfterWrite, undefined);
+  } finally { cleanup(dir); cleanup(input.dir); }
 });
 
 test('D1 预检零写语义不变：写前失败仍为 wroteFiles=false 且无 written', () => {

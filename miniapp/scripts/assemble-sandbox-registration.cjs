@@ -731,12 +731,40 @@ function makeClockReader(fixedNowMs) {
   let reads = 0;
   return {
     fixed,
-    /** 读取一个新快照；每次调用都重新取当前时间并校验为有限数值。 */
+    /**
+     * 读取一个新快照；每次调用都重新取当前时间并校验为有限数值。
+     *
+     * **在此边界显式归类时钟异常**：
+     *  - `Date.now()` 抛错 → 原样抛出，但挂上 `clockUnavailable=true` 标记；
+     *  - 读到非有限值（非固定注入时）→ 抛出带同一标记的错误。
+     * 下游只依据该结构化标记判断「时钟未知」，**不检查错误文字**。
+     */
     read(stage) {
       reads++;
-      const value = fixed ? fixedNowMs : Date.now();
+      if (fixed) {
+        if (!Number.isFinite(fixedNowMs)) {
+          const e = fail(ERR.WINDOW_EXPIRED, `${stage}：时钟快照无效（读到 ${String(fixedNowMs)}）。`);
+          throw e;
+        }
+        return fixedNowMs;
+      }
+      let value;
+      try {
+        value = Date.now();
+      } catch (cause) {
+        // 时钟不可用：未知时间，不能当作已证明的到期时刻
+        const error = new Error(`${stage}：读取当前时钟失败（${String(cause && cause.message || cause)}）。`);
+        error.code = ERR.WINDOW_EXPIRED;
+        error.detail = error.message;
+        error.clockUnavailable = true;
+        throw error;
+      }
       if (!Number.isFinite(value)) {
-        fail(ERR.WINDOW_EXPIRED, `${stage}：时钟快照无效（读到 ${String(value)}）。`);
+        const error = new Error(`${stage}：时钟快照无效（读到 ${String(value)}）。`);
+        error.code = ERR.WINDOW_EXPIRED;
+        error.detail = error.message;
+        error.clockUnavailable = true;
+        throw error;
       }
       return value;
     },
@@ -1179,7 +1207,13 @@ function checkAssembly(options = {}) {
     return {
       ok: false, mode: 'check', dir, artifactKind: kind, wroteFiles: false, cloudCalled: false,
       networkAttempts: netState ? netState.attempts.length : 0,
-      problems: [{ code: error.code || ERR.FAILED, detail: String(error.detail || error.message).slice(0, 220) }]
+      // 时钟未知由读取边界的结构化标记给出，不从错误文字推断
+      clockInvalid: error.clockUnavailable === true,
+      problems: [{
+        code: error.code || ERR.FAILED,
+        detail: String(error.detail || error.message).slice(0, 220)
+          + (error.clockUnavailable === true ? ' 本次未能取得当前时钟，时间未知。' : '')
+      }]
     };
   }
 }
@@ -1308,17 +1342,26 @@ function buildAssembly(options = {}) {
           assertCandidateNotExpired(bundle.normalized, clock.read(stage), stage);
         } catch (error) {
           const raw = String(error.detail || error.message);
+          // 时钟未知只依据**结构化标记**判定（由 makeClockReader 在读取边界打上），
+          // 不检查错误文字是否包含「时钟」；也不因 expiredAfterWrite 或错误码
+          // 而宣称已证明到期时刻。
+          const clockUnavailable = error.clockUnavailable === true;
           return writtenFailureProjection(error, {
             inputDir,
             expiredAfterWrite: true,
-            // 时钟无效与已过期如实区分：未知时钟不能被描述成已证明的真实截止时间
-            clockInvalid: /时钟/.test(raw),
+            clockInvalid: clockUnavailable,
+            clockUnknown: clockUnavailable,
+            // 时钟未知时不得把本次复核描述成「已证明到期」
+            expiryProven: !clockUnavailable,
             reason: stage === '组装（返回前）' ? 'final-check' : 'post-write-check',
             problems: [{
               code: error.code || ERR.WINDOW_EXPIRED,
               detail: raw.slice(0, 220)
                 + ` 产物已写入并保留（未删除、未清理），本次已写 ${written.length} 个文件`
                 + `（${stage}复核未通过），不可作为当前有效登记候选。`
+                + (clockUnavailable
+                  ? ' 本次未能取得当前时钟，时间未知，不作为已证明到期的依据。'
+                  : '')
             }]
           });
         }
@@ -1335,9 +1378,14 @@ function buildAssembly(options = {}) {
     };
   } catch (error) {
     // 外层出口：已开始写入则带回已写事实；未写入则保持预检零写语义。
-    if (wroteSomething) return writtenFailureProjection(error, { inputDir: inputDirForFailure });
+    if (wroteSomething) {
+      return writtenFailureProjection(Object.assign(error, {
+        clockInvalid: error.clockUnavailable === true
+      }), { inputDir: inputDirForFailure });
+    }
     return {
       ok: false, mode: 'build', dir, wroteFiles: false, cloudCalled: false,
+      clockInvalid: error.clockUnavailable === true,
       networkAttempts: netState ? netState.attempts.length : 0,
       problems: [{ code: error.code || ERR.FAILED, detail: String(error.detail || error.message).slice(0, 260) }]
     };
