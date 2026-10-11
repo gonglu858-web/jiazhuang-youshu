@@ -1,0 +1,326 @@
+{
+  "reviewCommit": "c6d40b9",
+  "reviewBaseline": "afe633d",
+  "verificationKind": "OFFLINE_CONTRACT_FIXTURE",
+  "nature": {
+    "localFixOnly": true,
+    "producesRealExecutionPackage": false,
+    "deploymentAuthorized": false,
+    "note": "synthetic=false 为被测计划契约；wx 与存储为受控合成，非真实 SDK 或平台验证。"
+  },
+  "controlledClock": {
+    "now": "2026-03-01T12:00:00.000Z",
+    "window": [
+      "2026-03-01T12:00:00.000Z",
+      "2026-03-01T12:20:00.000Z"
+    ]
+  },
+  "groups": [
+    {
+      "group": "S1-最终返回前失败出口保留已写事实",
+      "total": 25,
+      "passed": 25,
+      "checks": [
+        {
+          "label": "事件屏障命中（推进时已存在 manifest）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "推进时已写满 49 文件（证明位于最终检查之前）",
+          "ok": true,
+          "detail": "files=49"
+        },
+        {
+          "label": "时钟读取次数 >= 4",
+          "ok": true,
+          "detail": "reads=6"
+        },
+        {
+          "label": "拒绝成功",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_WINDOW_EXPIRED\",\"detail\":\"组装（返回前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（返回前）复核未通过），不可作为当前有效登记候选。\"}]"
+        },
+        {
+          "label": "标记 expiredAfterWrite",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "原因标为 final-check",
+          "ok": true,
+          "detail": "final-check"
+        },
+        {
+          "label": "wroteFiles=true（磁盘已写，不能报零写）",
+          "ok": true,
+          "detail": "wroteFiles=true"
+        },
+        {
+          "label": "返回 written 清单",
+          "ok": true,
+          "detail": "object"
+        },
+        {
+          "label": "written 含 49 项",
+          "ok": true,
+          "detail": "len=49"
+        },
+        {
+          "label": "written 无重复",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "产物保留 49 文件",
+          "ok": true,
+          "detail": "files=49"
+        },
+        {
+          "label": "written 与磁盘实际文件完全一致",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "错误码为 ASM_WINDOW_EXPIRED",
+          "ok": true,
+          "detail": "ASM_WINDOW_EXPIRED"
+        },
+        {
+          "label": "时钟有效 → 不标 clockInvalid",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "说明含保留与不可用表述",
+          "ok": true,
+          "detail": "组装（返回前）：登记候选窗口已于 2026-03-01T12:20:00.000Z 截止（当前 2026-03-01T12:20:00.000Z），不再有效。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（返回前）复核未通过），不可作为当前有效登记候选。"
+        },
+        {
+          "label": "[NaN] 事件屏障命中",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "[NaN] 推进时已写满 49 文件",
+          "ok": true,
+          "detail": "files=49"
+        },
+        {
+          "label": "[NaN] 时钟读取次数 >= 4",
+          "ok": true,
+          "detail": "reads=5"
+        },
+        {
+          "label": "[NaN] 拒绝成功",
+          "ok": true,
+          "detail": "[{\"code\":\"ASM_WINDOW_EXPIRED\",\"detail\":\"组装（写后）：时钟快照无效（读到 NaN）。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（写后）复核未通过），不可作为当前有效登记候选。\"}]"
+        },
+        {
+          "label": "[NaN] wroteFiles=true（保留已写事实）",
+          "ok": true,
+          "detail": "wroteFiles=true"
+        },
+        {
+          "label": "[NaN] written 含 49 项",
+          "ok": true,
+          "detail": "len=49"
+        },
+        {
+          "label": "[NaN] 产物保留 49 文件",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "[NaN] 如实标为 clockInvalid",
+          "ok": true,
+          "detail": "clockInvalid=true"
+        },
+        {
+          "label": "[NaN] 说明提及时钟问题",
+          "ok": true,
+          "detail": "组装（写后）：时钟快照无效（读到 NaN）。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（写后）复核未通过），不可作为当前有效登记候选。"
+        },
+        {
+          "label": "[NaN] 未把未知时钟说成已证明的截止时间",
+          "ok": true,
+          "detail": "组装（写后）：时钟快照无效（读到 NaN）。 产物已写入并保留（未删除、未清理），本次已写 49 个文件（组装（写后）复核未通过），不可作为当前有效登记候选。"
+        }
+      ]
+    },
+    {
+      "group": "S2-预检与复用零写语义不变",
+      "total": 14,
+      "passed": 14,
+      "checks": [
+        {
+          "label": "预检失败拒绝成功",
+          "ok": true,
+          "detail": "[{\"code\":\"REG_PLAN_WINDOW_EXPIRED\",\"detail\":\"真实窗口已过期。\"}]"
+        },
+        {
+          "label": "预检失败仍为 wroteFiles=false",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "预检失败不带 written 清单",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "预检失败目录快照不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "check 过期拒绝成功",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "check 失败仍为 wroteFiles=false",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "check 失败不带 written",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "check 失败目录不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "完整复用过期拒绝成功",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "完整复用失败仍为 wroteFiles=false",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "完整复用失败不带 written",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "完整复用失败目录不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "未过期完整复用成功且零写",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "未过期复用目录不变",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "group": "S3-合法续建与正常成功不回归",
+      "total": 9,
+      "passed": 9,
+      "checks": [
+        {
+          "label": "正常成功未回归",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "正常成功 wroteFiles=true",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "正常成功 written 为 49 项",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "正常成功不带过期标记",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "正常成功不带失败原因",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "合法续建成功",
+          "ok": true,
+          "detail": "[]"
+        },
+        {
+          "label": "续建 written 只列本次补写的 2 项",
+          "ok": true,
+          "detail": "[\"registration-project/miniprogram/app.wxss\",\"manifest.json\"]"
+        },
+        {
+          "label": "续建不把原有文件算作新写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "续建后目录 49 文件",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    }
+  ],
+  "protectedBaseline": {
+    "trackedFiles": 903,
+    "available": true,
+    "changedByThisRun": [],
+    "missingAfter": [],
+    "note": "接手时已跟踪文件运行前后应字节不变；提交范围另由 git diff 核对，两者不混称。"
+  },
+  "networkGuard": {
+    "installedPoints": [
+      "http.request",
+      "https.request",
+      "net.connect",
+      "net.createConnection",
+      "dns.lookup",
+      "dns.resolve"
+    ],
+    "scope": "本进程 Node 模块拦截点；不是系统级网络审计，也不覆盖原生编译器内部调用。",
+    "sensitivityTriggered": {
+      "httpsRequest": true,
+      "dnsLookup": true,
+      "netConnect": true
+    },
+    "sensitivityPointCount": 3,
+    "attemptsDuringWork": 0,
+    "note": "实际触发 3 个点；http.request 为安装拦截点但本轮无对应触发。"
+  },
+  "counts": {
+    "networkAttempts": 0
+  },
+  "fixturesCreated": 10,
+  "unverified": [
+    "真实 SDK 转换、平台事务、IAM 写权限、当前费用与额度。",
+    "依赖安装与实际受支持运行时、远端云函数代码字节回读。",
+    "完整微信构建、真机与平台部署。",
+    "本人微信登记、管理员初始化与批准签发者。",
+    "实际登记轮次、开始时间与截止时间（本轮只修出口，不产出当次真实执行包）。",
+    "首次尚未绑定账号的 identify 未知结果仍无持久防重：只证明不自动重发，必须停止核对。"
+  ],
+  "finishedAt": "2026-10-11T04:49:26.258Z",
+  "summary": {
+    "groups": 3,
+    "checks": 48,
+    "passed": 48,
+    "failed": 0
+  }
+}

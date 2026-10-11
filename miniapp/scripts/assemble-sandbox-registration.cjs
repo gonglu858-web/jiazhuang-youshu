@@ -1187,10 +1187,11 @@ function checkAssembly(options = {}) {
 /**
  * 本地组装：全部可预知失败发生在任何写入之前。
  *
- * 真实候选的时效复核共三次：
- *  1. 来源检查与整树预检之后、**第一次写输出之前**；
- *  2. 写入完成之后（此时过期则保留已写产物，如实报告，不删目录、不伪称零写）；
- *  3. 返回成功之前。
+ * 真实候选的时效复核在各分支**分别重新读当前时钟**，不复用启动时刻。
+ * 具体边界：来源/重算阶段；预检后与写前；复用返回前；续建补写前；
+ * 写后；最终返回前。写入开始之后的任何失败出口共用同一已写事实投影，
+ * 因此到期或时钟无效都会保留产物并如实报告已写文件，不会误报零写。
+ * 合成模式沿用 `generatedAt` 可复验口径，不启用这些边界。
  */
 function buildAssembly(options = {}) {
   const netState = options.networkGuard === undefined ? null : options.networkGuard;
@@ -1207,8 +1208,28 @@ function buildAssembly(options = {}) {
   // 真实候选：每个时效边界都重新读取当前时钟（不复用启动时刻）
   const clock = makeClockReader(options.nowMs);
   let dir;
+  // 写入状态提到 try 之外：**所有已经开始写入之后的失败出口**都必须带回
+  // 真实写入事实，包括最终返回前检查（否则会误报 wroteFiles=false 且丢失 written）。
+  const written = [];
+  let wroteSomething = false;
+  /** 已写入之后才成立的失败投影：保留已写事实，不伪称零写。 */
+  function writtenFailureProjection(error, extra) {
+    return Object.assign({
+      ok: false, mode: 'build', dir, artifactKind: kind,
+      inputDir: (typeof inputDirForFailure === 'string' ? inputDirForFailure : undefined),
+      wroteFiles: wroteSomething, written: written.slice(),
+      cloudCalled: false,
+      networkAttempts: netState ? netState.attempts.length : 0,
+      problems: [{
+        code: error.code || ERR.FAILED,
+        detail: String(error.detail || error.message).slice(0, 260)
+      }]
+    }, extra || {});
+  }
+  let inputDirForFailure = null;
   try {
     const inputDir = resolveInputDir(options.inputDir);
+    inputDirForFailure = inputDir;
     if (isReal && !isPlainObject(options.plan)) {
       fail(ERR.PLAN_REQUIRED_FOR_REAL, '真实候选组装必须由调用方提供外部完整 plan。');
     }
@@ -1245,10 +1266,8 @@ function buildAssembly(options = {}) {
     // 续建路径：补写之前再复核一次 —— **重新读时钟**
     if (isReal) assertCandidateNotExpired(bundle.normalized, clock.read('续建（写入前）'), '续建（写入前）');
 
-    const written = [];
-    // 记录「已写事实」：写入开始后，任何后续失败（含写后时钟异常）都不得被外层
-    // 统一返回成 wroteFiles=false —— 那会谎报零写。
-    let wroteSomething = false;
+    // 「已写事实」由 try 之外的共享状态记录（written / wroteSomething），
+    // 因此写入开始后的任何失败出口都不会被外层统一返回成零写。
     const missing = new Map();
     for (const [rel, buf] of bundle.expected) {
       if (rel === 'manifest.json') continue;
@@ -1281,28 +1300,30 @@ function buildAssembly(options = {}) {
       };
     }
 
-    // 写后复核：**重新读时钟**。若已过期，保留产物并如实报告已写事实，
-    // 不删目录、不伪称零写。
+    // 写后与最终返回前的时效复核：**各自重新读时钟**，共用同一失败投影。
+    // 两者都发生在写入开始之后，因此到期或时钟无效都必须保留已写事实、拒绝成功。
     if (isReal) {
-      try {
-        assertCandidateNotExpired(bundle.normalized, clock.read('组装（写后）'), '组装（写后）');
-      } catch (error) {
-        return {
-          ok: false, mode: 'build', dir, inputDir, artifactKind: kind, expiredAfterWrite: true,
-          written, wroteFiles: wroteSomething, cloudCalled: false,
-          networkAttempts: netState ? netState.attempts.length : 0,
-          problems: [{
-            code: error.code || ERR.WINDOW_EXPIRED,
-            detail: String(error.detail || error.message).slice(0, 220)
-              + ` 产物已写入并保留（未删除、未清理），本次已写 ${written.length} 个文件，`
-              + '不可作为当前有效登记候选。'
-          }]
-        };
+      for (const stage of ['组装（写后）', '组装（返回前）']) {
+        try {
+          assertCandidateNotExpired(bundle.normalized, clock.read(stage), stage);
+        } catch (error) {
+          const raw = String(error.detail || error.message);
+          return writtenFailureProjection(error, {
+            inputDir,
+            expiredAfterWrite: true,
+            // 时钟无效与已过期如实区分：未知时钟不能被描述成已证明的真实截止时间
+            clockInvalid: /时钟/.test(raw),
+            reason: stage === '组装（返回前）' ? 'final-check' : 'post-write-check',
+            problems: [{
+              code: error.code || ERR.WINDOW_EXPIRED,
+              detail: raw.slice(0, 220)
+                + ` 产物已写入并保留（未删除、未清理），本次已写 ${written.length} 个文件`
+                + `（${stage}复核未通过），不可作为当前有效登记候选。`
+            }]
+          });
+        }
       }
     }
-
-    // 返回成功前的最终复核 —— **重新读时钟**
-    if (isReal) assertCandidateNotExpired(bundle.normalized, clock.read('组装（返回前）'), '组装（返回前）');
 
     return {
       ok: true, mode: 'build', dir, inputDir, reused: false, artifactKind: kind,
@@ -1313,6 +1334,8 @@ function buildAssembly(options = {}) {
       networkAttempts: netState ? netState.attempts.length : 0
     };
   } catch (error) {
+    // 外层出口：已开始写入则带回已写事实；未写入则保持预检零写语义。
+    if (wroteSomething) return writtenFailureProjection(error, { inputDir: inputDirForFailure });
     return {
       ok: false, mode: 'build', dir, wroteFiles: false, cloudCalled: false,
       networkAttempts: netState ? netState.attempts.length : 0,
