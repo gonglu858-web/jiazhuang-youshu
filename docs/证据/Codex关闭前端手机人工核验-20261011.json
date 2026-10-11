@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-11T11:09:08.762217+00:00",
+  "source": "user supplied phone screenshot; visually reviewed by Codex",
+  "screenshotFileName": "7ce0c2242fcc0e5a85cbd0fb6c7620b7.jpg",
+  "screenshotSha256": "c50b7ceab86fb88f67308301347403e25c84beb4c00079da4ae79813c689b3e7",
+  "screenshotCopiedToRepository": false,
+  "visible": {
+    "title": "施工安排独立测试",
+    "banner": "施工安排独立测试副本未启用。",
+    "driverDisabledTextPresent": true,
+    "submissionButtonVisible": false
+  },
+  "conclusion": "THIS_PHONE_CLOSED_PAGE_VISUALLY_CONFIRMED",
+  "limitations": [
+    "手机系统时间不作为服务器时间证据。",
+    "未确认手机微信与固定目标账号匹配。",
+    "截图不独立证明云端状态、零网络请求或所有缓存客户端关闭。",
+    "尚未登记本人或初始化管理员。"
+  ],
+  "cloudReadOrWriteThisTurn": false
+}
