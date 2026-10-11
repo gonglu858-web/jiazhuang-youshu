@@ -1,0 +1,105 @@
+{
+  "schema": "codex-closed-baseline-preparation/1",
+  "recordedAt": "2026-10-11T06:49:25.016Z",
+  "scope": "LOCAL_PREPARATION_AND_READONLY_TOOL_CHECK",
+  "toolObservations": {
+    "source": "本轮 wechatide CLI 返回的选择性人工投影；未保存含登录用户的原始输出",
+    "ide": {
+      "success": true,
+      "loginExpired": false,
+      "versionRelation": "equal",
+      "cliTokenRequired": false
+    },
+    "function": {
+      "name": "scheduleSandbox",
+      "errorCode": "ResourceNotFound.Function"
+    },
+    "apiWasReadOnly": true
+  },
+  "cliBundleSha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97",
+  "artifactDir": "artifacts/schedule-sandbox/registration-closed-baseline-20261011",
+  "files": [
+    {
+      "path": "index.js",
+      "bytes": 7752,
+      "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/index.js"
+    },
+    {
+      "path": "gate.js",
+      "bytes": 11484,
+      "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/gate.js"
+    },
+    {
+      "path": "collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js"
+    },
+    {
+      "path": "project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/project-guard.js"
+    },
+    {
+      "path": "package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/package.json"
+    },
+    {
+      "path": "vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js"
+    },
+    {
+      "path": "vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/vendor/schedule-service.js"
+    },
+    {
+      "path": "vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830",
+      "sourceKey": "miniapp/cloudfunctions/scheduleSandbox/vendor/MANIFEST.json"
+    }
+  ],
+  "config": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "functionRoot": "./cloudfunctions",
+    "functions": [
+      {
+        "name": "scheduleSandbox",
+        "handler": "index.main",
+        "runtime": "Nodejs20.19",
+        "timeout": 3,
+        "memorySize": 256,
+        "type": "Event",
+        "installDependency": true,
+        "triggers": []
+      }
+    ]
+  },
+  "configSha256": "591ea844fc4ddf1b5dcd80cf47d00a0128f8a5fe22033171a0980a687c44769a",
+  "verification": {
+    "filesCopied": 8,
+    "byteIdenticalToClosedSource": true,
+    "byteIdenticalToCurrentSource": true,
+    "configJsonParsed": true,
+    "deployCommandExecuted": false,
+    "previewExecuted": false,
+    "dependencyInstallationPerformed": false,
+    "cloudWritePerformed": false,
+    "runtimeSupportVerified": false,
+    "remoteReadbackVerified": false
+  },
+  "limitations": [
+    "CLI 配置及 ZIP 上传方式为固定 bundle 静态核对，尚未执行部署。",
+    "平台首次部署支持、权限、依赖安装与远端代码回读仍须批准后逐步验证。",
+    "业务开关仍关闭；准备成功不等于部署成功。"
+  ]
+}
