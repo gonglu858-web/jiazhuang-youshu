@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-11T11:23:44.289713+00:00",
+  "source": "Codex tool outputs transcribed; no raw credentials retained",
+  "roundId": "self-1791717263921-4e2a401ebdc04447",
+  "preflightStatus": {
+    "loginExpired": true,
+    "versionRelation": "equal",
+    "cliTokenRequired": false
+  },
+  "login": {
+    "taskId": "login_e62c9834-3cdc-434f-8cdd-7d0b9a6f5071",
+    "pendingThenPolledOnce": true,
+    "finalStatus": "success"
+  },
+  "preview": {
+    "project": "artifacts/schedule-sandbox/registration-full-self-1791717263921-4e2a401ebdc04447/registration-project",
+    "attempts": 1,
+    "qrFormat": "window",
+    "pagePath": "pages/schedule-sandbox/schedule-sandbox",
+    "ok": false,
+    "errorType": "MCP_TOOL_ERROR",
+    "message": "错误 Error: aborted (code 10)",
+    "code": "10",
+    "usableQrObtained": false
+  },
+  "readonlyRuntimeDiagnostic": {
+    "firstAttempt": "INPUT_ERROR missing --action; no runtime inspection performed",
+    "helpReadThenAction": "currentPage",
+    "result": "cant find runtimeid by projectpath",
+    "causeOfPreviewFailureProven": false
+  },
+  "closureVerified": true,
+  "userSubmissionRequested": false,
+  "businessInvocationByAssistant": false,
+  "nextStep": "keep backend closed; inspect developer tool current project and visible notices; no repeated registration deploy"
+}

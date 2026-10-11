@@ -1,0 +1,228 @@
+{
+  "runId": "codex-self-closed-1791717637828-a8f4af43-1684-4b0b-9d3c-0493bd5f079b",
+  "mode": "closed",
+  "roundId": "self-1791717263921-4e2a401ebdc04447",
+  "startedAt": "2026-10-11T11:20:37.831Z",
+  "scriptSha256": "eb2574f440bc226bcb44bb8073d6e9edf2cb48020fbbecb675732410393e6aa8",
+  "deploymentAttempts": 1,
+  "businessInvocations": 0,
+  "stages": [
+    {
+      "stage": "deploy",
+      "startedAt": "2026-10-11T11:20:47.570Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T11:21:10.474Z"
+    },
+    {
+      "stage": "GetFunction",
+      "startedAt": "2026-10-11T11:21:10.475Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T11:21:12.958Z"
+    },
+    {
+      "stage": "GetFunctionAddress",
+      "startedAt": "2026-10-11T11:21:12.959Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "spawnFailed": false,
+      "processExited": true,
+      "terminationConfirmed": true,
+      "finishedAt": "2026-10-11T11:21:15.319Z"
+    }
+  ],
+  "status": "REMOTE_ZIP_OBTAINED_NEEDS_BYTE_VERIFICATION",
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "7b57810e-0372-4db2-87c2-db379cd6ecd6",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "3474",
+          "principalIdTail": "5386",
+          "requestId": "7b57810e-0372-4db2-87c2-db379cd6ecd6"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "646ef657-1d00-4557-959d-548761a543d2",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "646ef657-1d00-4557-959d-548761a543d2"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "360cc4a9-72ed-433b-9d36-626e67649233",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "360cc4a9-72ed-433b-9d36-626e67649233"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "7b57810e-0372-4db2-87c2-db379cd6ecd6",
+      "describeEnvs": "646ef657-1d00-4557-959d-548761a543d2",
+      "describeEnvInfo": "360cc4a9-72ed-433b-9d36-626e67649233"
+    }
+  },
+  "deploymentProcess": {
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "spawnFailed": false,
+    "processExited": true,
+    "terminationConfirmed": true
+  },
+  "functionDetail": {
+    "FunctionName": "scheduleSandbox",
+    "Namespace": "cloud1-d8gcq5ag39d847723",
+    "Runtime": "Nodejs20.19",
+    "MemorySize": 256,
+    "Timeout": 3,
+    "Type": "Event",
+    "Handler": "index.main",
+    "Status": "Active"
+  },
+  "archive": {
+    "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791717263921-4e2a401ebdc04447\\codex-self-closed-1791717637828-a8f4af43-1684-4b0b-9d3c-0493bd5f079b.zip",
+    "sha256": "69891172866cc5b95d9bac52c31a8574163afa1566211ff91c41758f22325a65",
+    "bytes": 4929625,
+    "platformCodeSha256": "69891172866cc5b95d9bac52c31a8574163afa1566211ff91c41758f22325a65"
+  },
+  "recordsAfter": {
+    "at": "2026-10-11T11:21:17.251Z",
+    "four": [
+      {
+        "id": "oldPrimary",
+        "collection": "app_admins",
+        "key": "primary",
+        "status": "OBSERVED",
+        "active": true,
+        "keyMatches": true,
+        "targetMatches": true,
+        "openidDerivationMatches": null,
+        "requestId": null
+      },
+      {
+        "id": "oldUser",
+        "collection": "users",
+        "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "status": "OBSERVED",
+        "active": true,
+        "keyMatches": true,
+        "targetMatches": true,
+        "openidDerivationMatches": true,
+        "requestId": null
+      },
+      {
+        "id": "testUser",
+        "collection": "schtest_v1_users",
+        "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "status": "NOT_FOUND",
+        "active": null,
+        "keyMatches": null,
+        "targetMatches": null,
+        "openidDerivationMatches": null,
+        "requestId": null
+      },
+      {
+        "id": "testPrimary",
+        "collection": "schtest_v1_app_admins",
+        "key": "primary",
+        "status": "NOT_FOUND",
+        "active": null,
+        "keyMatches": null,
+        "targetMatches": null,
+        "openidDerivationMatches": null,
+        "requestId": null
+      }
+    ],
+    "audit": {
+      "complete": true,
+      "rows": [],
+      "pages": 1
+    }
+  },
+  "finishedAt": "2026-10-11T11:21:17.251Z"
+}

@@ -1,0 +1,28 @@
+{
+  "runId": "codex-self-closed-1791717637828-a8f4af43-1684-4b0b-9d3c-0493bd5f079b",
+  "roundId": "self-1791717263921-4e2a401ebdc04447",
+  "at": "2026-10-11T11:20:47.568Z",
+  "mode": "closed",
+  "args": [
+    "fn",
+    "deploy",
+    "scheduleSandbox",
+    "--env-id",
+    "cloud1-d8gcq5ag39d847723",
+    "--region",
+    "ap-shanghai",
+    "--config-file",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791717263921-4e2a401ebdc04447\\closed.cloudbaserc.json",
+    "--dir",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-self-1791717263921-4e2a401ebdc04447\\closed-project\\cloudfunctions\\scheduleSandbox",
+    "--runtime",
+    "Nodejs20.19",
+    "--install-dependency",
+    "true",
+    "--deployMode",
+    "zip",
+    "--json",
+    "--force"
+  ],
+  "configSha256": "3f83963d9816317e37c7b8e4704aeefe0c0424702f61cc3d296a7f35e1694d0b"
+}
