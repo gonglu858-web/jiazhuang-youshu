@@ -1,0 +1,127 @@
+{
+  "startedAt": "2026-10-12T02:24:17.536Z",
+  "scriptSha256": "ce539e9f99f7877ecc1c4553cdc2ef5aff569f591d3b14bb141293dd9fa0a053",
+  "pins": {
+    "sandbox-primary-execution-host.cjs": "dc1881e8d7daa8caf4dfa7ebb8c4f9e3deb49dc85fdc977c461ef13c054fad4b",
+    "sandbox-primary-execution-worker.cjs": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8",
+    "sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+  },
+  "status": "SUBJECT_OBSERVED_NOT_APPROVED",
+  "writeAuthorized": false,
+  "approvalIssued": false,
+  "initializationAttempted": false,
+  "credentialFetchAttempted": true,
+  "subject": {
+    "subjectDigest": "93cb27f6ff00e5626a3d88fb01e0a0aafd1b6ceb8b3b5a3f2d02591f253099bf",
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "requestId": "2af9120b-cc3d-4a6d-a5e8-03798e3c78c5"
+  },
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "0622fa34-8183-437f-baef-881e36a56298",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "5437",
+          "principalIdTail": "5386",
+          "requestId": "0622fa34-8183-437f-baef-881e36a56298"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "f9413735-d10d-4ac2-ac73-2e9612a37d76",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "f9413735-d10d-4ac2-ac73-2e9612a37d76"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "6e86f6df-e9eb-4a00-a32f-2487aa1f2442",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "6e86f6df-e9eb-4a00-a32f-2487aa1f2442"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "0622fa34-8183-437f-baef-881e36a56298",
+      "describeEnvs": "f9413735-d10d-4ac2-ac73-2e9612a37d76",
+      "describeEnvInfo": "6e86f6df-e9eb-4a00-a32f-2487aa1f2442"
+    }
+  },
+  "finishedAt": "2026-10-12T02:24:26.034Z",
+  "dependenciesUnchanged": true,
+  "limitations": [
+    "此摘要是独立只读观测，不是批准名单；不得自动登记为预期主体。",
+    "之后需绑定具体写批准并重新比较；角色会话变化导致不符即停止，不自动刷新预期值。",
+    "未调用数据库、初始化或签发受控批准；未检查IAM写权限或费用。"
+  ]
+}
