@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-12T02:05:46.245857+00:00",
+  "source": "tool output transcription",
+  "statusCheck": {
+    "success": true,
+    "loginExpired": false,
+    "versionRelation": "equal",
+    "cliTokenRequired": false
+  },
+  "openedProject": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-self-1791770678256-9108e1f8a09c2dd1\\registration-project",
+  "openProjectResult": {
+    "success": true,
+    "type": "newopen",
+    "winId": "s0"
+  },
+  "automaticPreviewAttempted": false,
+  "manualPreviewConfirmed": false,
+  "phoneSubmissionAuthorizedAtThisStage": false,
+  "instruction": "用户在刚打开的新窗口手动预览，扫码只看，不提交；待明确反馈。",
+  "cloudClosedEvidence": "docs/证据/Codex登记前关闭基线只读确认-20261012.json"
+}
