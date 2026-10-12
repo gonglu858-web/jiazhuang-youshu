@@ -616,6 +616,31 @@ async function localCheck(options) {
  *
  * 任一环节失败即停止，**不**取第二批凭据、不重试初始化。
  */
+// ── M1：凭据来源模式（固定真实来源与离线夹具的明确分支） ────────────────────
+/**
+ * `credentialSourceMode` 是**来源分类**，不是权限凭据：
+ *  - `offline-fixture`（默认）：沿用既有行为 —— 必须显式提供合成 profile，
+ *    且不得等于固定真实 authSessionDir，否则在取凭据前停止；
+ *  - `fixed-real-source`：真实模式。凭据 profile **只允许**是受审只读观测器
+ *    FIXED 里的固定 `authSessionDir`（本机唯一固定真实来源），不接受调用方
+ *    传入的任意 profile/cwd/env/url 或认证文件参数。
+ *
+ * 真实模式选择本身**不是授权**：后续的受控批准检查（WeakSet 句柄、目标、
+ * 完整计划、时效、指纹、预期主体）在任何凭据获取之前照常执行。
+ */
+const CREDENTIAL_SOURCE_MODES = Object.freeze(['offline-fixture', 'fixed-real-source']);
+
+/** 规范化并校验凭据来源模式；未知取值抛错（可在任何写入之前独立调用）。 */
+function normalizeCredentialSourceMode(value) {
+  if (value === undefined || value === null) return 'offline-fixture';
+  if (typeof value !== 'string' || !CREDENTIAL_SOURCE_MODES.includes(value)) {
+    const e = new Error('未知凭据来源模式；仅允许 offline-fixture / fixed-real-source。');
+    e.code = ERR.PLAN_INVALID;
+    throw e;
+  }
+  return value;
+}
+
 async function executeOnce(options) {
   const o = options || {};
   const now = typeof o.now === 'function' ? o.now : () => Date.now();
@@ -629,6 +654,18 @@ async function executeOnce(options) {
     stages: [],
     incomplete: []
   };
+
+  // 0) 凭据来源模式（在任何凭据/网络/写入之前）
+  let sourceMode;
+  try {
+    sourceMode = normalizeCredentialSourceMode(o.credentialSourceMode);
+  } catch (error) {
+    report.stoppedAt = 'credentialSourceMode';
+    report.errorCode = error.code || ERR.PLAN_INVALID;
+    report.incomplete.push(String(error.message || error));
+    return report;
+  }
+  report.credentialSourceMode = sourceMode;
 
   // 1) 受控批准来源（**先于任何凭据/网络**）
   const approvalCheck = verifyControlledApproval({
@@ -664,20 +701,46 @@ async function executeOnce(options) {
     const credDeps = Object.assign({}, o.credentialDeps || {});
     // 复用同一注入点：CLI 阶段的 spawn 替身同样用于凭据命令（仅离线测试注入）
     if (!credDeps.spawn && typeof o.spawn === 'function') credDeps.spawn = o.spawn;
-    // profile 是凭据宿主的固定入参：缺失时会回退到本机真实 authSessionDir，
-    // 因此离线必须显式给合成 profile，避免指向真实登录目录。
+    // profile 是凭据宿主的固定入参：缺失时会回退到本机真实 authSessionDir。
+    // M1：两种模式的 profile 解析在这里明确分流。
     if (!credDeps.fixed) credDeps.fixed = {};
     if (!credDeps.fixed.authProfileDir) {
       const profile = o.profileDir || o.credentialProfileDir || null;
       if (profile) credDeps.fixed.authProfileDir = profile;
     }
-    // 安全闸：若最终仍会回退到本机真实登录目录，本轮**不执行**（不读真实认证内容）
     const effectiveProfile = credDeps.fixed.authProfileDir;
-    if (!effectiveProfile || effectiveProfile === cliObserver.FIXED.authSessionDir) {
-      report.stoppedAt = 'credentialFetch';
-      report.errorCode = ERR.CREDENTIAL_FETCH_FAILED;
-      report.incomplete.push('未提供合成登录 profile 边界；为避免触及真实登录目录，在取凭据之前停止。');
-      return report;
+    const REAL_AUTH_DIR = cliObserver.FIXED.authSessionDir;
+    if (sourceMode === 'fixed-real-source') {
+      // 真实模式：profile **只能**是固定真实 authSessionDir（规范化的字符串一致），
+      // 且必须经受审只读观测器的 FIXED 提供 —— 不接受调用方任意 profile。
+      // 不做路径别名绕过：不换大小写、不去尾部斜线、不解析相对/junction。
+      const realFixed = cliObserver.FIXED;
+      const expectedReal = realFixed.authSessionDir;
+      if (typeof expectedReal !== 'string' || !expectedReal) {
+        report.stoppedAt = 'credentialFetch';
+        report.errorCode = ERR.CREDENTIAL_FETCH_FAILED;
+        report.incomplete.push('受审只读观测器未提供固定真实 authSessionDir；真实模式拒绝启动。');
+        return report;
+      }
+      // 必须精确来自固定常量（字符串同一），而不是调用方自报的同值
+      if (effectiveProfile === undefined || effectiveProfile === null) {
+        credDeps.fixed.authProfileDir = expectedReal; // 真实模式唯一合法来源
+      } else if (effectiveProfile !== expectedReal) {
+        report.stoppedAt = 'credentialFetch';
+        report.errorCode = ERR.CREDENTIAL_FETCH_FAILED;
+        report.incomplete.push('真实模式的登录 profile 与固定真实来源不一致；不接受任意 profile/别名/缓存副本。');
+        return report;
+      }
+      report.fixedRealSourceUsed = true;
+    } else {
+      // 离线夹具模式（原有安全闸，语义不变）：必须显式提供合成 profile，
+      // 且不得等于固定真实登录目录 —— 避免离线测试读到真实认证内容。
+      if (!effectiveProfile || effectiveProfile === REAL_AUTH_DIR) {
+        report.stoppedAt = 'credentialFetch';
+        report.errorCode = ERR.CREDENTIAL_FETCH_FAILED;
+        report.incomplete.push('未提供合成登录 profile 边界；为避免触及真实登录目录，在取凭据之前停止。');
+        return report;
+      }
     }
     const fetched = await credentialHost.fetchTemporaryCredential({
       deps: credDeps, cwd: o.credentialCwd || null
@@ -1828,6 +1891,8 @@ module.exports = Object.freeze({
   boundSnapshot,
   fullPlanDigestOf,
   verifyControlledApproval,
+  normalizeCredentialSourceMode,
+  CREDENTIAL_SOURCE_MODES,
   callerTupleDigest,
   verifyCallerSubject,
   localCheck,

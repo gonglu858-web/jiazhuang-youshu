@@ -1,0 +1,196 @@
+{
+  "handoffBaseline": "506ea95",
+  "verificationKind": "OFFLINE_CONTRACT_FIXTURE",
+  "layers": {
+    "cliSpawn": "synthetic (injected)",
+    "sdkTransport": "synthetic Db.reqClass + injected db; real sdk.init/database/serialization",
+    "platformVerified": false,
+    "realSdkLocalConversion": true
+  },
+  "fixedRealSource": {
+    "authSessionDirPrefix": "[REAL_AUTH_DIR recorded, content untouched]"
+  },
+  "sideEffects": {
+    "isolatedFetchCwdInRealAuthDir": 1,
+    "note": "真实模式凭据获取会在固定登录目录创建空隔离工作目录（既有宿主行为，不读认证内容）。"
+  },
+  "groups": [
+    {
+      "group": "M1M2-固定真实来源、批准交界与单次保存",
+      "total": 28,
+      "passed": 28,
+      "checks": [
+        {
+          "label": "默认离线：无合成 profile 在取凭据前停止",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "默认离线：零子进程",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "默认离线：终态 FAILED 如实保存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "未知模式（含大小写变体）零写拒绝",
+          "ok": true,
+          "detail": "rejected=8"
+        },
+        {
+          "label": "真实模式拒绝外来 profile",
+          "ok": true,
+          "detail": "真实模式的登录 profile 与固定真实来源不一致；不接受任意 profile/别名/缓存副本。"
+        },
+        {
+          "label": "真实模式拒绝外来 profile 时零子进程",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实模式正向：宿主 PLAN_READY",
+          "ok": true,
+          "detail": "{\"stoppedAt\":null,\"errorCode\":null,\"incomplete\":[]}"
+        },
+        {
+          "label": "真实模式正向：COMPLETED 终态新建",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实模式：凭据恰取一次",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实模式：三阶段 + 额外 STS 共 4 次",
+          "ok": true,
+          "detail": "[\"sts.GetCallerIdentity\",\"tcb.DescribeEnvs\",\"tcb.DescribeEnvInfo\",\"sts.GetCallerIdentity\"]"
+        },
+        {
+          "label": "真实模式：凭据 CLI Home 恰为固定真实来源",
+          "ok": true,
+          "detail": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/auth-session-20261007"
+        },
+        {
+          "label": "真实模式：无路径别名变体",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实模式：关联阶段不使用登录 profile 作为 Home",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "副作用记录：隔离目录新增数已记录",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "真实模式正向：一次事务两写一提交",
+          "ok": true,
+          "detail": "{\"primarySet\":1,\"auditSet\":1,\"commit\":1,\"abort\":0}"
+        },
+        {
+          "label": "started 含确定性 auditId",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "started 含入口文件指纹（不遗漏于执行包指纹）",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "终态 COMPLETED 与 started 审计键一致",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "重复轮次：STARTED_EXISTS 拒绝",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "重复轮次：started 字节不变",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "重复轮次：零额外写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "重复轮次：不重新取凭据",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "普通 JSON 冒充批准：交界拒绝",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "普通 JSON 冒充批准：零子进程零 started",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "已有 primary：outcome=alreadyPresent 且零写",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "已有 primary：宿主持久化不记 COMPLETED",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "已有 primary：终态 RESULT_UNKNOWN 如实保存",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "label": "网络拦截敏感性：三面实测拒绝并计数（非硬写零）",
+          "ok": true,
+          "detail": "{\"https\":1,\"dns\":1,\"net\":1}"
+        }
+      ]
+    }
+  ],
+  "protectedBaseline": {
+    "note": "本进程未能调用 git（spawnSync 偶发 EBUSY），已跟踪文件基线未验证，如实记录。",
+    "trackedFiles": 0
+  },
+  "networkGuard": {
+    "note": "本证据全部子进程经注入合成 spawn；SDK 传输为合成 reqClass。",
+    "sensitivity": {
+      "https": 1,
+      "dns": 1,
+      "net": 1
+    }
+  },
+  "realModeRun": {
+    "runId": "ev-85f3af22-8-real",
+    "auditId": "sbx-init-primary:ddb2c6fc11d7023ca5419ebf9e7ec423"
+  },
+  "unverified": [
+    "平台事务行为、IAM 写权限、真实费用消耗（本轮全部为本地合成验证）。",
+    "生产 worker 自建 db 的同批凭据链（测试注入 db；真实 SDK 本地转换真实发生）。",
+    "远端代码回读、完整构建/真机、真实批准签发流程。",
+    "实际登记轮次与窗口（本轮不产出真实执行包，不生成真实写批准）。",
+    "首次未绑定 identify 未知结果仍无持久防重（既有边界）。"
+  ],
+  "finishedAt": "2026-10-12T03:17:39.907Z",
+  "summary": {
+    "groups": 1,
+    "checks": 28,
+    "passed": 28,
+    "failed": 0
+  }
+}
