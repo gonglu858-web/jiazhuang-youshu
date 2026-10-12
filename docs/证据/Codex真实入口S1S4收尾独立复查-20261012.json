@@ -1,0 +1,238 @@
+{
+  "reviewedCommit": "3e6a7c3",
+  "baseline": "98b81c7",
+  "kind": "REAL_APPLICATION_AND_SDK_LOCAL_CONVERSION_SYNTHETIC_TRANSPORT",
+  "samples": [
+    {
+      "name": "S1-binding-fixed-real-source-to-offline-fixture",
+      "checked": true,
+      "passed": true,
+      "errorCode": "REAL_MODE_BINDING_MISMATCH",
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S1-binding-offline-fixture-to-fixed-real-source",
+      "checked": true,
+      "passed": true,
+      "errorCode": "REAL_MODE_BINDING_MISMATCH",
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-existing-COMPLETED",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "oldBytesUnchanged": true,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-existing-FAILED",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "oldBytesUnchanged": true,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-existing-RESULT_UNKNOWN",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "oldBytesUnchanged": true,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-partial-EIO",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "EIO",
+      "commitFactEstablished": true,
+      "saveAttempts": 1,
+      "retainedBytes": 20,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S2-race-EEXIST",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "APR_TERMINAL_EXISTS",
+      "commitFactEstablished": true,
+      "saveAttempts": 1,
+      "retainedBytes": 15,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S2-mkdir-EACCES",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "EACCES",
+      "commitFactEstablished": true,
+      "saveAttempts": 1,
+      "retainedBytes": 0,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S2-terminal-scan-EACCES",
+      "checked": true,
+      "defectReproduced": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "APR_TERMINAL_EXISTS",
+      "scanAttempts": 1,
+      "oldBytesUnchanged": true,
+      "executionAttached": true,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S3-COMPLETED-and-repeat",
+      "checked": true,
+      "passed": true,
+      "status": "COMPLETED",
+      "disk": {
+        "resultPersisted": true,
+        "unknownPersisted": false
+      },
+      "returned": {
+        "resultPersisted": true,
+        "unknownPersisted": null
+      },
+      "repeatError": "APR_TERMINAL_EXISTS",
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S3-early-FAILED",
+      "checked": true,
+      "inconsistencyObserved": true,
+      "status": "FAILED",
+      "disk": {
+        "resultPersisted": true,
+        "unknownPersisted": false
+      },
+      "returned": {
+        "resultPersisted": null,
+        "unknownPersisted": null
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": true
+    },
+    {
+      "name": "S3-RESULT_UNKNOWN",
+      "checked": true,
+      "passed": true,
+      "status": "RESULT_UNKNOWN",
+      "disk": {
+        "resultPersisted": true,
+        "unknownPersisted": true
+      },
+      "returned": {
+        "resultPersisted": null,
+        "unknownPersisted": true
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": true
+    }
+  ],
+  "guards": {
+    "fixture": {
+      "https": 0,
+      "http": 0,
+      "dns": 0,
+      "net": 0,
+      "cp": 0
+    },
+    "outer": {
+      "network": 0,
+      "child": 0
+    }
+  },
+  "virtualizedFsCalls": 56,
+  "summary": {
+    "samples": 12,
+    "checked": 12
+  },
+  "finishedAt": "2026-10-12T10:04:23.562Z"
+}

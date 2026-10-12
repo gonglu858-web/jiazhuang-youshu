@@ -1,0 +1,48 @@
+{
+  "reviewedCommit": "3e6a7c3",
+  "firstExit": 0,
+  "firstSummary": {
+    "total": 12,
+    "passed": 12,
+    "failed": []
+  },
+  "secondExit": 1,
+  "newOutputSha256": "705629AE51DED63CD77A59E1AAAEB289E9C89B971EB5993BE093D2D8436DD2E3",
+  "repeatOutputSha256": "705629AE51DED63CD77A59E1AAAEB289E9C89B971EB5993BE093D2D8436DD2E3",
+  "bytesUnchanged": true,
+  "firstGuards": {
+    "channels": [
+      "https",
+      "http",
+      "dns",
+      "net",
+      "cp"
+    ],
+    "installedBeforeAppModules": true,
+    "note": "进程级不恢复；探针计数与业务意外尝试分离，意外 = 总数 − 探针。",
+    "totals": {
+      "https": 1,
+      "http": 1,
+      "dns": 1,
+      "net": 1,
+      "cp": 1
+    },
+    "probes": {
+      "https": 1,
+      "http": 1,
+      "dns": 1,
+      "net": 1,
+      "cp": 1
+    },
+    "unexpectedAttempts": {
+      "https": 0,
+      "http": 0,
+      "dns": 0,
+      "net": 0,
+      "cp": 0
+    }
+  },
+  "outputMode": "file",
+  "actualScriptReviewedCommitLabel": "da30720",
+  "note": "仅使用审查新建临时目录，未指定历史证据为输出目标；第二次验证wx拒绝。临时目录保留，不进行递归清理。"
+}
