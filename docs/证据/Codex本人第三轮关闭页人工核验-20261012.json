@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-12T02:20:43.451444+00:00",
+  "roundId": "self-1791770678256-9108e1f8a09c2dd1",
+  "source": "user supplied phone screenshot after manual closed-project preview instructions",
+  "filename": "a3055188aa5d121cccf18ecb528e236d.jpg",
+  "sha256": "12b8ee0dde716677c38e10b3b3b9d58ef695add223aec161794cfdcd7db60a93",
+  "screenshotClock": "10:19",
+  "visibleTitle": "施工安排独立测试",
+  "visibleClosedMessage": "施工安排独立测试副本未启用。",
+  "registrationFormVisible": false,
+  "submitControlVisible": false,
+  "manualClosedPageDisplayConfirmed": true,
+  "backendEvidence": "docs/证据/codex-self-closed-1791771204427-c3e0abca-cef8-42f9-a5e5-7a813232a968.verified.json",
+  "priorConclusion": "docs/证据/Codex本人第三轮登记与关闭结论-20261012.json",
+  "scope": "manual frontend display confirmation; previous independently verified backend closure retained",
+  "limitations": [
+    "Screenshot does not prove all cached clients closed or no in-flight requests.",
+    "No new cloud query or business call in this evidence-only step.",
+    "Administrator initialization remains unperformed and requires a separate execution package and approval."
+  ]
+}
