@@ -1,0 +1,239 @@
+{
+  "reviewedCommit": "60bdd92",
+  "baseline": "506ea95",
+  "verificationKind": "REAL_APPLICATION_AND_SDK_LOCAL_CONVERSION_WITH_SYNTHETIC_TRANSPORT_AND_FS",
+  "limitations": [
+    "All real-auth filesystem calls redirected to a newly created empty shadow; not an unmodified native test-runner replay.",
+    "Synthetic credentials only; worker is invoked in-process by the existing test transport. No production worker self-created-db credential chain verified.",
+    "Defect samples assert current defective behavior; sample pass is not product acceptance."
+  ],
+  "originalTests": [
+    {
+      "name": "A-1 默认（offline-fixture）无合成 profile：在取凭据前停止，零凭据零子进程",
+      "pass": true
+    },
+    {
+      "name": "A-2 未知凭据来源模式拒绝；大小写变体不接受；发生在任何写入之前",
+      "pass": true
+    },
+    {
+      "name": "A-3 真实模式拒绝任意 profile 别名：调用方 profile 与固定真实来源不一致即停",
+      "pass": true
+    },
+    {
+      "name": "A-4 真实模式：底层合成 CLI 捕获的 Home 恰为固定真实 authSessionDir（无别名）",
+      "pass": true
+    },
+    {
+      "name": "A-5 离线夹具模式显式给出固定真实目录 → 仍拒绝（两模式隔离）",
+      "pass": true
+    },
+    {
+      "name": "B-1 完整正向（离线合成链）：排他 started → 宿主全链 → COMPLETED 终态新建",
+      "pass": true
+    },
+    {
+      "name": "B-2 重复轮次：第二次运行不覆盖 started、不再写库、终态不新增",
+      "pass": true
+    },
+    {
+      "name": "B-3 终态已存在：同状态再次保存不覆盖历史（TERMINAL_EXISTS）",
+      "pass": true
+    },
+    {
+      "name": "B-4 未知终态被拒绝；终态名册仅三个",
+      "pass": true
+    },
+    {
+      "name": "B-5 RESULT_UNKNOWN 如实保存：进程结果未知不得猜测",
+      "pass": true
+    },
+    {
+      "name": "C-1 普通 JSON 冒充批准句柄：在批准交界拒绝，零凭据零写",
+      "pass": true
+    },
+    {
+      "name": "C-2 复制句柄（序列化后重建）不被接受：toJSON 抛错证明句柄不可序列化",
+      "pass": true
+    },
+    {
+      "name": "C-3 过期批准：在预期阶段拒绝，零凭据零写",
+      "pass": true
+    },
+    {
+      "name": "C-4 错目标：目标不在批准名单内即拒绝（换合成派生目标）",
+      "pass": true
+    },
+    {
+      "name": "C-5 期限边界：批准有效期恰在当前时刻 → 已过期拒绝（expires<=now）",
+      "pass": true
+    },
+    {
+      "name": "C-6 缺计划/缺句柄：模块级即拒绝并给出固定错误码",
+      "pass": true
+    },
+    {
+      "name": "C-7 非法轮次标识与已占用结果目录：写入前拒绝",
+      "pass": true
+    },
+    {
+      "name": "C-8 已有 primary（alreadyPresent）：宿主语义不变，终态如实保存",
+      "pass": true
+    },
+    {
+      "name": "D-1 拦截敏感性与意外真实子进程拦截（自装守卫，先拦截后探针）",
+      "pass": true
+    },
+    {
+      "name": "D-2 本入口指纹纳入证据：entry sha256 与实现指纹分离",
+      "pass": true
+    },
+    {
+      "name": "D-3 模块边界：approved-run 不提供 execute/approve 公众开关",
+      "pass": true
+    }
+  ],
+  "samples": [
+    {
+      "name": "R1-mode-not-bound-and-runtime-overrides",
+      "checked": true,
+      "defectReproduced": true,
+      "status": "COMPLETED",
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "overriddenNodeReachedSyntheticSpawn": true,
+      "approvalModeBound": false
+    },
+    {
+      "name": "R2-no-caller-persistence-callbacks",
+      "checked": true,
+      "defectReproduced": true,
+      "status": "FAILED",
+      "errorCode": "ROUND_START_FAILED",
+      "startedExists": true,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      }
+    },
+    {
+      "name": "R2-no-worker-spawn-wiring",
+      "checked": true,
+      "defectReproduced": true,
+      "status": "FAILED",
+      "workerStartedReported": true,
+      "errorCode": "WORKER_FAILED",
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      }
+    },
+    {
+      "name": "R3-entry-drift-not-rejected",
+      "checked": true,
+      "defectReproduced": true,
+      "status": "COMPLETED",
+      "entryBytesDriftSimulatedOnly": true,
+      "credentialFetches": 1,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "approvalFingerprintFiles": [
+        "sandbox-primary-execution-host.cjs",
+        "sandbox-primary-execution-worker.cjs",
+        "sandbox-primary-bootstrap.cjs",
+        "sandbox-primary-sdk-adapter.cjs"
+      ]
+    },
+    {
+      "name": "R4-terminal-drops-committed-facts",
+      "checked": true,
+      "defectReproduced": true,
+      "status": "COMPLETED",
+      "inMemoryInitialized": true,
+      "inMemoryObservationConfirmed": true,
+      "missingFromTerminal": [
+        "initialized",
+        "granted",
+        "observationConfirmed",
+        "commitFactEstablished",
+        "fullInitializationSuccess",
+        "workerProcess",
+        "reconcile"
+      ],
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      }
+    },
+    {
+      "name": "R4-save-failure-loses-returned-execution-report",
+      "checked": true,
+      "defectReproduced": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "errorHasExecutionReport": false,
+      "errorHasAuditId": false,
+      "startedExists": true
+    },
+    {
+      "name": "R5-profile-preflight-happens-after-started",
+      "checked": true,
+      "defectReproduced": true,
+      "credentialFetches": 0,
+      "startedCreated": true,
+      "status": "FAILED"
+    },
+    {
+      "name": "subject-mismatch-is-post-fetch-not-pre-fetch",
+      "checked": true,
+      "documentationCorrection": true,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "stoppedAt": "callerSubject",
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      }
+    }
+  ],
+  "sensitivity": {
+    "https": true,
+    "dns": true,
+    "net": true,
+    "child": true
+  },
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realAuthStoreContentRead": false,
+  "realAuthDirectoryModified": false,
+  "guardUnexpectedDuringWork": {
+    "network": 0,
+    "subprocess": 0
+  },
+  "virtualAuthFsCalls": 20,
+  "summary": {
+    "originalPassed": 21,
+    "originalTotal": 21,
+    "samplesChecked": 8,
+    "samplesTotal": 8
+  },
+  "finishedAt": "2026-10-12T03:32:33.724Z"
+}
