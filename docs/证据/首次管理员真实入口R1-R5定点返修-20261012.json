@@ -1,0 +1,175 @@
+{
+  "generatedAt": "2026-10-12T04:19:48.244Z",
+  "round": "首次管理员真实入口 R1–R5 定点返修",
+  "reviewBasis": "docs/Codex复核-首次管理员真实入口最小接线-20261012.md",
+  "verificationKind": "OFFLINE_CONTRACT_FIXTURE",
+  "layers": {
+    "cliSpawn": "synthetic (injected)",
+    "sdkTransport": "synthetic Db.reqClass + injected db; real sdk.init/database/serialization",
+    "platformVerified": false,
+    "realSdkLocalConversion": true
+  },
+  "guards": {
+    "channels": [
+      "https",
+      "http",
+      "dns",
+      "net",
+      "cp"
+    ],
+    "installedBeforeAppModules": true,
+    "note": "进程级不恢复；探针计数与业务意外尝试分离，意外 = 总数 − 探针。",
+    "totals": {
+      "https": 1,
+      "http": 1,
+      "dns": 1,
+      "net": 1,
+      "cp": 1
+    },
+    "probes": {
+      "https": 1,
+      "http": 1,
+      "dns": 1,
+      "net": 1,
+      "cp": 1
+    },
+    "unexpectedAttempts": {
+      "https": 0,
+      "http": 0,
+      "dns": 0,
+      "net": 0,
+      "cp": 0
+    }
+  },
+  "fsVirtualization": {
+    "realAuthDir": "[recorded, content untouched]",
+    "realIsolationRoot": "[recorded, content untouched]",
+    "note": "两个真实根的全部 fs 操作重定向到一次性沙箱并逐项验证；真实目录零触达、不清理。"
+  },
+  "groups": [
+    {
+      "group": "R1 来源模式绑定与固定执行依赖",
+      "total": 5,
+      "passed": 5,
+      "checks": [
+        {
+          "name": "R1-1 真实模式执行依赖覆盖提前拒绝（nodeBin 样本 + 时钟/隔离根/worker/核对逐项），零子进程零写",
+          "ok": true
+        },
+        {
+          "name": "R1-2 来源模式与批准绑定不一致 → started 之前拒绝（双向）",
+          "ok": true
+        },
+        {
+          "name": "R1-3/R5 正向：真实模式经模块级离线装配全链 —— 固定来源/固定启动器参数被捕获，真实目录经虚拟化零触达",
+          "ok": true
+        },
+        {
+          "name": "R1-4 模块级离线装配自身校验：未知字段与缺 spawn 拒绝",
+          "ok": true
+        },
+        {
+          "name": "R1-5 离线夹具模式显式给出固定真实目录 → started 之前拒绝（两模式隔离）",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "group": "R2 排他 started 与终态保存（入口自接）",
+      "total": 3,
+      "passed": 3,
+      "checks": [
+        {
+          "name": "R2-1 正向（离线合成链，无调用方持久化回调）：入口自接 started 核对与终态保存",
+          "ok": true
+        },
+        {
+          "name": "R2-2 重复轮次：第二次运行不覆盖 started、不再写库、不重取凭据",
+          "ok": true
+        },
+        {
+          "name": "R2-3 终态已存在：同状态再次保存不覆盖历史（TERMINAL_EXISTS）",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "group": "R3 入口指纹绑定与两处比较",
+      "total": 2,
+      "passed": 2,
+      "checks": [
+        {
+          "name": "R3-1 签发后入口漂移 → 取凭据之前拒绝（零凭据零子进程零写）",
+          "ok": true
+        },
+        {
+          "name": "R3-2 异步等待期间入口漂移 → 启动 worker 前复核拦截（不 COMPLETED，终态如实 FAILED）",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "group": "R4 终态完整投影与保存失败",
+      "total": 4,
+      "passed": 4,
+      "checks": [
+        {
+          "name": "R4-1 完整链终态保留提交事实/成功资格/退出事实/核对结论，且无凭据泄漏",
+          "ok": true
+        },
+        {
+          "name": "R4-2 worker 超时 → RESULT_UNKNOWN 终态保留进程事实，零提交零写",
+          "ok": true
+        },
+        {
+          "name": "R4-3 提交后回读失败 → RESULT_UNKNOWN 终态保留提交事实",
+          "ok": true
+        },
+        {
+          "name": "R4-4 终态落盘失败 → 结构化错误带净化执行事实，不伪造成功",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "group": "R5 全程守卫与敏感性",
+      "total": 2,
+      "passed": 2,
+      "checks": [
+        {
+          "name": "R5-1 敏感性探针：全程守卫对网络与真实子进程实际拦截并计数",
+          "ok": true
+        },
+        {
+          "name": "R5-2 汇总：业务期间意外网络/真实子进程尝试 = 总数 − 探针 = 0",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "group": "§7 文案更正",
+      "total": 3,
+      "passed": 3,
+      "checks": [
+        {
+          "name": "S7-1 可本地判断的轮次错误提前拒绝（零凭据零子进程零写）",
+          "ok": true
+        },
+        {
+          "name": "S7-2 格式合法但与当次 STS 不同的主体摘要 —— 取得当次身份后比较（1 凭据+4 API 后停），零事务写",
+          "ok": true
+        },
+        {
+          "name": "S7-3 缺失/格式非法的预期主体摘要 —— 取凭据之前拒绝",
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 19,
+    "passed": 19,
+    "failed": []
+  },
+  "finishedAt": "2026-10-12T04:19:49.487Z"
+}

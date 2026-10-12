@@ -46,6 +46,16 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
+/**
+ * R1（Codex 2026-10-12 §2）：真实候选路径的固定执行依赖。
+ * 真实模式的子进程**只能**经本模块装载时捕获的真实 spawn（固定 nodeBin +
+ * 固定 workerPath + 原私有 stdin）；调用方在真实模式下传入的任何
+ * spawn/时钟/路径/凭据依赖一律在取凭据之前拒绝。
+ * 模块装载时捕获（而非调用时 require），保证离线测试在进程入口处安装的
+ * 全程真实子进程守卫对真实模式同样生效 —— 未经批准的真实启动即被守卫拦截。
+ */
+const REAL_SPAWN = require('node:child_process').spawn;
+
 const credentialHost = require('./cloudbase-cli-credential-host.cjs');
 const readOnly = require('./cloudbase-sdk-readonly-observer.cjs');
 const cliObserver = require('./cloudbase-readonly-observer.cjs');
@@ -91,7 +101,10 @@ const ERR = Object.freeze({
   RESULT_UNKNOWN: 'RESULT_UNKNOWN',
   WORKER_FAILED: 'WORKER_FAILED',
   // S3-4：执行前缺保存能力（外部动作前拒绝，不等提交后才发现）
-  SAVE_CAPABILITY_MISSING: 'SAVE_CAPABILITY_MISSING'
+  SAVE_CAPABILITY_MISSING: 'SAVE_CAPABILITY_MISSING',
+  // R1（2026-10-12）：真实模式的执行依赖覆盖与来源绑定不匹配
+  REAL_MODE_OVERRIDE_REJECTED: 'REAL_MODE_OVERRIDE_REJECTED',
+  REAL_MODE_BINDING_MISMATCH: 'REAL_MODE_BINDING_MISMATCH'
 });
 
 /** 只接受这三个入口参数；出现其它一律在外部动作前拒绝。 */
@@ -184,6 +197,60 @@ function computeImplementationFingerprint() {
 }
 
 /**
+ * R3（Codex 2026-10-12 §4）：新入口（approved-run）文件是最终执行包的一部分，
+ * 批准必须绑定它的**实际内容**哈希。签发时读盘绑定；核对时重新读盘比较 ——
+ * 签发后入口字节漂移（无论是启动前还是异步等待期间）即拒绝，不得把重读的
+ * 新哈希当成新的批准值。
+ */
+const ENTRY_FILE = 'sandbox-primary-approved-run.cjs';
+
+function entryFileSha256() {
+  return sha256Of(fs.readFileSync(path.join(__dirname, ENTRY_FILE)));
+}
+
+/**
+ * R1：真实候选路径的**明确隔离装配**（模块级，非普通调用参数）。
+ *
+ * 真实模式（fixed-real-source）拒绝调用方逐次传入 spawn/worker/时钟等
+ * 执行依赖（见 executeOnce 的覆盖拒绝）。离线验证真实分支接线时，
+ * 使用本模块级装配点替换**底层传输**：装配对象登记后，真实模式用它提供的
+ * 合成 spawn 驱动，报告如实标记 `realModeOfflineHarness: true`。
+ * 装配只允许替换 spawn / spawnWorker / workerLimits 三项传输与限额能力，
+ * 不得改变 profile/路径/批准/时钟语义；仅离线测试与证据脚本使用。
+ */
+let realModeOfflineHarness = null;
+
+function installRealModeOfflineHarness(harness) {
+  const h = harness || {};
+  const allowed = ['spawn', 'spawnWorker', 'workerLimits', 'reconcileDeps'];
+  for (const key of Object.keys(h)) {
+    if (!allowed.includes(key)) {
+      const e = new Error('真实模式离线装配不允许的字段：' + key);
+      e.code = ERR.REAL_MODE_OVERRIDE_REJECTED;
+      throw e;
+    }
+  }
+  if (typeof h.spawn !== 'function') {
+    const e = new Error('真实模式离线装配必须提供合成 spawn。');
+    e.code = ERR.REAL_MODE_OVERRIDE_REJECTED;
+    throw e;
+  }
+  realModeOfflineHarness = Object.freeze({
+    spawn: h.spawn,
+    spawnWorker: typeof h.spawnWorker === 'function' ? h.spawnWorker : h.spawn,
+    workerLimits: h.workerLimits,
+    // R5：离线装配可替换只读核对的传输（否则真实模式下父层核对会自建
+    // 真实 SDK 适配器 —— 测试进程内即被全程守卫拦截，业务期间出现意外尝试）
+    reconcileDeps: isPlainObject(h.reconcileDeps) ? h.reconcileDeps : null
+  });
+  return function uninstall() { realModeOfflineHarness = null; };
+}
+
+function realModeOfflineHarnessActive() {
+  return realModeOfflineHarness !== null;
+}
+
+/**
  * 由**受审管理入口**签发受控批准绑定（本轮仅离线测试调用；真实批准未生成）。
  *
  * @param {object} spec
@@ -216,6 +283,13 @@ function issueControlledApproval(spec) {
   });
   // 签发时绑定**实际**实现内容；不是签发者自报
   handle.implementationFingerprint = deepFreeze(computeImplementationFingerprint());
+  // R3：签发时绑定新入口文件的实际内容哈希（执行包不遗漏入口）
+  handle.entryFingerprint = Object.freeze({
+    file: ENTRY_FILE,
+    sha256: entryFileSha256()
+  });
+  // R1：凭据来源模式纳入不可变批准绑定（默认离线夹具；签发即定，执行时核对）
+  handle.credentialSourceMode = normalizeCredentialSourceMode(s.credentialSourceMode);
   // 摘要基于原始计划字段（与核心同算法），同时另算「完整计划」规范化摘要
   handle.planDigest = p4.inputDigest(handle.plan);
   handle.fullPlanDigest = sha256Of(JSON.stringify(
@@ -392,6 +466,32 @@ function verifyControlledApproval(options) {
         reason: '批准绑定的实现文件指纹与本机实际内容不一致：' + name };
     }
   }
+  /**
+   * R3（2026-10-12）：入口文件哈希必须已绑定且与**当前实际内容**一致。
+   * 重读出的哈希只用于比较，绝不当作新的批准值 —— 签发后入口漂移即拒绝。
+   */
+  {
+    const ef = source.entryFingerprint;
+    if (!isPlainObject(ef) || ef.file !== ENTRY_FILE ||
+      typeof ef.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(ef.sha256)) {
+      return { ok: false, errorCode: ERR.FINGERPRINT_MISMATCH,
+        reason: '批准未绑定新入口文件指纹：' + ENTRY_FILE };
+    }
+    let actualEntry = null;
+    try { actualEntry = entryFileSha256(); } catch (_) { actualEntry = null; }
+    if (actualEntry === null || actualEntry !== ef.sha256) {
+      return { ok: false, errorCode: ERR.FINGERPRINT_MISMATCH,
+        reason: '入口文件与批准绑定的指纹不一致（签发后发生漂移）：' + ENTRY_FILE };
+    }
+  }
+  // R1：批准绑定的凭据来源模式必须合法（签发时已绑定，此处防御性复核）
+  let boundMode;
+  try {
+    boundMode = normalizeCredentialSourceMode(source.credentialSourceMode);
+  } catch (_) {
+    return { ok: false, errorCode: ERR.REAL_MODE_BINDING_MISMATCH,
+      reason: '批准绑定的凭据来源模式不合法。' };
+  }
   if (!isPlainObject(source.cliFingerprint) ||
     source.cliFingerprint.bundleSha256 !== FIXED.cliFingerprint.bundleSha256 ||
     source.cliFingerprint.entrySha256 !== FIXED.cliFingerprint.entrySha256) {
@@ -423,6 +523,8 @@ function verifyControlledApproval(options) {
     ok: true, errorCode: null, planDigest: digest, fullPlanDigest: fullDigest,
     approvedBy: source.approvedBy, expiresAtMs: source.expiresAtMs,
     expectedSubjectDigest: source.expectedSubjectDigest,
+    // R1：批准绑定的凭据来源模式（执行时须与请求模式一致）
+    credentialSourceMode: boundMode,
     // S1：worker 载荷的唯一来源
     boundPlan: snapshot.plan,
     boundApproval: snapshot.approval,
@@ -692,24 +794,86 @@ async function executeOnce(options) {
   report.roundId = typeof o.roundId === 'string' ? o.roundId : null;
   report.planDigest = approvalCheck.planDigest;
 
+  /**
+   * R1（2026-10-12 §2）：来源模式与执行依赖在真实模式下**固定**。
+   *  - 批准绑定的模式与请求模式不一致 → 拒绝（来源选择不是调用方可改的）；
+   *  - 真实模式拒绝调用方传入的任何执行依赖覆盖（spawn/worker/时钟/路径/
+   *    凭据依赖/隔离根/核对注入等）—— 一律在取凭据之前拒绝；
+   *  - 真实模式固定使用：模块装载时捕获的真实 spawn、固定 nodeBin、
+   *    固定 workerPath、固定隔离根、真实时钟。唯一例外是**模块级**离线装配
+   *    （installRealModeOfflineHarness），仅替换传输，报告如实标记。
+   */
+  const OVERRIDE_KEYS = Object.freeze([
+    'spawn', 'spawnWorker', 'baseEnv', 'isolationFixed', 'credentialDeps',
+    'profileDir', 'credentialProfileDir', 'credentialCwd', 'limits',
+    'workerLimits', 'reconcileReadOnly', 'reconcileDeps', 'readOnlyDeps',
+    'now', 'fixedNowMs'
+  ]);
+  let realSpawn = REAL_SPAWN;
+  let realWorkerSpawn = REAL_SPAWN;
+  let realWorkerLimits;
+  let realReconcileDeps;
+  if (sourceMode === 'fixed-real-source') {
+    if (approvalCheck.credentialSourceMode !== sourceMode) {
+      report.stoppedAt = 'credentialSourceBinding';
+      report.errorCode = ERR.REAL_MODE_BINDING_MISMATCH;
+      report.incomplete.push('批准绑定的凭据来源模式与请求模式不一致；未取凭据、未发起外部动作。');
+      return report;
+    }
+    for (const key of OVERRIDE_KEYS) {
+      if (o[key] !== undefined) {
+        report.stoppedAt = 'realModeOverrides';
+        report.errorCode = ERR.REAL_MODE_OVERRIDE_REJECTED;
+        report.incomplete.push('真实模式不接受执行依赖覆盖（' + key + '）；使用固定真实来源与固定启动器。');
+        return report;
+      }
+    }
+    if (realModeOfflineHarness !== null) {
+      realSpawn = realModeOfflineHarness.spawn;
+      realWorkerSpawn = realModeOfflineHarness.spawnWorker || realSpawn;
+      realWorkerLimits = realModeOfflineHarness.workerLimits;
+      realReconcileDeps = realModeOfflineHarness.reconcileDeps || undefined;
+      report.realModeOfflineHarness = true;
+    }
+  }
+  const effectiveDeps = {
+    spawn: realSpawn,
+    // R1：真实 worker 启动器独立于 CLI spawn（装配可分别替换；默认同为真实 spawn）
+    workerSpawn: sourceMode === 'fixed-real-source' ? realWorkerSpawn : o.spawnWorker,
+    baseEnv: {},
+    workerLimits: sourceMode === 'fixed-real-source' ? realWorkerLimits : o.workerLimits,
+    isRealMode: sourceMode === 'fixed-real-source'
+  };
+
   // 2) 文件指纹（受控来源绑定 + 本机固定值一致）
   report.stages.push('fileFingerprint');
 
   // 3) 一次取凭据（同批快照）
   let snapshot;
+  const REAL_AUTH_DIR = cliObserver.FIXED.authSessionDir;
   try {
-    const credDeps = Object.assign({}, o.credentialDeps || {});
-    // 复用同一注入点：CLI 阶段的 spawn 替身同样用于凭据命令（仅离线测试注入）
-    if (!credDeps.spawn && typeof o.spawn === 'function') credDeps.spawn = o.spawn;
-    // profile 是凭据宿主的固定入参：缺失时会回退到本机真实 authSessionDir。
-    // M1：两种模式的 profile 解析在这里明确分流。
-    if (!credDeps.fixed) credDeps.fixed = {};
-    if (!credDeps.fixed.authProfileDir) {
-      const profile = o.profileDir || o.credentialProfileDir || null;
-      if (profile) credDeps.fixed.authProfileDir = profile;
+    let credDeps;
+    if (sourceMode === 'fixed-real-source') {
+      // R1：真实模式凭据依赖**固定** —— 唯一合法 profile 是固定真实
+      // authSessionDir，spawn 用真实捕获（或模块级离线装配的合成传输）。
+      // 调用方 credentialDeps 一律不接受（上面已拒绝覆盖）。
+      credDeps = {
+        spawn: effectiveDeps.spawn,
+        fixed: { authProfileDir: REAL_AUTH_DIR }
+      };
+    } else {
+      credDeps = Object.assign({}, o.credentialDeps || {});
+      // 复用同一注入点：CLI 阶段的 spawn 替身同样用于凭据命令（仅离线测试注入）
+      if (!credDeps.spawn && typeof o.spawn === 'function') credDeps.spawn = o.spawn;
+      // profile 是凭据宿主的固定入参：缺失时会回退到本机真实 authSessionDir。
+      // M1：两种模式的 profile 解析在这里明确分流。
+      if (!credDeps.fixed) credDeps.fixed = {};
+      if (!credDeps.fixed.authProfileDir) {
+        const profile = o.profileDir || o.credentialProfileDir || null;
+        if (profile) credDeps.fixed.authProfileDir = profile;
+      }
     }
-    const effectiveProfile = credDeps.fixed.authProfileDir;
-    const REAL_AUTH_DIR = cliObserver.FIXED.authSessionDir;
+    const effectiveProfile = credDeps.fixed && credDeps.fixed.authProfileDir;
     if (sourceMode === 'fixed-real-source') {
       // 真实模式：profile **只能**是固定真实 authSessionDir（规范化的字符串一致），
       // 且必须经受审只读观测器的 FIXED 提供 —— 不接受调用方任意 profile。
@@ -790,8 +954,9 @@ async function executeOnce(options) {
   let association;
   try {
     association = await readOnly.runCliAssociation(snapshot, isolationDir, {
-      spawn: o.spawn,
-      baseEnv: o.baseEnv || {}
+      // R1：真实模式的关联子进程同样只用固定 spawn（或模块级离线装配）
+      spawn: effectiveDeps.isRealMode ? effectiveDeps.spawn : o.spawn,
+      baseEnv: effectiveDeps.isRealMode ? {} : (o.baseEnv || {})
     });
   } catch (_) {
     association = { matched: false };
@@ -807,8 +972,11 @@ async function executeOnce(options) {
 
   // 5) 当次 STS 完整主体元组核验（**同一快照**，一次固定调用）
   const subject = await verifyCallerSubject(snapshot, {
-    spawn: o.spawn, baseEnv: o.baseEnv, isolationDir,
-    limits: o.limits
+    // R1：真实模式固定 spawn；离线夹具保持注入语义
+    spawn: effectiveDeps.isRealMode ? effectiveDeps.spawn : o.spawn,
+    baseEnv: effectiveDeps.isRealMode ? {} : o.baseEnv,
+    isolationDir,
+    limits: effectiveDeps.isRealMode ? undefined : o.limits
   });
   if (!subject.ok) {
     report.stoppedAt = 'callerSubject';
@@ -889,6 +1057,8 @@ async function executeOnce(options) {
     return report;
   }
   // S1：启动前再核一次实际实现文件指纹（签发后文件可能已被改动）
+  // R3：入口文件哈希**同样**在启动 worker 前复核 —— 异步等待期间的漂移在此拦截；
+  // 比较基准始终是批准绑定的指纹，重读的新哈希绝不成为新的批准值。
   {
     const actualNow = computeImplementationFingerprint();
     for (const name of FINGERPRINT_FILES) {
@@ -899,6 +1069,15 @@ async function executeOnce(options) {
         report.incomplete.push('启动前复核发现实现文件已变化；未启动写 worker：' + name);
         return report;
       }
+    }
+    let actualEntryNow = null;
+    try { actualEntryNow = entryFileSha256(); } catch (_) { actualEntryNow = null; }
+    if (actualEntryNow === null ||
+      actualEntryNow !== o.approvalSource.entryFingerprint.sha256) {
+      report.stoppedAt = 'entryFingerprintRecheck';
+      report.errorCode = ERR.FINGERPRINT_MISMATCH;
+      report.incomplete.push('启动前复核发现入口文件已变化（异步等待期间漂移）；未启动写 worker：' + ENTRY_FILE);
+      return report;
     }
   }
   report.stages.push('implementationRecheck');
@@ -936,7 +1115,10 @@ async function executeOnce(options) {
     },
     // R2/R3：worker cwd 绑定到**本次新建并经核对**的隔离目录
     cwd: isolationDir,
-    spawn: o.spawnWorker, limits: o.workerLimits
+    // R1：真实模式固定真实 worker 启动器（固定 node + 固定 workerPath +
+    // 原私有 stdin）；离线夹具保持注入语义
+    spawn: effectiveDeps.workerSpawn,
+    limits: effectiveDeps.workerLimits
   });
 
   /**
@@ -1027,9 +1209,10 @@ async function executeOnce(options) {
           approval: boundApproval,
           isolationDir,
           auditId: approvalCheck.auditId,
-          // 合成测试可注入实现（离线）；生产路径用默认 P4 两读
+          // 合成测试可注入实现（离线）；生产路径用默认 P4 两读。
+          // R1：真实模式的注入仅来自**模块级离线装配**，不接受调用方参数。
           inject: o.reconcileReadOnly,
-          deps: o.reconcileDeps,
+          deps: effectiveDeps.isRealMode ? realReconcileDeps : o.reconcileDeps,
           // N1：统一时钟（测试可在读取事件上推进）
           now
         });
@@ -1085,7 +1268,7 @@ async function executeOnce(options) {
     if (typeof o.persistResult === 'function') {
       let savedUnknown;
       try {
-        savedUnknown = await o.persistResult({
+        savedUnknown = await o.persistResult(Object.assign({
           roundId: round,
           planDigest: approvalCheck.planDigest,
           auditId: approvalCheck.auditId,
@@ -1100,7 +1283,7 @@ async function executeOnce(options) {
           reconcileConfirmed: report.reconcileConfirmed === true,
           reconcile: report.reconcile,
           workerProcess: report.workerProcess
-        });
+        }, reportExecutionFacts(report)));
       } catch (_) {
         savedUnknown = false;
       }
@@ -1119,7 +1302,7 @@ async function executeOnce(options) {
   // （保存能力已在启动 worker 前确认存在，此处不再重复缺失分支）
   let saved;
   try {
-    saved = await o.persistResult({
+    saved = await o.persistResult(Object.assign({
       roundId: round,
       planDigest: approvalCheck.planDigest,
       auditId: report.auditId,
@@ -1131,7 +1314,7 @@ async function executeOnce(options) {
       // 必须成对出现，避免落盘记录与报告互相矛盾。
       initialized: report.initialized,
       granted: report.granted
-    });
+    }, reportExecutionFacts(report)));
   } catch (_) {
     saved = false;
   }
@@ -1146,6 +1329,34 @@ async function executeOnce(options) {
   report.stages.push('resultPersisted');
   report.status = STATUS.PLAN_READY;
   return report;
+}
+
+/**
+ * R4（2026-10-12 §5）：宿主持久化载荷必须携带**全部已净化执行事实**，
+ * 使入口终态落盘能保留提交事实、成功资格、退出事实与核对结论 ——
+ * 不能依赖调用方另行记录。字段与本报告投影同源，不含原始异常与凭据。
+ */
+function reportExecutionFacts(report) {
+  return {
+    outcome: report.outcome,
+    stoppedAt: report.stoppedAt,
+    errorCode: report.errorCode,
+    stages: Array.isArray(report.stages) ? report.stages.slice() : [],
+    incomplete: Array.isArray(report.incomplete) ? report.incomplete.slice() : [],
+    networkAttempts: report.networkAttempts,
+    commitFactEstablished: report.commitFactEstablished === true,
+    fullInitializationSuccess: report.fullInitializationSuccess === true,
+    bootstrap: report.bootstrap,
+    observed: report.observed,
+    observeFailed: report.observeFailed === true,
+    stateContradictions: report.stateContradictions,
+    bindingMismatch: report.bindingMismatch === true,
+    workerProcess: report.workerProcess,
+    credentialSourceMode: report.credentialSourceMode,
+    realModeOfflineHarness: report.realModeOfflineHarness === true ? true : undefined,
+    fixedRealSourceUsed: report.fixedRealSourceUsed === true ? true : undefined,
+    credentialFailureClass: report.credentialFailureClass
+  };
 }
 
 /**
@@ -1884,6 +2095,8 @@ function projectObserved(o2) {
 module.exports = Object.freeze({
   FIXED, ERR, STATUS, ALLOWED_ARGS, FORBIDDEN_ARG_PREFIXES,
   FINGERPRINT_FILES,
+  ENTRY_FILE,
+  entryFileSha256,
   parseArgs,
   issueControlledApproval,
   computeImplementationFingerprint,
@@ -1893,6 +2106,9 @@ module.exports = Object.freeze({
   verifyControlledApproval,
   normalizeCredentialSourceMode,
   CREDENTIAL_SOURCE_MODES,
+  // R1：真实候选路径的模块级离线装配（仅离线测试/证据使用）
+  installRealModeOfflineHarness,
+  realModeOfflineHarnessActive,
   callerTupleDigest,
   verifyCallerSubject,
   localCheck,

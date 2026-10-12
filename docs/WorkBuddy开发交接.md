@@ -1,3 +1,16 @@
+## 2026-10-12 R1–R5 定点返修完成（首次管理员真实入口，自测通过、待 Codex 复查）
+
+依据 docs/Codex复核-首次管理员真实入口最小接线-20261012.md 完成定点返修，仅本地离线实现与自测。
+
+- **R1（host）**：`credentialSourceMode` 签发时纳入批准不可变绑定，`REAL_MODE_BINDING_MISMATCH` 双向拒绝；真实模式对 15 项执行依赖覆盖（spawn/spawnWorker/baseEnv/isolationFixed/credentialDeps/profileDir/credentialProfileDir/credentialCwd/limits/workerLimits/reconcileReadOnly/reconcileDeps/readOnlyDeps/now/fixedNowMs）在取凭据前拒绝（`REAL_MODE_OVERRIDE_REJECTED`）；真实 spawn 取模块装载时捕获的 `REAL_SPAWN`；离线验证走模块级 `installRealModeOfflineHarness`（允许 spawn/spawnWorker/workerLimits/reconcileDeps 四项，自身校验未知字段），配文件系统虚拟化——真实登录目录/SDK 隔离根全部 fs 操作重定向一次性沙箱，真实目录零触达、不清理。
+- **R2（approved-run）**：`runOnce` 契约移除 `persistRoundStarted`/`persistResult` 调用方回调；入口自接排他 started 既有记录核对（auditId/planDigest，不重复创建）与终态直接落盘并复核在盘；真实模式 worker 启动参数固定为 `cliObserver.FIXED.nodeBin` + `host.FIXED.workerPath` + 私有 stdin。
+- **R3（host）**：入口文件（`ENTRY_FILE = sandbox-primary-approved-run.cjs`）SHA-256 签发时读盘绑定，`verifyControlledApproval` 取凭据前比较一次、启动 worker 前复核一次（`entryFingerprintRecheck`）；签发后漂移在零凭据前拒绝，等待期漂移不启动 worker、终态如实 FAILED。
+- **R4（approved-run）**：终态载荷经 34 项白名单 `TERMINAL_FIELDS` 投影（保留字段始终出现、未知字段不进盘），完整保留提交事实/成功资格/退出事实（含 workerProcess）/未知结果/核对结论（由宿主新增 `reportExecutionFacts` 注入）；终态保存失败抛 `APR_TERMINAL_SAVE_FAILED`（`e.execution` 净化事实 + `e.causeCode`），保留 started、不伪造成功、不重试初始化。
+- **R5（测试/证据）**：应用模块加载前安装进程级全程守卫（https/http/dns/net/child_process，不恢复），敏感性探针实测拦截计数，业务期间意外尝试 = 总数 − 探针 = 0；真实登录目录经虚拟化零触达（取代早期在真实目录建空隔离目录的做法）。
+- **§7 文案更正（操作说明 §8）**：可本地判断的来源/轮次错误提前拒绝（`APR_ROUND_MISMATCH` 等，started 之前）；格式合法但与当次 STS 不同的主体摘要只能在取得当次身份（1 凭据 + 4 API）后比较，不得宣称全部在取凭据前发现。
+- 改动 3 文件（host/approved-run/测试重写 33 项）+ 操作说明增补 + 新证据 `docs/证据/首次管理员真实入口R1-R5定点返修-20261012.cjs/.json`（19/19）；两份顶部记录仅追加。P4、worker、SDK 适配器、凭据宿主、只读链、计时器、旧 CLI、登记生成/组装器、页面、云函数/vendor 未改。
+- 实测：新测试 33/33（连跑两遍一致）；回归 host 91/91、P4 bootstrap 45/45。未联网、未取真实凭据、未读真实认证内容、未初始化/写库/再次登记/部署。真实写入仍须复核通过、具体执行包及用户确认。
+
 ## 2026-10-12 Codex复核：首次管理员真实入口 60bdd92 需定点返修
 
 审查基线 506ea95 → 60bdd92，实际 8 文件；结论 M1/M2/M3 暂不关闭，真实初始化不放行。

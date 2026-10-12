@@ -1,10 +1,10 @@
-'use strict';
+'use strict';
 /**
  * 最小单次入口 / 本地准备模块（approved-run）
  * ===========================================
  *
- * 职责（M2）：围绕**已验收**的执行宿主（sandbox-primary-execution-host）
- * 提供「一次运行」的本地准备与证据持久化：
+ * 职责（M2 + 2026-10-12 复核 R2/R4 定点返修）：围绕**已验收**的执行宿主
+ * （sandbox-primary-execution-host）提供「一次运行」的本地准备与证据持久化：
  *   1. 固定目标计划检查（复用 P4 原计划白名单 / inputDigest / auditId，
  *      不传含 deadlineMs 的归一化对象回核心）；
  *   2. 受控批准交界（只接受宿主 `issueControlledApproval` 签发、经
@@ -12,7 +12,23 @@
  *      命令行开关不能构成批准）；
  *   3. 排他 started（独占新建，`await` 成功后才启动写 worker；
  *      同轮次再次运行不覆盖、不再写）与不可覆盖终态保存
- *      （COMPLETED / FAILED / RESULT_UNKNOWN 分别新建，不覆盖历史）。
+ *      （COMPLETED / FAILED / RESULT_UNKNOWN 分别新建，不覆盖历史）；
+ *   4. **默认执行/持久化接线由本入口自己完成**（R2）：宿主的
+ *      `persistRoundStarted` 回调由本入口核对本轮已独占创建的 started
+ *      记录（避免双重创建），`persistResult` 回调由本入口直接执行
+ *      终态落盘 —— 不依赖调用方返回 true 冒充持久化，也不用无条件
+ *      true 代替保存。调用方不再提供持久化回调。
+ *   5. **可本地判定的错误在创建 started 之前拒绝**（2026-10-12 §7）：
+ *      来源模式不合法/与批准绑定不一致、离线模式缺合成 profile 或指向
+ *      真实登录目录、真实模式执行依赖覆盖、轮次与绑定计划不一致。
+ *
+ * 终态记录（R4）按字段白名单投影宿主已净化报告：保留提交事实
+ * （commitFactEstablished）、完整成功资格（fullInitializationSuccess）、
+ * initialized/granted、观察确认、worker 进程事实、只读核对结论、
+ * 未知标记等；不透传原始异常或凭据。终态落盘失败时抛出带固定错误码
+ * （APR_TERMINAL_SAVE_FAILED）与净化执行事实（`e.execution`）的结构化
+ * 错误 —— 不伪造保存成功、不重试初始化，使受审调用者能保留未知或已
+ * 提交事实。
  *
  * **不是**通用管理 CLI：不提供 --execute / --approve 公众开关，
  * 不建批准数据库、签名服务或管理后台。真实写入仍须未来受审本机管理进程
@@ -20,13 +36,16 @@
  * 代码无法独立证明聊天授权。
  *
  * 硬边界：
- *  - 默认零写、零网络、零子进程；`executeOnce` 的注入点由调用方显式提供，
- *    仅限离线测试夹具（合成 spawn / 持久化回调）。
+ *  - 默认零写、零网络、零子进程；离线夹具的注入点（合成 spawn 等）仅
+ *    `offline-fixture` 模式可用；真实模式（fixed-real-source）拒绝任何
+ *    执行依赖覆盖，其离线验证走宿主的模块级装配
+ *    `installRealModeOfflineHarness`（明确隔离，报告如实标记）。
  *  - `approvalSource` 只能是宿主签发的不可序列化句柄；本模块**不复制**其内容，
  *    也不提供从 JSON 重建句柄的途径。
- *  - `entryFingerprint`：本模块文件自身的 SHA-256 必须纳入运行证据，
- *    不得把新入口遗漏于最终执行包指纹。
+ *  - 入口自身文件哈希由宿主在批准签发时绑定（ENTRY_FILE），并在取凭据前与
+ *    启动 worker 前各比较一次（R3）；本模块不另行生成或替换批准指纹。
  */
+
 'use strict';
 
 const fs = require('node:fs');
@@ -34,12 +53,16 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const host = require('./sandbox-primary-execution-host.cjs');
 const p4 = require('./sandbox-primary-bootstrap.cjs');
+const cliObserver = require('./cloudbase-readonly-observer.cjs');
+
+const REAL_AUTH_DIR = cliObserver.FIXED.authSessionDir;
 
 const ERR = Object.freeze({
   RUN_ID_INVALID: 'APR_RUN_ID_INVALID',
   RUN_DIR_INVALID: 'APR_RUN_DIR_INVALID',
   PLAN_REQUIRED: 'APR_PLAN_REQUIRED',
   APPROVAL_REQUIRED: 'APR_APPROVAL_REQUIRED',
+  ROUND_MISMATCH: 'APR_ROUND_MISMATCH',
   STARTED_EXISTS: 'APR_STARTED_EXISTS',
   STARTED_CREATE_FAILED: 'APR_STARTED_CREATE_FAILED',
   TERMINAL_EXISTS: 'APR_TERMINAL_EXISTS',
@@ -53,13 +76,13 @@ function sha256Of(text) {
   return crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
-/** 本入口文件自身的指纹（纳入运行证据，不遗漏于最终执行包指纹）。 */
+/** 本入口文件自身的指纹（纳入运行证据；批准绑定与比对由宿主完成）。 */
 function entryFingerprint() {
   const bytes = fs.readFileSync(__filename);
   return { file: path.basename(__filename), bytes: bytes.length, sha256: sha256Of(bytes) };
 }
 
-/** 实现指纹（宿主 4 文件）+ 本入口文件指纹的合并快照。 */
+/** 实现指纹（宿主 4 文件 + 入口文件）的合并快照。 */
 function fullFingerprint() {
   return Object.freeze({
     implementation: host.computeImplementationFingerprint(),
@@ -104,6 +127,39 @@ function assertFreshOutDir(outDir) {
 }
 
 /**
+ * 终态记录的字段白名单（R4）：只允许宿主**已净化**报告中的这些键进入落盘
+ * 记录；未列出的键（含任何原始异常、凭据类字段）一律丢弃。
+ * 已知键始终出现在记录里（不适用的为 null），便于逐项核对。
+ */
+const TERMINAL_FIELDS = Object.freeze([
+  'auditId', 'planDigest', 'fullPlanDigest', 'roundId',
+  'outcome', 'stoppedAt', 'errorCode',
+  'stages', 'incomplete', 'networkAttempts',
+  'initialized', 'granted',
+  'commitFactEstablished', 'fullInitializationSuccess',
+  'observationConfirmed', 'resultUnknown',
+  'bootstrap', 'observed', 'observeFailed',
+  'stateContradictions', 'bindingMismatch',
+  'workerProcess',
+  'reconcile', 'reconcileAttempted', 'reconcileConfirmed',
+  'credentialSourceMode', 'fixedRealSourceUsed', 'realModeOfflineHarness',
+  'credentialFailureClass',
+  'resultPersisted', 'unknownPersisted'
+]);
+
+/** 按白名单投影宿主报告/持久化载荷（不透传未知字段、不透传异常对象）。 */
+function projectTerminalPayload(payload) {
+  const out = {};
+  for (const key of TERMINAL_FIELDS) {
+    const v = payload ? payload[key] : undefined;
+    if (v === undefined) { out[key] = null; continue; }
+    if (Array.isArray(v)) { out[key] = v.slice(); continue; }
+    out[key] = v;
+  }
+  return out;
+}
+
+/**
  * 排他新建 started 记录（`wx` flag：文件已存在即失败，绝不覆盖）。
  * 返回 true 表示本进程独占创建成功；false 表示同轮次已存在。
  * 注意：调用方必须 `await` 本函数成功后才允许启动写 worker。
@@ -126,6 +182,7 @@ async function createStartedExclusive(outDir, runId, meta) {
     approvalExpiresAtMs: meta.approvalExpiresAtMs,
     approvedBy: meta.approvedBy,
     expectedSubjectDigest: meta.expectedSubjectDigest,
+    credentialSourceMode: meta.credentialSourceMode,
     fingerprint: fullFingerprint()
   }, null, 2) + '\n';
   try {
@@ -133,9 +190,28 @@ async function createStartedExclusive(outDir, runId, meta) {
     return true;
   } catch (error) {
     if (error && error.code === 'EEXIST') return false;
-    const e = new Error('started 记录创建失败：' + String(error && error.message || error));
+    const e = new Error('started 记录创建失败：' + String(error && error.code || error));
     e.code = ERR.STARTED_CREATE_FAILED;
     throw e;
+  }
+}
+
+/**
+ * R2：核对**本轮已独占创建**的 started 记录与宿主要求一致。
+ * 这是宿主 `persistRoundStarted` 回调的默认实现：不重复创建（入口已在
+ * 启动执行前独占新建），只核对既有记录的轮次/审计键/摘要 —— 一致才
+ * 返回 true，不一致或读取失败一律 false（不发写请求）。
+ */
+function verifyStartedRecord(outDir, runId, expected) {
+  try {
+    const file = path.join(outDir, 'started', runId + '.json');
+    const body = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return body.recordType === 'STARTED' &&
+      body.runId === runId &&
+      body.auditId === expected.auditId &&
+      body.planDigest === expected.planDigest;
+  } catch (_) {
+    return false;
   }
 }
 
@@ -143,6 +219,7 @@ async function createStartedExclusive(outDir, runId, meta) {
  * 终态新建保存：COMPLETED / FAILED / RESULT_UNKNOWN 各自独立文件名，
  * 文件已存在即失败（不覆盖历史、不清理后重跑）。
  * 进程结果未知时**不得猜测**：调用方必须如实传 RESULT_UNKNOWN。
+ * 载荷经 `projectTerminalPayload` 白名单投影后再落盘。
  */
 async function saveTerminalExclusive(outDir, runId, status, payload) {
   if (!TERMINAL_STATUSES.includes(status)) {
@@ -153,21 +230,14 @@ async function saveTerminalExclusive(outDir, runId, status, payload) {
   const terminalDir = path.join(outDir, 'terminal');
   fs.mkdirSync(terminalDir, { recursive: true });
   const file = path.join(terminalDir, runId + '.' + status + '.json');
-  const body = JSON.stringify({
+  const body = JSON.stringify(Object.assign({
     recordType: status,
     runId,
     savedAt: new Date().toISOString(),
-    status,
-    auditId: payload.auditId,
-    planDigest: payload.planDigest,
-    outcome: payload.outcome || null,
-    stoppedAt: payload.stoppedAt || null,
-    errorCode: payload.errorCode || null,
-    stages: Array.isArray(payload.stages) ? payload.stages.slice() : [],
-    incomplete: Array.isArray(payload.incomplete) ? payload.incomplete.slice() : [],
-    networkAttempts: payload.networkAttempts === undefined ? null : payload.networkAttempts,
+    status
+  }, projectTerminalPayload(payload), {
     fingerprint: fullFingerprint()
-  }, null, 2) + '\n';
+  }), null, 2) + '\n';
   try {
     fs.writeFileSync(file, body, { flag: 'wx' });
     return { saved: true, file };
@@ -177,7 +247,7 @@ async function saveTerminalExclusive(outDir, runId, status, payload) {
       e.code = ERR.TERMINAL_EXISTS;
       throw e;
     }
-    const e = new Error('终态保存失败：' + String(error && error.message || error));
+    const e = new Error('终态保存失败：' + String(error && error.code || 'UNKNOWN'));
     e.code = ERR.TERMINAL_SAVE_FAILED;
     throw e;
   }
@@ -214,14 +284,35 @@ function checkPlanAndApproval(options) {
 }
 
 /**
- * 一次运行的完整编排（离线验证入口）。
+ * R1：真实模式在创建 started 之前就拒绝调用方执行依赖覆盖。
+ * 与宿主 `executeOnce` 的覆盖清单保持一致（提前拒绝，零写零子进程）。
+ */
+const REAL_MODE_OVERRIDE_KEYS = Object.freeze([
+  'spawn', 'spawnWorker', 'baseEnv', 'isolationFixed', 'credentialDeps',
+  'profileDir', 'credentialProfileDir', 'credentialCwd', 'limits',
+  'workerLimits', 'reconcileReadOnly', 'reconcileDeps', 'readOnlyDeps',
+  'now', 'fixedNowMs'
+]);
+
+/** 按宿主报告分类终态（宿主成功口径是 status === PLAN_READY）。 */
+function classifyStatus(report) {
+  return report.status === host.STATUS.PLAN_READY ? 'COMPLETED'
+    : (report.resultUnknown === true || report.errorCode === host.ERR.RESULT_UNKNOWN)
+      ? 'RESULT_UNKNOWN' : 'FAILED';
+}
+
+/**
+ * 一次运行的完整编排。
  *
- * 流程：本地检查 → 排他 started → executeOnce（宿主全链） → 终态新建保存。
- * `persistRoundStarted` / `persistTerminal` 之类的宿主持久化回调由调用方
- * 以**注入**方式提供（离线夹具），本模块自身不实现云写入。
+ * 流程：本地检查（模式/来源/轮次 —— 可本地判定的错误在 started 之前拒绝）
+ * → 排他 started → executeOnce（宿主全链，持久化由本入口自接）→
+ * 终态新建保存（不覆盖、失败抛结构化错误）。
  *
- * 关键顺序：started 必须独占新建成功**之后**才调用 executeOnce；
- * executeOnce 返回未知/失败也必须保存真实终态，不清理重跑。
+ * R2：调用方**不再提供**持久化回调或 worker 启动器：
+ *  - `persistRoundStarted` 由本入口核对已独占创建的 started（避免双重创建）；
+ *  - `persistResult` 由本入口直接执行终态落盘；
+ *  - 真实模式的 worker 启动器是宿主固定实现（固定 node + 固定 workerPath +
+ *    原私有 stdin）；离线夹具模式下才允许显式注入合成 spawn。
  */
 async function runOnce(options) {
   const o = options || {};
@@ -229,14 +320,50 @@ async function runOnce(options) {
   assertFreshOutDir(o.outDir);
 
   // 0) 凭据来源模式：在任何写入（含 started）之前校验 —— 未知模式零写
-  host.normalizeCredentialSourceMode(o.credentialSourceMode);
+  const mode = host.normalizeCredentialSourceMode(o.credentialSourceMode);
+
+  // R1：真实模式的执行依赖覆盖在创建 started 之前拒绝（零写）
+  if (mode === 'fixed-real-source') {
+    for (const key of REAL_MODE_OVERRIDE_KEYS) {
+      if (o[key] !== undefined) {
+        const e = new Error('真实模式不接受执行依赖覆盖（' + key + '）；使用固定真实来源与固定启动器。');
+        e.code = host.ERR.REAL_MODE_OVERRIDE_REJECTED;
+        throw e;
+      }
+    }
+  }
 
   // 1) 计划与批准交界（零写）
   const checked = checkPlanAndApproval({
     plan: o.plan, approvalSource: o.approvalSource,
-    now: typeof o.now === 'function' ? o.now : undefined
+    now: mode === 'fixed-real-source' ? undefined
+      : (typeof o.now === 'function' ? o.now : undefined)
   });
   const boundPlan = checked.boundPlan;
+
+  // R1：批准绑定的来源模式与请求模式必须一致（可本地判定，started 之前拒绝）
+  if (checked.credentialSourceMode !== mode) {
+    const e = new Error('批准绑定的凭据来源模式与请求模式不一致；未取凭据、未写 started。');
+    e.code = host.ERR.REAL_MODE_BINDING_MISMATCH;
+    throw e;
+  }
+
+  // §7-1：离线模式缺合成 profile 或指向真实登录目录 —— started 之前拒绝
+  if (mode === 'offline-fixture') {
+    const profile = o.profileDir;
+    if (typeof profile !== 'string' || profile.length === 0 || profile === REAL_AUTH_DIR) {
+      const e = new Error('离线夹具模式必须提供合成登录 profile，且不得指向真实登录目录；未取凭据、未写 started。');
+      e.code = host.ERR.CREDENTIAL_FETCH_FAILED;
+      throw e;
+    }
+  }
+
+  // §7-1：轮次与绑定计划不一致 —— 可本地判定，started 之前拒绝
+  if (typeof boundPlan.roundId === 'string' && boundPlan.roundId !== runId) {
+    const e = new Error('本轮轮次标识与绑定计划不一致；未取凭据、未写 started。');
+    e.code = ERR.ROUND_MISMATCH;
+    throw e;
+  }
 
   // 2) 排他 started（await 成功后才允许启动写 worker）
   const created = await createStartedExclusive(o.outDir, runId, {
@@ -249,7 +376,8 @@ async function runOnce(options) {
     planExpiresAt: boundPlan.expiresAt,
     approvalExpiresAtMs: checked.expiresAtMs,
     approvedBy: o.approvalSource.approvedBy,
-    expectedSubjectDigest: checked.expectedSubjectDigest
+    expectedSubjectDigest: checked.expectedSubjectDigest,
+    credentialSourceMode: mode
   });
   if (!created) {
     const e = new Error('同轮次 started 已存在；不覆盖、不再写。');
@@ -257,43 +385,95 @@ async function runOnce(options) {
     throw e;
   }
 
-  // 3) 执行宿主全链（离线注入由调用方提供）
-  const result = await host.executeOnce({
+  // 3) 执行宿主全链（持久化由本入口自接，R2）
+  //
+  // 离线夹具模式的注入点仅在 offline-fixture 分支转发；真实模式只传
+  // 必需字段（执行依赖由宿主固定，任何覆盖已被上面拒绝）。
+  const isReal = mode === 'fixed-real-source';
+  let hostSavedTerminal = null; // 宿主 persistResult 成功落盘的终态
+  const hostOptions = {
     plan: o.plan,
     approvalSource: o.approvalSource,
     roundId: runId,
-    now: typeof o.now === 'function' ? o.now : undefined,
-    fixedNowMs: o.fixedNowMs,
-    credentialSourceMode: o.credentialSourceMode,
-    profileDir: o.profileDir,
-    spawn: o.spawn,
-    spawnWorker: o.spawnWorker,
-    credentialDeps: o.credentialDeps,
-    persistRoundStarted: o.persistRoundStarted,
-    persistResult: o.persistResult,
-    readOnlyDeps: o.readOnlyDeps,
-    reconcileDeps: o.reconcileDeps,
-    isolationFixed: o.isolationFixed,
-    baseEnv: o.baseEnv,
-    workerLimits: o.workerLimits
-  });
+    credentialSourceMode: mode,
+    // R2：持久化回调由本入口自接 —— 不依赖调用方返回 true 冒充持久化
+    persistRoundStarted: (p) => verifyStartedRecord(o.outDir, runId, {
+      auditId: checked.auditId, planDigest: checked.planDigest
+    }),
+    persistResult: (p) => {
+      // 宿主持久化载荷 recordType 直接映射终态状态；落盘经白名单投影。
+      const status = TERMINAL_STATUSES.includes(p && p.recordType)
+        ? p.recordType : classifyStatus(p || {});
+      return saveTerminalExclusive(o.outDir, runId, status, Object.assign({}, p, {
+        fullPlanDigest: checked.fullPlanDigest,
+        credentialSourceMode: mode,
+        // 本入口的落盘事实：记录写入成功即在盘（R2：不靠调用方 true 冒充）
+        resultPersisted: true,
+        unknownPersisted: true
+      })).then((saved) => {
+        hostSavedTerminal = { status, file: saved.file };
+        return true;
+      }).catch(() => false);
+    }
+  };
+  if (!isReal) {
+    hostOptions.now = typeof o.now === 'function' ? o.now : undefined;
+    hostOptions.fixedNowMs = o.fixedNowMs;
+    hostOptions.profileDir = o.profileDir;
+    hostOptions.spawn = o.spawn;
+    hostOptions.spawnWorker = o.spawnWorker;
+    hostOptions.credentialDeps = o.credentialDeps;
+    hostOptions.baseEnv = o.baseEnv;
+    hostOptions.isolationFixed = o.isolationFixed;
+    hostOptions.limits = o.limits;
+    hostOptions.workerLimits = o.workerLimits;
+    hostOptions.reconcileReadOnly = o.reconcileReadOnly;
+    hostOptions.reconcileDeps = o.reconcileDeps;
+    hostOptions.readOnlyDeps = o.readOnlyDeps;
+    hostOptions.credentialCwd = o.credentialCwd;
+  }
+  const result = await host.executeOnce(hostOptions);
 
-  // 4) 终态新建保存（按宿主报告如实分类，不猜测）
-  //    宿主成功口径是 `status === PLAN_READY`（报告无 ok 字段）；
-  //    结果未知（resultUnknown / RESULT_UNKNOWN）不得猜测为成功或失败。
-  const status = result.status === host.STATUS.PLAN_READY ? 'COMPLETED'
-    : (result.resultUnknown === true || result.errorCode === host.ERR.RESULT_UNKNOWN)
-      ? 'RESULT_UNKNOWN' : 'FAILED';
-  const saved = await saveTerminalExclusive(o.outDir, runId, status, {
-    auditId: result.auditId || checked.auditId,
-    planDigest: result.planDigest || checked.planDigest,
-    outcome: result.outcome || null,
-    stoppedAt: result.stoppedAt,
-    errorCode: result.errorCode,
-    stages: result.stages,
-    incomplete: result.incomplete,
-    networkAttempts: result.networkAttempts
-  });
+  // 4) 终态新建保存（不覆盖、不猜测）
+  let status;
+  let saved;
+  if (hostSavedTerminal !== null) {
+    // 宿主 persistResult 已由本入口落盘成功：复核文件在盘即可，不重复保存
+    status = hostSavedTerminal.status;
+    if (!fs.existsSync(hostSavedTerminal.file)) {
+      const e = new Error('终态记录落盘复核失败：文件不在盘。');
+      e.code = ERR.TERMINAL_SAVE_FAILED;
+      e.execution = Object.freeze(projectTerminalPayload(Object.assign({}, result, {
+        roundId: runId, fullPlanDigest: checked.fullPlanDigest,
+        credentialSourceMode: mode
+      })));
+      throw e;
+    }
+    saved = { saved: true, file: hostSavedTerminal.file };
+  } else {
+    status = classifyStatus(result);
+    const payload = Object.assign({}, result, {
+      roundId: runId,
+      fullPlanDigest: checked.fullPlanDigest,
+      credentialSourceMode: mode,
+      fixedRealSourceUsed: result.fixedRealSourceUsed === true
+    });
+    try {
+      saved = await saveTerminalExclusive(o.outDir, runId, status, payload);
+    } catch (error) {
+      if (error && error.code === ERR.TERMINAL_EXISTS) throw error;
+      /**
+       * R4：终态落盘失败 —— 不伪造保存成功、不重试初始化，抛出带固定
+       * 错误码与**净化执行事实**的结构化错误（e.execution），使受审调用者
+       * 能保留未知或已提交事实；不透传原始异常对象或其文本。
+       */
+      const e = new Error('终态保存失败；保留 started 与净化执行事实，不伪造保存成功、不重试初始化。');
+      e.code = ERR.TERMINAL_SAVE_FAILED;
+      e.causeCode = String(error && error.code || 'UNKNOWN');
+      e.execution = Object.freeze(projectTerminalPayload(payload));
+      throw e;
+    }
+  }
 
   return { runId, status, result, saved };
 }
@@ -301,12 +481,16 @@ async function runOnce(options) {
 module.exports = Object.freeze({
   ERR,
   TERMINAL_STATUSES,
+  TERMINAL_FIELDS,
+  projectTerminalPayload,
   entryFingerprint,
   fullFingerprint,
   normalizeRunId,
   assertFreshOutDir,
   createStartedExclusive,
+  verifyStartedRecord,
   saveTerminalExclusive,
   checkPlanAndApproval,
+  classifyStatus,
   runOnce
 });
