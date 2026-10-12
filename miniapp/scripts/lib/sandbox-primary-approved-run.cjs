@@ -21,6 +21,11 @@
  *   5. **可本地判定的错误在创建 started 之前拒绝**（2026-10-12 §7）：
  *      来源模式不合法/与批准绑定不一致、离线模式缺合成 profile 或指向
  *      真实登录目录、真实模式执行依赖覆盖、轮次与绑定计划不一致。
+ *   6. **S2 收尾（2026-10-12 复核 §4）**：同轮已有任一种终态在创建
+ *      started、取凭据之前拒绝；「已尝试保存但失败」与「尚未保存」严格
+ *      区分 —— 首次保存失败（EEXIST/部分落盘/目录创建失败/EIO）后不自动
+ *      再次保存，抛固定错误码 + causeCode + 净化 e.execution，保留已提交
+ *      事实；既有/半截文件不覆盖、不清理。
  *
  * 终态记录（R4）按字段白名单投影宿主已净化报告：保留提交事实
  * （commitFactEstablished）、完整成功资格（fullInitializationSuccess）、
@@ -160,6 +165,22 @@ function projectTerminalPayload(payload) {
 }
 
 /**
+ * S2（2026-10-12 复核 §4）：查找同轮次已存在的任一种终态记录。
+ * 返回文件路径（存在）或 null。用于在创建 started、取凭据**之前**发现
+ * 「本轮已有终态」这一可本地判定的冲突，而不是等到写文件碰撞才发现。
+ */
+function findExistingTerminalRecord(outDir, runId) {
+  const dir = path.join(outDir, 'terminal');
+  let names;
+  try { names = fs.readdirSync(dir); } catch (_) { return null; }
+  const prefix = runId + '.';
+  for (const name of names) {
+    if (name.startsWith(prefix)) return path.join(dir, name);
+  }
+  return null;
+}
+
+/**
  * 排他新建 started 记录（`wx` flag：文件已存在即失败，绝不覆盖）。
  * 返回 true 表示本进程独占创建成功；false 表示同轮次已存在。
  * 注意：调用方必须 `await` 本函数成功后才允许启动写 worker。
@@ -249,6 +270,8 @@ async function saveTerminalExclusive(outDir, runId, status, payload) {
     }
     const e = new Error('终态保存失败：' + String(error && error.code || 'UNKNOWN'));
     e.code = ERR.TERMINAL_SAVE_FAILED;
+    // S2：原始固定失败类别随 causeCode 保留（EIO/EACCES/ENOSPC 等），不丢失
+    e.causeCode = String(error && error.code || 'UNKNOWN');
     throw e;
   }
 }
@@ -365,7 +388,19 @@ async function runOnce(options) {
     throw e;
   }
 
-  // 2) 排他 started（await 成功后才允许启动写 worker）
+  // 2) S2：同轮已有任一种终态 → 在创建 started、取凭据之前拒绝。
+  //    （本轮已不可能再产生新终态；不靠后续写文件碰撞发现，零凭据零写。
+  //    started 的既有 STARTED_EXISTS 语义与竞态防护仍由 createStartedExclusive
+  //    的 `wx` 独占新建保持 —— 这是第二道防线，不是唯一手段。）
+  const existingTerminal = findExistingTerminalRecord(o.outDir, runId);
+  if (existingTerminal !== null) {
+    const e = new Error('同轮次终态记录已存在；在创建 started、取凭据之前停止：' +
+      path.basename(existingTerminal));
+    e.code = ERR.TERMINAL_EXISTS;
+    throw e;
+  }
+
+  // 3) 排他 started（await 成功后才允许启动写 worker）
   const created = await createStartedExclusive(o.outDir, runId, {
     auditId: checked.auditId,
     planDigest: checked.planDigest,
@@ -385,12 +420,19 @@ async function runOnce(options) {
     throw e;
   }
 
-  // 3) 执行宿主全链（持久化由本入口自接，R2）
+  // 4) 执行宿主全链（持久化由本入口自接，R2）
   //
   // 离线夹具模式的注入点仅在 offline-fixture 分支转发；真实模式只传
   // 必需字段（执行依赖由宿主固定，任何覆盖已被上面拒绝）。
   const isReal = mode === 'fixed-real-source';
   let hostSavedTerminal = null; // 宿主 persistResult 成功落盘的终态
+  /**
+   * S2：区分「尚未保存」与「已尝试保存但失败」。
+   * 首次终态保存失败时记录固定失败类别与净化执行事实；后续**不得**因
+   * 首次失败（含部分落盘）而把同一轮次当作「尚未尝试」再次保存 —— 否则
+   * 第二次保存会变成 EEXIST 且丢失首次已提交事实。
+   */
+  let hostTerminalSaveFailure = null;
   const hostOptions = {
     plan: o.plan,
     approvalSource: o.approvalSource,
@@ -404,16 +446,31 @@ async function runOnce(options) {
       // 宿主持久化载荷 recordType 直接映射终态状态；落盘经白名单投影。
       const status = TERMINAL_STATUSES.includes(p && p.recordType)
         ? p.recordType : classifyStatus(p || {});
-      return saveTerminalExclusive(o.outDir, runId, status, Object.assign({}, p, {
+      const payload = Object.assign({}, p, {
         fullPlanDigest: checked.fullPlanDigest,
         credentialSourceMode: mode,
-        // 本入口的落盘事实：记录写入成功即在盘（R2：不靠调用方 true 冒充）
+        // S3：落盘标记按实际保存类型表达 —— 保存成功即结果已在盘；
+        // 「未知结果已保存」只对 RESULT_UNKNOWN 记录成立。
         resultPersisted: true,
-        unknownPersisted: true
-      })).then((saved) => {
+        unknownPersisted: status === 'RESULT_UNKNOWN'
+      });
+      return saveTerminalExclusive(o.outDir, runId, status, payload).then((saved) => {
         hostSavedTerminal = { status, file: saved.file };
         return true;
-      }).catch(() => false);
+      }).catch((error) => {
+        // S2：已尝试保存但失败 —— 记录首次失败事实，返回 false（宿主如实
+        // 标记未持久化）；不在此处重试，也不让外层把本轮当「尚未保存」。
+        hostTerminalSaveFailure = Object.freeze({
+          status,
+          causeCode: String(error && error.causeCode || error && error.code || 'UNKNOWN'),
+          execution: Object.freeze(projectTerminalPayload(Object.assign({}, payload, {
+            // 实际未落盘：标记如实为 false，不与文件矛盾
+            resultPersisted: false,
+            unknownPersisted: false
+          })))
+        });
+        return false;
+      });
     }
   };
   if (!isReal) {
@@ -434,7 +491,7 @@ async function runOnce(options) {
   }
   const result = await host.executeOnce(hostOptions);
 
-  // 4) 终态新建保存（不覆盖、不猜测）
+  // 5) 终态新建保存（不覆盖、不猜测、不自动重试）
   let status;
   let saved;
   if (hostSavedTerminal !== null) {
@@ -450,27 +507,47 @@ async function runOnce(options) {
       throw e;
     }
     saved = { saved: true, file: hostSavedTerminal.file };
+  } else if (hostTerminalSaveFailure !== null) {
+    /**
+     * S2：首次终态保存**已尝试但失败**（EEXIST/部分落盘/目录创建失败/EIO
+     * 等）—— 不把本轮当「尚未保存」再次保存（避免二次碰撞 EEXIST 且丢失
+     * 首次已提交事实）；抛出固定错误码 + 原始固定失败类别（causeCode）+
+     * 首次保存时捕获的净化执行事实。半截/既有文件保留，不清理、不覆盖、
+     * 不重试初始化。
+     */
+    const f = hostTerminalSaveFailure;
+    const e = new Error('终态保存已尝试但失败；保留 started 与首次保存的净化执行事实，不重复保存、不重试初始化。');
+    e.code = ERR.TERMINAL_SAVE_FAILED;
+    e.causeCode = f.causeCode;
+    e.execution = f.execution;
+    throw e;
   } else {
+    // 宿主未请求落盘（执行在 started 后提前停止等）：本入口直接保存一次。
     status = classifyStatus(result);
     const payload = Object.assign({}, result, {
       roundId: runId,
       fullPlanDigest: checked.fullPlanDigest,
       credentialSourceMode: mode,
-      fixedRealSourceUsed: result.fixedRealSourceUsed === true
+      fixedRealSourceUsed: result.fixedRealSourceUsed === true,
+      // S3：保存成功前的标记按将要写入的实际类型表达
+      resultPersisted: true,
+      unknownPersisted: status === 'RESULT_UNKNOWN'
     });
     try {
       saved = await saveTerminalExclusive(o.outDir, runId, status, payload);
     } catch (error) {
-      if (error && error.code === ERR.TERMINAL_EXISTS) throw error;
       /**
-       * R4：终态落盘失败 —— 不伪造保存成功、不重试初始化，抛出带固定
-       * 错误码与**净化执行事实**的结构化错误（e.execution），使受审调用者
-       * 能保留未知或已提交事实；不透传原始异常对象或其文本。
+       * R4/S2：终态落盘失败（含 EEXIST）—— 不伪造保存成功、不重试初始化，
+       * 统一抛出带固定错误码、原始固定失败类别（causeCode）与**净化执行
+       * 事实**（e.execution）的结构化错误；不透传原始异常对象或其文本。
        */
       const e = new Error('终态保存失败；保留 started 与净化执行事实，不伪造保存成功、不重试初始化。');
       e.code = ERR.TERMINAL_SAVE_FAILED;
-      e.causeCode = String(error && error.code || 'UNKNOWN');
-      e.execution = Object.freeze(projectTerminalPayload(payload));
+      e.causeCode = String(error && error.causeCode || error && error.code || 'UNKNOWN');
+      e.execution = Object.freeze(projectTerminalPayload(Object.assign({}, payload, {
+        resultPersisted: false,
+        unknownPersisted: false
+      })));
       throw e;
     }
   }
@@ -489,6 +566,7 @@ module.exports = Object.freeze({
   assertFreshOutDir,
   createStartedExclusive,
   verifyStartedRecord,
+  findExistingTerminalRecord,
   saveTerminalExclusive,
   checkPlanAndApproval,
   classifyStatus,

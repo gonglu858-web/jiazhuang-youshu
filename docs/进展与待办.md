@@ -1,3 +1,14 @@
+## 2026-10-12 S1–S4 定点收尾完成（首次管理员真实入口，自测通过、待 Codex 复查）
+
+依据 docs/Codex复查-首次管理员真实入口R1-R5返修-20261012.md 完成四项收尾，仅本地离线实现与自测。
+
+- **S1（host）**：来源模式批准绑定核对移到两种模式共同前置（双向）：绑定真实/请求离线、绑定离线/请求真实均在取凭据前拒绝（`credentialSourceBinding`/`REAL_MODE_BINDING_MISMATCH`）；补 host 直接调用的双向不匹配与匹配对照（对照全链 1 凭据+4 API+两写一提交）。入口 runOnce 双向检查有效保留。
+- **S2（approved-run）**：同轮已有任一种终态在创建 started、取凭据之前拒绝（`APR_TERMINAL_EXISTS`，`findExistingTerminalRecord`；排他 wx 保留为竞态第二道防线）；「已尝试保存但失败」与「尚未保存」严格区分——首次终态保存失败（EEXIST/部分落盘/目录创建失败/EIO）后**不自动再次保存**，抛 `APR_TERMINAL_SAVE_FAILED`（`e.causeCode`=原始固定失败类别、`e.execution`=首次保存捕获的净化执行事实，含 commitFactEstablished）；既有/半截文件保留不清理。完整链断言：部分写后 EIO（半截 20 字节保留、保存恰 1 次、提交恰 1 次）、同轮终态预存（零子进程零写）、写入遇 EEXIST（竞争者文件字节不变）、正常保存（保存恰 1 次）。
+- **S3**：`resultPersisted` 按实际保存结果、`unknownPersisted` 仅对 RESULT_UNKNOWN 记录为 true（成功/失败记录 false、保存失败时 e.execution 内两者 false）；文件与宿主返回值逐项核对。`TERMINAL_FIELDS` 实测 **31 项业务字段**（操作说明此前误写 34 项已更正；另有 recordType/runId/savedAt/status/fingerprint 元字段，不为凑数加字段）；第 58 行尾随空白已清除。
+- **S4**：历史证据脚本/JSON 原样保留不改；另建收尾证据 `docs/证据/首次管理员真实入口S1-S4收尾-20261012.cjs`——**默认只输出 stdout 不写文件**；`--out <绝对路径>` 以 wx 独占新建、目标已存在即失败退出（实测二次运行拒绝覆盖、字节不变），安全复跑方式已写入操作说明。全程守卫+真实登录目录 fs 虚拟化保留。
+- 改动：host（模式核对前置）、approved-run（保存分支+前置检查）、测试 33→41 项、操作说明、新证据、两份顶部记录（仅追加）。R3 入口指纹、R1 入口 15 项覆盖拒绝、R2 固定 worker 接线、既有守卫与虚拟化不重做；P4、worker、SDK 适配器、凭据宿主、只读链、计时器、登记工具/页面、云函数/vendor、原 CLI 未改。
+- 实测：新测试 41/41；回归 host 91 项（90 过 1 跳过 0 失败）、P4 bootstrap 45 项（40 过 5 跳过 0 失败）；新证据 12/12。未联网、未取真实凭据、未读真实认证内容、未写库/初始化/再次登记/部署。真实管理员写入仍须复核通过、具体执行包与用户确认。
+
 ## 2026-10-12 Codex复查：真实入口 da30720，需 S1–S4 定点收尾
 
 依据：docs/Codex复查-首次管理员真实入口R1-R5返修-20261012.md。

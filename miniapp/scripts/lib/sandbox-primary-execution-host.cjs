@@ -813,13 +813,19 @@ async function executeOnce(options) {
   let realWorkerSpawn = REAL_SPAWN;
   let realWorkerLimits;
   let realReconcileDeps;
+  /**
+   * S1（2026-10-12 复核 §3）：批准绑定的凭据来源模式与请求模式必须一致
+   * —— **两种模式共同前置**（双向）：绑定真实而请求离线、绑定离线而请求
+   * 真实，都在取凭据/任何外部动作之前拒绝（此前该检查只在真实模式分支内，
+   * 直接调用 host.executeOnce 时「绑定真实、请求离线」会被放行）。
+   */
+  if (approvalCheck.credentialSourceMode !== sourceMode) {
+    report.stoppedAt = 'credentialSourceBinding';
+    report.errorCode = ERR.REAL_MODE_BINDING_MISMATCH;
+    report.incomplete.push('批准绑定的凭据来源模式与请求模式不一致；未取凭据、未发起外部动作。');
+    return report;
+  }
   if (sourceMode === 'fixed-real-source') {
-    if (approvalCheck.credentialSourceMode !== sourceMode) {
-      report.stoppedAt = 'credentialSourceBinding';
-      report.errorCode = ERR.REAL_MODE_BINDING_MISMATCH;
-      report.incomplete.push('批准绑定的凭据来源模式与请求模式不一致；未取凭据、未发起外部动作。');
-      return report;
-    }
     for (const key of OVERRIDE_KEYS) {
       if (o[key] !== undefined) {
         report.stoppedAt = 'realModeOverrides';

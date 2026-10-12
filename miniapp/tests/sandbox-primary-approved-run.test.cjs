@@ -649,7 +649,7 @@ test('B-1 R2 正向（离线合成链，无调用方持久化回调）：入口�
   } finally { fx.tr.restore(); }
 });
 
-test('B-2 重复轮次：第二次运行不覆盖 started、不再写库、终态不新增', async () => {
+test('B-2 重复轮次：同轮已有终态在 started/取凭据之前拒绝；第二次运行不覆盖 started、不再写库', async () => {
   const fx = offlineChain({ tag: 'b2', runId: 'B2-DUP-0001' });
   try {
     const first = await approvedRun.runOnce(fx.options);
@@ -657,9 +657,11 @@ test('B-2 重复轮次：第二次运行不覆盖 started、不再写库、终�
     const startedBefore = fs.readFileSync(path.join(fx.outDir, 'started', 'B2-DUP-0001.json'));
     const terminalBefore = fs.readFileSync(path.join(fx.outDir, 'terminal', 'B2-DUP-0001.COMPLETED.json'));
     const writesBefore = fx.tr.counts();
+    // S2：同轮已有任一种终态 → 在创建 started、取凭据之前拒绝（TERMINAL_EXISTS）；
+    // 排他 wx 防竞态仍是第二道防线
     await assert.rejects(
       () => approvedRun.runOnce(fx.options),
-      (e) => e.code === approvedRun.ERR.STARTED_EXISTS);
+      (e) => e.code === approvedRun.ERR.TERMINAL_EXISTS);
     assert.ok(fs.readFileSync(path.join(fx.outDir, 'started', 'B2-DUP-0001.json'))
       .equals(startedBefore), 'started 不得被重写');
     assert.ok(fs.readFileSync(path.join(fx.outDir, 'terminal', 'B2-DUP-0001.COMPLETED.json'))
@@ -1020,8 +1022,8 @@ test('D-6 R4 反例闭合：终态落盘失败 → 结构化错误带净化执�
         assert.equal(ex.initialized, true);
         assert.equal(ex.granted, true);
         assert.ok(ex.workerProcess && ex.workerProcess.exitCode === 0, '退出事实保留');
-        assert.equal(e.causeCode, 'APR_TERMINAL_SAVE_FAILED',
-          '内层保存失败的固定错误码如实保留');
+        assert.equal(e.causeCode, 'EIO',
+          '原始固定失败类别随 causeCode 保留（S2：首次保存失败不重试）');
         // 净化：不透传原始异常文本、不含凭据
         const raw = JSON.stringify({ message: e.message, execution: ex });
         assert.ok(!/EIO/.test(e.message), '不透传原始异常文本');
@@ -1126,4 +1128,233 @@ test('D-11 模块边界：approved-run 不再接受调用方持久化回调；�
       '导出不应含公众执行/批准开关：' + key);
   }
   assert.equal(typeof approvedRun.runOnce, 'function');
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// E：S1–S3 收尾（host 双向绑定前置 / 终态冲突前置与保存失败事实 / 保存标记）
+// ══════════════════════════════════════════════════════════════════════
+
+test('E-1 S1 反例闭合：host 直接调用 —— 批准绑定真实模式、请求离线模式 → 取凭据前拒绝', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const source = syntheticApprovalSource(plan, { credentialSourceMode: 'fixed-real-source' });
+  const dirs = syntheticDirs('e1');
+  const report = await host.executeOnce({
+    plan, approvalSource: source, roundId: plan.roundId,
+    credentialSourceMode: 'offline-fixture',
+    profileDir: dirs.profileDir,
+    spawn: syntheticCliSpawn(captured),
+    persistRoundStarted: async () => true,
+    persistResult: async () => true
+  });
+  assert.equal(report.errorCode, host.ERR.REAL_MODE_BINDING_MISMATCH,
+    'host 直接调用的反向不匹配也应拒绝');
+  assert.equal(report.stoppedAt, 'credentialSourceBinding');
+  assert.equal(captured.calls.length, 0, '零子进程（未取凭据）');
+});
+
+test('E-2 S1 反例闭合：host 直接调用 —— 批准绑定离线模式、请求真实模式 → 取凭据前拒绝（先于覆盖清单）', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const source = syntheticApprovalSource(plan); // 绑定 offline-fixture
+  const dirs = syntheticDirs('e2');
+  const report = await host.executeOnce({
+    plan, approvalSource: source, roundId: plan.roundId,
+    credentialSourceMode: 'fixed-real-source',
+    profileDir: dirs.profileDir,
+    spawn: syntheticCliSpawn(captured),
+    persistRoundStarted: async () => true,
+    persistResult: async () => true
+  });
+  assert.equal(report.errorCode, host.ERR.REAL_MODE_BINDING_MISMATCH);
+  assert.equal(report.stoppedAt, 'credentialSourceBinding');
+  assert.equal(captured.calls.length, 0, '零子进程');
+});
+
+test('E-3 S1 对照：host 直接调用 —— 绑定与请求一致（离线）时全链正常完成', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const plan = syntheticPlan();
+  const source = syntheticApprovalSource(plan);
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: plan.targetUserId, status: 'active', openid: SYN_OPENID }
+  });
+  const dirs = syntheticDirs('e3');
+  try {
+    const report = await host.executeOnce({
+      plan, approvalSource: source, roundId: plan.roundId,
+      credentialSourceMode: 'offline-fixture',
+      profileDir: dirs.profileDir,
+      spawn: syntheticCliSpawn(captured),
+      spawnWorker: syntheticWorkerSpawn(tr),
+      reconcileDeps: { db: tr.db },
+      persistRoundStarted: async () => true,
+      persistResult: async () => true
+    });
+    assert.equal(report.status, host.STATUS.PLAN_READY);
+    assert.equal(captured.credentialFetches, 1);
+    assert.equal(captured.apiCalls.length, 4);
+    const c = tr.counts();
+    assert.equal(c.primarySet, 1);
+    assert.equal(c.auditSet, 1);
+    assert.equal(c.commit, 1);
+  } finally { tr.restore(); }
+});
+
+test('E-4 S2 完整链：部分写后 EIO → 恰一次保存尝试，结构化错误保留已提交事实与半截文件', async () => {
+  const fx = offlineChain({ tag: 'e4', runId: 'E4-PART-0001' });
+  const origWrite = fs.writeFileSync;
+  let saveAttempts = 0;
+  fs.writeFileSync = function (p, data, options) {
+    if (typeof p === 'string' && p.includes(path.join('terminal', 'E4-PART-0001'))) {
+      saveAttempts++;
+      origWrite.call(fs, p, String(data).slice(0, 20), options); // 先部分落盘再失败
+      const e = new Error('EIO'); e.code = 'EIO'; throw e;
+    }
+    return origWrite.call(fs, p, data, options);
+  };
+  try {
+    const err = await approvedRun.runOnce(fx.options).then(() => null, (e) => e);
+    assert.ok(err, '应失败');
+    assert.equal(err.code, approvedRun.ERR.TERMINAL_SAVE_FAILED);
+    assert.equal(err.causeCode, 'EIO', '原始固定失败类别保留');
+    assert.equal(err.execution.commitFactEstablished, true, '已提交事实不丢失');
+    assert.equal(err.execution.initialized, true);
+    assert.equal(err.execution.granted, true);
+    assert.equal(err.execution.resultPersisted, false, '未落盘如实标记');
+    assert.equal(err.execution.unknownPersisted, false);
+    assert.equal(saveAttempts, 1, '恰一次保存尝试（不自动再次保存）');
+    const file = path.join(fx.outDir, 'terminal', 'E4-PART-0001.COMPLETED.json');
+    assert.ok(fs.existsSync(file), '半截文件保留（不清理不覆盖）');
+    const bytes = fs.readFileSync(file);
+    assert.equal(bytes.length, 20, '半截字节数如实');
+    assert.throws(() => JSON.parse(bytes.toString('utf8')), '半截文件不是合法 JSON');
+    assert.equal(fs.readdirSync(path.join(fx.outDir, 'terminal')).length, 1, '无第二次保存的新文件');
+    const c = fx.tr.counts();
+    assert.equal(c.commit, 1, '事务提交恰一次');
+    assert.equal(c.primarySet, 1);
+    assert.equal(fx.captured.credentialFetches, 1, '凭据恰一次（不重试初始化）');
+    assert.ok(fs.existsSync(path.join(fx.outDir, 'started', 'E4-PART-0001.json')),
+      'started 保留');
+  } finally {
+    fs.writeFileSync = origWrite; fx.tr.restore();
+  }
+});
+
+test('E-5 S2 反例闭合：同轮终态已存在且无 started → started/取凭据之前拒绝（零子进程零写，原文件字节不变）', async () => {
+  const fx = offlineChain({ tag: 'e5', runId: 'E5-PRIOR-0001' });
+  fs.mkdirSync(path.join(fx.outDir, 'terminal'), { recursive: true });
+  const priorFile = path.join(fx.outDir, 'terminal', 'E5-PRIOR-0001.COMPLETED.json');
+  const priorBody = '{\n  "recordType": "COMPLETED",\n  "runId": "E5-PRIOR-0001",\n  "syntheticPrior": true\n}\n';
+  fs.writeFileSync(priorFile, priorBody);
+  try {
+    const err = await approvedRun.runOnce(fx.options).then(() => null, (e) => e);
+    assert.ok(err, '应拒绝');
+    assert.equal(err.code, approvedRun.ERR.TERMINAL_EXISTS);
+    assert.equal(fx.captured.calls.length, 0, '零子进程（未取凭据）');
+    const c = fx.tr.counts();
+    assert.equal(c.commit, 0, '零事务提交');
+    assert.equal(c.primarySet, 0, '零事务写');
+    assert.equal(fs.existsSync(path.join(fx.outDir, 'started')), false,
+      'started 未创建');
+    assert.equal(fs.readFileSync(priorFile, 'utf8'), priorBody, '原终态字节不变');
+  } finally { fx.tr.restore(); }
+});
+
+test('E-6 S2 完整链：检查通过后写入遇 EEXIST → 恰一次保存尝试，结构化错误保留提交事实与既有文件', async () => {
+  const fx = offlineChain({ tag: 'e6', runId: 'E6-EXST-0001' });
+  const origWrite = fs.writeFileSync;
+  let saveAttempts = 0;
+  fs.writeFileSync = function (p, data, options) {
+    if (typeof p === 'string' && p.includes(path.join('terminal', 'E6-EXST-0001'))) {
+      saveAttempts++;
+      // 模拟前置检查通过后、写入前，另一写入者抢先创建了同轮终态
+      origWrite.call(fs, p, '{\n  "recordType": "COMPLETED",\n  "syntheticRacer": true\n}\n', options);
+      const e = new Error('EEXIST'); e.code = 'EEXIST'; throw e;
+    }
+    return origWrite.call(fs, p, data, options);
+  };
+  try {
+    const err = await approvedRun.runOnce(fx.options).then(() => null, (e) => e);
+    assert.ok(err, '应失败');
+    assert.equal(err.code, approvedRun.ERR.TERMINAL_SAVE_FAILED);
+    assert.equal(err.causeCode, 'APR_TERMINAL_EXISTS', 'EEXIST 固定类别随 causeCode 保留');
+    assert.equal(err.execution.commitFactEstablished, true, '已提交事实不丢失');
+    assert.equal(err.execution.resultPersisted, false);
+    assert.equal(saveAttempts, 1, '恰一次保存尝试（EEXIST 不触发第二次保存）');
+    const file = path.join(fx.outDir, 'terminal', 'E6-EXST-0001.COMPLETED.json');
+    assert.ok(fs.readFileSync(file, 'utf8').includes('syntheticRacer'),
+      '既有文件保留（不覆盖）');
+    assert.equal(fs.readdirSync(path.join(fx.outDir, 'terminal')).length, 1);
+    assert.equal(fx.tr.counts().commit, 1, '事务提交恰一次');
+    assert.equal(fx.captured.credentialFetches, 1);
+  } finally {
+    fs.writeFileSync = origWrite; fx.tr.restore();
+  }
+});
+
+test('E-7 S2/S3 对照：正常保存完整链 —— 保存恰一次、文件字节一致、返回事实与标记如实', async () => {
+  const fx = offlineChain({ tag: 'e7', runId: 'E7-OK-0001' });
+  const origWrite = fs.writeFileSync;
+  let saveAttempts = 0;
+  fs.writeFileSync = function (p, data, options) {
+    if (typeof p === 'string' && p.includes(path.join('terminal', 'E7-OK-0001'))) {
+      saveAttempts++;
+    }
+    return origWrite.call(fs, p, data, options);
+  };
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.status, 'COMPLETED');
+    assert.equal(saveAttempts, 1, '保存恰一次');
+    const file = path.join(fx.outDir, 'terminal', 'E7-OK-0001.COMPLETED.json');
+    assert.equal(r.saved.saved, true);
+    assert.equal(r.saved.file, file, '返回 saved.file 指向实际记录');
+    const body = JSON.parse(fs.readFileSync(file, 'utf8'));
+    assert.equal(body.recordType, 'COMPLETED');
+    assert.equal(body.resultPersisted, true, 'S3：成功记录 resultPersisted=true');
+    assert.equal(body.unknownPersisted, false, 'S3：成功记录不标 unknownPersisted');
+    assert.equal(body.commitFactEstablished, true);
+    assert.equal(r.result.resultPersisted, true, '宿主返回事实一致');
+    const c = fx.tr.counts();
+    assert.equal(c.commit, 1);
+    assert.equal(c.primarySet, 1);
+    assert.equal(c.auditSet, 1);
+    assert.equal(fx.captured.credentialFetches, 1);
+  } finally {
+    fs.writeFileSync = origWrite; fx.tr.restore();
+  }
+});
+
+test('E-8 S3：RESULT_UNKNOWN 与 FAILED 记录的保存标记各按实际类型；TERMINAL_FIELDS 口径固定 31 项', async () => {
+  assert.equal(approvedRun.TERMINAL_FIELDS.length, 31,
+    '统计口径：业务字段 31 项（另有 recordType/runId/savedAt/status/fingerprint 元字段）');
+  // 未知结果（worker 超时）
+  const fxU = offlineChain({
+    tag: 'e8u', runId: 'E8-UNK-0001',
+    spawnWorker: hangingWorkerSpawn(),
+    workerLimits: { timeoutMs: 400, maxOutputBytes: 1048576 }
+  });
+  try {
+    const r = await approvedRun.runOnce(fxU.options);
+    assert.equal(r.status, 'RESULT_UNKNOWN');
+    const body = JSON.parse(fs.readFileSync(
+      path.join(fxU.outDir, 'terminal', 'E8-UNK-0001.RESULT_UNKNOWN.json'), 'utf8'));
+    assert.equal(body.resultPersisted, true);
+    assert.equal(body.unknownPersisted, true, '未知结果记录如实标记 unknownPersisted');
+    assert.equal(r.result.unknownPersisted, true, '宿主返回事实一致');
+  } finally { fxU.tr.restore(); }
+  // 失败（主体不匹配，取凭据后停止）
+  const otherSts = Object.assign({}, SYN_STS, { UserId: 'OTHER_USER_VALUE', PrincipalId: 'OTHER_PRINCIPAL' });
+  const fxF = offlineChain({
+    tag: 'e8f', runId: 'E8-FAIL-0001',
+    approvalPatch: { expectedSubjectDigest: host.callerTupleDigest(otherSts) }
+  });
+  try {
+    const r = await approvedRun.runOnce(fxF.options);
+    assert.equal(r.status, 'FAILED');
+    const body = JSON.parse(fs.readFileSync(
+      path.join(fxF.outDir, 'terminal', 'E8-FAIL-0001.FAILED.json'), 'utf8'));
+    assert.equal(body.resultPersisted, true);
+    assert.equal(body.unknownPersisted, false, '失败记录不标 unknownPersisted');
+  } finally { fxF.tr.restore(); }
 });
