@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "appId": "wxfb4db1615ac15531",
+  "envId": "cloud1-d8gcq5ag39d847723",
+  "roundId": "primary-20261012-final-01",
+  "targetUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+  "evidenceId": "codex-primary-20261012-final-01",
+  "expiresAt": "2026-10-12T14:00:00.000Z",
+  "schemaVersion": 1,
+  "operatorRef": "Codex-reviewed-local-host",
+  "approvedOwnerHint": "2d3aa4"
+}

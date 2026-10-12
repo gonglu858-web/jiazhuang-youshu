@@ -1,0 +1,119 @@
+{
+  "status": "PREPARED_AWAITING_RECONFIRMATION",
+  "observedAt": "2026-10-12T13:09:23.151Z",
+  "packageRevision": "primary-20261012-final-01-v2",
+  "writeAuthorized": false,
+  "approvalIssued": false,
+  "credentialFetched": false,
+  "cloudCallAttempted": false,
+  "initializationAttempted": false,
+  "oldPlanActualSha256": "68afd3d8bcf61ca365e7410f474c34359147d8be5a280db54ae47da35d343174",
+  "oldPlanRecordedSha256": "68afd3d8bcf61ca365e7410f474c34359147d8be5a280db54ae47da35d343174",
+  "oldPlanBytesMatchRecorded": true,
+  "oldPlanSemanticMatch": true,
+  "oldPlanExpired": true,
+  "planFile": "Codex首次管理员最终计划-20261012-v2.json",
+  "planSha256": "b55b2815795625b296a2d0367d9d8f5368af78643e1633f5c90d43d57513d124",
+  "plan": {
+    "enabled": true,
+    "appId": "wxfb4db1615ac15531",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "roundId": "primary-20261012-final-01",
+    "targetUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+    "evidenceId": "codex-primary-20261012-final-01",
+    "expiresAt": "2026-10-12T14:00:00.000Z",
+    "schemaVersion": 1,
+    "operatorRef": "Codex-reviewed-local-host",
+    "approvedOwnerHint": "2d3aa4"
+  },
+  "inputDigest": "54a7361743abcb9c8b2271370ed2f7a8",
+  "auditId": "sbx-init-primary:5f320cbaedc3e6223cfd3948efc59171",
+  "fullPlanDigest": "6beed50232057d13992c25966e96790494fbcab4d5c0f21f38a7186eac1820cf",
+  "expectedSubjectDigest": "93cb27f6ff00e5626a3d88fb01e0a0aafd1b6ceb8b3b5a3f2d02591f253099bf",
+  "outDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\管理员初始化执行-primary-20261012-final-01",
+  "outDirAbsent": true,
+  "checkedFiles": [
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-approved-run.cjs",
+      "bytes": 27090,
+      "sha256": "270391049c0714801f7bbc9bc32e7351643d8a576aeac88bb2fc2095e6950128"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-execution-host.cjs",
+      "bytes": 103192,
+      "sha256": "5047fc18b14021fa149dfe506932b987916694af2908084cdb61714393c4e550"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs",
+      "bytes": 38488,
+      "sha256": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs",
+      "bytes": 28388,
+      "sha256": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs",
+      "bytes": 29620,
+      "sha256": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs",
+      "bytes": 27811,
+      "sha256": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-readonly-observer.cjs",
+      "bytes": 53598,
+      "sha256": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs",
+      "bytes": 87816,
+      "sha256": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs",
+      "bytes": 34784,
+      "sha256": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5"
+    },
+    {
+      "path": "../../../.agent-reach/tools/node-v22.16.0-win-x64/node.exe",
+      "bytes": 85119640,
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    },
+    {
+      "path": "../../../.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/bin/tcb",
+      "bytes": 57,
+      "sha256": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b"
+    },
+    {
+      "path": "../../../.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/dist/standalone/cli.js",
+      "bytes": 25891966,
+      "sha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97"
+    },
+    {
+      "path": "docs/证据/Codex管理员初始化准备主体只读核对-20261012.json",
+      "bytes": 4976,
+      "sha256": "741d45f8723d948e3f71cc8f4688b216625b09ca7e05d6338345f6804eaa8536"
+    },
+    {
+      "path": "docs/证据/Codex本人第三轮登记与关闭结论-20261012.json",
+      "bytes": 1979,
+      "sha256": "eaf82329cef07994df8671438dc8239e0905ec29c209f82cc3a2477badb0e1ed"
+    },
+    {
+      "path": "docs/证据/Codex本人第三轮关闭页人工核验-20261012.json",
+      "bytes": 1227,
+      "sha256": "55505c536a1921df45f22ae116e74d297420b41884e59a18ce52e72e34156ff5"
+    }
+  ],
+  "sdkTreeFiles": 2067,
+  "sdkTreeSha256": "a3cbc65b6c73881ea25856d9f09a3b2d4f524d399b3464b998ca2fa0c1f9c4bc",
+  "notes": [
+    "同一轮次和审计键，仅变更截止时间，未签发批准",
+    "本地无执行目录不等于重新查询云端；执行前仍走事务内检查",
+    "若旧计划哈希失配但字段一致，保留差异，不回写旧证据"
+  ]
+}
