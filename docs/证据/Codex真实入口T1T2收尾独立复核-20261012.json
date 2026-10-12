@@ -1,0 +1,271 @@
+{
+  "reviewedCommit": "b537402",
+  "baseline": "7ad03b4",
+  "kind": "REAL_APPLICATION_AND_SDK_LOCAL_CONVERSION_SYNTHETIC_TRANSPORT",
+  "samples": [
+    {
+      "name": "S1-binding-fixed-real-source-to-offline-fixture",
+      "checked": true,
+      "passed": true,
+      "errorCode": "REAL_MODE_BINDING_MISMATCH",
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S1-binding-offline-fixture-to-fixed-real-source",
+      "checked": true,
+      "passed": true,
+      "errorCode": "REAL_MODE_BINDING_MISMATCH",
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-existing-COMPLETED",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "oldBytesUnchanged": true,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-existing-FAILED",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "oldBytesUnchanged": true,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-existing-RESULT_UNKNOWN",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "oldBytesUnchanged": true,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S2-partial-EIO",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "EIO",
+      "commitFactEstablished": true,
+      "saveAttempts": 1,
+      "retainedBytes": 20,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S2-race-EEXIST",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "APR_TERMINAL_EXISTS",
+      "commitFactEstablished": true,
+      "saveAttempts": 1,
+      "retainedBytes": 15,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S2-mkdir-EACCES",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_SAVE_FAILED",
+      "causeCode": "EACCES",
+      "commitFactEstablished": true,
+      "saveAttempts": 1,
+      "retainedBytes": 0,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "T1-terminal-scan-EACCES",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_DIR_CHECK_FAILED",
+      "causeCode": "EACCES",
+      "scanAttempts": 1,
+      "oldBytesUnchanged": true,
+      "executionAttached": false,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "T1-terminal-scan-EIO",
+      "checked": true,
+      "passed": true,
+      "errorCode": "APR_TERMINAL_DIR_CHECK_FAILED",
+      "causeCode": "EIO",
+      "scanAttempts": 1,
+      "oldBytesUnchanged": true,
+      "executionAttached": false,
+      "credentialFetches": 0,
+      "apiCalls": 0,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": false
+    },
+    {
+      "name": "S3-COMPLETED-and-repeat",
+      "checked": true,
+      "passed": true,
+      "status": "COMPLETED",
+      "disk": {
+        "resultPersisted": true,
+        "unknownPersisted": false
+      },
+      "returned": {
+        "resultPersisted": true,
+        "unknownPersisted": false
+      },
+      "repeatError": "APR_TERMINAL_EXISTS",
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    },
+    {
+      "name": "S3-early-FAILED",
+      "checked": true,
+      "passed": true,
+      "status": "FAILED",
+      "disk": {
+        "resultPersisted": true,
+        "unknownPersisted": false
+      },
+      "returned": {
+        "resultPersisted": true,
+        "unknownPersisted": false
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": true
+    },
+    {
+      "name": "S3-RESULT_UNKNOWN",
+      "checked": true,
+      "passed": true,
+      "status": "RESULT_UNKNOWN",
+      "disk": {
+        "resultPersisted": true,
+        "unknownPersisted": true
+      },
+      "returned": {
+        "resultPersisted": true,
+        "unknownPersisted": true
+      },
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "started": true
+    },
+    {
+      "name": "T1-readable-other-round",
+      "checked": true,
+      "passed": true,
+      "otherRoundBytesUnchanged": true,
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "started": true
+    }
+  ],
+  "implementationSha256": "270391049c0714801f7bbc9bc32e7351643d8a576aeac88bb2fc2095e6950128",
+  "guards": {
+    "fixture": {
+      "https": 0,
+      "http": 0,
+      "dns": 0,
+      "net": 0,
+      "cp": 0
+    },
+    "outer": {
+      "network": 0,
+      "child": 0
+    }
+  },
+  "virtualizedFsCalls": 56,
+  "summary": {
+    "samples": 14,
+    "checked": 14
+  },
+  "finishedAt": "2026-10-12T10:17:25.530Z"
+}
