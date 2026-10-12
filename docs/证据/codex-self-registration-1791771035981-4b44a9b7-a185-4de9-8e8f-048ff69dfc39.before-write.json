@@ -1,0 +1,82 @@
+{
+  "runId": "codex-self-registration-1791771035981-4b44a9b7-a185-4de9-8e8f-048ff69dfc39",
+  "roundId": "self-1791770678256-9108e1f8a09c2dd1",
+  "at": "2026-10-12T02:10:45.154Z",
+  "mode": "registration",
+  "args": [
+    "fn",
+    "deploy",
+    "scheduleSandbox",
+    "--env-id",
+    "cloud1-d8gcq5ag39d847723",
+    "--region",
+    "ap-shanghai",
+    "--config-file",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-control-self-1791770678256-9108e1f8a09c2dd1\\registration.cloudbaserc.json",
+    "--dir",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-self-1791770678256-9108e1f8a09c2dd1\\registration-project\\cloudfunctions\\scheduleSandbox",
+    "--runtime",
+    "Nodejs20.19",
+    "--install-dependency",
+    "true",
+    "--deployMode",
+    "zip",
+    "--json",
+    "--force"
+  ],
+  "configSha256": "09e97fd333e4d7b2373bf6f8026689d25be8c8de9f17cf5050cb0fa92f3a34ee",
+  "recordsBefore": {
+    "at": "2026-10-12T02:10:45.148Z",
+    "four": [
+      {
+        "id": "oldPrimary",
+        "collection": "app_admins",
+        "key": "primary",
+        "status": "OBSERVED",
+        "active": true,
+        "keyMatches": true,
+        "targetMatches": true,
+        "openidDerivationMatches": null,
+        "requestId": null
+      },
+      {
+        "id": "oldUser",
+        "collection": "users",
+        "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "status": "OBSERVED",
+        "active": true,
+        "keyMatches": true,
+        "targetMatches": true,
+        "openidDerivationMatches": true,
+        "requestId": null
+      },
+      {
+        "id": "testUser",
+        "collection": "schtest_v1_users",
+        "key": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+        "status": "NOT_FOUND",
+        "active": null,
+        "keyMatches": null,
+        "targetMatches": null,
+        "openidDerivationMatches": null,
+        "requestId": null
+      },
+      {
+        "id": "testPrimary",
+        "collection": "schtest_v1_app_admins",
+        "key": "primary",
+        "status": "NOT_FOUND",
+        "active": null,
+        "keyMatches": null,
+        "targetMatches": null,
+        "openidDerivationMatches": null,
+        "requestId": null
+      }
+    ],
+    "audit": {
+      "complete": true,
+      "rows": [],
+      "pages": 1
+    }
+  }
+}

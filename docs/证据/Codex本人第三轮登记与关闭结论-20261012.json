@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-12T02:15:54.733554+00:00",
+  "roundId": "self-1791770678256-9108e1f8a09c2dd1",
+  "status": "REGISTRATION_RECORDS_CONFIRMED_BACKEND_CLOSED",
+  "manualScreenshot": {
+    "source": "user supplied screenshot",
+    "filename": "2f8300ddfcdd3c2750e85f5dbd3f7936.jpg",
+    "sha256": "7e8a40e2cab52fdb72dfdfc027b98f2f69a040389513c020067c5214a77948d2",
+    "visible": {
+      "ok": true,
+      "sandbox": true,
+      "replayed": false
+    },
+    "fullResponseTranscribed": false
+  },
+  "registrationRunId": "codex-self-registration-1791771035981-4b44a9b7-a185-4de9-8e8f-048ff69dfc39",
+  "closedRunId": "codex-self-closed-1791771204427-c3e0abca-cef8-42f9-a5e5-7a813232a968",
+  "remoteMatches": {
+    "registration": 8,
+    "closed": 8
+  },
+  "closedArchiveSha256": "4e7a20c0639d40187d23b895e13e6de3976638cd68d2cc27dd49858414127b6d",
+  "testUserActiveAndDerivedIdentityMatches": true,
+  "targetAuditCountBefore": 0,
+  "targetAuditCountAfter": 1,
+  "testPrimaryAbsent": true,
+  "oldRecordsSelectedFieldsRemainValid": true,
+  "frontend": {
+    "closedProject": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\registration-full-self-1791770678256-9108e1f8a09c2dd1\\closed-project",
+    "localEnabled": false,
+    "appidMatches": true,
+    "openToolResult": {
+      "ok": false,
+      "code": "APPID_ERROR",
+      "message": "aborted"
+    },
+    "manualClosedPreviewConfirmed": false
+  },
+  "limitations": [
+    "Screenshot response text is clipped; no complete requestId copied.",
+    "Audit schema lacks roundId/requestId; before/after delta and time support this registration, not an exact request-bound receipt.",
+    "Readbacks are not an atomic snapshot.",
+    "Remote closed ZIP verifies deployed bytes, not absence of all in-flight requests or removal of cached clients.",
+    "Administrator initialization and broader platform/business acceptance are not granted."
+  ]
+}

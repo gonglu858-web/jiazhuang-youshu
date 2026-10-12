@@ -1,0 +1,68 @@
+{
+  "runId": "codex-self-registration-1791771035981-4b44a9b7-a185-4de9-8e8f-048ff69dfc39",
+  "mode": "registration",
+  "observedAt": "2026-10-12T02:11:24.509290+00:00",
+  "archiveSha256": "b6c5bea57d97853640edae1e935ec3a8720f9a777a9dcbcf50328adc9f740a42",
+  "files": [
+    {
+      "path": "collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+      "matched": true
+    },
+    {
+      "path": "gate.js",
+      "bytes": 11344,
+      "sha256": "11222f02eed4eeeb3e705ff56d84ec755a3681f8667395c311ee8c0ba28ec00a",
+      "matched": true
+    },
+    {
+      "path": "index.js",
+      "bytes": 7973,
+      "sha256": "8568aca11a2de1433b3df3fbab241d8a712579efee2c1bc287ae774fd1b7f4ee",
+      "matched": true
+    },
+    {
+      "path": "package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84",
+      "matched": true
+    },
+    {
+      "path": "project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687",
+      "matched": true
+    },
+    {
+      "path": "vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830",
+      "matched": true
+    },
+    {
+      "path": "vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+      "matched": true
+    },
+    {
+      "path": "vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+      "matched": true
+    }
+  ],
+  "matched": 8,
+  "wxServerSdk": "3.0.1",
+  "symlinksInspected": [
+    "node_modules/.bin/semver",
+    "node_modules/.bin/sshpk-conv",
+    "node_modules/.bin/sshpk-sign",
+    "node_modules/.bin/sshpk-verify",
+    "node_modules/.bin/uuid"
+  ],
+  "status": "REMOTE_EIGHT_FILES_MATCH_APPROVED_INPUT",
+  "extracted": false,
+  "downloadedCodeExecuted": false
+}
