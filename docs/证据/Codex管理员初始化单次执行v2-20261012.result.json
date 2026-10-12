@@ -1,0 +1,34 @@
+{
+  "finishedAt": "2026-10-12T13:12:24.436Z",
+  "runId": "primary-20261012-final-01",
+  "status": "FAILED",
+  "result": {
+    "status": "FAILED",
+    "stoppedAt": "callerSubject",
+    "errorCode": "CALLER_SUBJECT_MISMATCH",
+    "credentialFetched": true,
+    "cloudCallAttempted": true,
+    "workerStarted": false,
+    "stages": [
+      "approvalSource",
+      "fileFingerprint",
+      "credentialFetch",
+      "cliAssociation"
+    ],
+    "incomplete": [
+      "当次完整云主体与批准绑定的预期不一致（可能是角色会话变更）；已停止，未自动放宽。"
+    ],
+    "credentialSourceMode": "fixed-real-source",
+    "auditId": "sbx-init-primary:5f320cbaedc3e6223cfd3948efc59171",
+    "roundId": "primary-20261012-final-01",
+    "planDigest": "54a7361743abcb9c8b2271370ed2f7a8",
+    "fixedRealSourceUsed": true,
+    "isolationDirCreated": true,
+    "resultPersisted": true,
+    "unknownPersisted": false
+  },
+  "saved": {
+    "saved": true,
+    "file": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\管理员初始化执行-primary-20261012-final-01\\terminal\\primary-20261012-final-01.FAILED.json"
+  }
+}

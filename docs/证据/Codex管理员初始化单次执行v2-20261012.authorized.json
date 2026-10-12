@@ -1,0 +1,18 @@
+{
+  "packageRevision": "primary-20261012-final-01-v2",
+  "roundId": "primary-20261012-final-01",
+  "confirmationObservedAt": "2026-10-12T13:11:00.000Z",
+  "confirmationTimeMeaning": "本助手本轮首次读取时钟的接收记录；不是平台提供的聊天发送时间",
+  "confirmationText": "同意执行管理员初始化v2：尾号2d3aa4，仅新增两条记录，允许本次凭据获取与核对，接受现有套餐用量消耗，保持入口关闭。",
+  "approvedBy": "project-owner-chat-confirmation:primary-20261012-final-01",
+  "approvalExpiresAt": "2026-10-12T13:21:00.000Z",
+  "planSha256": "b55b2815795625b296a2d0367d9d8f5368af78643e1633f5c90d43d57513d124",
+  "expectedSubjectDigest": "93cb27f6ff00e5626a3d88fb01e0a0aafd1b6ceb8b3b5a3f2d02591f253099bf",
+  "runnerSha256": "60105912f600f645fc5f3ce6ac05b045c0484cbd85d57d3738e0b36d22c9f0b9",
+  "invocationAt": "2026-10-12T13:12:15.406Z",
+  "noDependencyInjection": true,
+  "writeScope": [
+    "initializePrimary"
+  ],
+  "platformSuccessNotYetKnown": true
+}
