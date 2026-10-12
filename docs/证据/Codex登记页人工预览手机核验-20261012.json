@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-10-12T02:02:45.558606+00:00",
+  "observationDate": "2026-10-11",
+  "recordCompletionDate": "2026-10-12",
+  "source": "用户报告人工点击预览后二维码出来；用户提供三张手机截图，Codex目视核对",
+  "projectContext": "artifacts/schedule-sandbox/registration-full-self-1791717263921-4e2a401ebdc04447/registration-project",
+  "manualPreviewQrReported": true,
+  "phonePageVisuallyObserved": true,
+  "images": [
+    {
+      "fileName": "eecf856fb98bcb3819387d053c0e7c52.jpg",
+      "fileAvailableAtRecordTime": true,
+      "sha256": "ca7363886fbeeb86ef695c559aa7b162881561a8630a11982c3dabd9823c1d9e",
+      "copiedIntoRepository": false
+    },
+    {
+      "fileName": "f5571a95a5692d2e865e2d470e3d5e24.jpg",
+      "fileAvailableAtRecordTime": true,
+      "sha256": "315525e99eb1b2571f0ace4a69e9aa3d9ffeaf621b5bbf333a438d513c9135f0",
+      "copiedIntoRepository": false
+    },
+    {
+      "fileName": "1156cd8d78037ebbecae95e4576cd7f6.jpg",
+      "fileAvailableAtRecordTime": true,
+      "sha256": "34c02f3a52a77df3b09a78395e56b1c3e33bf30a8070fa51886a727ac8e7d37e",
+      "copiedIntoRepository": false
+    }
+  ],
+  "visibleFacts": {
+    "pageTitle": "施工安排独立测试",
+    "selectedAction": "身份登记",
+    "testProjectIdShowsPreparationPlaceholder": true,
+    "emptyCredentialAndScheduleInputsVisible": true,
+    "submissionControlText": "提交到独立测试副本",
+    "driverMessage": "专用测试未启用：专用测试驱动未启用。"
+  },
+  "verificationResult": "MANUAL_PREVIEW_AND_PHONE_PAGE_DISPLAY_CONFIRMED",
+  "notEstablished": [
+    "没有截图或记录证明完成身份登记提交。",
+    "没有证明手机微信与固定目标账号匹配。",
+    "页面显示及测试驱动未启用均不证明服务端配置。",
+    "不能仅凭截图证明无网络请求、无历史提交或所有缓存客户端关闭。",
+    "自动预览aborted(code10)的根因仍未确认。"
+  ],
+  "backendEvidenceReference": "docs/证据/codex-self-closed-1791717637828-a8f4af43-1684-4b0b-9d3c-0493bd5f079b.verified.json",
+  "backendReadbackThisTurn": false,
+  "cloudOperationsThisTurn": false,
+  "registrationWindow": "2026-10-11T11:44:23.921Z (expired)",
+  "nextStepProposal": "后续新具体执行包优先在服务端关闭时完成人工预览，再经用户确认临时开放登记；本次未生成新窗口或放行。"
+}
