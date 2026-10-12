@@ -1,3 +1,13 @@
+## 2026-10-12 T1/T2 定点收尾完成（首次管理员真实入口，自测通过、待 Codex 复查）
+
+依据 docs/Codex复查-首次管理员真实入口S1-S4收尾-20261012.md（复查提交 7ad03b4，受审实现 3e6a7c3）完成两项收尾，仅本地离线实现与自测。
+
+- **T1（approved-run）**：`findExistingTerminalRecord` 仅把 ENOENT 按「目录不存在/无记录」处理；EACCES/EIO 等列举失败不得当作检查通过——在创建 started、取凭据及启动 worker 之前以固定净化错误 `APR_TERMINAL_DIR_CHECK_FAILED`（`e.causeCode` = 实际错误 code，不透传原始异常文本）停止。完整入口断言：EACCES/EIO → 零凭据、零 worker、零 set/commit、无 started、旧文件字节不变；保留 ENOENT 正常链、可读无同轮记录正常链、三类已有终态拒绝（COMPLETED/FAILED/RESULT_UNKNOWN 零凭据零写）与排他 wx。
+- **T2（approved-run）**：入口成功保存后按实际保存结果与终态类型同步返回报告标记——COMPLETED/FAILED → `resultPersisted: true, unknownPersisted: false`；RESULT_UNKNOWN → `true, true`（复制宿主报告补齐，不改宿主既有聚合）；保存失败异常保持两个标记 false 与净化 `e.execution`。三种终态类型的文件与返回字段逐项交叉核对（不只查其一）；业务 status/errorCode/提交事实/未知结果语义不变。
+- 证据口径更正：新证据 `docs/证据/首次管理员真实入口T1-T2收尾-20261012.cjs` 的 `reviewedCommit` 记**实际受测版本 3e6a7c3**，与返修依据版本 7ad03b4 区分；默认仅 stdout（不自动写结果 JSON；运行中合成夹具的临时本地文件写入并清理），`--out` wx 独占新建不覆盖历史。全部历史证据文件原样保留。
+- 改动：approved-run（目录检查分类+返回标记）、测试 41→45 项、操作说明、新证据、两份顶部记录（仅追加）。S1/S4/S2 已通过部分、R3 指纹及既有批准/事务/凭据/时效机制不重做；host、P4、worker、SDK 适配器、凭据宿主、只读链、计时器、登记工具、页面、云函数/vendor 未改。
+- 实测：相称测试 45/45；回归 host 91 项（90 过 1 跳过）、P4 bootstrap 45 项（40 过 5 跳过）均 0 失败；新证据 7/7（探针 5 通道各 1、业务意外尝试 0）。未联网、未取真实凭据、未读认证内容、未写库/初始化/再次登记/部署。真实管理员写入仍须复核通过、具体执行包与用户确认。
+
 ## 2026-10-12 Codex复查：真实入口3e6a7c3，S1/S4关闭，S2/S3尚需T1/T2
 
 依据：docs/Codex复查-首次管理员真实入口S1-S4收尾-20261012.md；独立证据：docs/证据/Codex真实入口S1S4收尾独立复查-20261012.cjs/.json、Codex真实入口S4独占输出核对-20261012.json。

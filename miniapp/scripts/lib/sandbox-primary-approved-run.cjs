@@ -26,6 +26,12 @@
  *      区分 —— 首次保存失败（EEXIST/部分落盘/目录创建失败/EIO）后不自动
  *      再次保存，抛固定错误码 + causeCode + 净化 e.execution，保留已提交
  *      事实；既有/半截文件不覆盖、不清理。
+ *   7. **T1/T2 收尾（2026-10-12 复核 S1–S4 §3/§4）**：终态目录列举失败
+ *      （EACCES/EIO 等）不当作「无记录」放行 —— 仅 ENOENT 按无目录处理，
+ *      其余在 started/凭据/worker 之前以固定净化错误
+ *      （APR_TERMINAL_DIR_CHECK_FAILED + causeCode）停止；成功保存后返回
+ *      报告的 resultPersisted/unknownPersisted 按实际保存结果与终态类型
+ *      同步（复制报告补齐，不改宿主聚合）。
  *
  * 终态记录（R4）按字段白名单投影宿主已净化报告：保留提交事实
  * （commitFactEstablished）、完整成功资格（fullInitializationSuccess）、
@@ -72,7 +78,8 @@ const ERR = Object.freeze({
   STARTED_CREATE_FAILED: 'APR_STARTED_CREATE_FAILED',
   TERMINAL_EXISTS: 'APR_TERMINAL_EXISTS',
   TERMINAL_SAVE_FAILED: 'APR_TERMINAL_SAVE_FAILED',
-  STATUS_INVALID: 'APR_STATUS_INVALID'
+  STATUS_INVALID: 'APR_STATUS_INVALID',
+  TERMINAL_DIR_CHECK_FAILED: 'APR_TERMINAL_DIR_CHECK_FAILED'
 });
 
 const TERMINAL_STATUSES = Object.freeze(['COMPLETED', 'FAILED', 'RESULT_UNKNOWN']);
@@ -172,7 +179,19 @@ function projectTerminalPayload(payload) {
 function findExistingTerminalRecord(outDir, runId) {
   const dir = path.join(outDir, 'terminal');
   let names;
-  try { names = fs.readdirSync(dir); } catch (_) { return null; }
+  try {
+    names = fs.readdirSync(dir);
+  } catch (error) {
+    // T1（2026-10-12 复核 §3）：仅明确的目录不存在可按「无记录」处理；
+    // EACCES/EIO 等只能证明检查未完成，不能当作检查通过放行 —— 在创建
+    // started、取凭据及启动 worker 之前以固定净化错误停止（不带原始异常
+    // 文本；实际错误类别经 causeCode 保留）。
+    if (error && error.code === 'ENOENT') return null;
+    const e = new Error('终态目录检查失败；无法确认同轮终态状态，未创建 started、未取凭据、未启动 worker。');
+    e.code = ERR.TERMINAL_DIR_CHECK_FAILED;
+    e.causeCode = String(error && error.code || 'UNKNOWN');
+    throw e;
+  }
   const prefix = runId + '.';
   for (const name of names) {
     if (name.startsWith(prefix)) return path.join(dir, name);
@@ -552,7 +571,16 @@ async function runOnce(options) {
     }
   }
 
-  return { runId, status, result, saved };
+  // T2（2026-10-12 复核 §4）：入口已完成终态保存 —— 返回报告的持久化标记
+  // 按**实际保存结果与终态类型**同步（COMPLETED/FAILED → true/false；
+  // RESULT_UNKNOWN → true/true）。复制宿主报告后补齐两个字段，不改宿主
+  // 既有聚合；业务 status/errorCode/提交事实/未知结果语义不变。
+  // 保存失败路径不经过这里：异常保持 e.execution 内两个标记为 false。
+  const finalResult = Object.assign({}, result, {
+    resultPersisted: true,
+    unknownPersisted: status === 'RESULT_UNKNOWN'
+  });
+  return { runId, status, result: finalResult, saved };
 }
 
 module.exports = Object.freeze({
