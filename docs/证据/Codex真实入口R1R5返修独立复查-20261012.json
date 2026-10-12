@@ -1,0 +1,144 @@
+{
+  "reviewedCommit": "da30720",
+  "baseline": "b4da00c",
+  "verificationKind": "APPLICATION_AND_SDK_LOCAL_CONVERSION_SYNTHETIC_TRANSPORT",
+  "samples": [
+    {
+      "name": "S1-host-reverse-mode-binding",
+      "checked": true,
+      "defectReproduced": true,
+      "entryProperlyRejects": true,
+      "hostStatus": "PLAN_READY",
+      "boundMode": "fixed-real-source",
+      "requestedMode": "offline-fixture",
+      "credentialFetches": 1,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      }
+    },
+    {
+      "name": "S2-partial-terminal-write-then-EIO",
+      "checked": true,
+      "defectReproduced": true,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "executionAttached": false,
+      "terminalWriteAttempts": 2,
+      "partialFilePreserved": true,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "credentialFetches": 1
+    },
+    {
+      "name": "S2-existing-terminal-with-no-started",
+      "checked": true,
+      "defectReproduced": true,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "credentialFetches": 1,
+      "errorCode": "APR_TERMINAL_EXISTS",
+      "executionAttached": false,
+      "priorTerminalUnchanged": true
+    },
+    {
+      "name": "S3-success-persistence-flags",
+      "checked": true,
+      "defectReproduced": true,
+      "status": "COMPLETED",
+      "resultUnknown": false,
+      "terminalUnknownPersisted": true,
+      "reportUnknownPersisted": null,
+      "terminalFieldAllowlistCount": 31,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      }
+    },
+    {
+      "name": "closed-positive-and-repeat-round",
+      "checked": true,
+      "passed": true,
+      "status": "COMPLETED",
+      "credentialFetches": 1,
+      "apiCalls": 4,
+      "counts": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "commitFactsPersisted": true,
+      "duplicateRejected": true
+    }
+  ],
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realAuthContentsRead": false,
+  "deliveredEvidenceReplay": {
+    "summary": {
+      "total": 19,
+      "passed": 19,
+      "failed": []
+    },
+    "guards": {
+      "channels": [
+        "https",
+        "http",
+        "dns",
+        "net",
+        "cp"
+      ],
+      "installedBeforeAppModules": true,
+      "note": "进程级不恢复；探针计数与业务意外尝试分离，意外 = 总数 − 探针。",
+      "totals": {
+        "https": 1,
+        "http": 1,
+        "dns": 1,
+        "net": 1,
+        "cp": 1
+      },
+      "probes": {
+        "https": 1,
+        "http": 1,
+        "dns": 1,
+        "net": 1,
+        "cp": 1
+      },
+      "unexpectedAttempts": {
+        "https": 0,
+        "http": 0,
+        "dns": 0,
+        "net": 0,
+        "cp": 0
+      }
+    },
+    "fixedOutputWritesIntercepted": 1,
+    "oldBytesUnchanged": true
+  },
+  "customFixtureGuardTotals": {
+    "https": 0,
+    "http": 0,
+    "dns": 0,
+    "net": 0,
+    "cp": 0
+  },
+  "outerGuardUnexpected": {
+    "network": 0,
+    "child": 0
+  },
+  "virtualizedFsCalls": 40,
+  "originalEvidenceUnchanged": true,
+  "originalEvidenceSha256": "21ab1671082630a0469fae8ae19f0cc7be2941d88b4547fa1e6783de85ce7d5a",
+  "summary": {
+    "samples": 5,
+    "checked": 5
+  },
+  "finishedAt": "2026-10-12T04:31:17.257Z"
+}

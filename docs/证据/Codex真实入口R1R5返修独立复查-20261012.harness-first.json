@@ -1,0 +1,56 @@
+{
+  "reviewedCommit": "da30720",
+  "baseline": "b4da00c",
+  "verificationKind": "APPLICATION_AND_SDK_LOCAL_CONVERSION_SYNTHETIC_TRANSPORT",
+  "samples": [],
+  "realCredentialFetches": 0,
+  "realCloudCalls": 0,
+  "realAuthContentsRead": false,
+  "deliveredEvidenceReplay": {
+    "summary": {
+      "total": 19,
+      "passed": 19,
+      "failed": []
+    },
+    "guards": {
+      "channels": [
+        "https",
+        "http",
+        "dns",
+        "net",
+        "cp"
+      ],
+      "installedBeforeAppModules": true,
+      "note": "进程级不恢复；探针计数与业务意外尝试分离，意外 = 总数 − 探针。",
+      "totals": {
+        "https": 1,
+        "http": 1,
+        "dns": 1,
+        "net": 1,
+        "cp": 1
+      },
+      "probes": {
+        "https": 1,
+        "http": 1,
+        "dns": 1,
+        "net": 1,
+        "cp": 1
+      },
+      "unexpectedAttempts": {
+        "https": 0,
+        "http": 0,
+        "dns": 0,
+        "net": 0,
+        "cp": 0
+      }
+    },
+    "fixedOutputWritesIntercepted": 1,
+    "oldBytesUnchanged": true
+  },
+  "harnessError": {
+    "name": "TypeError",
+    "code": null,
+    "message": "require.resolve is not a function"
+  },
+  "finishedAt": "2026-10-12T04:30:47.156Z"
+}
