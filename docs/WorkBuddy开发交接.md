@@ -1,3 +1,12 @@
+## 2026-10-13 管理员初始化v3真实执行成功：两条新增及回读已确认，入口未启用
+
+- 用户对v3完整确认页回复“确认”。21:40:03.310记录确认接收，批准最长至21:50:03.310；21:42:09.610排他started、21:42:27.530保存COMPLETED，执行exit0，无重试。
+- 固定环境cloud1-d8gcq5ag39d847723、目标尾2d3aa4；受审生产worker完成primary与审计sbx-init-primary:921461b56e1024c3de220a5e87aeb530新增。initialized/granted/commitFactEstablished/fullInitializationSuccess均true；回读present、primary active、审计存在，实际完成态落盘。
+- 首次身份/最终稳定身份/会话均匹配；fixed-real-source，无执行依赖注入。principalSourceConfirmed仍false，用户接受本次替代人工依据，不伪造腾讯内部账号归属已查实。
+- 新报告docs/Codex执行结论-管理员初始化v3成功-20261013.md；执行cjs/authorized/result、排他started/COMPLETED与本地复核cjs/json留证。结果本地交叉检查8/8通过；10实现/3运行文件未变，SDK2067文件树执行前核对通过。未保留原始DB网络跟踪，不硬报平台网络或事务底层调用计数。
+- 本轮未部署/启用/再次登记/改权限或计费；未新做远端关闭回读，沿用既有关闭证据并未改变入口。实际套餐扣费与剩余额度未查。真实worker自建db本次链成功不等于完整业务上线验收。
+- 下一步仅整理独立测试项目及管家/师傅业务验证的准备范围；新的写入、部署或启用另行确认。本节点完成停止，不重复初始化，无WorkBuddy开发任务。
+
 ## 2026-10-13 管理员初始化v3执行包已准备：两条新增，待用户明确确认
 
 - 用户授权整理具体执行包。新包primary-20261013-self-01-v3、轮次primary-20261013-self-01，截止2026-10-13 22:00北京时间，批准在实际确认后最多10分钟。旧v2失败记录保留，新目录不存在，未创建执行记录。

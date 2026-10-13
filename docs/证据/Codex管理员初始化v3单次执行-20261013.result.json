@@ -1,0 +1,81 @@
+{
+  "finishedAt": "2026-10-13T13:42:27.534Z",
+  "runId": "primary-20261013-self-01",
+  "status": "COMPLETED",
+  "result": {
+    "status": "PLAN_READY",
+    "stoppedAt": null,
+    "errorCode": null,
+    "credentialFetched": true,
+    "cloudCallAttempted": true,
+    "workerStarted": true,
+    "firstIdentityCheckMatched": true,
+    "stableIdentityMatched": true,
+    "sessionContinuityConfirmed": true,
+    "stages": [
+      "approvalSource",
+      "fileFingerprint",
+      "credentialFetch",
+      "firstIdentityCheck",
+      "cliAssociation",
+      "callerSubject",
+      "roundStarted",
+      "implementationRecheck",
+      "worker",
+      "resultPersisted"
+    ],
+    "incomplete": [],
+    "credentialSourceMode": "fixed-real-source",
+    "auditId": "sbx-init-primary:921461b56e1024c3de220a5e87aeb530",
+    "roundId": "primary-20261013-self-01",
+    "planDigest": "36f01acbc3e47ff352a0cf2948060f9a",
+    "fixedRealSourceUsed": true,
+    "isolationDirCreated": true,
+    "bindingPolicyVersion": "cloud-role-binding/1",
+    "bootstrap": {
+      "ok": true,
+      "outcome": "initialized",
+      "granted": true,
+      "initialized": true,
+      "auditId": "sbx-init-primary:921461b56e1024c3de220a5e87aeb530",
+      "inputDigest": "36f01acbc3e47ff352a0cf2948060f9a",
+      "existingPrimary": null,
+      "errorCode": null,
+      "requestIds": [],
+      "bindingMatched": true
+    },
+    "observed": {
+      "state": "present",
+      "primaryPresent": true,
+      "primaryStatus": "active",
+      "auditPresent": true,
+      "writeAuthorized": false,
+      "errorCode": null
+    },
+    "observeFailed": false,
+    "outcome": "initialized",
+    "granted": true,
+    "initialized": true,
+    "observationConfirmed": true,
+    "stateContradictions": null,
+    "commitFactEstablished": true,
+    "fullInitializationSuccess": true,
+    "bindingMismatch": false,
+    "workerProcess": {
+      "spawnError": false,
+      "timedOut": false,
+      "overflow": false,
+      "signal": null,
+      "exitCode": 0,
+      "closeNotObserved": false,
+      "terminationRequested": false,
+      "terminationConfirmed": true
+    },
+    "resultPersisted": true,
+    "unknownPersisted": false
+  },
+  "saved": {
+    "saved": true,
+    "file": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\管理员初始化执行-primary-20261013-self-01\\terminal\\primary-20261013-self-01.COMPLETED.json"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "packageRevision": "primary-20261013-self-01-v3",
+  "roundId": "primary-20261013-self-01",
+  "confirmationText": "确认",
+  "confirmationContext": "Direct reply to assistant v3 execution package and its complete quoted confirmation scope.",
+  "confirmationObservedAt": "2026-10-13T13:40:03.310Z",
+  "confirmationTimeMeaning": "Assistant first local clock observation after receiving confirmation; not platform message timestamp.",
+  "approvedBy": "project-owner-chat-confirmation:primary-20261013-self-01",
+  "approvalExpiresAt": "2026-10-13T13:50:03.310Z",
+  "planSha256": "6addb92e6c1b00d23155211c10d6561b9083b50b9cd1ed50c666069bb3272b21",
+  "packageSha256": "792f3121c8d88231a7d7faf20e9dd55ff0e77de023c6cdf4f2acd666cb914615",
+  "proofSha256": "9aaec0d29a9480d314e1f016b12f01c5301e891620da7fdbc54f73bddbfb802f",
+  "alternativeBasisAccepted": true,
+  "authorizationBasis": "owner-verified-role-and-pinned-caller/1",
+  "principalSourceConfirmed": false,
+  "bindingPolicyVersion": "cloud-role-binding/1",
+  "expectedStableIdentityDigest": "87640b24a884160905abcf1403489fde763d481758752cffecff3e79e9f33b90",
+  "runnerSha256": "8b9a6d79d2136b6a5ec4e004b2b7bc0d8150abfc688c4d2dff4df6fe844c922e",
+  "writeScope": [
+    "initializePrimary"
+  ],
+  "invocationAt": "2026-10-13T13:42:09.602Z",
+  "noDependencyInjection": true,
+  "platformSuccessNotYetKnown": true
+}
