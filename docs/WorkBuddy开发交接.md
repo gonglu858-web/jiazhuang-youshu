@@ -1,3 +1,13 @@
+## 2026-10-13 管理员稳定身份接线 R1/R2 事实记录收尾完成（自测通过、待 Codex 复核）
+
+依据 docs/Codex复核-管理员稳定身份与会话最小接线-20261013.md（复核提交 9e62eba，受审实现 4d63f8d）完成两项事实记录定点收尾，仅本地离线实现与自测。
+
+- **R1（host）**：`verifyCallerSubject` 拆出内部实现并恒返回 `attempted` 事实——在实际启动子进程后置 true（非零退出/解析失败也保留），参数/快照/隔离目录等本地前置失败未尝试启动保持 false；首次完整 STS 与第二次完整 STS 的所有早退及时合并 `cloudCallAttempted`。不把「调用已尝试」等同「请求已到平台」；不改已关闭的 spawnBounded。相称断言：首段不匹配、坏形状 IDENT_UNPARSEABLE、非零退出均 `cloudCallAttempted=true` 且零 worker/零事务；helper 直调对照未启动保持 false。
+- **R2（host）**：`stableIdentityMatched` 定义为无阶段限定的**最终**结论——仅在第二次完整 STS（及其后同一快照复核）通过时为 true；第二次不匹配（换 PrincipalId/换角色）撤销为 false；仅会话变化而稳定主体一致时保留 true 且 `sessionContinuityConfirmed=false`（SESSION_CONTINUITY_BROKEN 不变）。首次通过的**分阶段**事实记入新字段 `firstIdentityCheckMatched`（终态白名单 34→35 项）。报告初始化即显式布尔，早退路径投影不再出现 null。返回报告与 FAILED/COMPLETED 终态逐项交叉一致。
+- **证据**：新脚本 `docs/证据/管理员身份事实记录收尾-20261013.cjs`（10/10）——默认仅 stdout，`--out` wx 独占新建不覆盖；`reviewedCommit` 不硬编码，运行时记录受测实现内容指纹（批准指纹 5 文件 SHA-256）；全程守卫探针 5 通道各 1、业务意外尝试 0；真实登录目录 fs 虚拟化零触达。历史证据原样保留；顺带更正上轮证据脚本头部一处过期依据提交号注释（ff5ef5f）。
+- 未改：身份解析/摘要/批准互斥/五 API 顺序等已通过部分不重做；P4、worker、SDK 适配器、凭据宿主、只读链、计时器、登记工具、页面、云函数/vendor、历史证据均不改。approved-run 仅配合白名单新增一事实字段。
+- 实测：相称测试 53→61 项全过；回归 host 91 项（90 过 1 跳过）、P4 bootstrap 45 项（40 过 5 跳过）均 0 失败；新证据 10/10。未联网、未取真实凭据、未读认证内容、未写库/初始化/再次登记/部署；不生成生产批准、不复用 v2 失败轮次。真实写入仍须只读基线、新执行包与用户确认。
+
 ## 2026-10-13 Codex复核：稳定身份接线4d63f8d，控制通过、两处事实待修
 
 - 依据：docs/Codex复核-管理员稳定身份与会话最小接线-20261013.md。解析/摘要分离/批准互斥/五API正向及不匹配零worker、零事务通过；暂不整体关闭。

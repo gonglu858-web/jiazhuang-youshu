@@ -617,7 +617,18 @@ function callerTupleDigest(sts) {
  * （`parseCliJson`）与 STS 字段检查（字段名对齐已验收投影）。
  * 只在内存取得四个字段并算摘要；**不修改旧观测器的输出契约**，不重写计时器。
  */
+/**
+ * R1（2026-10-13 复核 §2）：对外包装 —— 返回结果恒带 `attempted` 事实。
+ * 内部实现仅在**实际启动子进程**后置 attempted=true（含非零退出/解析失败）；
+ * 参数/快照/隔离目录等本地前置失败未尝试启动时保持 false。
+ * 「调用已尝试」不等同「请求已到达平台」。
+ */
 async function verifyCallerSubject(snapshot, deps) {
+  const r = await verifyCallerSubjectInner(snapshot, deps);
+  return Object.assign({ attempted: false }, r);
+}
+
+async function verifyCallerSubjectInner(snapshot, deps) {
   const d = deps || {};
   const cryptoMod = d.crypto || crypto;
   const spawnFn = d.spawn;
@@ -660,6 +671,8 @@ async function verifyCallerSubject(snapshot, deps) {
     return { ok: false, errorCode: ERR.STS_FIELD_MISSING, reason: 'STS_STAGE_ABSENT' };
   }
   const apiArgs = cliObserver.buildStageArgs(stage, cliObserver.FIXED);
+  // R1：自此已实际尝试启动子进程（后续失败也须保留「调用已尝试」事实）
+  const spawnAttempted = true;
   const r = await cliObserver.spawnBounded(
     cliObserver.FIXED.nodeBin,
     [cliObserver.FIXED.cliEntry, ...apiArgs],
@@ -671,13 +684,13 @@ async function verifyCallerSubject(snapshot, deps) {
   );
   if (r.spawnError || r.timedOut || r.overflow || r.closeNotObserved ||
     r.code === null || r.code === undefined || r.code !== 0) {
-    return { ok: false, errorCode: ERR.CLI_ASSOCIATION_FAILED, reason: 'STS_CALL_FAILED' };
+    return { ok: false, errorCode: ERR.CLI_ASSOCIATION_FAILED, reason: 'STS_CALL_FAILED', attempted: spawnAttempted };
   }
   let payload;
   try {
     payload = cliObserver.parseCliJson(r.stdout, stage.service, stage.action);
   } catch (_) {
-    return { ok: false, errorCode: ERR.STS_FIELD_MISSING, reason: 'STS_PARSE_FAILED' };
+    return { ok: false, errorCode: ERR.STS_FIELD_MISSING, reason: 'STS_PARSE_FAILED', attempted: spawnAttempted };
   }
   const data = isPlainObject(payload) && isPlainObject(payload.data) ? payload.data : payload;
   /**
@@ -706,6 +719,7 @@ async function verifyCallerSubject(snapshot, deps) {
     // 2026-10-12 身份绑定方案：完整 STS 数据仅限内存传给身份解析模块
     // （稳定身份/会话摘要计算）；**不落报告、不持久化**。
     stsData: data,
+    attempted: spawnAttempted,
     accountIdSha256: sts.accountIdSha256,
     accountIdTail: sts.accountIdTail,
     requestId: typeof sts.requestId === 'string' ? sts.requestId : null
@@ -819,6 +833,12 @@ async function executeOnce(options) {
     credentialFetched: false,
     cloudCallAttempted: false,
     workerStarted: false,
+    // R2（2026-10-13 复核 §3）：身份匹配事实全程为显式布尔（早退路径投影
+    // 不得出现 null）；`stableIdentityMatched` 是无阶段限定的**最终**结论，
+    // 仅在第二次完整核对（及其后同一快照复核）通过时为 true。
+    firstIdentityCheckMatched: false,
+    stableIdentityMatched: false,
+    sessionContinuityConfirmed: false,
     stages: [],
     incomplete: []
   };
@@ -1036,6 +1056,11 @@ async function executeOnce(options) {
       isolationDir,
       limits: effectiveDeps.isRealMode ? undefined : o.limits
     });
+    // R1（2026-10-13 复核 §2）：首次 STS 实际尝试后，任何早退都必须保留
+    // 「调用已尝试」事实（不把尝试等同请求已到平台）；真正未启动才保持 false。
+    if (firstIdentity.attempted === true) {
+      report.cloudCallAttempted = true;
+    }
     if (!firstIdentity.ok) {
       report.stoppedAt = 'firstIdentityCheck';
       report.errorCode = firstIdentity.errorCode;
@@ -1055,14 +1080,19 @@ async function executeOnce(options) {
       return report;
     }
     if (stableDigest !== approvalCheck.expectedStableIdentityDigest) {
-      // 稳定身份与事先批准不一致 → 停止，不从当前响应补齐预期
+      // 稳定身份与事先批准不一致 → 停止，不从当前响应补齐预期。
+      // R2：此处最终 stableIdentityMatched 保持 false（不再被首次通过置 true）。
       report.stoppedAt = 'stableIdentity';
       report.errorCode = ERR.STABLE_IDENTITY_MISMATCH;
+      report.stableIdentityMatched = false;
       report.incomplete.push('当次稳定云主体与批准绑定不一致；未发起后续动作。');
       return report;
     }
     sessionWitness = sessionDigestValue;
-    report.stableIdentityMatched = true;
+    // R2（2026-10-13 复核 §3）：首次通过只记**分阶段**事实；无阶段限定的
+    // `stableIdentityMatched`（最终匹配结论）须等第二次完整核对通过才置 true，
+    // 避免末次不匹配早退后与终态矛盾。
+    report.firstIdentityCheckMatched = true;
     report.stages.push('firstIdentityCheck');
   }
 
@@ -1099,6 +1129,8 @@ async function executeOnce(options) {
     limits: effectiveDeps.isRealMode ? undefined : o.limits
   });
   if (!subject.ok) {
+    // R1：第二次 STS 实际尝试后同样保留「调用已尝试」事实
+    if (subject.attempted === true) report.cloudCallAttempted = true;
     report.stoppedAt = 'callerSubject';
     report.errorCode = subject.errorCode;
     report.incomplete.push('当次云主体核验未通过；未进入事务。');
@@ -1117,11 +1149,16 @@ async function executeOnce(options) {
       return report;
     }
     if (stableDigest !== approvalCheck.expectedStableIdentityDigest) {
+      // R2：第二次稳定身份不匹配 → 撤销最终匹配结论（首次通过只记分阶段事实）
       report.stoppedAt = 'stableIdentity';
       report.errorCode = ERR.STABLE_IDENTITY_MISMATCH;
+      report.stableIdentityMatched = false;
       report.incomplete.push('第二次完整核对的稳定云主体与批准绑定不一致；未进入事务。');
       return report;
     }
+    // R2：稳定主体已与批准一致 —— 最终匹配结论此时才成立；若仅会话变化，
+    // 稳定匹配事实保留 true，会话连续性不置 true。
+    report.stableIdentityMatched = true;
     if (sessionWitness === null || sessionDigestValue !== sessionWitness) {
       // 同轮会话变化 → 在启动 worker 前拒绝；不自动刷新或重取凭据
       report.stoppedAt = 'sessionContinuity';
@@ -1211,12 +1248,15 @@ async function executeOnce(options) {
       return report;
     }
     if (stableDigestNow !== approvalCheck.expectedStableIdentityDigest) {
+      // R2：同一快照复核若发现稳定身份不一致，撤销最终匹配结论
       report.stoppedAt = 'stableIdentity';
       report.errorCode = ERR.STABLE_IDENTITY_MISMATCH;
+      report.stableIdentityMatched = false;
       report.incomplete.push('启动前复核发现稳定云主体与批准绑定不一致；未启动写 worker。');
       return report;
     }
     if (sessionWitness === null || sessionDigestNow !== sessionWitness) {
+      // R2：仅会话变化时稳定匹配事实保留 true，会话连续性不置 true
       report.stoppedAt = 'sessionContinuity';
       report.errorCode = ERR.SESSION_CONTINUITY_BROKEN;
       report.incomplete.push('启动前复核发现执行会话与本轮见证不一致；未启动写 worker。');
@@ -1532,6 +1572,8 @@ function reportExecutionFacts(report) {
     credentialFailureClass: report.credentialFailureClass,
     // 2026-10-12 身份绑定方案：固定枚举与核对结论（不含身份原值/会话名）
     bindingPolicyVersion: report.bindingPolicyVersion,
+    // R2（2026-10-13 复核 §3）：分阶段事实与最终结论分开投影
+    firstIdentityCheckMatched: report.firstIdentityCheckMatched === true,
     stableIdentityMatched: report.stableIdentityMatched === true,
     sessionContinuityConfirmed: report.sessionContinuityConfirmed === true
   };

@@ -157,7 +157,10 @@ const TERMINAL_FIELDS = Object.freeze([
   'credentialSourceMode', 'fixedRealSourceUsed', 'realModeOfflineHarness',
   'credentialFailureClass',
   // 2026-10-12 身份绑定方案：固定枚举与核对结论（不含身份原值/会话名）
-  'bindingPolicyVersion', 'stableIdentityMatched', 'sessionContinuityConfirmed',
+  'bindingPolicyVersion',
+  // R2（2026-10-13 复核 §3）：首次完整 STS 的分阶段匹配事实（与最终结论分开）
+  'firstIdentityCheckMatched',
+  'stableIdentityMatched', 'sessionContinuityConfirmed',
   'resultPersisted', 'unknownPersisted'
 ]);
 

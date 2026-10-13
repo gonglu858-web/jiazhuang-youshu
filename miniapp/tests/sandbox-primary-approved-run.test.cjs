@@ -1347,8 +1347,8 @@ test('E-7 S2/S3 对照：正常保存完整链 —— 保存恰一次、文件�
 });
 
 test('E-8 S3：RESULT_UNKNOWN 与 FAILED 记录的保存标记各按实际类型；TERMINAL_FIELDS 口径固定 34 项', async () => {
-  assert.equal(approvedRun.TERMINAL_FIELDS.length, 34,
-    '统计口径：业务字段 34 项（含身份绑定三事实；另有 recordType/runId/savedAt/status/fingerprint 元字段）');
+  assert.equal(approvedRun.TERMINAL_FIELDS.length, 35,
+    '统计口径：业务字段 35 项（含身份绑定四事实；另有 recordType/runId/savedAt/status/fingerprint 元字段）');
   // 未知结果（worker 超时）
   const fxU = offlineChain({
     tag: 'e8u', runId: 'E8-UNK-0001',
@@ -1767,7 +1767,7 @@ test('G-6 同轮会话变化 → 第二次完整 STS 后、启动 worker 前拒�
     assert.equal(r.result.stoppedAt, 'sessionContinuity');
     assert.equal(r.result.errorCode, host.ERR.SESSION_CONTINUITY_BROKEN);
     assert.equal(r.result.stableIdentityMatched, true, '首次稳定身份已匹配');
-    assert.equal(r.result.sessionContinuityConfirmed ?? null, null, '会话连续性未确认');
+    assert.equal(r.result.sessionContinuityConfirmed, false, '会话连续性未确认（显式布尔）');
     assert.equal(fx.captured.credentialFetches, 1, '不自动取第二批凭据');
     assert.equal(fx.captured.apiCalls.length, 5, '两次完整 STS + 三阶段关联都已发生');
     assert.equal(fx.tr.counts().commit, 0, '零事务');
@@ -1864,4 +1864,187 @@ test('G-8 真实模式（模块级离线装配）新版绑定正向：五条 API
   } finally {
     uninstall(); fsv.restore(); tr.restore();
   }
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// H：R1/R2 事实记录收尾（调用尝试事实 / 分阶段与最终匹配结论）
+// ══════════════════════════════════════════════════════════════════════
+
+test('H-1 R1：首次 STS 实际尝试后身份不匹配 → cloudCallAttempted=true（零 worker 零事务）', async () => {
+  const otherRole = { ...G_STS_A, UserId: '4616873507:' + G_SESSION_A,
+    Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/4616873507' };
+  const fx = offlineChain({
+    tag: 'h1', runId: 'H1-FIRSTMM-001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: identityBinding.stableIdentityDigest(otherRole)
+    },
+    cliOpts: { stsResponses: [G_STS_A] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.result.errorCode, host.ERR.STABLE_IDENTITY_MISMATCH);
+    assert.equal(r.result.cloudCallAttempted, true, '已实际尝试 STS 调用，事实不得丢失');
+    assert.equal(fx.tr.counts().commit, 0);
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'H1-FIRSTMM-001.FAILED.json'), 'utf8'));
+    assert.equal(terminal.stableIdentityMatched, false, 'R2：首次不匹配时最终结论 false');
+    assert.equal(terminal.firstIdentityCheckMatched, false);
+  } finally { fx.tr.restore(); }
+});
+
+test('H-2 R1：首次 STS 收到响应但身份坏形状（IDENT_UNPARSEABLE）→ cloudCallAttempted=true', async () => {
+  const badShape = { ...G_STS_A, UserId: 'no-colon-value' }; // assertSts 通过、收窄契约拒绝
+  const fx = offlineChain({
+    tag: 'h2', runId: 'H2-FIRSTBAD-001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [badShape] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.result.stoppedAt, 'firstIdentityCheck');
+    assert.equal(r.result.errorCode, host.ERR.IDENT_UNPARSEABLE);
+    assert.equal(r.result.cloudCallAttempted, true, '已收到响应并解析拒绝，尝试事实保留');
+    assert.equal(fx.tr.counts().commit, 0);
+    assert.equal(r.result.stableIdentityMatched ?? false, false);
+  } finally { fx.tr.restore(); }
+});
+
+test('H-3 R1：首次 STS 非零退出 → 调用尝试事实保留（CLI_ASSOCIATION_FAILED）', async () => {
+  const fx = offlineChain({
+    tag: 'h3', runId: 'H3-STSEXIT-001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [G_STS_A], apiExit: 1 }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.result.stoppedAt, 'firstIdentityCheck');
+    assert.equal(r.result.errorCode, host.ERR.CLI_ASSOCIATION_FAILED);
+    assert.equal(r.result.cloudCallAttempted, true, '子进程已启动（非零退出）→ 尝试事实 true');
+    assert.equal(fx.captured.credentialFetches, 1, '凭据已取得（时点如实）');
+    assert.equal(fx.tr.counts().commit, 0);
+    assert.equal(fs.existsSync(path.join(fx.outDir, 'started',
+      'H3-STSEXIT-001.json')), true);
+  } finally { fx.tr.restore(); }
+});
+
+test('H-4 R1 对照：本地前置失败未尝试启动 → attempted 保持 false（helper 直接调用）', async () => {
+  const noSnapshot = await host.verifyCallerSubject(null, { spawn: () => {} });
+  assert.equal(noSnapshot.ok, false);
+  assert.equal(noSnapshot.attempted, false, '缺快照未尝试启动');
+  const noSpawn = await host.verifyCallerSubject({
+    secretId: 'ID', secretKey: 'KEY', sessionToken: 'TOK'
+  }, {});
+  assert.equal(noSpawn.ok, false);
+  assert.equal(noSpawn.attempted, false, '缺 spawn 未尝试启动');
+});
+
+test('H-5 R2：第二次稳定身份不匹配（仅换 PrincipalId）→ 撤销最终匹配、保留分阶段事实，返回与落盘一致', async () => {
+  const driftPrincipal = { ...G_STS_A, PrincipalId: '999999789012' };
+  const fx = offlineChain({
+    tag: 'h5', runId: 'H5-SECONDBAD-01',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [G_STS_A, G_STS_A, driftPrincipal] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.status, 'FAILED');
+    assert.equal(r.result.stoppedAt, 'stableIdentity');
+    assert.equal(r.result.errorCode, host.ERR.STABLE_IDENTITY_MISMATCH);
+    assert.equal(fx.captured.apiCalls.length, 5, '五条 API 已发生（含第二次完整 STS）');
+    assert.equal(fx.tr.counts().commit, 0, '零事务');
+    // 返回：最终匹配撤销、分阶段事实保留
+    assert.equal(r.result.stableIdentityMatched, false, 'R2：最终匹配结论撤销');
+    assert.equal(r.result.firstIdentityCheckMatched, true, 'R2：首次已匹配的分阶段事实保留');
+    // 落盘与返回交叉一致
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'H5-SECONDBAD-01.FAILED.json'), 'utf8'));
+    assert.equal(terminal.errorCode, host.ERR.STABLE_IDENTITY_MISMATCH);
+    assert.equal(terminal.stableIdentityMatched, false, 'R2：终态不再记 true');
+    assert.equal(terminal.firstIdentityCheckMatched, true);
+    assert.equal(r.result.stableIdentityMatched, terminal.stableIdentityMatched);
+  } finally { fx.tr.restore(); }
+});
+
+test('H-6 R2：第二次稳定身份不匹配（换角色）→ 同样撤销最终匹配、零 worker 零事务', async () => {
+  const driftRole = { ...G_STS_A, UserId: '4616873507:' + G_SESSION_A,
+    Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/4616873507' };
+  const fx = offlineChain({
+    tag: 'h6', runId: 'H6-SECROLE-001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [G_STS_A, G_STS_A, driftRole] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.result.stoppedAt, 'stableIdentity');
+    assert.equal(r.result.errorCode, host.ERR.STABLE_IDENTITY_MISMATCH);
+    assert.equal(r.result.stableIdentityMatched, false);
+    assert.equal(r.result.firstIdentityCheckMatched, true);
+    assert.equal(fx.tr.counts().commit, 0);
+    assert.equal(fx.tr.counts().primarySet, 0);
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'H6-SECROLE-001.FAILED.json'), 'utf8'));
+    assert.equal(terminal.stableIdentityMatched, false);
+    assert.equal(terminal.firstIdentityCheckMatched, true);
+  } finally { fx.tr.restore(); }
+});
+
+test('H-7 R2：仅会话变化而稳定主体一致 → 稳定匹配事实 true、会话连续性 false（返回与落盘一致）', async () => {
+  const fx = offlineChain({
+    tag: 'h7', runId: 'H7-SESSDRFT-01',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [G_STS_A, G_STS_A, G_STS_B] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.status, 'FAILED');
+    assert.equal(r.result.stoppedAt, 'sessionContinuity');
+    assert.equal(r.result.errorCode, host.ERR.SESSION_CONTINUITY_BROKEN);
+    assert.equal(r.result.stableIdentityMatched, true, 'R2：稳定主体仍一致 → 保留 true');
+    assert.equal(r.result.firstIdentityCheckMatched, true);
+    assert.equal(r.result.sessionContinuityConfirmed ?? false, false, '会话核对失败不得 true');
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'H7-SESSDRFT-01.FAILED.json'), 'utf8'));
+    assert.equal(terminal.stableIdentityMatched, true);
+    assert.equal(terminal.firstIdentityCheckMatched, true);
+    assert.equal(terminal.sessionContinuityConfirmed, false);
+  } finally { fx.tr.restore(); }
+});
+
+test('H-8 R2 正向：三种匹配事实均为 true（返回与落盘交叉一致）', async () => {
+  const fx = offlineChain({
+    tag: 'h8', runId: 'H8-OK-0000001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [G_STS_A] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.status, 'COMPLETED');
+    assert.equal(r.result.firstIdentityCheckMatched, true);
+    assert.equal(r.result.stableIdentityMatched, true);
+    assert.equal(r.result.sessionContinuityConfirmed, true);
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'H8-OK-0000001.COMPLETED.json'), 'utf8'));
+    assert.equal(terminal.firstIdentityCheckMatched, true);
+    assert.equal(terminal.stableIdentityMatched, true);
+    assert.equal(terminal.sessionContinuityConfirmed, true);
+  } finally { fx.tr.restore(); }
 });
