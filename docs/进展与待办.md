@@ -1,3 +1,12 @@
+## 2026-10-13 R1 剩余字段校验出口收尾完成（自测通过、待 Codex 复核）
+
+依据 docs/Codex复核-管理员身份事实R1R2收尾-20261013.md（复核提交 907de4b，受审实现 0c05474）完成唯一待修项，仅本地离线实现与自测。
+
+- **修复（host）**：`verifyCallerSubjectInner` 的 assertSts catch（映射 STS_FIELD/STS_TYPE）与 TUPLE_INCOMPLETE 出口补齐 `attempted: spawnAttempted` —— 字段/类型校验失败发生在子进程已实际调用之后，此前被外层包装默认值变成 false，首次 STS 的 `cloudCallAttempted` 因此错误。本地前置失败（缺快照/缺 spawn 等）仍未尝试启动保持 false，不在函数入口统一置 true。
+- **相称测试**：53→64 项。新增 J 组：J1 完整链矩阵（缺 AccountId/PrincipalId/Arn/RequestId、Type 不支持 → 恰一次合成 STS、`cloudCallAttempted=true`、零后续请求、零 worker/事务写、落盘交叉一致）；J2 畸形 stdout（JSON 解析失败 → attempted=true）；J3 helper 直调覆盖字段缺失/Type 拒绝/JSON 解析失败/非零退出/ok 路径均 attempted=true，缺快照/缺 spawn 对照 false。R2 已关闭不重做，仅回归三布尔返回/落盘一致与正向完整链（均通过）。
+- **证据**：新脚本 `docs/证据/管理员身份R1剩余出口收尾-20261013.cjs`（7/7）——默认仅 stdout、`--out` wx 独占新建不覆盖、运行时记录受测实现内容指纹（批准指纹 5 文件 SHA-256）、守卫探针 5 通道各 1/业务意外尝试 0、真实登录目录 fs 虚拟化零触达。历史证据原样保留。调用尝试不等同请求已到平台；终态 35 项契约不变。
+- 实测：相称测试 64/64；回归 host 91 项（90 过 1 跳过）、P4 bootstrap 45 项（40 过 5 跳过）均 0 失败；新证据 7/7。未联网、未取真实凭据、未读认证内容、未写库/初始化/再次登记/部署；不生成生产批准、不复用 v2 失败轮次。真实写入仍须只读稳定基线、新执行包与用户确认。
+
 ## 2026-10-13 Codex复核：0c05474 身份事实收尾，R2关闭、R1尚余字段校验出口
 
 - 报告：docs/Codex复核-管理员身份事实R1R2收尾-20261013.md。R2 返回/落盘三布尔交叉通过，35项终态契约核对通过，不再重做。

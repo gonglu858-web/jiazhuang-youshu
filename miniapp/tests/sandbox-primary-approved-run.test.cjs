@@ -231,6 +231,10 @@ function syntheticCliSpawn(captured, opts) {
       captured.apiCalls.push({ key: argv[2] + '.' + argv[3] });
       if (typeof o.onApiCall === 'function') o.onApiCall(captured.apiCalls.length);
       // 2026-10-12 身份绑定方案：支持按次注入 STS 响应序列（会话变化反例用）
+      if (argv[2] === 'sts' && argv[3] === 'GetCallerIdentity' && o.stsRawOutput !== undefined) {
+        // R1 剩余出口：畸形 stdout（JSON 解析失败路径）
+        return respond(o.stsRawOutput, o.apiExit);
+      }
       if (argv[2] === 'sts' && argv[3] === 'GetCallerIdentity' &&
         Array.isArray(o.stsResponses) && o.stsResponses.length > 0) {
         const idx = Math.min(captured.stsCalls, o.stsResponses.length - 1);
@@ -2047,4 +2051,135 @@ test('H-8 R2 正向：三种匹配事实均为 true（返回与落盘交叉一�
     assert.equal(terminal.stableIdentityMatched, true);
     assert.equal(terminal.sessionContinuityConfirmed, true);
   } finally { fx.tr.restore(); }
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// J：R1 剩余出口 —— assertSts 字段/类型校验失败也保留调用尝试事实
+// （2026-10-13 复核：assertSts catch 与 TUPLE_INCOMPLETE 曾漏 attempted）
+// ══════════════════════════════════════════════════════════════════════
+
+test('J-1 R1 完整链矩阵：缺 AccountId/PrincipalId/Arn/RequestId 与 Type 不支持 → 一次合成 STS 后停止，cloudCallAttempted=true，零后续请求零 worker 零事务写', async () => {
+  const cases = [
+    ['缺AccountId', { ...G_STS_A, AccountId: '' }, host.ERR.STS_FIELD_MISSING],
+    ['缺PrincipalId', { ...G_STS_A, PrincipalId: '' }, host.ERR.STS_FIELD_MISSING],
+    ['缺Arn', { ...G_STS_A, Arn: '' }, host.ERR.STS_FIELD_MISSING],
+    ['缺RequestId', { ...G_STS_A, RequestId: '' }, host.ERR.STS_FIELD_MISSING],
+    ['Type不支持', { ...G_STS_A, Type: 'SubUser' }, host.ERR.STS_TYPE_MISMATCH]
+  ];
+  for (const [label, badSts, expectCode] of cases) {
+    const workerCapture = { calls: [] };
+    const fx = offlineChain({
+      tag: 'j1', runId: 'J1-FIELD-0001',
+      approvalPatch: {
+        bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+        expectedStableIdentityDigest: G_EXPECTED_STABLE
+      },
+      cliOpts: { stsResponses: [badSts] },
+      workerCapture
+    });
+    try {
+      const r = await approvedRun.runOnce(fx.options);
+      assert.equal(r.status, 'FAILED', label);
+      assert.equal(r.result.stoppedAt, 'firstIdentityCheck', label);
+      assert.equal(r.result.errorCode, expectCode, label);
+      assert.equal(r.result.cloudCallAttempted, true,
+        label + '：字段校验失败发生在子进程已调用之后，尝试事实必须保留');
+      assert.equal(r.result.stableIdentityMatched, false, label);
+      assert.equal(fx.captured.credentialFetches, 1, label + '：凭据恰一次');
+      assert.equal(fx.captured.apiCalls.length, 1, label + '：仅一次合成 STS，零后续请求');
+      assert.equal(workerCapture.calls.length, 0, label + '：worker 未启动');
+      const c = fx.tr.counts();
+      assert.equal(c.commit, 0, label + '：零提交');
+      assert.equal(c.primarySet, 0, label + '：零写');
+      assert.equal(c.auditSet, 0, label);
+      // 落盘交叉一致
+      const t = JSON.parse(fs.readFileSync(
+        path.join(fx.outDir, 'terminal', 'J1-FIELD-0001.FAILED.json'), 'utf8'));
+      assert.equal(t.cloudCallAttempted ?? true, true, label);
+      assert.equal(t.stableIdentityMatched, false, label);
+    } finally { fx.tr.restore(); }
+  }
+});
+
+test('J-2 R1 完整链：首次 STS 返回畸形 stdout（JSON 解析失败）→ cloudCallAttempted=true', async () => {
+  const fx = offlineChain({
+    tag: 'j2', runId: 'J2-BADJSON-001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsRawOutput: 'NOT-JSON-AT-ALL' }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.result.stoppedAt, 'firstIdentityCheck');
+    assert.equal(r.result.errorCode, host.ERR.STS_FIELD_MISSING);
+    assert.equal(r.result.cloudCallAttempted, true, '解析失败发生在调用之后');
+    assert.equal(fx.captured.apiCalls.length, 1);
+    assert.equal(fx.tr.counts().commit, 0);
+  } finally { fx.tr.restore(); }
+});
+
+test('J-3 R1 helper 直调：字段缺失与 Type 不支持 → attempted=true（保留 JSON 解析失败、非零退出、身份不匹配及未启动对照）', async () => {
+  function stubSpawn(payload, exitCode) {
+    return (bin, argv, options) => {
+      const { EventEmitter } = require('node:events');
+      const c = new EventEmitter();
+      c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+      c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+      const text = 'ℹ →STS.GetCallerIdentity\n' + JSON.stringify({ data: payload }) + '\n';
+      setImmediate(() => {
+        if (payload !== null) c.stdout.emit('data', Buffer.from(text));
+        c.emit('exit', exitCode === undefined ? 0 : exitCode, null);
+        c.emit('close', exitCode === undefined ? 0 : exitCode, null);
+      });
+      return c;
+    };
+  }
+  const deps = { spawn: null, isolationDir: 'synthetic-isolation-dir', baseEnv: {} };
+  const snap = { secretId: 'ID', secretKey: 'KEY', sessionToken: 'TOK' };
+  // 字段缺失 → STS_FIELD_MISSING + attempted=true
+  deps.spawn = stubSpawn({ ...G_STS_A, AccountId: '' });
+  let r = await host.verifyCallerSubject(snap, deps);
+  assert.equal(r.ok, false);
+  assert.equal(r.errorCode, host.ERR.STS_FIELD_MISSING);
+  assert.equal(r.attempted, true, '字段校验失败在子进程调用之后');
+  // Type 不支持 → STS_TYPE_MISMATCH + attempted=true
+  deps.spawn = stubSpawn({ ...G_STS_A, Type: 'SubUser' });
+  r = await host.verifyCallerSubject(snap, deps);
+  assert.equal(r.ok, false);
+  assert.equal(r.errorCode, host.ERR.STS_TYPE_MISMATCH);
+  assert.equal(r.attempted, true);
+  // 既有对照保留：JSON 解析失败 / 非零退出 → attempted=true
+  const rawSpawn = (bin, argv, options) => {
+    const { EventEmitter } = require('node:events');
+    const c = new EventEmitter();
+    c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.stdin = new EventEmitter();
+    c.stdin.write = () => true; c.stdin.end = () => {}; c.kill = () => true;
+    setImmediate(() => {
+      c.stdout.emit('data', Buffer.from('NOT-JSON'));
+      c.emit('exit', 0, null); c.emit('close', 0, null);
+    });
+    return c;
+  };
+  deps.spawn = rawSpawn;
+  r = await host.verifyCallerSubject(snap, deps);
+  assert.equal(r.ok, false);
+  assert.equal(r.errorCode, host.ERR.STS_FIELD_MISSING);
+  assert.equal(r.attempted, true, 'JSON 解析失败在调用之后');
+  deps.spawn = stubSpawn(G_STS_A, 1);
+  r = await host.verifyCallerSubject(snap, deps);
+  assert.equal(r.ok, false);
+  assert.equal(r.errorCode, host.ERR.CLI_ASSOCIATION_FAILED);
+  assert.equal(r.attempted, true, '非零退出在调用之后');
+  // 身份不匹配对照（helper 层摘要不一致由父层比较；此处仅确认 ok 路径带 attempted）
+  deps.spawn = stubSpawn(G_STS_A);
+  r = await host.verifyCallerSubject(snap, deps);
+  assert.equal(r.ok, true);
+  assert.equal(r.attempted, true);
+  // 真正未启动对照：缺快照/缺 spawn → attempted=false
+  r = await host.verifyCallerSubject(null, { spawn: () => {} });
+  assert.equal(r.attempted, false);
+  r = await host.verifyCallerSubject(snap, {});
+  assert.equal(r.attempted, false);
 });

@@ -701,18 +701,22 @@ async function verifyCallerSubjectInner(snapshot, deps) {
   try {
     sts = cliObserver.assertSts(data, cryptoMod, 'extraSts');
   } catch (_) {
-    // assertSts 的错误码是既有常量；映射到本宿主固定码，不外传其 message
+    // assertSts 的错误码是既有常量；映射到本宿主固定码，不外传其 message。
+    // R1 剩余出口（2026-10-13 复核）：子进程已实际调用，字段/类型校验失败
+    // 同样必须保留「调用已尝试」事实（此前此处漏 attempted，被外层默认 false）。
     const typeBad = isPlainObject(data) && data.Type !== cliObserver.FIXED.acceptedStsType;
     return {
       ok: false,
       errorCode: typeBad ? ERR.STS_TYPE_MISMATCH : ERR.STS_FIELD_MISSING,
-      reason: typeBad ? 'STS_TYPE' : 'STS_FIELD'
+      reason: typeBad ? 'STS_TYPE' : 'STS_FIELD',
+      attempted: spawnAttempted
     };
   }
   // 完整主体元组摘要（原值只在内存）
   const digest = callerTupleDigest(data);
   if (digest === null) {
-    return { ok: false, errorCode: ERR.CALLER_SUBJECT_UNVERIFIED, reason: 'TUPLE_INCOMPLETE' };
+    // R1 剩余出口：元组不完整同样发生在子进程已调用之后，保留尝试事实
+    return { ok: false, errorCode: ERR.CALLER_SUBJECT_UNVERIFIED, reason: 'TUPLE_INCOMPLETE', attempted: spawnAttempted };
   }
   return {
     ok: true, errorCode: null, subjectDigest: digest,
