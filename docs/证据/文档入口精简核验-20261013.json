@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-13",
+  "scope": "仅文档入口整理及本地只读指纹核验",
+  "baselineCommit": "31d10983c10991f94057fc88e8feb3530d3ea852",
+  "branch": "master",
+  "baselineWorktreeClean": true,
+  "originalDocumentCount": 878,
+  "originalDocumentManifestSha256": "41f6da35fba0f0d633e9792ebeb35681ef157180e00574512d0eb20c4eec25cd",
+  "protectedKeyFiles": [
+    {
+      "path": "docs/WorkBuddy开发交接.md",
+      "beforeSha256": "4fcbb1dfb81bf761378b23f7efb0ebec670b44b907483a3859ae16fb9a0cce60",
+      "afterSha256": "4fcbb1dfb81bf761378b23f7efb0ebec670b44b907483a3859ae16fb9a0cce60",
+      "bytes": 405379,
+      "characters": 205604
+    },
+    {
+      "path": "docs/需求与业务规则.md",
+      "beforeSha256": "8712bce422fca93e8229a22304dbd1f20490d40df725644be09f28119a224506",
+      "afterSha256": "8712bce422fca93e8229a22304dbd1f20490d40df725644be09f28119a224506",
+      "bytes": 55987,
+      "characters": 20965
+    },
+    {
+      "path": "docs/进展与待办.md",
+      "beforeSha256": "a47ebce18d7cb9e08874a62018a0c703c825420eea1f06371273cc26a8404f77",
+      "afterSha256": "a47ebce18d7cb9e08874a62018a0c703c825420eea1f06371273cc26a8404f77",
+      "bytes": 730903,
+      "characters": 363473
+    }
+  ],
+  "agentsBeforeSha256": "b417887603f5ef0303e083af1c63ba6ecff7702c1de49774ad5e99d3b45270c0",
+  "agentsAfterSha256": "7a095c013bb57e5af86fdb7ec9c7ad950f64ef8f1b7427666c3c2838bccaa7a6",
+  "newStateCharacters": 1604,
+  "productCodeModified": false,
+  "businessTestsRun": false,
+  "cloudOperationsRun": false,
+  "tokenSavingsMeasured": false,
+  "verificationCommand": "node docs/证据/文档入口精简核验-20261013.cjs",
+  "note": "保存本轮起始文档原字节摘要；新入口事实来源为基线提交的已有文档，不是本轮云端或业务验收。"
+}

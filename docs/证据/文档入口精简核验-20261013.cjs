@@ -1,0 +1,20 @@
+// 仅本地只读核验文档：不查询云端、不修改或恢复文件。
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
+const root = path.resolve(__dirname, '../..');
+const report = JSON.parse(fs.readFileSync(path.join(__dirname, '文档入口精简核验-20261013.json'), 'utf8'));
+const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const originalPaths = execFileSync('git', ['ls-tree', '-r', '--name-only', '-z', report.baselineCommit, '--', 'docs'], { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean);
+const rows = originalPaths.map(p => `${p}:${hash(fs.readFileSync(path.join(root, p)))}`).sort();
+const protectedDocsUnchanged = originalPaths.length === report.originalDocumentCount && hash(rows.join('\n')) === report.originalDocumentManifestSha256;
+const protectedKeyFilesUnchanged = report.protectedKeyFiles.every(item => hash(fs.readFileSync(path.join(root, item.path))) === item.beforeSha256);
+const state = fs.readFileSync(path.join(root, 'docs/当前状态.md'), 'utf8');
+const brokenFileLinks = [...state.matchAll(/\]\(([^)]+)\)/g)].map(m => m[1].split('#')[0]).filter(p => p && !fs.existsSync(path.resolve(root, 'docs', p)));
+const stateLengthWithinBudget = state.length >= 1000 && state.length <= 2000;
+const result = { originalDocumentCount: originalPaths.length, protectedDocsUnchanged, protectedKeyFilesUnchanged, stateCharacters: state.length, stateLengthWithinBudget, brokenFileLinks };
+result.passed = protectedDocsUnchanged && protectedKeyFilesUnchanged && stateLengthWithinBudget && brokenFileLinks.length === 0;
+console.log(JSON.stringify(result, null, 2));
+if (!result.passed) process.exitCode = 1;
