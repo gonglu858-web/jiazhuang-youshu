@@ -1,0 +1,657 @@
+{
+  "reviewedCommit": "e4ee7ee",
+  "reviewBasisCommit": "907de4b",
+  "reviewDate": "2026-10-13",
+  "verification": "REAL_APPLICATION_AND_SDK_LOCAL_CONVERSION_WITH_SYNTHETIC_TRANSPORT",
+  "platformVerified": false,
+  "realCredentialFetches": 0,
+  "productionApprovalIssued": false,
+  "helperFixtureSha256": "dfabf0dd6fe87e845ffc867e0fbb1b7e0cb632e409a3dea5685d970bcaf430c3",
+  "implementation": {
+    "sandbox-primary-execution-host.cjs": "0c0b856a3cd56194047d49b742d3b506d1477b8661333b01f64daa7e8ee7bd58",
+    "sandbox-primary-execution-worker.cjs": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8",
+    "sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "sandbox-identity-binding.cjs": "c110a13deedcbcba426826ad45048a9a2b881bf700ed22a38fe9f3af02cc9a9a"
+  },
+  "entrySha256": "5c765faa2dc8873cc171625111647b084cd407675dd381b74edc78790d0ecade",
+  "checks": [
+    {
+      "name": "exact versioned digest and large decimal preservation",
+      "observed": "4611686018427397919",
+      "pass": true
+    },
+    {
+      "name": "cross-batch session separation",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "strict malformed field matrix",
+      "observed": {
+        "total": 12,
+        "refused": 12
+      },
+      "pass": true
+    },
+    {
+      "name": "full positive five APIs and two writes",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "first mismatch stops before further APIs/worker",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "first attempted STS is reported as attempted",
+      "observed": true,
+      "pass": true
+    },
+    {
+      "name": "second mismatch stops worker",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "second mismatch cannot leave aggregate matched true",
+      "observed": false,
+      "pass": true
+    },
+    {
+      "name": "session change stops worker",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "malformed identity fails closed",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "malformed STS still records attempted call",
+      "observed": true,
+      "pass": true
+    },
+    {
+      "name": "R1 missing AccountId retains attempted fact",
+      "observed": {
+        "attempted": true,
+        "apiCalls": 1,
+        "errorCode": "STS_FIELD_MISSING"
+      },
+      "pass": true
+    },
+    {
+      "name": "R1 missing PrincipalId retains attempted fact",
+      "observed": {
+        "attempted": true,
+        "apiCalls": 1,
+        "errorCode": "STS_FIELD_MISSING"
+      },
+      "pass": true
+    },
+    {
+      "name": "R1 missing Arn retains attempted fact",
+      "observed": {
+        "attempted": true,
+        "apiCalls": 1,
+        "errorCode": "STS_FIELD_MISSING"
+      },
+      "pass": true
+    },
+    {
+      "name": "R1 missing RequestId retains attempted fact",
+      "observed": {
+        "attempted": true,
+        "apiCalls": 1,
+        "errorCode": "STS_FIELD_MISSING"
+      },
+      "pass": true
+    },
+    {
+      "name": "R1 unsupported STS type retains attempted fact",
+      "observed": {
+        "attempted": true,
+        "apiCalls": 1,
+        "errorCode": "STS_TYPE_MISMATCH"
+      },
+      "pass": true
+    },
+    {
+      "name": "all field/type failures remain zero worker and zero transaction writes",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "nonzero exit retains attempted and rejects before worker",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "R2 SECOND_MISMATCH return and saved facts agree",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "R2 SECOND_ROLE return and saved facts agree",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "R2 POSITIVE preserves correct staged facts",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "R2 SESSION_CHANGE preserves correct staged facts",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "all reports and saved records contain explicit boolean identity facts",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "R1 helper field rejection retains attempted after one synthetic spawn",
+      "observed": {
+        "attempted": true,
+        "calls": 1,
+        "errorCode": "STS_FIELD_MISSING"
+      },
+      "pass": true
+    },
+    {
+      "name": "helper JSON parsing rejection retains attempted",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "helper local precondition remains unattempted",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "local precondition missing-spawn makes zero attempts",
+      "observed": {
+        "attempted": false,
+        "reason": "NO_SPAWN",
+        "calls": 0
+      },
+      "pass": true
+    },
+    {
+      "name": "local precondition missing-isolation makes zero attempts",
+      "observed": {
+        "attempted": false,
+        "reason": "NO_ISOLATION_DIR",
+        "calls": 0
+      },
+      "pass": true
+    },
+    {
+      "name": "local precondition invalid-env-snapshot makes zero attempts",
+      "observed": {
+        "attempted": false,
+        "reason": "ENV_SNAPSHOT_MISSING",
+        "calls": 0
+      },
+      "pass": true
+    },
+    {
+      "name": "full-chain JSON failure stops with attempted fact",
+      "observed": null,
+      "pass": true
+    },
+    {
+      "name": "guard counters",
+      "observed": null,
+      "pass": true
+    }
+  ],
+  "cases": [
+    {
+      "name": "POSITIVE",
+      "status": "COMPLETED",
+      "errorCode": null,
+      "stoppedAt": null,
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity",
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 1,
+      "db": {
+        "primarySet": 1,
+        "auditSet": 1,
+        "commit": 1
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": true,
+      "terminalFirstIdentityCheckMatched": true,
+      "terminalSessionContinuityConfirmed": true,
+      "stableIdentityMatched": true,
+      "sessionContinuityConfirmed": true,
+      "terminalStableIdentityMatched": true,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": true,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "FIRST_MISMATCH",
+      "status": "FAILED",
+      "errorCode": "STABLE_IDENTITY_MISMATCH",
+      "stoppedAt": "stableIdentity",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "SECOND_MISMATCH",
+      "status": "FAILED",
+      "errorCode": "STABLE_IDENTITY_MISMATCH",
+      "stoppedAt": "stableIdentity",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity",
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": true,
+      "terminalFirstIdentityCheckMatched": true,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "SESSION_CHANGE",
+      "status": "FAILED",
+      "errorCode": "SESSION_CONTINUITY_BROKEN",
+      "stoppedAt": "sessionContinuity",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity",
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": true,
+      "terminalFirstIdentityCheckMatched": true,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": true,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": true,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "FIRST_BAD",
+      "status": "FAILED",
+      "errorCode": "IDENT_UNPARSEABLE",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "MISSING_AccountId",
+      "status": "FAILED",
+      "errorCode": "STS_FIELD_MISSING",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "MISSING_PrincipalId",
+      "status": "FAILED",
+      "errorCode": "STS_FIELD_MISSING",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "MISSING_Arn",
+      "status": "FAILED",
+      "errorCode": "STS_FIELD_MISSING",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "MISSING_RequestId",
+      "status": "FAILED",
+      "errorCode": "STS_FIELD_MISSING",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "WRONG_TYPE",
+      "status": "FAILED",
+      "errorCode": "STS_TYPE_MISMATCH",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "NONZERO",
+      "status": "FAILED",
+      "errorCode": "CLI_ASSOCIATION_FAILED",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "SECOND_ROLE",
+      "status": "FAILED",
+      "errorCode": "STABLE_IDENTITY_MISMATCH",
+      "stoppedAt": "stableIdentity",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity",
+        "sts.GetCallerIdentity",
+        "tcb.DescribeEnvs",
+        "tcb.DescribeEnvInfo",
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": true,
+      "terminalFirstIdentityCheckMatched": true,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    },
+    {
+      "name": "BAD_JSON_FULL",
+      "status": "FAILED",
+      "errorCode": "STS_FIELD_MISSING",
+      "stoppedAt": "firstIdentityCheck",
+      "credentialFetches": 1,
+      "apiKeys": [
+        "sts.GetCallerIdentity"
+      ],
+      "workerCalls": 0,
+      "db": {
+        "primarySet": 0,
+        "auditSet": 0,
+        "commit": 0
+      },
+      "cloudCallAttempted": true,
+      "firstIdentityCheckMatched": false,
+      "terminalFirstIdentityCheckMatched": false,
+      "terminalSessionContinuityConfirmed": false,
+      "stableIdentityMatched": false,
+      "sessionContinuityConfirmed": false,
+      "terminalStableIdentityMatched": false,
+      "bindingVersion": "cloud-role-binding/1",
+      "startedHasExpectedStableDigest": false,
+      "startedLegacyExpectedIsNull": true,
+      "terminalHasExpectedStableDigest": false,
+      "cliSnapshotAllEqual": true,
+      "workerSnapshotEqual": null,
+      "resultPersisted": true,
+      "unknownPersisted": false
+    }
+  ],
+  "auditObservation": {
+    "expectedStableDigestPersisted": false,
+    "note": "new-policy started keeps version and null legacy digest; expected stable identity is absent from started and terminal"
+  },
+  "guards": {
+    "fixtureUnexpected": {
+      "https": 0,
+      "http": 0,
+      "dns": 0,
+      "net": 0,
+      "cp": 0
+    },
+    "additional": {
+      "probes": 2,
+      "unexpected": 0
+    }
+  },
+  "summary": {
+    "checks": 31,
+    "pass": 31,
+    "findings": []
+  }
+}
