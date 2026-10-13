@@ -1,3 +1,15 @@
+## 2026-10-12 管理员稳定身份与会话最小接线完成（仅本地实现与离线验证，自测通过、待 Codex 复核）
+
+依据 docs/Codex方案-管理员稳定身份与执行会话绑定-20261012.md 与 docs/WorkBuddy任务-管理员稳定身份与会话最小接线-20261012.md（接手参考 master ff5ef5f）。
+
+- **新增纯身份模块** `miniapp/scripts/lib/sandbox-identity-binding.cjs`（零网络/零子进程/零文件访问）：严格解析 CAMRole——恰一个冒号、RoleId/UIN 十进制字符串严格校验并保留原字节（不用 Number，前导零变体不同一）、会话名白名单 `[A-Za-z0-9_+=,.@-]{2,128}`、ARN 收窄形状 `qcs::sts:<AccountId>:assumed-role/<RoleId>` 逐字核对；两类摘要——稳定主体 `["cloud-role-binding/1", Type, AccountId, PrincipalId, RoleId, Arn]`（不含会话名）与会话 `["cloud-role-session/1", Type, AccountId, UserId, PrincipalId, Arn]`。错误码固定枚举、文本净化。**模块已纳入批准指纹 FINGERPRINT_FILES（现 5 文件）**。
+- **host**：批准绑定二选一——旧 `expectedSubjectDigest`（完整四元组，语义不变）或新 `bindingPolicyVersion + expectedStableIdentityDigest`；混用/未知版本/新路径缺摘要均拒（`IDENT_POLICY_MIXED`）。新版执行顺序：一次凭据 → 隔离目录 → **首次完整 STS**（稳定匹配后捕获会话见证，内存内）→ 原三阶段关联（未改）→ 原额外 STS 改为**第二次完整核对**（稳定 + 会话见证均须匹配）→ 既有 started/时效/指纹门槛 → worker 启动前再复核（同一 STS 快照）。同轮会话变化在 worker 前拒绝（`SESSION_CONTINUITY_BROKEN`），不自动刷新/重取；稳定身份不匹配在对应 STS 时点停止（`STABLE_IDENTITY_MISMATCH`），时点如实区分。旧路径 4 条 API 不变；新版 **5 条显式 API**（STS 三条、环境两条）。
+- **approved-run**：started 记录绑定 `bindingPolicyVersion`；终态白名单增三个事实字段（`bindingPolicyVersion`/`stableIdentityMatched`/`sessionContinuityConfirmed`），业务字段 31→34 项（元字段口径不变）；既有排他保存、期限、未知结果、禁止重试语义未动。
+- **测试**：45→53 项（G1 摘要分离、G2 反例矩阵含前导零/尾号、G3 签发互斥、G4 正向 5 API、G5 错配时点、G6 会话漂移 worker 前拒绝、G7 新旧门槛并存、G8 真实模式装配正向）。
+- **证据**：`docs/证据/管理员稳定身份与会话接线-20261012.cjs`——默认仅 stdout；`--out` wx 独占新建不覆盖；`reviewedCommit` 不硬编码，运行时记录受测实现**内容指纹**（批准指纹 5 文件 SHA-256 及合并值）。全程守卫探针 5 通道各 1、业务意外尝试 0；真实登录目录 fs 虚拟化零触达。
+- 未改：P4、worker、SDK 适配器、凭据宿主、只读链、计时器、登记工具、页面、云函数/vendor、历史证据。不生成真实批准，不复用 v2 失败轮次；稳定主体基线未建立（属后续单独只读准备）。
+- 实测：相称测试 53/53；回归 host 91 项（90 过 1 跳过）、P4 bootstrap 45 项（40 过 5 跳过）均 0 失败；新证据 9/9。未联网、未取真实凭据、未读认证内容、未写库/初始化/再次登记/部署。真实写入仍须只读基线、新执行包与用户确认。
+
 ## 2026-10-12 Codex方案：官方身份语义已核实，稳定主体与执行会话分开绑定
 
 - 腾讯云官方 GetCallerIdentity 明确 CAMRole 的 UserId 包含角色ID和会话名；PrincipalId 是申请角色凭据的账号UIN。完整四元组不宜作为跨凭据批次固定身份；不能由此断言此前差异仅由会话变化引起。

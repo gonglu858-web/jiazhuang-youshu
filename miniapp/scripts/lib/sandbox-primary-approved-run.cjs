@@ -156,6 +156,8 @@ const TERMINAL_FIELDS = Object.freeze([
   'reconcile', 'reconcileAttempted', 'reconcileConfirmed',
   'credentialSourceMode', 'fixedRealSourceUsed', 'realModeOfflineHarness',
   'credentialFailureClass',
+  // 2026-10-12 身份绑定方案：固定枚举与核对结论（不含身份原值/会话名）
+  'bindingPolicyVersion', 'stableIdentityMatched', 'sessionContinuityConfirmed',
   'resultPersisted', 'unknownPersisted'
 ]);
 
@@ -222,6 +224,7 @@ async function createStartedExclusive(outDir, runId, meta) {
     approvalExpiresAtMs: meta.approvalExpiresAtMs,
     approvedBy: meta.approvedBy,
     expectedSubjectDigest: meta.expectedSubjectDigest,
+    bindingPolicyVersion: meta.bindingPolicyVersion,
     credentialSourceMode: meta.credentialSourceMode,
     fingerprint: fullFingerprint()
   }, null, 2) + '\n';
@@ -430,7 +433,9 @@ async function runOnce(options) {
     planExpiresAt: boundPlan.expiresAt,
     approvalExpiresAtMs: checked.expiresAtMs,
     approvedBy: o.approvalSource.approvedBy,
-    expectedSubjectDigest: checked.expectedSubjectDigest,
+    expectedSubjectDigest: checked.expectedSubjectDigest || null,
+    // 2026-10-12 身份绑定方案：新版绑定时的策略版本（旧路径为 null）
+    bindingPolicyVersion: checked.bindingPolicyVersion || null,
     credentialSourceMode: mode
   });
   if (!created) {

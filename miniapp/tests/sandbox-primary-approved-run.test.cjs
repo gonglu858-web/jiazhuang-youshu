@@ -66,6 +66,7 @@ const host = require('../scripts/lib/sandbox-primary-execution-host.cjs');
 const worker = require('../scripts/lib/sandbox-primary-execution-worker.cjs');
 const p4 = require('../scripts/lib/sandbox-primary-bootstrap.cjs');
 const approvedRun = require('../scripts/lib/sandbox-primary-approved-run.cjs');
+const identityBinding = require('../scripts/lib/sandbox-identity-binding.cjs');
 const cliObserver = require('../scripts/lib/cloudbase-readonly-observer.cjs');
 const sdkObserver = require('../scripts/lib/cloudbase-sdk-readonly-observer.cjs');
 
@@ -159,17 +160,28 @@ function syntheticApprovalSource(plan, patch) {
     credentialSourceMode: p.credentialSourceMode === undefined
       ? 'offline-fixture' : p.credentialSourceMode
   };
-  if (!('expectedSubjectDigest' in p)) {
-    spec.expectedSubjectDigest = host.callerTupleDigest(SYN_STS);
-  } else if (p.expectedSubjectDigest !== undefined) {
+  // 2026-10-12 身份绑定方案：新版绑定的透传（旧/新互斥由签发与核验保证）
+  const modern = p.bindingPolicyVersion !== undefined ||
+    p.expectedStableIdentityDigest !== undefined;
+  if (p.expectedSubjectDigest !== undefined) {
+    // 显式提供旧摘要时照传（用于互斥反例；签发会拒绝混用）
     spec.expectedSubjectDigest = p.expectedSubjectDigest;
+  } else if (!modern) {
+    spec.expectedSubjectDigest = host.callerTupleDigest(SYN_STS);
+  }
+  if (modern) {
+    if (p.bindingPolicyVersion !== undefined) spec.bindingPolicyVersion = p.bindingPolicyVersion;
+    if (p.expectedStableIdentityDigest !== undefined) {
+      spec.expectedStableIdentityDigest = p.expectedStableIdentityDigest;
+    }
   }
   return host.issueControlledApproval(spec);
 }
 
-function cliStdoutFor(service, action) {
+function cliStdoutFor(service, action, dataOverride) {
   const key = service + '.' + action;
-  const data = key === 'sts.GetCallerIdentity' ? SYN_STS
+  const data = dataOverride !== undefined ? dataOverride
+    : key === 'sts.GetCallerIdentity' ? SYN_STS
     : key === 'tcb.DescribeEnvs'
       ? { EnvList: [{ EnvId: host.FIXED.envId, Status: 'NORMAL', Region: host.FIXED.region }], RequestId: RID }
       : {
@@ -218,6 +230,13 @@ function syntheticCliSpawn(captured, opts) {
     if (argv[1] === 'api') {
       captured.apiCalls.push({ key: argv[2] + '.' + argv[3] });
       if (typeof o.onApiCall === 'function') o.onApiCall(captured.apiCalls.length);
+      // 2026-10-12 身份绑定方案：支持按次注入 STS 响应序列（会话变化反例用）
+      if (argv[2] === 'sts' && argv[3] === 'GetCallerIdentity' &&
+        Array.isArray(o.stsResponses) && o.stsResponses.length > 0) {
+        const idx = Math.min(captured.stsCalls, o.stsResponses.length - 1);
+        captured.stsCalls++;
+        return respond(cliStdoutFor(argv[2], argv[3], o.stsResponses[idx]), o.apiExit);
+      }
       respond(cliStdoutFor(argv[2], argv[3]), o.apiExit);
       return c;
     }
@@ -354,7 +373,7 @@ function freshOutDir(tag) {
 
 function offlineChain(opts) {
   const o = opts || {};
-  const captured = { calls: [], credentialFetches: 0, apiCalls: [] };
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [], stsCalls: 0 };
   const planPatch = Object.assign({}, o.planPatch,
     o.runId ? { roundId: o.runId } : {});
   const plan = syntheticPlan(o.target, planPatch);
@@ -1327,9 +1346,9 @@ test('E-7 S2/S3 对照：正常保存完整链 —— 保存恰一次、文件�
   }
 });
 
-test('E-8 S3：RESULT_UNKNOWN 与 FAILED 记录的保存标记各按实际类型；TERMINAL_FIELDS 口径固定 31 项', async () => {
-  assert.equal(approvedRun.TERMINAL_FIELDS.length, 31,
-    '统计口径：业务字段 31 项（另有 recordType/runId/savedAt/status/fingerprint 元字段）');
+test('E-8 S3：RESULT_UNKNOWN 与 FAILED 记录的保存标记各按实际类型；TERMINAL_FIELDS 口径固定 34 项', async () => {
+  assert.equal(approvedRun.TERMINAL_FIELDS.length, 34,
+    '统计口径：业务字段 34 项（含身份绑定三事实；另有 recordType/runId/savedAt/status/fingerprint 元字段）');
   // 未知结果（worker 超时）
   const fxU = offlineChain({
     tag: 'e8u', runId: 'E8-UNK-0001',
@@ -1529,4 +1548,320 @@ test('F-4 T2：三种终态类型返回报告的持久化标记与文件逐项�
     assert.equal(err.execution.unknownPersisted, false);
     assert.equal(err.execution.commitFactEstablished, true);
   } finally { fs.writeFileSync = origWrite; fxS.tr.restore(); }
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// G：管理员稳定身份与执行会话绑定（2026-10-12 方案 §4–§6）
+// ══════════════════════════════════════════════════════════════════════
+
+/** 形状合法的 CAMRole STS 夹具（RoleId/UIN 为十进制字符串，ARN 收窄形状）。 */
+const G_ROLE_ID = '4616873506';
+const G_ACCOUNT = '123456789012';
+const G_SESSION_A = 'roundA-session-1';
+const G_SESSION_B = 'roundB-session-2';
+function gSts(sessionName) {
+  return {
+    Type: 'CAMRole',
+    AccountId: G_ACCOUNT,
+    UserId: G_ROLE_ID + ':' + sessionName,
+    PrincipalId: G_ACCOUNT,
+    Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/' + G_ROLE_ID,
+    RequestId: RID
+  };
+}
+const G_STS_A = gSts(G_SESSION_A);
+const G_STS_B = gSts(G_SESSION_B); // 同角色/主账号/申请账号，跨批次不同会话
+const G_EXPECTED_STABLE = identityBinding.stableIdentityDigest(G_STS_A);
+
+test('G-1 摘要分离：跨批次会话不同 → 稳定摘要相同、会话摘要不同；单轮两次相同会话可通过', () => {
+  assert.equal(identityBinding.stableIdentityDigest(G_STS_A),
+    identityBinding.stableIdentityDigest(G_STS_B),
+    '稳定摘要不含会话名（跨批次固定预期的输入）');
+  assert.notEqual(identityBinding.sessionDigest(G_STS_A),
+    identityBinding.sessionDigest(G_STS_B), '会话摘要随会话名变化');
+  assert.equal(identityBinding.sessionDigest(G_STS_A),
+    identityBinding.sessionDigest(gSts(G_SESSION_A)), '同会话两次摘要一致');
+  // 摘要输入的版本标识与字段顺序固定（方案 §4.1/§4.2）
+  const id = identityBinding.parseCallerIdentity(G_STS_A);
+  assert.equal(id.roleId, G_ROLE_ID);
+  assert.equal(id.sessionName, G_SESSION_A);
+});
+
+test('G-2 收窄契约反例矩阵：坏类型/空值/多冒号/非法会话/ARN 不一致/前导零/尾号相同均拒绝', () => {
+  const E = identityBinding.ERR;
+  // 坏类型与空值
+  assert.throws(() => identityBinding.parseCallerIdentity({ ...G_STS_A, Type: 'SubUser' }),
+    (e) => e.code === E.TYPE_MISMATCH);
+  assert.throws(() => identityBinding.parseCallerIdentity({ ...G_STS_A, AccountId: '' }),
+    (e) => e.code === E.FIELD_INVALID);
+  assert.throws(() => identityBinding.parseCallerIdentity({ ...G_STS_A, Arn: '' }),
+    (e) => e.code === E.FIELD_INVALID);
+  assert.throws(() => identityBinding.parseCallerIdentity({ ...G_STS_A, AccountId: '12345678901a' }),
+    (e) => e.code === E.FIELD_INVALID);
+  // UserId 形状：无冒号/多冒号/非十进制角色 ID
+  assert.throws(() => identityBinding.parseCallerIdentity({ ...G_STS_A, UserId: G_ROLE_ID }),
+    (e) => e.code === E.USERID_FORMAT);
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...G_STS_A, UserId: G_ROLE_ID + ':a:b' }), (e) => e.code === E.USERID_FORMAT);
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...G_STS_A, UserId: '12ab' + ':sess' }), (e) => e.code === E.USERID_FORMAT);
+  // 会话名：空、超长（129）、非法字符
+  assert.throws(() => identityBinding.parseCallerIdentity({ ...G_STS_A, UserId: G_ROLE_ID + ':' }),
+    (e) => e.code === E.SESSION_NAME_INVALID);
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...G_STS_A, UserId: G_ROLE_ID + ':' + 'a'.repeat(129) }),
+    (e) => e.code === E.SESSION_NAME_INVALID);
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...G_STS_A, UserId: G_ROLE_ID + ':bad*name' }),
+    (e) => e.code === E.SESSION_NAME_INVALID);
+  assert.ok(identityBinding.parseCallerIdentity(
+    { ...G_STS_A, UserId: G_ROLE_ID + ':' + 'a'.repeat(128) }), '128 恰好可接受');
+  // ARN 与 UserId/AccountId 逐字不一致
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...G_STS_A, Arn: 'qcs::sts:999999999999:assumed-role/' + G_ROLE_ID }),
+    (e) => e.code === E.ARN_MISMATCH);
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...G_STS_A, Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/123' }),
+    (e) => e.code === E.ARN_MISMATCH);
+  // 数字精度风险：前导零变体保留原字节（不数值化为相同），且 ARN 必须逐字对应
+  const leadZero = { ...G_STS_A, UserId: '0' + G_ROLE_ID + ':' + G_SESSION_A,
+    Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/0' + G_ROLE_ID };
+  const leadZeroParsed = identityBinding.parseCallerIdentity(leadZero);
+  assert.equal(leadZeroParsed.roleId, '0' + G_ROLE_ID);
+  assert.notEqual(identityBinding.stableIdentityDigest(leadZero),
+    identityBinding.stableIdentityDigest(G_STS_A), '前导零变体不是同一身份');
+  assert.throws(() => identityBinding.parseCallerIdentity(
+    { ...leadZero, Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/' + G_ROLE_ID }),
+    (e) => e.code === E.ARN_MISMATCH);
+  // 尾号相同不放行：完整值不同的两个身份稳定摘要不同
+  const tailTwin = { ...G_STS_A, AccountId: '999999789012',
+    Arn: 'qcs::sts:999999789012:assumed-role/' + G_ROLE_ID };
+  assert.notEqual(identityBinding.stableIdentityDigest(tailTwin),
+    identityBinding.stableIdentityDigest(G_STS_A), '仅尾号相同不构成同一主体');
+});
+
+test('G-3 版本混用与缺预期在签发即拒：新旧摘要互斥、未知版本拒绝、新路径缺摘要拒绝', () => {
+  // 新旧混用
+  assert.throws(() => syntheticApprovalSource(syntheticPlan(), {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: G_EXPECTED_STABLE,
+    expectedSubjectDigest: host.callerTupleDigest(SYN_STS)
+  }), (e) => e.code === host.ERR.IDENT_POLICY_MIXED);
+  // 未知版本
+  assert.throws(() => syntheticApprovalSource(syntheticPlan(), {
+    bindingPolicyVersion: 'cloud-role-binding/2',
+    expectedStableIdentityDigest: G_EXPECTED_STABLE
+  }), (e) => e.code === host.ERR.IDENT_POLICY_MIXED);
+  // 新路径缺摘要
+  assert.throws(() => syntheticApprovalSource(syntheticPlan(), {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION
+  }), (e) => e.code === host.ERR.IDENT_POLICY_MIXED);
+  // 摘要格式非法
+  assert.throws(() => syntheticApprovalSource(syntheticPlan(), {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: 'not-a-digest'
+  }), (e) => e.code === host.ERR.IDENT_POLICY_MIXED);
+});
+
+test('G-4 新版绑定完整正向链：一次凭据、五条固定 API（3 STS + 2 环境查询）、两写一提交，报告与文件记录绑定事实', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [], stsCalls: 0 };
+  const workerCapture = { calls: [] };
+  const plan = syntheticPlan(null, { roundId: 'G4-MODERN-0001' });
+  const source = syntheticApprovalSource(plan, {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: G_EXPECTED_STABLE
+  });
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: plan.targetUserId, status: 'active', openid: SYN_OPENID }
+  });
+  const outDir = freshOutDir('g4');
+  const dirs = syntheticDirs('g4');
+  try {
+    const r = await approvedRun.runOnce({
+      runId: 'G4-MODERN-0001', outDir, plan, approvalSource: source,
+      roundId: plan.roundId, profileDir: dirs.profileDir,
+      spawn: syntheticCliSpawn(captured, { stsResponses: [G_STS_A] }),
+      spawnWorker: syntheticWorkerSpawn(tr, workerCapture),
+      reconcileDeps: { db: tr.db }
+    });
+    assert.equal(r.status, 'COMPLETED');
+    // 固定调用：一次凭据 + 五条显式 API（STS 三条、环境查询两条）
+    assert.equal(captured.credentialFetches, 1);
+    assert.equal(captured.apiCalls.length, 5);
+    assert.equal(captured.apiCalls[0].key, 'sts.GetCallerIdentity', '首个 API 是首次完整 STS');
+    assert.equal(captured.apiCalls[4].key, 'sts.GetCallerIdentity', '末个 API 是第二次完整 STS');
+    assert.equal(captured.apiCalls.filter(x => x.key === 'sts.GetCallerIdentity').length, 3);
+    const c = tr.counts();
+    assert.equal(c.primarySet, 1);
+    assert.equal(c.auditSet, 1);
+    assert.equal(c.commit, 1);
+    // 报告与终态记录绑定事实（固定枚举/布尔，不含身份原值）
+    assert.equal(r.result.bindingPolicyVersion, identityBinding.BINDING_POLICY_VERSION);
+    assert.equal(r.result.stableIdentityMatched, true);
+    assert.equal(r.result.sessionContinuityConfirmed, true);
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(outDir, 'terminal', 'G4-MODERN-0001.COMPLETED.json'), 'utf8'));
+    assert.equal(terminal.bindingPolicyVersion, identityBinding.BINDING_POLICY_VERSION);
+    assert.equal(terminal.stableIdentityMatched, true);
+    assert.equal(terminal.sessionContinuityConfirmed, true);
+    const started = JSON.parse(fs.readFileSync(
+      path.join(outDir, 'started', 'G4-MODERN-0001.json'), 'utf8'));
+    assert.equal(started.bindingPolicyVersion, identityBinding.BINDING_POLICY_VERSION);
+    // 同批传递：worker 载荷与 CLI 同一不可变快照（合成层断言既有接线）
+    assert.equal(workerCapture.calls.length, 1);
+    assert.equal(workerCapture.calls[0].bin, cliObserver.FIXED.nodeBin);
+    assert.ok(workerCapture.calls[0].payloadRef() && workerCapture.calls[0].payloadRef().plan);
+    // 净化：报告不含身份原值/会话名
+    const raw = JSON.stringify(r.result);
+    for (const marker of [G_ROLE_ID, G_SESSION_A, 'qcs::sts', G_ACCOUNT]) {
+      assert.ok(!raw.includes(marker), '报告不含身份原值：' + marker);
+    }
+  } finally { tr.restore(); }
+});
+
+test('G-5 稳定身份不匹配 → 取得凭据与首个 STS 后停止（零 worker 零事务），净化报告', async () => {
+  // 预期绑定为另一角色（形状合法）—— 尾号不同、完整值不同
+  const otherRole = { ...G_STS_A, UserId: '4616873507:' + G_SESSION_A,
+    Arn: 'qcs::sts:' + G_ACCOUNT + ':assumed-role/4616873507' };
+  const fx = offlineChain({
+    tag: 'g5', runId: 'G5-MISMATCH-001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: identityBinding.stableIdentityDigest(otherRole)
+    },
+    cliOpts: { stsResponses: [G_STS_A] }
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.status, 'FAILED');
+    assert.equal(r.result.stoppedAt, 'stableIdentity', '在首个 STS 时点停止');
+    assert.equal(r.result.errorCode, host.ERR.STABLE_IDENTITY_MISMATCH);
+    assert.equal(r.result.credentialFetched, true, '已取得凭据（时点如实区分）');
+    assert.equal(fx.captured.apiCalls.length, 1, '仅首次完整 STS');
+    assert.equal(fx.tr.counts().commit, 0, '零事务');
+    assert.equal(fx.tr.counts().primarySet, 0, '零写');
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'G5-MISMATCH-001.FAILED.json'), 'utf8'));
+    assert.equal(terminal.errorCode, host.ERR.STABLE_IDENTITY_MISMATCH);
+    const raw = JSON.stringify({ t: terminal, r: r.result });
+    for (const marker of [G_ROLE_ID, G_SESSION_A, 'qcs::sts', G_ACCOUNT]) {
+      assert.ok(!raw.includes(marker), '不含身份原值：' + marker);
+    }
+  } finally { fx.tr.restore(); }
+});
+
+test('G-6 同轮会话变化 → 第二次完整 STS 后、启动 worker 前拒绝（零事务零 worker）', async () => {
+  const workerCapture = { calls: [] };
+  const fx = offlineChain({
+    tag: 'g6', runId: 'G6-DRIFT-0001',
+    approvalPatch: {
+      bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+      expectedStableIdentityDigest: G_EXPECTED_STABLE
+    },
+    cliOpts: { stsResponses: [G_STS_A, G_STS_A, G_STS_B] }, // 首次/关联 A，第二次完整 STS 换 B
+    workerCapture
+  });
+  try {
+    const r = await approvedRun.runOnce(fx.options);
+    assert.equal(r.status, 'FAILED');
+    assert.equal(r.result.stoppedAt, 'sessionContinuity');
+    assert.equal(r.result.errorCode, host.ERR.SESSION_CONTINUITY_BROKEN);
+    assert.equal(r.result.stableIdentityMatched, true, '首次稳定身份已匹配');
+    assert.equal(r.result.sessionContinuityConfirmed ?? null, null, '会话连续性未确认');
+    assert.equal(fx.captured.credentialFetches, 1, '不自动取第二批凭据');
+    assert.equal(fx.captured.apiCalls.length, 5, '两次完整 STS + 三阶段关联都已发生');
+    assert.equal(fx.tr.counts().commit, 0, '零事务');
+    assert.equal(workerCapture.calls.length, 0, 'worker 未启动');
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(fx.outDir, 'terminal', 'G6-DRIFT-0001.FAILED.json'), 'utf8'));
+    assert.equal(terminal.errorCode, host.ERR.SESSION_CONTINUITY_BROKEN);
+    const raw = JSON.stringify(terminal);
+    for (const marker of [G_SESSION_A, G_SESSION_B, G_ROLE_ID, 'qcs::sts']) {
+      assert.ok(!raw.includes(marker), '不含会话名/身份原值：' + marker);
+    }
+  } finally { fx.tr.restore(); }
+});
+
+test('G-7 新版绑定与旧门槛并存：普通 JSON 冒充批准、来源模式绑定、终态预存仍按原门槛拒绝', async () => {
+  const plan = syntheticPlan(null, { roundId: 'G7-GUARD-0001' });
+  // 普通 JSON 冒充（即便带新版字段也不构成批准）
+  const fake = JSON.parse(JSON.stringify({
+    plan, approval: { approvedUserIds: [plan.targetUserId], approvedBy: 'FAKE',
+      approvedAt: new Date().toISOString() },
+    approvedBy: 'FAKE', writeScope: ['initializePrimary'],
+    expiresAtMs: Date.now() + 3600000,
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: G_EXPECTED_STABLE
+  }));
+  const outDir = freshOutDir('g7');
+  await assert.rejects(() => approvedRun.runOnce({
+    runId: 'G7-GUARD-0001', outDir, plan, approvalSource: fake,
+    roundId: plan.roundId, profileDir: path.join(outDir, 'profile'),
+    spawn: syntheticCliSpawn({ calls: [], credentialFetches: 0, apiCalls: [], stsCalls: 0 })
+  }), (e) => e.code === host.ERR.APPROVAL_SOURCE_MISSING ||
+    e.code === host.ERR.APPROVAL_REQUIRED || e.code === host.ERR.PLAN_INVALID);
+  assert.equal(fs.existsSync(path.join(outDir, 'started')), false);
+  // 新版批准 + 真实模式请求 → 来源绑定不匹配（既有门槛不回归）
+  const modernSource = syntheticApprovalSource(plan, {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: G_EXPECTED_STABLE
+  });
+  const outDir2 = freshOutDir('g7b');
+  await assert.rejects(() => approvedRun.runOnce({
+    runId: 'G7-GUARD-0002', outDir: outDir2, plan, approvalSource: modernSource,
+    roundId: plan.roundId, credentialSourceMode: 'fixed-real-source'
+  }), (e) => e.code === host.ERR.REAL_MODE_BINDING_MISMATCH);
+  // 同轮终态预存 → started/凭据之前拒绝（既有 S2 语义不回归）
+  const modernSource2 = syntheticApprovalSource(plan, {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: G_EXPECTED_STABLE
+  });
+  const outDir3 = freshOutDir('g7c');
+  fs.mkdirSync(path.join(outDir3, 'terminal'), { recursive: true });
+  fs.writeFileSync(path.join(outDir3, 'terminal', 'G7-GUARD-0001.COMPLETED.json'), '{}\n');
+  await assert.rejects(() => approvedRun.runOnce({
+    runId: 'G7-GUARD-0001', outDir: outDir3, plan, approvalSource: modernSource2,
+    roundId: plan.roundId, profileDir: path.join(outDir3, 'profile'),
+    spawn: syntheticCliSpawn({ calls: [], credentialFetches: 0, apiCalls: [], stsCalls: 0 })
+  }), (e) => e.code === approvedRun.ERR.TERMINAL_EXISTS);
+});
+
+test('G-8 真实模式（模块级离线装配）新版绑定正向：五条 API、两写一提交、真实登录目录零触达', async () => {
+  const captured = { calls: [], credentialFetches: 0, apiCalls: [], stsCalls: 0 };
+  const plan = syntheticPlan(null, { roundId: 'G8-REALMOD-0001' });
+  const source = syntheticApprovalSource(plan, {
+    bindingPolicyVersion: identityBinding.BINDING_POLICY_VERSION,
+    expectedStableIdentityDigest: G_EXPECTED_STABLE,
+    credentialSourceMode: 'fixed-real-source'
+  });
+  const tr = installSyntheticSdkTransport({
+    schtest_v1_users: { _id: plan.targetUserId, status: 'active', openid: SYN_OPENID }
+  });
+  const outDir = freshOutDir('g8');
+  const fsv = installFsVirtualization('g8');
+  const uninstall = host.installRealModeOfflineHarness({
+    spawn: syntheticCliSpawn(captured, { stsResponses: [G_STS_A] }),
+    spawnWorker: syntheticWorkerSpawn(tr),
+    reconcileDeps: { db: tr.db }
+  });
+  try {
+    const r = await approvedRun.runOnce({
+      runId: 'G8-REALMOD-0001', outDir, plan, approvalSource: source,
+      roundId: plan.roundId, credentialSourceMode: 'fixed-real-source'
+    });
+    assert.equal(r.status, 'COMPLETED');
+    assert.equal(captured.credentialFetches, 1);
+    assert.equal(captured.apiCalls.length, 5, '新版绑定五条固定 API');
+    const c = tr.counts();
+    assert.equal(c.primarySet, 1); assert.equal(c.auditSet, 1); assert.equal(c.commit, 1);
+    assert.equal(r.result.bindingPolicyVersion, identityBinding.BINDING_POLICY_VERSION);
+    assert.equal(r.result.stableIdentityMatched, true);
+    assert.equal(r.result.sessionContinuityConfirmed, true);
+    const terminal = JSON.parse(fs.readFileSync(
+      path.join(outDir, 'terminal', 'G8-REALMOD-0001.COMPLETED.json'), 'utf8'));
+    assert.equal(terminal.bindingPolicyVersion, identityBinding.BINDING_POLICY_VERSION);
+    assert.ok(fsv.vops.length >= 2, '真实登录目录操作被虚拟化重定向');
+  } finally {
+    uninstall(); fsv.restore(); tr.restore();
+  }
 });

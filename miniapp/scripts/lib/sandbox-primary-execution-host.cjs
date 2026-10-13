@@ -61,6 +61,8 @@ const readOnly = require('./cloudbase-sdk-readonly-observer.cjs');
 const cliObserver = require('./cloudbase-readonly-observer.cjs');
 const p4 = require('./sandbox-primary-bootstrap.cjs');
 const executionWorker = require('./sandbox-primary-execution-worker.cjs');
+// 2026-10-12 身份绑定方案（§4/§5）：稳定云主体与会话分开绑定的纯解析模块
+const identityBinding = require('./sandbox-identity-binding.cjs');
 
 // ── 固定值（全部取自已验收模块，不重新定义） ────────────────────────────────
 const FIXED = {
@@ -104,7 +106,13 @@ const ERR = Object.freeze({
   SAVE_CAPABILITY_MISSING: 'SAVE_CAPABILITY_MISSING',
   // R1（2026-10-12）：真实模式的执行依赖覆盖与来源绑定不匹配
   REAL_MODE_OVERRIDE_REJECTED: 'REAL_MODE_OVERRIDE_REJECTED',
-  REAL_MODE_BINDING_MISMATCH: 'REAL_MODE_BINDING_MISMATCH'
+  REAL_MODE_BINDING_MISMATCH: 'REAL_MODE_BINDING_MISMATCH',
+  // 2026-10-12 身份绑定方案（§4.3）：新版绑定路径的固定错误码。
+  // 旧 expectedSubjectDigest 语义不变；新旧摘要/版本混用即拒绝，不自动兼容。
+  IDENT_POLICY_MIXED: 'IDENT_POLICY_MIXED',
+  STABLE_IDENTITY_MISMATCH: 'STABLE_IDENTITY_MISMATCH',
+  SESSION_CONTINUITY_BROKEN: 'SESSION_CONTINUITY_BROKEN',
+  IDENT_UNPARSEABLE: 'IDENT_UNPARSEABLE'
 });
 
 /** 只接受这三个入口参数；出现其它一律在外部动作前拒绝。 */
@@ -180,7 +188,9 @@ const FINGERPRINT_FILES = Object.freeze([
   'sandbox-primary-execution-host.cjs',
   'sandbox-primary-execution-worker.cjs',
   'sandbox-primary-bootstrap.cjs',
-  'sandbox-primary-sdk-adapter.cjs'
+  'sandbox-primary-sdk-adapter.cjs',
+  // 2026-10-12 身份绑定方案：新纯身份模块纳入批准指纹（不遗漏于执行包）
+  'sandbox-identity-binding.cjs'
 ]);
 
 /** 计算固定文件的实际 sha256（真的读磁盘）。 */
@@ -259,7 +269,9 @@ function realModeOfflineHarnessActive() {
  * @param {string} spec.approvedBy 确认人
  * @param {string[]} spec.writeScope 写范围
  * @param {number} spec.expiresAtMs 有效期
- * @param {string} spec.expectedSubjectDigest 执行前受审的完整主体摘要
+ * @param {string} [spec.expectedSubjectDigest] 旧版：执行前受审的完整主体摘要（含会话名）
+ * @param {string} [spec.bindingPolicyVersion] 新版：须为 cloud-role-binding/1
+ * @param {string} [spec.expectedStableIdentityDigest] 新版：稳定云主体摘要（不含会话名）
  * @returns {object} 不可序列化的受控批准句柄
  */
 function issueControlledApproval(spec) {
@@ -276,7 +288,40 @@ function issueControlledApproval(spec) {
   handle.approvedBy = s.approvedBy;
   handle.writeScope = Object.freeze(Array.isArray(s.writeScope) ? s.writeScope.slice() : []);
   handle.expiresAtMs = s.expiresAtMs;
-  handle.expectedSubjectDigest = s.expectedSubjectDigest;
+  /**
+   * 2026-10-12 身份绑定方案（§4.1/§4.3）：新版绑定
+   * `bindingPolicyVersion = cloud-role-binding/1` + `expectedStableIdentityDigest`
+   * （稳定云主体，不含会话名）与旧版 `expectedSubjectDigest`（完整四元组，
+   * 含会话名）**二选一**：混用旧/新摘要、未知版本或新路径缺摘要一律拒绝，
+   * 不做默认升级或回退。旧路径语义不变。
+   */
+  {
+    const hasLegacy = s.expectedSubjectDigest !== undefined;
+    const hasModern = s.bindingPolicyVersion !== undefined ||
+      s.expectedStableIdentityDigest !== undefined;
+    if (hasLegacy && hasModern) {
+      const e = new Error('批准绑定不得同时提供旧主体摘要与新稳定身份绑定。');
+      e.code = ERR.IDENT_POLICY_MIXED;
+      throw e;
+    }
+    if (hasModern) {
+      if (s.bindingPolicyVersion !== identityBinding.BINDING_POLICY_VERSION) {
+        const e = new Error('未知的绑定策略版本；不做默认升级或回退。');
+        e.code = ERR.IDENT_POLICY_MIXED;
+        throw e;
+      }
+      if (typeof s.expectedStableIdentityDigest !== 'string' ||
+        !/^[0-9a-f]{64}$/.test(s.expectedStableIdentityDigest)) {
+        const e = new Error('新版绑定缺少受审的稳定身份摘要预期值。');
+        e.code = ERR.IDENT_POLICY_MIXED;
+        throw e;
+      }
+      handle.bindingPolicyVersion = s.bindingPolicyVersion;
+      handle.expectedStableIdentityDigest = s.expectedStableIdentityDigest;
+    } else {
+      handle.expectedSubjectDigest = s.expectedSubjectDigest;
+    }
+  }
   handle.cliFingerprint = Object.freeze({
     bundleSha256: FIXED.cliFingerprint.bundleSha256,
     entrySha256: FIXED.cliFingerprint.entrySha256
@@ -499,11 +544,26 @@ function verifyControlledApproval(options) {
       reason: '批准绑定的文件指纹与本机固定安装不一致。' };
   }
 
-  // 预期主体摘要：R4 要求绑定到受控批准，而不是只作为 options 传入
-  if (typeof source.expectedSubjectDigest !== 'string' ||
-    !/^[0-9a-f]{64}$/.test(source.expectedSubjectDigest)) {
-    return { ok: false, errorCode: ERR.CALLER_SUBJECT_UNVERIFIED,
-      reason: '批准未绑定执行前受审的主体摘要预期值。' };
+  /**
+   * 预期主体绑定（R4 绑定到受控批准）：旧版完整四元组摘要（语义不变）或
+   * 2026-10-12 新版稳定身份绑定（cloud-role-binding/1，不含会话名）二选一；
+   * 混用/未知版本/新路径缺摘要即拒绝（IDENT_POLICY_MIXED），不自动兼容。
+   */
+  {
+    const hasLegacy = typeof source.expectedSubjectDigest === 'string';
+    const hasModern = source.bindingPolicyVersion !== undefined ||
+      source.expectedStableIdentityDigest !== undefined;
+    if (hasModern) {
+      if (hasLegacy || source.bindingPolicyVersion !== identityBinding.BINDING_POLICY_VERSION ||
+        typeof source.expectedStableIdentityDigest !== 'string' ||
+        !/^[0-9a-f]{64}$/.test(source.expectedStableIdentityDigest)) {
+        return { ok: false, errorCode: ERR.IDENT_POLICY_MIXED,
+          reason: '批准绑定的新旧身份摘要混用、版本未知或缺少稳定身份预期值。' };
+      }
+    } else if (!hasLegacy || !/^[0-9a-f]{64}$/.test(source.expectedSubjectDigest)) {
+      return { ok: false, errorCode: ERR.CALLER_SUBJECT_UNVERIFIED,
+        reason: '批准未绑定执行前受审的主体摘要预期值。' };
+    }
   }
 
   /**
@@ -523,6 +583,9 @@ function verifyControlledApproval(options) {
     ok: true, errorCode: null, planDigest: digest, fullPlanDigest: fullDigest,
     approvedBy: source.approvedBy, expiresAtMs: source.expiresAtMs,
     expectedSubjectDigest: source.expectedSubjectDigest,
+    // 2026-10-12 身份绑定方案：新版绑定时携带版本与稳定身份预期（执行时用）
+    bindingPolicyVersion: source.bindingPolicyVersion,
+    expectedStableIdentityDigest: source.expectedStableIdentityDigest,
     // R1：批准绑定的凭据来源模式（执行时须与请求模式一致）
     credentialSourceMode: boundMode,
     // S1：worker 载荷的唯一来源
@@ -640,6 +703,9 @@ async function verifyCallerSubject(snapshot, deps) {
   }
   return {
     ok: true, errorCode: null, subjectDigest: digest,
+    // 2026-10-12 身份绑定方案：完整 STS 数据仅限内存传给身份解析模块
+    // （稳定身份/会话摘要计算）；**不落报告、不持久化**。
+    stsData: data,
     accountIdSha256: sts.accountIdSha256,
     accountIdTail: sts.accountIdTail,
     requestId: typeof sts.requestId === 'string' ? sts.requestId : null
@@ -957,6 +1023,49 @@ async function executeOnce(options) {
   }
   report.isolationDirCreated = true;
 
+  // I-3（2026-10-12 身份绑定方案 §5.3）：新版绑定（cloud-role-binding/1）下，
+  // 取得凭据并建隔离目录后**先做一次完整 STS**：先匹配事先批准的稳定身份
+  // （不含会话名），匹配后才捕获本轮会话摘要见证（内存内，不落原值）。
+  // 旧路径（完整四元组摘要）不增加这次调用，行为与 API 计数不变。
+  let sessionWitness = null;
+  if (approvalCheck.bindingPolicyVersion === identityBinding.BINDING_POLICY_VERSION) {
+    report.bindingPolicyVersion = approvalCheck.bindingPolicyVersion;
+    const firstIdentity = await verifyCallerSubject(snapshot, {
+      spawn: effectiveDeps.isRealMode ? effectiveDeps.spawn : o.spawn,
+      baseEnv: effectiveDeps.isRealMode ? {} : o.baseEnv,
+      isolationDir,
+      limits: effectiveDeps.isRealMode ? undefined : o.limits
+    });
+    if (!firstIdentity.ok) {
+      report.stoppedAt = 'firstIdentityCheck';
+      report.errorCode = firstIdentity.errorCode;
+      report.incomplete.push('首次完整 STS 核验未通过；未发起后续动作。');
+      return report;
+    }
+    let stableDigest = null;
+    let sessionDigestValue = null;
+    try {
+      stableDigest = identityBinding.stableIdentityDigest(firstIdentity.stsData);
+      sessionDigestValue = identityBinding.sessionDigest(firstIdentity.stsData);
+    } catch (_) {
+      // 身份形状未通过本地收窄契约（净化：不含原值）
+      report.stoppedAt = 'firstIdentityCheck';
+      report.errorCode = ERR.IDENT_UNPARSEABLE;
+      report.incomplete.push('调用者身份未通过本地收窄契约校验；未发起后续动作。');
+      return report;
+    }
+    if (stableDigest !== approvalCheck.expectedStableIdentityDigest) {
+      // 稳定身份与事先批准不一致 → 停止，不从当前响应补齐预期
+      report.stoppedAt = 'stableIdentity';
+      report.errorCode = ERR.STABLE_IDENTITY_MISMATCH;
+      report.incomplete.push('当次稳定云主体与批准绑定不一致；未发起后续动作。');
+      return report;
+    }
+    sessionWitness = sessionDigestValue;
+    report.stableIdentityMatched = true;
+    report.stages.push('firstIdentityCheck');
+  }
+
   let association;
   try {
     association = await readOnly.runCliAssociation(snapshot, isolationDir, {
@@ -976,7 +1085,12 @@ async function executeOnce(options) {
   }
   report.stages.push('cliAssociation');
 
-  // 5) 当次 STS 完整主体元组核验（**同一快照**，一次固定调用）
+  // 5) 当次 STS 完整主体核验（**同一快照**，一次固定调用）
+  //
+  // 2026-10-12 身份绑定方案（§5.5）：新版绑定下这是**第二次完整核对** ——
+  // 稳定身份仍须匹配批准，且完整会话摘要须与本轮见证相同（同轮会话变化
+  // 在启动 worker 前拒绝，不自动取第二批凭据或刷新后继续）。旧路径仍是
+  // 完整四元组摘要比较，语义不变。
   const subject = await verifyCallerSubject(snapshot, {
     // R1：真实模式固定 spawn；离线夹具保持注入语义
     spawn: effectiveDeps.isRealMode ? effectiveDeps.spawn : o.spawn,
@@ -990,16 +1104,43 @@ async function executeOnce(options) {
     report.incomplete.push('当次云主体核验未通过；未进入事务。');
     return report;
   }
-  // 与**受控批准绑定的**预期值比较（R4：不再是 options 传入的独立值，
-  // 也不是从本次响应自动「学习」）
-  if (approvalCheck.expectedSubjectDigest !== subject.subjectDigest) {
-    // 同主账号但主体不同 → 停止，不自动放宽
+  if (approvalCheck.bindingPolicyVersion === identityBinding.BINDING_POLICY_VERSION) {
+    let stableDigest = null;
+    let sessionDigestValue = null;
+    try {
+      stableDigest = identityBinding.stableIdentityDigest(subject.stsData);
+      sessionDigestValue = identityBinding.sessionDigest(subject.stsData);
+    } catch (_) {
+      report.stoppedAt = 'callerSubject';
+      report.errorCode = ERR.IDENT_UNPARSEABLE;
+      report.incomplete.push('调用者身份未通过本地收窄契约校验；未进入事务。');
+      return report;
+    }
+    if (stableDigest !== approvalCheck.expectedStableIdentityDigest) {
+      report.stoppedAt = 'stableIdentity';
+      report.errorCode = ERR.STABLE_IDENTITY_MISMATCH;
+      report.incomplete.push('第二次完整核对的稳定云主体与批准绑定不一致；未进入事务。');
+      return report;
+    }
+    if (sessionWitness === null || sessionDigestValue !== sessionWitness) {
+      // 同轮会话变化 → 在启动 worker 前拒绝；不自动刷新或重取凭据
+      report.stoppedAt = 'sessionContinuity';
+      report.errorCode = ERR.SESSION_CONTINUITY_BROKEN;
+      report.incomplete.push('当次执行会话与本轮见证不一致；未进入事务，未自动刷新凭据。');
+      return report;
+    }
+    report.sessionContinuityConfirmed = true;
+    report.stages.push('callerSubject');
+  } else if (approvalCheck.expectedSubjectDigest !== subject.subjectDigest) {
+    // 旧路径：与**受控批准绑定的**预期值比较（R4：不再是 options 传入的独立值，
+    // 也不是从本次响应自动「学习」）。同主账号但主体不同 → 停止，不自动放宽
     report.stoppedAt = 'callerSubject';
     report.errorCode = ERR.CALLER_SUBJECT_MISMATCH;
     report.incomplete.push('当次完整云主体与批准绑定的预期不一致（可能是角色会话变更）；已停止，未自动放宽。');
     return report;
+  } else {
+    report.stages.push('callerSubject');
   }
-  report.stages.push('callerSubject');
 
   // 6) 轮次 started（不含秘密）；必须存在、await 成功、轮次完全匹配
   //
@@ -1055,8 +1196,35 @@ async function executeOnce(options) {
     report.incomplete.push('异步耗时后批准已过期；未启动写 worker。');
     return report;
   }
-  // 当次主体摘要必须与**批准绑定**的预期值一致（不再是 options 传入的独立值）
-  if (approvalCheck.expectedSubjectDigest !== subject.subjectDigest) {
+  // worker 启动前的主体绑定复核（同一 `subject` 快照，不再发起新 API）：
+  // 新版绑定 → 稳定身份仍匹配 + 会话见证一致；旧路径 → 完整四元组摘要一致。
+  if (approvalCheck.bindingPolicyVersion === identityBinding.BINDING_POLICY_VERSION) {
+    let stableDigestNow = null;
+    let sessionDigestNow = null;
+    try {
+      stableDigestNow = identityBinding.stableIdentityDigest(subject.stsData);
+      sessionDigestNow = identityBinding.sessionDigest(subject.stsData);
+    } catch (_) {
+      report.stoppedAt = 'callerSubject';
+      report.errorCode = ERR.IDENT_UNPARSEABLE;
+      report.incomplete.push('启动前身份复核未通过本地收窄契约校验；未启动写 worker。');
+      return report;
+    }
+    if (stableDigestNow !== approvalCheck.expectedStableIdentityDigest) {
+      report.stoppedAt = 'stableIdentity';
+      report.errorCode = ERR.STABLE_IDENTITY_MISMATCH;
+      report.incomplete.push('启动前复核发现稳定云主体与批准绑定不一致；未启动写 worker。');
+      return report;
+    }
+    if (sessionWitness === null || sessionDigestNow !== sessionWitness) {
+      report.stoppedAt = 'sessionContinuity';
+      report.errorCode = ERR.SESSION_CONTINUITY_BROKEN;
+      report.incomplete.push('启动前复核发现执行会话与本轮见证不一致；未启动写 worker。');
+      return report;
+    }
+  } else if (approvalCheck.expectedSubjectDigest !== subject.subjectDigest) {
+    // 旧路径：当次完整主体摘要必须与**批准绑定**的预期值一致（不再是
+    // options 传入的独立值，也不是从本次响应自动「学习」）
     report.stoppedAt = 'callerSubject';
     report.errorCode = ERR.CALLER_SUBJECT_MISMATCH;
     report.incomplete.push('当次完整云主体与批准绑定的预期不一致；已停止，未自动放宽。');
@@ -1361,7 +1529,11 @@ function reportExecutionFacts(report) {
     credentialSourceMode: report.credentialSourceMode,
     realModeOfflineHarness: report.realModeOfflineHarness === true ? true : undefined,
     fixedRealSourceUsed: report.fixedRealSourceUsed === true ? true : undefined,
-    credentialFailureClass: report.credentialFailureClass
+    credentialFailureClass: report.credentialFailureClass,
+    // 2026-10-12 身份绑定方案：固定枚举与核对结论（不含身份原值/会话名）
+    bindingPolicyVersion: report.bindingPolicyVersion,
+    stableIdentityMatched: report.stableIdentityMatched === true,
+    sessionContinuityConfirmed: report.sessionContinuityConfirmed === true
   };
 }
 
