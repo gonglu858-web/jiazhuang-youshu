@@ -1,0 +1,190 @@
+{
+  "schema": "codex-primary-v3-local-package/1",
+  "preparedAt": "2026-10-13T10:41:56.062Z",
+  "sourceCommit": "a26f0bf",
+  "reviewedImplementation": "e4ee7ee",
+  "acceptanceCommit": "523c9c6",
+  "packageRevision": "primary-20261013-self-01-v3",
+  "status": "PREPARED_AWAITING_EXPLICIT_CONFIRMATION",
+  "writeAuthorized": false,
+  "approvalIssued": false,
+  "credentialFetched": false,
+  "cloudCallAttempted": false,
+  "workerStarted": false,
+  "authStoreRead": false,
+  "databaseAttempted": false,
+  "planFile": {
+    "path": "docs/证据/Codex管理员初始化v3计划-20261013.json",
+    "bytes": 396,
+    "sha256": "6addb92e6c1b00d23155211c10d6561b9083b50b9cd1ed50c666069bb3272b21"
+  },
+  "plan": {
+    "enabled": true,
+    "appId": "wxfb4db1615ac15531",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "roundId": "primary-20261013-self-01",
+    "targetUserId": "u_c32979f165284b3c34672abccf2e8dcb0e2d3aa4",
+    "evidenceId": "codex-primary-20261013-self-01-v3",
+    "expiresAt": "2026-10-13T14:00:00.000Z",
+    "schemaVersion": 1,
+    "operatorRef": "Codex-reviewed-local-host",
+    "approvedOwnerHint": "2d3aa4"
+  },
+  "inputDigest": "36f01acbc3e47ff352a0cf2948060f9a",
+  "auditId": "sbx-init-primary:921461b56e1024c3de220a5e87aeb530",
+  "fullPlanDigest": "4b2bd55f3a302feeb6a193a9c9a34da56382478fdcc83321ddada9b76388d2a5",
+  "bindingPolicyVersion": "cloud-role-binding/1",
+  "expectedStableIdentityDigest": "87640b24a884160905abcf1403489fde763d481758752cffecff3e79e9f33b90",
+  "authorizationBasis": "owner-verified-role-and-pinned-caller/1",
+  "alternativeBasisAccepted": false,
+  "principalSourceConfirmed": false,
+  "roleTrustApproved": false,
+  "credentialSourceMode": "fixed-real-source",
+  "credentialProfile": "C:/Users/30591/.codex/tmp/cloudbase-readonly-cli-3.8.4/auth-session-20261007",
+  "approvalWindow": "at most 10 minutes after observed explicit user confirmation, no later than plan expiry",
+  "approvedByTemplate": "project-owner-chat-confirmation:primary-20261013-self-01",
+  "outDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\管理员初始化执行-primary-20261013-self-01",
+  "outDirAbsent": true,
+  "implementationFiles": [
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-approved-run.cjs",
+      "bytes": 27627,
+      "sha256": "5c765faa2dc8873cc171625111647b084cd407675dd381b74edc78790d0ecade"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-execution-host.cjs",
+      "bytes": 115974,
+      "sha256": "0c0b856a3cd56194047d49b742d3b506d1477b8661333b01f64daa7e8ee7bd58"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-execution-worker.cjs",
+      "bytes": 38488,
+      "sha256": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-bootstrap.cjs",
+      "bytes": 28388,
+      "sha256": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-primary-sdk-adapter.cjs",
+      "bytes": 29620,
+      "sha256": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-cli-credential-host.cjs",
+      "bytes": 27811,
+      "sha256": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-readonly-observer.cjs",
+      "bytes": 53598,
+      "sha256": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-observer.cjs",
+      "bytes": 87816,
+      "sha256": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478"
+    },
+    {
+      "path": "miniapp/scripts/lib/cloudbase-sdk-readonly-worker.cjs",
+      "bytes": 34784,
+      "sha256": "c5368fff5131d6d43e99d2fdbcbdc2270b4a8c19c8444d347cd2f2e5059100d5"
+    },
+    {
+      "path": "miniapp/scripts/lib/sandbox-identity-binding.cjs",
+      "bytes": 5965,
+      "sha256": "c110a13deedcbcba426826ad45048a9a2b881bf700ed22a38fe9f3af02cc9a9a"
+    }
+  ],
+  "boundFingerprint": {
+    "implementation": {
+      "sandbox-primary-execution-host.cjs": "0c0b856a3cd56194047d49b742d3b506d1477b8661333b01f64daa7e8ee7bd58",
+      "sandbox-primary-execution-worker.cjs": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8",
+      "sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+      "sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+      "sandbox-identity-binding.cjs": "c110a13deedcbcba426826ad45048a9a2b881bf700ed22a38fe9f3af02cc9a9a"
+    },
+    "entry": {
+      "file": "sandbox-primary-approved-run.cjs",
+      "bytes": 27627,
+      "sha256": "5c765faa2dc8873cc171625111647b084cd407675dd381b74edc78790d0ecade"
+    }
+  },
+  "runtimeFiles": [
+    {
+      "path": "../../../.agent-reach/tools/node-v22.16.0-win-x64/node.exe",
+      "bytes": 85119640,
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    },
+    {
+      "path": "../../../.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/bin/tcb",
+      "bytes": 57,
+      "sha256": "328da4af4726c2aa4b20cf9b2e1a3614e4f22bf2e8fb8cb6d601692180de926b"
+    },
+    {
+      "path": "../../../.codex/tmp/cloudbase-readonly-cli-3.8.4/node_modules/@cloudbase/cli/dist/standalone/cli.js",
+      "bytes": 25891966,
+      "sha256": "8d987e48b05eef08f78167f7da0f3c07a2515c6cdf58482094e217c49824ee97"
+    }
+  ],
+  "sdkRoot": "C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules",
+  "sdkTreeFiles": 2067,
+  "sdkTreeSha256": "a3cbc65b6c73881ea25856d9f09a3b2d4f524d399b3464b998ca2fa0c1f9c4bc",
+  "checkedSources": [
+    {
+      "path": "docs/证据/Codex首次管理员最终包本地核对-20261012.json",
+      "bytes": 6000,
+      "sha256": "c24f351d5596547c971dc8368bef9375dcc794e271c5d92aca9de4ac0798acfa"
+    },
+    {
+      "path": "docs/证据/Codex管理员初始化单次执行v2-20261012.result.json",
+      "bytes": 1163,
+      "sha256": "d9249018837db009150c1a0041217bd554425b595960788d4b17293358ff81fa"
+    },
+    {
+      "path": "docs/证据/Codex用户GetRole成功结果核对-20261013.json",
+      "bytes": 2439,
+      "sha256": "e7210a4657bb5f98f6c8d3befdb017c75caa40d5f3225e00c2d904fb7a03b567"
+    },
+    {
+      "path": "docs/Codex方案-管理员初始化自助核验-20261013.md",
+      "bytes": 5716,
+      "sha256": "168d753e14397030afe4caeba08675c0c59f312dbedb44b028623ce39442bd95"
+    },
+    {
+      "path": "docs/证据/Codex管理员稳定身份只读基线-20261013.json",
+      "bytes": 8402,
+      "sha256": "8ac5c2a9bf60004f65933b48d3a8881a789f4dd30775e4d538c7730c305e3579"
+    },
+    {
+      "path": "docs/证据/Codex身份R1剩余出口独立验收-20261013.json",
+      "bytes": 19339,
+      "sha256": "bb7abf9c64d19d41004d05f7693a322576e66c08f96800e6a7a6d823fa607073"
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "docs/证据/Codex管理员初始化准备主体只读核对-20261012.json",
+      "bytes": 4976,
+      "sha256": "741d45f8723d948e3f71cc8f4688b216625b09ca7e05d6338345f6804eaa8536"
+    },
+    {
+      "path": "docs/证据/Codex本人第三轮登记与关闭结论-20261012.json",
+      "bytes": 1979,
+      "sha256": "eaf82329cef07994df8671438dc8239e0905ec29c209f82cc3a2477badb0e1ed"
+    },
+    {
+      "path": "docs/证据/Codex本人第三轮关闭页人工核验-20261012.json",
+      "bytes": 1227,
+      "sha256": "55505c536a1921df45f22ae116e74d297420b41884e59a18ce52e72e34156ff5"
+    }
+  ],
+  "scriptSha256": "153c38f4dd076c93f80cc91ffc8e39578f25a75b0a2183de0e0d4b082914c3a8",
+  "limitations": [
+    "Historical cloud observations are not current cloud state.",
+    "PrincipalId internal ownership remains unknown; explicit acceptance of alternative evidence is required.",
+    "No live IAM write permission, production worker DB chain, quota or transaction verification.",
+    "No deployment or source configuration change; closed status is supported by historical evidence only."
+  ]
+}
