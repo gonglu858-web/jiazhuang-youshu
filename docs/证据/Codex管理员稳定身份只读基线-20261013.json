@@ -1,0 +1,229 @@
+{
+  "schema": "stable-identity-observation/1",
+  "sourceCommit": "523c9c6",
+  "reviewedImplementation": "e4ee7ee",
+  "startedAt": "2026-10-13T03:17:05.060Z",
+  "status": "STABLE_IDENTITY_OBSERVED_NOT_APPROVED",
+  "pins": {
+    "sandbox-primary-execution-host.cjs": "0c0b856a3cd56194047d49b742d3b506d1477b8661333b01f64daa7e8ee7bd58",
+    "sandbox-primary-execution-worker.cjs": "c12b791f2ae653b28dfd530bc5d23aa7a8043c4cad4bef6619d574925ac7c6e8",
+    "sandbox-primary-bootstrap.cjs": "133c21ae4b1081a1e716422862730d518a2194cc8620eb0956a9459a44765614",
+    "sandbox-primary-sdk-adapter.cjs": "9088e6478b940a4c2db06737effbb9264f12fd1b62778e64cdb3990ef2ec9f1d",
+    "sandbox-identity-binding.cjs": "c110a13deedcbcba426826ad45048a9a2b881bf700ed22a38fe9f3af02cc9a9a",
+    "cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+  },
+  "scriptSha256": "0f2228088ab226c3d0cbf0f82449475fa1cc08912f101cc4cd141570f429e762",
+  "writeAuthorized": false,
+  "approvalIssued": false,
+  "initializationAttempted": false,
+  "databaseAttempted": false,
+  "workerStarted": false,
+  "credentialFetchFunctionInvocations": 1,
+  "credentialCommandAttempted": true,
+  "cloudQueryAttempted": true,
+  "stoppedAt": null,
+  "fixedTarget": {
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "appId": "wxfb4db1615ac15531",
+    "region": "ap-shanghai"
+  },
+  "credentialSource": "FIXED_CLI_AUTH_SESSION",
+  "bindingPolicyVersion": "cloud-role-binding/1",
+  "roleTrustApproved": false,
+  "principalSourceConfirmed": false,
+  "first": {
+    "type": "CAMRole",
+    "stableIdentityDigest": "87640b24a884160905abcf1403489fde763d481758752cffecff3e79e9f33b90",
+    "sessionDigest": "8c926d83d7320fe790a335b8f78b1fcdca757feb8fab55684db22dc1477313cf",
+    "tupleDigest": "7eed1ea114c3b88079d2595c6f2ab478aed3b50718666b00e802cd5785b515d4",
+    "fields": {
+      "AccountId": {
+        "sha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "tail": "7053",
+        "length": 12
+      },
+      "PrincipalId": {
+        "sha256": "ab205695f117c9abd7aaa87eedb28024c0b364023c466d4a070d3d28f7db4777",
+        "tail": "5386",
+        "length": 12
+      },
+      "RoleId": {
+        "sha256": "95f28ff80d93e08863ba897bfe303a39ef7a5c150204fce069d0b96aaa3af0da",
+        "tail": "2941",
+        "length": 19
+      },
+      "Arn": {
+        "sha256": "f89e2a955c1c592c685dc67355e5389f5d947325aa4877597b1128828391d764",
+        "tail": "2941",
+        "length": 54
+      }
+    },
+    "requestId": "6325b3f8-fc73-4ba3-ad91-d3435bf07967"
+  },
+  "second": {
+    "type": "CAMRole",
+    "stableIdentityDigest": "87640b24a884160905abcf1403489fde763d481758752cffecff3e79e9f33b90",
+    "sessionDigest": "8c926d83d7320fe790a335b8f78b1fcdca757feb8fab55684db22dc1477313cf",
+    "tupleDigest": "7eed1ea114c3b88079d2595c6f2ab478aed3b50718666b00e802cd5785b515d4",
+    "fields": {
+      "AccountId": {
+        "sha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "tail": "7053",
+        "length": 12
+      },
+      "PrincipalId": {
+        "sha256": "ab205695f117c9abd7aaa87eedb28024c0b364023c466d4a070d3d28f7db4777",
+        "tail": "5386",
+        "length": 12
+      },
+      "RoleId": {
+        "sha256": "95f28ff80d93e08863ba897bfe303a39ef7a5c150204fce069d0b96aaa3af0da",
+        "tail": "2941",
+        "length": 19
+      },
+      "Arn": {
+        "sha256": "f89e2a955c1c592c685dc67355e5389f5d947325aa4877597b1128828391d764",
+        "tail": "2941",
+        "length": 54
+      }
+    },
+    "requestId": "1d8f45de-d6e0-41e8-9831-5d5db0af6722"
+  },
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "stages": [
+      {
+        "stage": "sts",
+        "service": "sts",
+        "action": "GetCallerIdentity",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "a6644148-69dc-4b26-809f-edeecf786462",
+        "ok": true,
+        "reasons": [],
+        "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "accountIdTail": "7053",
+        "sts": {
+          "type": "CAMRole",
+          "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "accountIdTail": "7053",
+          "userIdTail": "1010",
+          "principalIdTail": "5386",
+          "requestId": "a6644148-69dc-4b26-809f-edeecf786462"
+        }
+      },
+      {
+        "stage": "describeEnvs",
+        "service": "tcb",
+        "action": "DescribeEnvs",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "bc73dec0-6c1f-4338-8de9-943001238957",
+        "ok": true,
+        "reasons": [],
+        "envs": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "requestId": "bc73dec0-6c1f-4338-8de9-943001238957"
+        }
+      },
+      {
+        "stage": "describeEnvInfo",
+        "service": "tcb",
+        "action": "DescribeEnvInfo",
+        "launchedBy": "node",
+        "entry": "tcb",
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "terminationRequested": false,
+        "terminationConfirmed": true,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "signal": null,
+        "requestId": "fba50c99-614a-4e50-a868-f7c1f76f69df",
+        "ok": true,
+        "reasons": [],
+        "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+        "uinTail": "7053",
+        "envInfo": {
+          "envId": "cloud1-d8gcq5ag39d847723",
+          "status": "NORMAL",
+          "region": "ap-shanghai",
+          "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+          "uinTail": "7053",
+          "wxAppId": "wxfb4db1615ac15531",
+          "requestId": "fba50c99-614a-4e50-a868-f7c1f76f69df"
+        }
+      }
+    ],
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "requestIds": {
+      "sts": "a6644148-69dc-4b26-809f-edeecf786462",
+      "describeEnvs": "bc73dec0-6c1f-4338-8de9-943001238957",
+      "describeEnvInfo": "fba50c99-614a-4e50-a868-f7c1f76f69df"
+    }
+  },
+  "stableIdentityConsistent": true,
+  "sessionContinuityConfirmed": true,
+  "productionWorkerSameBatchProven": false,
+  "firstIdentityCall": {
+    "attempted": true,
+    "ok": true,
+    "errorCode": null
+  },
+  "secondIdentityCall": {
+    "attempted": true,
+    "ok": true,
+    "errorCode": null
+  },
+  "historicalComparison": {
+    "reference": "Codex管理员主体差异只读核对-20261012.json",
+    "sha256": "7edf5a015e3b7f3a65b5b0d0bdee19ccde9080b9bfeb3c60979eb4f29b079918",
+    "fields": {
+      "AccountId": {
+        "fullHashEqual": true
+      },
+      "PrincipalId": {
+        "fullHashEqual": true
+      },
+      "Arn": {
+        "fullHashEqual": true
+      }
+    },
+    "fullTupleEqual": false,
+    "oldSessionDigestUnavailable": true
+  },
+  "finishedAt": "2026-10-13T03:17:14.699Z",
+  "dependenciesUnchanged": true,
+  "limitations": [
+    "独立只读观测，不是批准或允许名单；角色及PrincipalId受信来源仍须明确",
+    "官方CLI可能内部查询、刷新并写回官方登录缓存；本轮未计量网络总请求数",
+    "同批内存快照供CLI使用；未执行数据库worker，不证明生产worker自建db同批链",
+    "未核实IAM写权限、数据库记录、平台事务、当前费用或前后端远端关闭指纹",
+    "不保存原始身份、会话名、秘密或原始stdout；首次与末次完整摘要一致不代表原子快照"
+  ]
+}
