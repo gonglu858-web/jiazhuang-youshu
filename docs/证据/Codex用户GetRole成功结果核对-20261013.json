@@ -1,0 +1,60 @@
+{
+  "schema": "user-get-role-corroboration/1",
+  "recordedAt": "2026-10-13T10:22:45.455Z",
+  "source": "USER_PASTED_API_EXPLORER_RESPONSE",
+  "sourceCommit": "5eaabf4",
+  "scriptSha256": "152112ba37e1e1e3d6d6523f247296f2bdf488154f684003f6852a01bb9148fa",
+  "baselineFile": "Codex管理员稳定身份只读基线-20261013.json",
+  "baselineSha256": "8ac5c2a9bf60004f65933b48d3a8881a789f4dd30775e4d538c7730c305e3579",
+  "supplied": {
+    "roleIdSha256": "95f28ff80d93e08863ba897bfe303a39ef7a5c150204fce069d0b96aaa3af0da",
+    "ownerUinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "roleName": "TCB_QcsRole",
+    "roleType": "system",
+    "roleIdTail": "2941",
+    "ownerTail": "7053",
+    "roleArnShape": "qcs::cam::uin/<ownerUin>:roleName/TCB_QcsRole",
+    "requestId": "2511d0fd-f9af-4fae-a3bc-fa27d12cb621",
+    "addTime": "2026-09-23 16:51:43",
+    "updateTime": "2026-09-23 16:51:43",
+    "consoleLogin": 0,
+    "sessionDuration": 7200,
+    "trustPolicy": {
+      "version": "2.0",
+      "statement": [
+        {
+          "action": "sts:AssumeRole",
+          "effect": "allow",
+          "principal": {
+            "service": [
+              "scf.qcloud.com",
+              "tcb.cloud.tencent.com",
+              "cvm.qcloud.com"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "checks": {
+    "fullRoleIdDigestMatches": true,
+    "fullOwnerUinDigestMatches": true,
+    "cloudBaseServiceInTrustPolicy": true
+  },
+  "status": "ROLE_ENTITY_IDENTIFIED_PRINCIPAL_SOURCE_PENDING",
+  "roleTrustApproved": false,
+  "principalSourceConfirmed": false,
+  "writeAuthorized": false,
+  "assistantAuthenticatedApiCalls": 0,
+  "workerStarted": false,
+  "databaseAttempted": false,
+  "officialRoleReference": "https://cloud.tencent.com/document/product/876/47056",
+  "limitations": [
+    "用户人工运行平台API并粘贴返回，助手未独立重新请求或验证回包签名",
+    "PolicyDocument为角色信任策略，不等于角色关联权限策略或临时会话有效权限",
+    "服务域名不能直接映射为PrincipalId尾5386；申请主体映射与轮换机制仍未确认",
+    "GetRole成功RequestId与旧CLI失败请求不同；未解释控制台列表可见性原因",
+    "SessionDuration为本次角色详情字段，不据此推断此前凭据有效期",
+    "CAM RoleArn与STS assumed-role Arn结构不同，核对RoleId和所属账号，不要求两ARN字面相等"
+  ]
+}

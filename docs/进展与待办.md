@@ -1,3 +1,11 @@
+## 2026-10-13 用户主账号 GetRole 成功：角色2941已识别，申请主体来源待确认
+
+- 用户在 API Explorer 人工查询并粘贴返回：TCB_QcsRole、system、创建时间2026-09-23 16:51:43；成功 RequestId=2511d0fd-f9af-4fae-a3bc-fa27d12cb621。完整角色及所属账号摘要与既有 STS 基线一致，非仅尾号比对。
+- 信任策略含 scf.qcloud.com、tcb.cloud.tencent.com、cvm.qcloud.com；官方文档确认 TCB_QcsRole 为云开发服务角色。与日志角色2942不同，无需修改或继续排查日志角色。
+- 角色实体识别已闭合；服务域名与 PrincipalId 尾5386的具体申请链仍未确认，principalSourceConfirmed/roleTrustApproved/writeAuthorized仍false。信任策略和描述不当作数据库写权限证据。
+- 新报告 docs/Codex核对-用户主账号GetRole成功-20261013.md；新证据 Codex用户GetRole成功结果核对-20261013.cjs/.json。本地摘要一致性核对通过，不冒充助手重新执行平台查询。保留旧CLI失败事实及所有历史证据。
+- 下一步只向原工单202610137590补充成功查询，请确认申请主体5386与本次凭据签发关系；真实初始化仍需新执行包与用户确认。本轮无凭据获取/认证API/worker/写库/部署/权限变更，无业务代码改动或业务测试重跑。本节点无需转发给WorkBuddy。
+
 ## 2026-10-13 工单 202610137590 首次答复：PrincipalId 语义定论，角色来源仍需人工补充材料
 
 - 平台AI初步答复（16:30前后，标注仅供参考）确认：本次调用为角色临时凭据而非主账号长期凭据；PrincipalId 含义定为"申请该角色密钥的账号UIN"，尾号5386 即代申请主体——与受审实现稳定摘要设计一致。角色2941 未判异常，倾向平台托管/服务相关角色。
