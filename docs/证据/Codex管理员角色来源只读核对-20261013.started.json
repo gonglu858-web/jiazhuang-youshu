@@ -1,0 +1,1 @@
+{"startedAt":"2026-10-13T03:26:19.501Z","scriptSha256":"2c314436c43656bf526db10d24bcfca25ae73c35032fcb58775201c42dcfcfe6","authorization":"用户确认继续角色与PrincipalId来源只读核对；不包含管理员写入","plannedApis":["sts.GetCallerIdentity","cam.GetRole","sts.GetCallerIdentity"],"writeAuthorized":false}
