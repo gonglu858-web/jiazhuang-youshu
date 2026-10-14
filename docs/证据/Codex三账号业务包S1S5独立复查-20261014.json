@@ -1,0 +1,179 @@
+{
+  "reviewedCommit": "afa409c",
+  "reviewBasis": "5ed9f60",
+  "implementationSha256": "c36643a3661f8c97aea8c5b18d58bf6ee25f6c77307bdeecca8d31527746a703",
+  "generatedAt": "2026-10-14T08:23:04.969Z",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/codex-afa-96e8a9a0-d75e-4b58-9e40-230f02af31ef",
+  "verificationKind": "offline synthetic files/time only; no SDK/platform/real identity",
+  "results": [
+    {
+      "id": "C01_guard",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityHits": 2
+      }
+    },
+    {
+      "id": "C02_S1_S2_positive_E_X",
+      "assertionsPassed": true,
+      "actual": [
+        {
+          "window": "E",
+          "receipt": "sbx-create-project:3ec4eba4ed51fc46b4749590790781f05b675014",
+          "files": 24,
+          "closeFiles": 23,
+          "reuseWrites": 0,
+          "resumeWrites": 1,
+          "planBytesPreserved": true
+        },
+        {
+          "window": "X",
+          "receipt": "sbx-create-project:3ec4eba4ed51fc46b4749590790781f05b675014",
+          "files": 24,
+          "closeFiles": 23,
+          "reuseWrites": 0,
+          "resumeWrites": 1,
+          "planBytesPreserved": true
+        }
+      ]
+    },
+    {
+      "id": "C03_S1_wrong_receipts_zero_write",
+      "assertionsPassed": true,
+      "actual": [
+        {
+          "receipt": "sbx-create-project:e51c01e41ea99bd829af9dc66fe30b415790ebed",
+          "code": "BTP_PLAN_PROJECT_INVALID",
+          "outputCreated": false
+        },
+        {
+          "receipt": "unrelated_receipt_123456",
+          "code": "BTP_PLAN_PROJECT_INVALID",
+          "outputCreated": false
+        },
+        {
+          "receipt": null,
+          "code": "BTP_PLAN_PROJECT_INVALID",
+          "outputCreated": false
+        }
+      ]
+    },
+    {
+      "id": "C04_S2_relative_paths_zero_write",
+      "assertionsPassed": true,
+      "actual": [
+        {
+          "target": "participant",
+          "code": "BTP_PLAN_USER_INVALID",
+          "outputCreated": false
+        },
+        {
+          "target": "project",
+          "code": "BTP_PLAN_PROJECT_INVALID",
+          "outputCreated": false
+        }
+      ]
+    },
+    {
+      "id": "C05_S3_fixed_plan_before_read",
+      "assertionsPassed": true,
+      "actual": {
+        "matrix": [
+          {
+            "name": "replacement.json",
+            "code": "BTP_MANIFEST_INVALID",
+            "nonManifestReads": 0
+          },
+          {
+            "name": "./plan.json",
+            "code": "BTP_MANIFEST_INVALID",
+            "nonManifestReads": 0
+          },
+          {
+            "name": "..\\escape.json",
+            "code": "BTP_MANIFEST_INVALID",
+            "nonManifestReads": 0
+          }
+        ],
+        "omittedFieldUsesFixedPlanJson": true,
+        "normalOk": true
+      }
+    },
+    {
+      "id": "C06_S4_close_junction_zero_follow",
+      "assertionsPassed": true,
+      "actual": {
+        "normalNaNClockOk": true,
+        "junctionOk": false,
+        "fileReads": 0,
+        "targetUnchanged": true
+      }
+    },
+    {
+      "id": "C07_S5_partial_and_race_actual_facts",
+      "assertionsPassed": true,
+      "actual": [
+        {
+          "mode": "partial",
+          "code": "EIO",
+          "written": [
+            "server/index.js",
+            "server/gate.js"
+          ],
+          "wroteFiles": 2,
+          "partialWrites": [
+            {
+              "rel": "server/gate.js",
+              "bytesOnDisk": 11
+            }
+          ],
+          "sideEffect": null,
+          "actualTargetBytes": 11
+        },
+        {
+          "mode": "race",
+          "code": "EEXIST",
+          "written": [
+            "server/index.js"
+          ],
+          "wroteFiles": 1,
+          "partialWrites": null,
+          "sideEffect": "EEXIST:目标已被他人创建，未计入本轮写入，未覆盖未删除",
+          "actualTargetBytes": 12
+        }
+      ]
+    },
+    {
+      "id": "C08_clock_and_closed_controls",
+      "assertionsPassed": true,
+      "actual": {
+        "matrix": [
+          {
+            "mode": "expired",
+            "ok": false,
+            "count": 2
+          },
+          {
+            "mode": "nan",
+            "ok": false,
+            "count": 2
+          },
+          {
+            "mode": "throw",
+            "ok": false,
+            "count": 2
+          }
+        ],
+        "closeIndependentOfBrokenManifestAndNaN": true,
+        "preflightConflictUnchanged": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "assertionsPassed": 8,
+    "sensitivityHits": 2,
+    "unexpectedAttempts": 0,
+    "localClosureChecksPassed": true
+  }
+}
