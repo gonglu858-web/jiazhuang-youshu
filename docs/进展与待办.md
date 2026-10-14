@@ -1,3 +1,14 @@
+## 2026-10-14 三账号独立业务测试包本地准备完成（仅本地实现与合成验证，自测通过、待 Codex 审查；云端未放行）
+
+依据 docs/WorkBuddy任务-三账号独立业务测试包本地准备-20261013.md 与 docs/Codex方案-独立测试项目与管家师傅业务验证-20261013.md（接手 master/280ed72）。
+
+- **新增工具** `miniapp/scripts/package-business-test.cjs`：P/E/X 三窗口候选生成/组装——38 个受审源文件与钉定清单（package-sandbox-registration 的 PINNED_FACTS）逐字节核对后，仅做受审配置替换与动作收窄（唯一锚点替换，锚点缺失/多处命中即拒）；E/X 的 projectId 必须等于由 businessRoundId 确定性推导的 p_sbx_+32hex（project-guard 同算法），绑定不符 BTP_PLAN_PROJECT_INVALID 拒绝；窗口 ≤2 小时；manifest 内容寻址（无时间戳，重复构建字节一致）。
+- **三窗口候选**：P 准备（createProject/assignManager/邀请链，phase 固定 prepare）；E 基本安排（createSchedule/updateSchedule/cancelSchedule+只读，phase 固定 execute）；X 专用 V07 移出（cancelSchedule/removeMember+只读；前端 driver 变换 TEST_CASES=Object.freeze(V07_CASES)，仅 V07-A/B 可运行，V06 开放用例被 TEST_DRIVER_UNKNOWN_CASE 零发送拒绝——不附带开放 V06）。各窗口 19 候选文件+19 配对关闭文件，关闭包独立可检查。
+- **相称测试 7/7**（business-test-package.test.cjs）：来源零漂移、三窗口构建/checkDir、可达动作块收窄断言、roundId↔projectId 绑定反例、窗口/非法输入零写、P 完整正向链（建项目→管家→师傅，候选合成于 Node vm+合成 db）、E 完整正向链（安排创建→调整→取消）、X 驱动绑定与 V06 拒绝、同轮接续门槛（V07-A candidate 后同候选 V07-B 零发送阻断，须人工云端核对接续；独立轮次可达）、Page 级测试卡可见。
+- **收尾证据 10/10**：docs/证据/三账号业务测试包本地准备-20261014.cjs——默认仅 stdout、--out wx 独占新建不覆盖、运行时记录受测实现内容 SHA-256（不硬编码提交号）；守卫探针 5 通道各 1、业务期意外尝试 0。验证口径分述：合成验证（候选 Node vm+合成 db/合成 wx 传输，P/E 完整链通过）；SDK 本地转换未触达；真实云函数部署、真实 wx.cloud.callFunction、project-guard 云端建库、真实微信三账号登录均未验证——测试全绿不等于平台可用。
+- 未改：源页面、client、驱动、云函数/vendor、管理员链及旧生成器（38 文件哈希钉定核对零漂移）；既有排他保存、期限、未知结果和禁止重试语义保持。三账号计划为合成用户（openid→u_sha256(appId:openid) 派生）；两位参与者完整身份尚待核实，不猜测、不沿用历史尾号授权；双师傅改派不在范围。
+- 边界：仅本地实现与合成验证；未联网、未取真实凭据、未读认证缓存、未运行真实 API/数据库、未登记/初始化/建项目或资源/邀请/改权限或费用、未部署/预览/上传/启用入口、未清缓存、未处理 A/B/C、未生成真实批准。artifacts 候选可随时重建（已 gitignore）。回归：driver 98/98、isolation 41/41、frontend 48/48 均 0 失败。docs/当前状态.md 已更新为本轮入口。
+
 ## 2026-10-13 三账号独立业务验证方案已整理：仅本地文档，待制品准备
 
 - 接手378335e；用户请求整理独立测试项目与管家／师傅业务验证方案。本轮只核对源码、需求和既有验收／成功证据，无联网、凭据、云调用或业务写入。
