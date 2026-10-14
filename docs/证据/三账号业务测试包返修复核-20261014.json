@@ -1,0 +1,132 @@
+{
+  "reviewedCommit": "3cbdd7f",
+  "fixedAgainst": "b5aff19 R1-R6",
+  "generatedAt": "2026-10-14T04:14:28.875Z",
+  "implementationSha256": "b35c86b6fecd98cc43125c1a38684facf56450b29eaca2c0defc865c5c91e672",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/btp-r116-cd2ceb18-91a9-4e8f-acce-92de1fa1d51f",
+  "verificationKind": "offline synthetic verification; no SDK/platform/credentials; SDK local transform NOT executed",
+  "terminologyNote": "project-guard 创建业务项目记录不等于创建数据库/集合；集合初始化未执行",
+  "results": [
+    {
+      "id": "G0_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "unexpectedBefore": 0,
+        "note": "探针在断言内实际触发；余项报告 unexpectedGuardAttempts"
+      }
+    },
+    {
+      "id": "S1_source_and_artifact_counts",
+      "assertionsPassed": true,
+      "actual": {
+        "pinnedSourceFiles": 19,
+        "assemblyPinnedFiles": 4,
+        "candidateArtifacts": 23,
+        "planFile": "plan.json",
+        "closeFiles": 23,
+        "statement": "钉定来源 19+4=23 文件；候选制品 23 + plan.json；不称 38 源文件"
+      }
+    },
+    {
+      "id": "S2_r1_check_rebuild_and_close_independent",
+      "assertionsPassed": true,
+      "actual": {
+        "normalCheckOk": true,
+        "emptyRejected": true,
+        "syncedHashRejected": true,
+        "flipRejected": true,
+        "closeIndependent": {
+          "ok": true,
+          "files": 23
+        }
+      }
+    },
+    {
+      "id": "S3_r2_dynamic_clock_boundaries",
+      "assertionsPassed": true,
+      "actual": {
+        "validRealCheckOk": true,
+        "expiredBuild": "BTP_WINDOW_EXPIRED(零写,目录未创建)",
+        "expiredCheck": "problems 含 BTP_WINDOW_EXPIRED",
+        "boundaryEqualExpired": true,
+        "nanClock": "BTP_CLOCK_INVALID",
+        "syntheticControlOk": true
+      }
+    },
+    {
+      "id": "S4_r3_precheck_exclusive_and_written_facts",
+      "assertionsPassed": true,
+      "actual": {
+        "precheckConflict": "BTP_OUT_CONFLICT(目录快照不变,零写)",
+        "eioFacts": {
+          "wroteFiles": 2,
+          "written": [
+            "server/index.js",
+            "server/gate.js"
+          ]
+        },
+        "legalResume": {
+          "written": 1,
+          "reused": 47,
+          "snapshotRestored": true,
+          "checkOk": true
+        }
+      }
+    },
+    {
+      "id": "S5_r4_full_project_and_real_chain",
+      "assertionsPassed": true,
+      "actual": {
+        "fullProject": {
+          "appJsonPages": [
+            "pages/schedule-sandbox/schedule-sandbox"
+          ],
+          "roots": [
+            "frontend/",
+            "server/"
+          ]
+        },
+        "pageNarrowing": {
+          "P": true,
+          "E": true,
+          "X": "V07-A/B only"
+        },
+        "chain": {
+          "appReady": true,
+          "eCreateScheduleWritten": 1,
+          "assignManagerDenied": "SANDBOX_ACTION_NOT_ALLOWED_IN_PHASE"
+        },
+        "sameRoundX": "V07-A→acceptTestCloudReview→cancelSchedule→V07-B（同项目同轮同候选）",
+        "v06ZeroSend": true,
+        "peDriverClosed": true
+      }
+    },
+    {
+      "id": "S6_r5_readback_evidence_binding",
+      "assertionsPassed": true,
+      "actual": {
+        "noEvidenceRejected": true,
+        "badKindRejected": true,
+        "badDigestRejected": true,
+        "evidencePlusReadbackAccepted": true,
+        "readbackMismatchRejected": true,
+        "ewithoutReadbackRejected": true,
+        "sourceInPlanDigest": true
+      }
+    },
+    {
+      "id": "S7_r6_wording_and_artifact_hygiene",
+      "assertionsPassed": true,
+      "actual": {
+        "noDebugOutput": true,
+        "terminologyFixed": true,
+        "contentAddressed": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "assertionsPassed": 8,
+    "unexpectedGuardAttempts": 0
+  }
+}
