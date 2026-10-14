@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-10-14T05:14:49.787Z",
+  "implementationSha256": "d0733cfb7cac8ba383ce0011bda70552fe7687a1d249cf40abfba8776a71b7f2",
+  "implementationPath": "miniapp/scripts/package-business-test.cjs",
+  "reviewBasis": "docs/Codex复查-三账号业务包R1R6返修-20261014.md §3（R1-a/R2-a/R3-a/b/c/R4-a/R5-a/R6-a；接手参考 be993ce）",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/btpx2-137c5350-70ec-4b69-b54a-a7a2a4b88519",
+  "verificationKind": "offline synthetic verification; no SDK/platform/credentials; SDK local transform NOT executed",
+  "terminologyNote": "project-guard 创建业务项目记录不等于创建数据库/集合；集合初始化未执行；R5-a 记录核对为本地结构/绑定核对，不替代平台侧核验",
+  "results": [
+    {
+      "id": "G0_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityProbeHits": 2,
+        "note": "敏感性探针实际触发并单独记账；业务期基线自此固定"
+      }
+    },
+    {
+      "id": "N1_r1a_plan_entry_verified",
+      "assertionsPassed": true,
+      "actual": {
+        "tamperedEntryRejected": true,
+        "controlOk": true
+      }
+    },
+    {
+      "id": "N2_r2a_check_clock_rechecks",
+      "assertionsPassed": true,
+      "actual": {
+        "midCheckExpiryRejected": true,
+        "dateNowCalls": 2,
+        "nanRejected": true,
+        "controlOk": true
+      }
+    },
+    {
+      "id": "N3_r3a_dir_placeholder_and_extra",
+      "assertionsPassed": true,
+      "actual": {
+        "dirPlaceholderRejected": "BTP_OUT_CONFLICT(全树快照不变,零写)",
+        "extraDirRejected": true,
+        "noCleanup": true
+      }
+    },
+    {
+      "id": "N4_r3b_root_junction_rejected",
+      "assertionsPassed": true,
+      "actual": {
+        "rootJunctionRejected": true,
+        "targetFilesAfter": 0,
+        "checkAndCheckCloseRefuse": true
+      }
+    },
+    {
+      "id": "N5_r3c_write_side_effects",
+      "assertionsPassed": true,
+      "actual": {
+        "partialWrite": {
+          "wroteFiles": 1,
+          "written": null,
+          "bytesOnDisk": 7
+        },
+        "raceEexist": {
+          "notCounted": true,
+          "notOverwritten": true,
+          "sideEffect": "EEXIST:目标已被他人创建，未计入本轮写入，未覆盖未删除"
+        }
+      }
+    },
+    {
+      "id": "N6_r4a_close_assembly_and_closed_chain",
+      "assertionsPassed": true,
+      "actual": {
+        "closeRoots": [
+          "frontend/",
+          "server/"
+        ],
+        "closePages": [
+          "pages/schedule-sandbox/schedule-sandbox"
+        ],
+        "closeFiles": 23,
+        "tamperRejected": true,
+        "closedChain": {
+          "appLoaded": true,
+          "entryAllowed": false,
+          "driverSent": 0,
+          "serverCode": "SANDBOX_DISABLED"
+        },
+        "clockIndependent": true
+      }
+    },
+    {
+      "id": "N7_r5a_record_verification",
+      "assertionsPassed": true,
+      "actual": {
+        "legalControlAccepted": true,
+        "rejected": [
+          "noRecordPath",
+          "missingFile",
+          "digestMismatch",
+          "syntheticMarked",
+          "subjectMismatch",
+          "missingReceipt",
+          "projectIdMismatch"
+        ],
+        "syntheticModeUnchanged": true
+      }
+    },
+    {
+      "id": "N8_r6a_caught_attempt_counted",
+      "assertionsPassed": true,
+      "actual": {
+        "injectedCaughtAttempt": 1,
+        "copyReportedUnexpected": 1,
+        "copyExitCode": 1,
+        "copyGuardAccounting": {
+          "sensitivityProbeHits": 2,
+          "businessPeriodUnexpectedAttempts": 1,
+          "caughtAttemptsCounted": true,
+          "note": "敏感性与业务期命中分别记账；业务期命中含被调用方捕获的尝试（N8 反例直接证明）"
+        }
+      }
+    },
+    {
+      "id": "N9_closed_controls",
+      "assertionsPassed": true,
+      "actual": {
+        "filesOnDisk": 48,
+        "manifestEntries": 24,
+        "resume": {
+          "written": 1,
+          "reused": 47
+        },
+        "expiredBuild": "BTP_WINDOW_EXPIRED(目录未创建)",
+        "modeFlipRejected": true
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true,
+    "note": "敏感性与业务期命中分别记账；业务期命中含被调用方捕获的尝试（N8 反例直接证明）"
+  },
+  "summary": {
+    "total": 10,
+    "assertionsPassed": 10,
+    "unexpectedGuardAttempts": 0
+  }
+}

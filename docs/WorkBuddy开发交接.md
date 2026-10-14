@@ -1,3 +1,9 @@
+## 2026-10-14 三账号业务测试包R1–R6剩余出口定点返修完成（第二轮，仅本地合成验证，待Codex复核；云端未放行）
+
+- 依据 docs/Codex复查-三账号业务包R1R6返修-20261014.md §3，接手 master be993ce（受审实现 c62f32d）。仅改 package-business-test.cjs、business-test-package.test.cjs、操作说明、新证据与状态记录；源App/Page/client/驱动、云函数/vendor、管理员链、P4、旧生成器、历史证据零改动。
+- 修复与实测：R1-a manifest.files 条目级核对 plan.json（bytes/sha256 篡改拒绝、合法对照通过）；R2-a check 逐文件读取与最终成功返回前重查时钟（中途到期/NaN/抛错均不成功，复用/续建时效与写事实保留）；R3 目录占位/多余目录/链接预检拒绝且全树快照不变，assertRealDirChain 拒绝 junction/symlink 越界（build/check/checkClose 均拒、目标零写），排他写后部分写记录 bytesOnDisk、竞态 EEXIST 不算本轮写入、不覆盖不清理用户目录；R4-a 关闭包按受审变换重建唯一关闭页面与完整依赖（23 文件 checkClose 通过、篡改拒绝、关闭链可加载但 entryAllowed=false 零发送、NaN 时钟下 checkCloseDir 不受影响）；R5-a verifyEvidenceRecord 本地逐条核对来源记录内容与摘要及身份/角色/目标/项目/持久回执绑定，缺 recordPath 拒绝真实候选生成，合成模式保持；R6-a 新证据守卫记账区分敏感性（2 次）与业务期意外（0），N8 内存副本反例证明被 catch 的意外尝试计数 1 且 exit 1。
+- 复跑：交付测试 17/17、新证据 10/10 exit0（控制组 48 文件、续建 1/复用 47、过期真实构建零写且目录未创建）。受测实现运行时摘要 d0733cfb7cac8ba383ce0011bda70552fe7687a1d249cf40abfba8776a71b7f2。
+- 未验证项：SDK 本地转换未执行、平台部署/真实传输/真实三账号身份未验证；R5-a 本地记录核对不替代平台侧核验。不进入真实P执行包，不重复登记/管理员初始化，不处理A/B/C。真实操作仍须执行包与用户确认。
 ## 2026-10-14 Codex复查c62f32d：部分修复有效，R1–R6仍有定点缺口
 
 - 依据 docs/Codex复查-三账号业务包R1R6返修-20261014.md。仅审查与记录，未改受审工具/测试/业务源/旧生成器/历史证据。

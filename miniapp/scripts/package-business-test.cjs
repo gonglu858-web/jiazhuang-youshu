@@ -21,6 +21,16 @@
 //     E/X 的 **P 项目回读证据**（绑定 roundId/projectId/marker/记录摘要）；
 //     人工来源声明（source 文本）与回读证据严格区分，缺资料明确拒绝。
 //     来源与证据全部计入 planDigest 稳定摘要。
+// R5-a：真实模式必须读取**实际来源记录文件**并核对内容摘要、身份/角色、
+//     AppID/环境、轮次/项目与持久回执绑定；kind 标签 + 64 位摘要字符串
+//     不构成回读核实；记录标记为合成时不得为真实候选背书。
+//
+// 剩余出口返修（Codex 复查 20261014 §3）：R1-a plan.json 清单条目核对；
+// R2-a check 读取边界与最终返回前重查时钟；R3-a 目录占位/多余目录预检零写、
+// R3-b 输出根及祖先链接/junction 拒绝、R3-c 部分写副作用事实（竞态 EEXIST
+// 不算本轮写入）；R4-a 关闭包同样受审装配变换并由 checkCloseDir 独立重建；
+// R5-a 来源记录实体核对；R6-a 由新证据脚本承担（守卫基线前置、被捕获的
+// 意外尝试计数、运行时实现摘要定位受测内容）。
 //
 // 其余约束沿用原版：只做受审变换（唯一锚点替换）、来源漂移防护、
 // roundId↔projectId 绑定、配对关闭包、输出仅限 artifacts 之下、
@@ -187,13 +197,13 @@ const ROLES = Object.freeze(['owner', 'manager', 'worker']);
 const EVIDENCE_KIND = 'readback-record';
 
 /** 校验单个角色回读证据结构（真实模式必填；合成模式可选但出现即须合规）。 */
-function checkEvidence(role, ev) {
+function checkEvidence(role, ev, ctx) {
   if (!ev || typeof ev !== 'object' || Array.isArray(ev)) {
     fail(ERR.PLAN_USER_INVALID, role + ' 缺少回读证据对象（participantEvidence 或 users[role].sourceEvidence）。');
   }
   const keys = Object.keys(ev);
   for (const k of keys) {
-    if (!['kind', 'recordSha256', 'note'].includes(k)) {
+    if (!['kind', 'recordSha256', 'recordPath', 'note'].includes(k)) {
       fail(ERR.PLAN_USER_INVALID, role + ' 回读证据含未知字段：' + k);
     }
   }
@@ -206,17 +216,111 @@ function checkEvidence(role, ev) {
   if (ev.note !== undefined && isPlaceholder(ev.note)) {
     fail(ERR.PLAN_USER_INVALID, role + ' 回读证据 note 为占位。');
   }
-  return { kind: ev.kind, recordSha256: ev.recordSha256, note: ev.note || '' };
+  const info = { kind: ev.kind, recordSha256: ev.recordSha256, recordPath: null, note: ev.note || '' };
+  if (ev.recordPath !== undefined) {
+    // R5-a：实际读取来源记录并核对内容摘要与绑定（两种模式一致；真实模式必查）
+    const r = verifyEvidenceRecord(role + ' 回读记录', ERR.PLAN_USER_INVALID, ev.recordPath,
+      ev.recordSha256, ctx.baseDir, {
+        schema: 'business-test-participant-record/1',
+        subject: { role, userId: ctx.userId },
+        businessRoundId: ctx.businessRoundId,
+        requireReceipt: false
+      });
+    info.recordPath = r.abs;
+  } else if (!ctx.synthetic) {
+    fail(ERR.PLAN_USER_INVALID,
+      role + ' 真实候选必须提供可本地核对的来源记录文件（recordPath）；' +
+      '64 位摘要字符串或 kind 标签不等于已核对记录。');
+  }
+  return info;
 }
 
-/** 校验 E/X 的 P 项目回读证据（绑定 roundId/projectId/marker/记录摘要）。 */
-function checkProjectReadback(raw, projectId) {
+/**
+ * R5-a：读取并核对一份来源记录文件（participant / project-readback 通用）。
+ * 核对：文件存在且为普通文件；内容 SHA-256 与声明一致；JSON 结构与未知字段；
+ * 记录未标记合成；AppID/环境、轮次、身份/角色/项目绑定与计划一致；非占位正文。
+ */
+function verifyEvidenceRecord(label, errCode, recordPath, expectSha, baseDir, bind) {
+  if (typeof recordPath !== 'string' || !recordPath.trim()) {
+    fail(errCode, label + ' 缺少可本地核对的来源记录文件路径（recordPath）。');
+  }
+  const abs = path.isAbsolute(recordPath) ? path.resolve(recordPath) : path.resolve(baseDir, recordPath);
+  let st = null;
+  try { st = fs.lstatSync(abs); } catch (_) { st = null; }
+  if (!st || !st.isFile()) fail(errCode, label + ' 来源记录文件不存在或不是普通文件：' + abs);
+  const buf = fs.readFileSync(abs);
+  if (sha256Buffer(buf) !== expectSha) {
+    fail(errCode, label + ' 来源记录内容摘要与声明 recordSha256 不一致（自报摘要不等于已核对记录）。');
+  }
+  let rec;
+  try { rec = JSON.parse(buf.toString('utf8')); } catch (error) {
+    fail(errCode, label + ' 来源记录不是合法 JSON：' + error.message);
+  }
+  if (!rec || typeof rec !== 'object' || Array.isArray(rec)) {
+    fail(errCode, label + ' 来源记录必须是 JSON 对象。');
+  }
+  const allowed = ['schema', 'synthetic', 'appId', 'envId', 'businessRoundId',
+    'subject', 'projectId', 'projectReadyMarker', 'capturedAt', 'content', 'persistentReceipt', 'note'];
+  for (const k of Object.keys(rec)) {
+    if (!allowed.includes(k)) fail(errCode, label + ' 来源记录含未知字段：' + k);
+  }
+  if (rec.schema !== bind.schema) {
+    fail(errCode, label + ' 来源记录 schema 必须是 ' + bind.schema + '。');
+  }
+  if (rec.synthetic !== false) {
+    fail(errCode, label + ' 来源记录标记为合成或未声明真实，不能为真实候选背书。');
+  }
+  if (rec.appId !== FIXED_TARGET.appId || rec.envId !== FIXED_TARGET.envId) {
+    fail(errCode, label + ' 来源记录 AppID/环境与受审固定目标不一致。');
+  }
+  if (rec.businessRoundId !== bind.businessRoundId) {
+    fail(errCode, label + ' 来源记录轮次与计划 businessRoundId 不一致。');
+  }
+  const subject = rec.subject || {};
+  for (const k of Object.keys(subject)) {
+    if (!['role', 'userId'].includes(k)) fail(errCode, label + ' subject 含未知字段：' + k);
+  }
+  if (subject.role !== bind.subject.role || subject.userId !== bind.subject.userId) {
+    fail(errCode, label + ' 来源记录身份/角色（' + JSON.stringify(subject) +
+      '）与计划绑定（' + JSON.stringify(bind.subject) + '）不一致。');
+  }
+  if (bind.projectId !== undefined && rec.projectId !== bind.projectId) {
+    fail(errCode, label + ' 来源记录 projectId 与计划不一致。');
+  }
+  if (bind.projectReadyMarker !== undefined && rec.projectReadyMarker !== bind.projectReadyMarker) {
+    fail(errCode, label + ' 来源记录 projectReadyMarker 与计划持久标记不一致。');
+  }
+  if (typeof rec.capturedAt !== 'string' || !Number.isFinite(Date.parse(rec.capturedAt))) {
+    fail(errCode, label + ' 来源记录缺少有效 capturedAt。');
+  }
+  if (isPlaceholder(rec.content)) {
+    fail(errCode, label + ' 来源记录缺少非占位回读正文（content）。');
+  }
+  if (rec.persistentReceipt !== undefined) {
+    const pr = rec.persistentReceipt;
+    if (!pr || typeof pr !== 'object' || Array.isArray(pr)) {
+      fail(errCode, label + ' persistentReceipt 必须是对象。');
+    }
+    for (const k of Object.keys(pr)) {
+      if (!['recordId', 'note'].includes(k)) fail(errCode, label + ' persistentReceipt 含未知字段：' + k);
+    }
+    if (typeof pr.recordId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{5,}$/.test(pr.recordId)) {
+      fail(errCode, label + ' persistentReceipt.recordId 缺失或格式无效（project-guard 业务项目记录回执编号）。');
+    }
+  } else if (bind.requireReceipt) {
+    fail(errCode, label + ' 缺少持久回执关联（persistentReceipt.recordId）。');
+  }
+  return { abs, rec };
+}
+
+/** 校验 E/X 的 P 项目回读证据（绑定 roundId/projectId/marker/记录摘要 + 实体记录核对）。 */
+function checkProjectReadback(raw, projectId, ctx) {
   const rb = raw.projectReadback;
   if (!rb || typeof rb !== 'object' || Array.isArray(rb)) {
     fail(ERR.PLAN_PROJECT_INVALID, 'E/X 计划缺少 projectReadback（P 项目回读证据）；ID 公式推算不等于已回读。');
   }
   for (const k of Object.keys(rb)) {
-    if (!['source', 'projectId', 'businessRoundId', 'projectReadyMarker', 'recordSha256', 'note'].includes(k)) {
+    if (!['source', 'projectId', 'businessRoundId', 'projectReadyMarker', 'recordSha256', 'recordPath', 'note'].includes(k)) {
       fail(ERR.PLAN_PROJECT_INVALID, 'projectReadback 含未知字段：' + k);
     }
   }
@@ -238,10 +342,29 @@ function checkProjectReadback(raw, projectId) {
   if (rb.note !== undefined && isPlaceholder(rb.note)) {
     fail(ERR.PLAN_PROJECT_INVALID, 'projectReadback.note 为占位。');
   }
-  return {
+  const info = {
     source: rb.source, projectId: rb.projectId, businessRoundId: rb.businessRoundId,
-    projectReadyMarker: rb.projectReadyMarker, recordSha256: rb.recordSha256, note: rb.note || ''
+    projectReadyMarker: rb.projectReadyMarker, recordSha256: rb.recordSha256,
+    recordPath: null, note: rb.note || ''
   };
+  if (rb.recordPath !== undefined) {
+    // R5-a：实际核对 P 项目回读记录（内容摘要、AppID/环境、轮次/项目/标记、持久回执）
+    const r = verifyEvidenceRecord('P 项目回读记录', ERR.PLAN_PROJECT_INVALID, rb.recordPath,
+      rb.recordSha256, ctx.baseDir, {
+        schema: 'business-test-project-readback-record/1',
+        subject: { role: 'owner', userId: ctx.ownerUserId },
+        businessRoundId: raw.businessRoundId,
+        projectId,
+        projectReadyMarker: raw.projectReadyMarker,
+        requireReceipt: true
+      });
+    info.recordPath = r.abs;
+  } else if (!raw.synthetic) {
+    fail(ERR.PLAN_PROJECT_INVALID,
+      '真实候选必须提供可本地核对的 P 项目回读记录文件（recordPath）；' +
+      '项目 ID 公式与自报摘要不等于已核对记录。');
+  }
+  return info;
 }
 
 function readPlan(planPath, windowId) {
@@ -283,14 +406,21 @@ function readPlan(planPath, windowId) {
   }
   const ids = ROLES.map(r => users[r].userId);
   if (new Set(ids).size !== 3) fail(ERR.PLAN_USER_INVALID, '三个账号必须互不相同。');
-  // 回读证据（R5）：真实模式必填；合成模式可选但出现即须合规
+  // 回读证据（R5）：真实模式必填且必须附实际记录文件；合成模式可选但出现即须合规
+  const evidenceCtx = {
+    synthetic: raw.synthetic,
+    baseDir: path.dirname(path.resolve(planPath)),
+    businessRoundId: raw.businessRoundId
+  };
   let evidenceBound = false;
   const evidence = {};
   for (const role of ROLES) {
     const ev = users[role].sourceEvidence
       || (raw.participantEvidence && raw.participantEvidence[role]);
-    if (ev) { evidence[role] = checkEvidence(role, ev); evidenceBound = true; }
-    else if (!raw.synthetic) {
+    if (ev) {
+      evidence[role] = checkEvidence(role, ev, { ...evidenceCtx, userId: users[role].userId });
+      evidenceBound = true;
+    } else if (!raw.synthetic) {
       fail(ERR.PLAN_USER_INVALID, role + ' 真实候选缺少可核对的回读证据；非空来源声明不等于来源核实。');
     }
   }
@@ -326,9 +456,12 @@ function readPlan(planPath, windowId) {
         'projectId 与 businessRoundId 不绑定（应为 ' + derived + '）；不得指向其他轮次的项目。');
     }
     projectId = raw.projectId;
-    // P 项目回读证据：真实模式必填；合成模式可选但出现即须绑定一致
+    // P 项目回读证据：真实模式必填且必须附实际记录文件；合成模式可选但出现即须绑定一致
     if (!raw.synthetic || raw.projectReadback) {
-      projectReadback = checkProjectReadback(raw, projectId);
+      projectReadback = checkProjectReadback(raw, projectId, {
+        ...evidenceCtx,
+        ownerUserId: users.owner.userId
+      });
     }
   }
   return Object.freeze({
@@ -634,32 +767,75 @@ function planDigest(plan) {
 }
 
 // ── R3：全量预检 + 排他新建 ─────────────────────────────────────────────────
-/** 递归枚举 dir 下现有文件（rel 用 '/'，含 lstat 符号链接检测）。 */
+/**
+ * 递归枚举 dir 下现有条目（rel 用 '/'）。目录与符号链接本身也登记，
+ * 预检可见目录占位/多余目录/链接（R3-a）。dir 本身不存在时返回空表。
+ */
 function listExisting(dir) {
-  const out = new Map(); // rel -> {abs, isSymlink, isFile}
+  const out = new Map(); // rel -> {abs, isSymlink, isDir, isFile}
   const walk = d => {
     for (const name of fs.readdirSync(d)) {
       const abs = path.join(d, name);
       const rel = path.relative(dir, abs).split(path.sep).join('/');
       const st = fs.lstatSync(abs);
-      if (st.isSymbolicLink()) { out.set(rel, { abs, isSymlink: true, isFile: false }); continue; }
-      if (st.isDirectory()) { walk(abs); continue; }
-      out.set(rel, { abs, isSymlink: false, isFile: st.isFile() });
+      if (st.isSymbolicLink()) { out.set(rel, { abs, isSymlink: true, isDir: false, isFile: false }); continue; }
+      if (st.isDirectory()) { out.set(rel, { abs, isSymlink: false, isDir: true, isFile: false }); walk(abs); continue; }
+      out.set(rel, { abs, isSymlink: false, isDir: false, isFile: st.isFile() });
     }
   };
   if (fs.existsSync(dir)) walk(dir);
   return out;
 }
 
+const isExpectedPrefix = (rel, expectedKeys) =>
+  expectedKeys.some(k => k.startsWith(rel + '/'));
+
 /**
- * 全量预检：既有文件必须属于预期集、内容逐字节一致；多余文件、目录占位、
- * 符号链接一律冲突。**预检阶段零写入**——预存冲突目录快照保持不变。
+ * R3-b：输出根及其祖先链的实际文件系统核对——每一层存在则必须是真实目录
+ * 且不是符号链接/junction（junction 在 lstat 下即符号链接），拒绝借链接
+ * 绕过输出边界；不跟随链接、不清理任何目录。不存在的前缀层交由后续创建。
+ */
+function assertRealDirChain(target, label) {
+  const chain = [];
+  let cur = path.resolve(target);
+  for (;;) {
+    chain.push(cur);
+    if (cur === ROOT || chain.length > 64) break;
+    const parent = path.dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  chain.reverse();
+  for (const p of chain) {
+    let st = null;
+    try { st = fs.lstatSync(p); } catch (_) { continue; } // 不存在的层由后续 mkdir/写时失败
+    if (st.isSymbolicLink()) {
+      fail(ERR.OUT_CONFLICT, label + ' 路径含符号链接/junction，拒绝绕过输出边界：' + p);
+    }
+    if (!st.isDirectory()) {
+      fail(ERR.OUT_CONFLICT, label + ' 路径存在非目录占位，不覆盖：' + p);
+    }
+  }
+}
+
+/**
+ * 全量预检：既有文件必须属于预期集、内容逐字节一致；目录占位（含目录冒名
+ * 预期文件）、多余目录、符号链接一律冲突。**预检阶段零写入**——预存冲突
+ * 目录全树快照保持不变。
  */
 function precheckOutDir(outDir, expected) {
   const io = [];
   const existing = listExisting(outDir);
+  const expectedKeys = [...expected.keys()];
   for (const [rel, info] of existing) {
-    if (!info.isFile) fail(ERR.OUT_CONFLICT, '输出位置存在目录/符号链接，不覆盖：' + rel);
+    if (info.isSymlink) fail(ERR.OUT_CONFLICT, '输出位置存在符号链接/junction，不跟随、不覆盖：' + rel);
+    if (info.isDir) {
+      if (!isExpectedPrefix(rel, expectedKeys)) {
+        fail(ERR.OUT_CONFLICT, '输出位置存在目录占位/多余目录（不清理、不覆盖）：' + rel);
+      }
+      continue;
+    }
+    if (!info.isFile) fail(ERR.OUT_CONFLICT, '输出位置存在非常规文件系统对象：' + rel);
     if (!expected.has(rel)) fail(ERR.OUT_CONFLICT, '输出目录已存在不属于本计划的文件：' + rel);
     const current = fs.readFileSync(info.abs);
     if (!current.equals(expected.get(rel))) {
@@ -670,10 +846,31 @@ function precheckOutDir(outDir, expected) {
   return io;
 }
 
-/** 排他新建：预检确认缺失后仍用 flag:'wx'，竞态下宁可失败不覆盖。 */
-function writeExclusive(abs, buf) {
+/**
+ * 排他新建：预检确认缺失后仍用 flag:'wx'，竞态下宁可失败不覆盖。
+ * R3-c：副作用事实——已独占创建但写入失败（部分写/完整写后报错）的文件
+ * 记入 io（partial 标记）；竞态 EEXIST 的他人文件不算本轮写入，也不覆盖/
+ * 删除解决冲突。
+ */
+function writeExclusive(abs, buf, io, rel) {
   fs.mkdirSync(path.dirname(abs), { recursive: true });
-  fs.writeFileSync(abs, buf, { flag: 'wx' });
+  try {
+    fs.writeFileSync(abs, buf, { flag: 'wx' });
+    io.push({ path: abs, rel, action: 'written', partial: false });
+  } catch (error) {
+    if (error && error.code === 'EEXIST') {
+      // 他人（或并发进程）抢先创建：不是本轮写入，不覆盖、不删除。
+      error.sideEffect = 'EEXIST:目标已被他人创建，未计入本轮写入，未覆盖未删除';
+      throw error;
+    }
+    let st = null;
+    try { st = fs.lstatSync(abs); } catch (_) { st = null; }
+    if (st && st.isFile()) {
+      // 本次排他创建已生效但写入失败：磁盘留下本轮创建的（部分）文件，如实记录
+      io.push({ path: abs, rel, action: 'written', partial: true, bytesOnDisk: st.size });
+    }
+    throw error;
+  }
 }
 
 // ── 组装与写出 ──────────────────────────────────────────────────────────────
@@ -691,18 +888,32 @@ function computeArtifacts(plan, files, transforms) {
   return artifacts;
 }
 
-/** 关闭包条目：交付源码原样（含 app 壳原样），逐字节等于受审基线。 */
+/** 关闭包条目：受审**装配变换**（正确根路径 + 唯一关闭页面；服务端/前端开关保持默认关闭）。 */
+const CLOSE_ASSEMBLY_TRANSFORMS = Object.freeze([
+  {
+    root: 'frontend', file: 'app.json', label: 'app.json.pages',
+    from: APP_JSON_PAGES_ANCHOR,
+    to: '  "pages": [\n    "pages/schedule-sandbox/schedule-sandbox"\n  ],'
+  },
+  {
+    root: 'root', file: 'project.config.json', label: 'project.config.miniprogramRoot',
+    from: '  "miniprogramRoot": "miniprogram/",', to: '  "miniprogramRoot": "frontend/",'
+  },
+  {
+    root: 'root', file: 'project.config.json', label: 'project.config.cloudfunctionRoot',
+    from: '  "cloudfunctionRoot": "cloudfunctions/",', to: '  "cloudfunctionRoot": "server/",'
+  }
+]);
+
 function computeCloseArtifacts(files) {
   const close = new Map();
   for (const rel of SERVER_FILES) {
-    const e = files.get('server/' + rel);
-    close.set('close/server/' + rel, e);
+    close.set('close/server/' + rel, applyFileTransforms(files, 'server', rel, []));
   }
   for (const rel of FRONTEND_FILES) {
-    const e = files.get('frontend/' + rel);
-    close.set('close/frontend/' + rel, e);
+    close.set('close/frontend/' + rel, applyFileTransforms(files, 'frontend', rel, CLOSE_ASSEMBLY_TRANSFORMS));
   }
-  close.set('close/project.config.json', files.get('root/project.config.json'));
+  close.set('close/project.config.json', applyFileTransforms(files, 'root', 'project.config.json', CLOSE_ASSEMBLY_TRANSFORMS));
   return close;
 }
 
@@ -718,6 +929,8 @@ function build(windowId, planPath, outOverride) {
   if (!outDir.startsWith(OUT_ROOT + path.sep)) {
     fail(ERR.OUT_CONFLICT, '输出目录必须位于 ' + OUT_ROOT + ' 之下。');
   }
+  // R3-b：输出根及相关祖先的实际路径/链接边界（junction/symlink 绕过即拒绝）
+  assertRealDirChain(outDir, 'build 输出');
   const io = [];
   try {
     // ── 全部变换与预期文件集先算完（未写盘）──
@@ -754,7 +967,7 @@ function build(windowId, planPath, outOverride) {
       allowedUserIds: plan.allowedUserIds,
       userSourceBinding: plan.synthetic
         ? 'synthetic-declaration-only：账号为合成值，仅人工声明来源，不代表真实人员或批准。'
-        : 'readback-evidence-bound：三账号均带可本地核对的回读证据摘要（recordSha256）。',
+        : 'readback-records-verified：三账号与 P 项目回读记录文件已本地逐条核对（内容摘要、身份/角色、AppID/环境、轮次/项目与持久回执绑定一致）；本地核对不替代平台侧核验。',
       userSources: plan.users.map(u => ({
         role: u.role, userIdTail: u.userId.slice(-6), source: u.source,
         evidence: u.evidence ? { kind: u.evidence.kind, recordSha256: u.evidence.recordSha256 } : null
@@ -771,7 +984,7 @@ function build(windowId, planPath, outOverride) {
       })),
       files: entries,
       closePackage: {
-        note: '配对关闭包：交付源码原样（服务端开关默认关闭、前端配置默认关闭）；可用 --check-close 独立核对，不受开启窗口时效影响。',
+        note: '配对关闭包：受审装配变换（正确根路径 + 唯一关闭页面）；服务端/前端开关保持默认关闭，原门槛不变；可用 --check-close 独立重建核对，不受开启候选或窗口时效影响。',
         files: closeEntries
       },
       boundaries: [
@@ -795,12 +1008,11 @@ function build(windowId, planPath, outOverride) {
       io.push({ path: r.path, action: 'reused' });
       reusedRels.add(r.rel);
     }
-    // ── 排他新建缺失文件（每次写前重读时钟）──
+    // ── 排他新建缺失文件（每次写前重读时钟；副作用事实由 writeExclusive 记入 io）──
     for (const [rel, buf] of expected) {
       if (reusedRels.has(rel)) continue;
       windowClockCheck(plan, 'build.write:' + rel);
-      writeExclusive(path.join(outDir, rel), buf);
-      io.push({ path: path.join(outDir, rel), action: 'written' });
+      writeExclusive(path.join(outDir, rel), buf, io, rel);
     }
     // ── R2 最终返回前时钟守卫 ──
     windowClockCheck(plan, 'build.final');
@@ -820,32 +1032,44 @@ function build(windowId, planPath, outOverride) {
 
 // ── R1：check 从独立受审来源 + 目录内严格计划重建预期制品 ───────────────────
 function checkDir(dir) {
+  // R3-b：检查入口不得认领符号链接/junction 绕过输出边界的目录
+  assertRealDirChain(dir, 'check 输入');
   const manifestPath = path.join(dir, 'manifest.json');
-  if (!fs.existsSync(manifestPath)) fail(ERR.MANIFEST_INVALID, '缺少 manifest.json：' + dir);
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  } catch (error) {
+    fail(ERR.MANIFEST_INVALID, 'manifest.json 无法读取（缺失或目录占位等）：' + error.message);
+  }
   if (manifest.schema !== MANIFEST_SCHEMA) fail(ERR.MANIFEST_INVALID, 'manifest schema 不符（须 ' + MANIFEST_SCHEMA + '）。');
   const problems = [];
   const bad = msg => problems.push(msg);
+  // R2-a：check 各读取边界与最终成功返回前都重查当下时钟（中途到期/NaN/抛错均不得带成功结论）
+  let plan = null;
+  let clockStopped = false;
+  const clockCheck = at => {
+    if (!plan || clockStopped) return;
+    try {
+      windowClockCheck(plan, at);
+    } catch (error) {
+      bad('窗口时效检查失败[' + (error.code || 'BTP_ERROR') + ']（' + at + '）：' + error.message);
+      clockStopped = true;
+    }
+  };
   // 1) 目录内严格计划：plan.json 必须存在且与 manifest.planSha256 一致
   const planPath = path.join(dir, manifest.planFile || 'plan.json');
   if (!fs.existsSync(planPath)) { bad('缺少目录内计划 plan.json'); return finish(); }
   const planBytes = fs.readFileSync(planPath);
   if (manifest.planSha256 !== sha256Buffer(planBytes)) { bad('plan.json 与 manifest.planSha256 不一致'); return finish(); }
   // 2) 重新执行严格计划校验（真实模式在此重读当下时钟，过期即失败）
-  let plan;
   try {
     plan = readPlan(planPath, manifest.window);
   } catch (error) {
     bad('计划校验失败[' + (error.code || 'BTP_ERROR') + ']：' + error.message);
     return finish();
   }
-  // 真实模式：check 边界重读当下时钟（过期/时钟无效即失败；关闭包不受影响）
-  try {
-    windowClockCheck(plan, 'check');
-  } catch (error) {
-    bad('窗口时效检查失败[' + (error.code || 'BTP_ERROR') + ']：' + error.message);
-    return finish();
-  }
+  clockCheck('check.start');
+  if (clockStopped) return finish();
   // 3) 计划摘要一致（来源与证据计入摘要）
   if (planDigest(plan) !== manifest.planDigest) bad('planDigest 与目录内计划重算不一致');
   // 4) manifest 核心字段与计划一致（模式/账号/动作/窗口不可被清单侧篡改）
@@ -912,19 +1136,33 @@ function checkDir(dir) {
     if (!st || !st.isFile()) { bad('缺失或非普通文件：' + rel); continue; }
     const buf = fs.readFileSync(abs);
     if (buf.length !== a.bytes || sha256Buffer(buf) !== a.sha256) bad('盘上字节/哈希与重建不符：' + rel);
+    // R2-a：逐文件读取边界重查时钟
+    clockCheck('check.read:' + rel);
+    if (clockStopped) return finish();
   }
   if (!fs.existsSync(path.join(dir, 'manifest.json'))) bad('缺失 manifest.json');
-  // plan.json 本身也在期望集内（按 manifest 记录与盘上字节核对）
-  expected.set('plan.json', { bytes: planBytes.length, sha256: sha256Buffer(planBytes) });
-  if (!declared.has('plan.json')) bad('清单未声明 plan.json');
-  // 7) 精确文件集：多余文件拒绝
+  // R1-a：plan.json 自身的清单条目同样纳入精确核对（顶层 planSha256 正确不代表整条清单正确）
+  const planRel = manifest.planFile || 'plan.json';
+  const planRec = manifestFiles.find(f => f && f.rel === planRel);
+  if (!planRec) {
+    bad('清单未声明 ' + planRel);
+  } else if (planRec.bytes !== planBytes.length || planRec.sha256 !== sha256Buffer(planBytes)) {
+    bad('清单 ' + planRel + ' 条目与实际计划不符（bytes/sha256 必须与目录内计划一致）');
+  }
+  // 7) 精确文件集：多余文件/多余目录/链接拒绝
   const existing = listExisting(dir);
-  for (const rel of existing.keys()) {
+  for (const [rel, info] of existing) {
     if (rel === 'manifest.json') continue;
-    if (!expected.has(rel) && rel !== 'plan.json') bad('额外文件：' + rel);
+    if (info.isSymlink) { bad('符号链接/junction：' + rel); continue; }
+    if (info.isDir) {
+      const expectedKeys = [...expected.keys(), planRel];
+      if (!isExpectedPrefix(rel, expectedKeys)) bad('额外目录：' + rel);
+      continue;
+    }
+    if (!expected.has(rel) && rel !== planRel) bad('额外文件：' + rel);
   }
   for (const rel of declared) {
-    if (!expected.has(rel) && rel !== 'plan.json') bad('清单声明了非预期文件：' + rel);
+    if (!expected.has(rel) && rel !== planRel) bad('清单声明了非预期文件：' + rel);
   }
   // 8) 每文件的变换步骤标签与重建一致
   for (const [rel, a] of artifacts) {
@@ -934,6 +1172,8 @@ function checkDir(dir) {
     if (JSON.stringify(rec.transform || null) !== JSON.stringify(wantLabels)) bad('transform 标签与重建不符：' + rel);
   }
   function finish() {
+    // R2-a：最终成功返回前重查时钟（含逐文件读取后到期/NaN/抛错情形）
+    clockCheck('check.final');
     return {
       manifest, problems, ok: problems.length === 0,
       files: manifest.files ? manifest.files.length : 0,
@@ -945,34 +1185,45 @@ function checkDir(dir) {
 }
 
 /**
- * R1：关闭包独立核对入口——只依赖受审基线哈希，不读 manifest、不读计划、
- * 不受开启候选损坏或窗口过期影响。
+ * R1/R4-a：关闭包独立核对入口——从独立受审来源 + 固定受审**装配变换**
+ * （正确根路径 + 唯一关闭页面）重建关闭包预期制品，逐字节比对精确文件集。
+ * 不读 manifest、不读计划、不受开启候选损坏或窗口过期影响。
  */
 function checkCloseDir(dir) {
+  assertRealDirChain(dir, 'check-close 输入');
   const closeDir = path.join(dir, 'close');
   const problems = [];
   let files = 0;
-  const expected = new Map();
-  const add = (root, rel) => {
-    const pinned = pinnedFor(root, rel);
-    expected.set(root === 'root' ? rel : root + '/' + rel, { pinned, baseDir: root === 'root' ? MINIAPP_BASE : (root === 'server' ? SERVER_BASE : FRONTEND_BASE), root, rel });
-  };
-  for (const rel of SERVER_FILES) add('server', rel);
-  for (const rel of FRONTEND_FILES) add('frontend', rel);
-  add('root', 'project.config.json');
-  for (const [rel, info] of expected) {
+  let expected;
+  try {
+    expected = computeCloseArtifacts(readPinnedSources());
+  } catch (error) {
+    problems.push('来源/装配重建失败[' + (error.code || 'BTP_ERROR') + ']：' + error.message);
+    return { ok: false, problems, files: 0, expectedFiles: 0 };
+  }
+  for (const [relFull, a] of expected) {
+    const rel = relFull.startsWith('close/') ? relFull.slice('close/'.length) : relFull;
     const abs = path.join(closeDir, rel);
     let st = null;
     try { st = fs.lstatSync(abs); } catch (_) { st = null; }
     if (!st || !st.isFile()) { problems.push('缺失：close/' + rel); continue; }
     files++;
     const buf = fs.readFileSync(abs);
-    if (buf.length !== info.pinned.bytes || sha256Buffer(buf) !== info.pinned.sha256) {
-      problems.push('与交付源码基线不一致：close/' + rel);
+    if (buf.length !== a.bytes || sha256Buffer(buf) !== a.sha256) {
+      problems.push('与受审装配重建不一致：close/' + rel);
     }
   }
-  for (const rel of listExisting(closeDir).keys()) {
-    if (!expected.has(rel)) problems.push('额外文件：close/' + rel);
+  for (const [relFull, info] of listExisting(closeDir)) {
+    const rel = relFull;
+    if (info.isSymlink) { problems.push('符号链接/junction：close/' + rel); continue; }
+    if (info.isDir) {
+      const innerKeys = [...expected.keys()].map(k => k.startsWith('close/') ? k.slice('close/'.length) : k);
+      if (!isExpectedPrefix(rel, innerKeys)) problems.push('多余目录：close/' + rel);
+      continue;
+    }
+    const stripped = rel;
+    const has = [...expected.keys()].some(k => (k.startsWith('close/') ? k.slice('close/'.length) : k) === stripped);
+    if (!has) problems.push('额外文件：close/' + rel);
   }
   return { ok: problems.length === 0, problems, files, expectedFiles: expected.size };
 }
@@ -1039,6 +1290,7 @@ module.exports = Object.freeze({
   SERVER_FILES,
   FRONTEND_FILES,
   ASSEMBLY_PINNED,
+  CLOSE_ASSEMBLY_TRANSFORMS,
   MANIFEST_SCHEMA,
   MAX_WINDOW_MS,
   readPlan,

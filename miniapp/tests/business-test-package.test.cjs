@@ -82,6 +82,44 @@ function buildWindow(windowId, overrides, outName) {
   return tool.build(windowId, planPath, out);
 }
 
+// ── R5-a 来源记录夹具（结构性核对控制；内容为合成夹具，不代表真实人员/回执） ──
+const RECORD_DIR = path.join(OUT_ROOT, 'records-' + RUN_ID);
+function writeRecordFile(obj) {
+  fs.mkdirSync(RECORD_DIR, { recursive: true });
+  const f = path.join(RECORD_DIR, 'rec-' + crypto.randomBytes(6).toString('hex') + '.json');
+  fs.writeFileSync(f, JSON.stringify(obj, null, 2));
+  return {
+    recordPath: f,
+    recordSha256: crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')
+  };
+}
+function participantRecordFixture(role, userId, overrides = {}) {
+  return writeRecordFile({
+    schema: 'business-test-participant-record/1',
+    synthetic: false,
+    appId: APPID, envId: ENV_ID,
+    businessRoundId: SYN_ROUND,
+    subject: { role, userId },
+    capturedAt: '2026-10-14T00:00:00Z',
+    content: '登记/成员查询回执原文（合成夹具，仅验证本地核对路径，不代表真实人员）',
+    ...overrides
+  });
+}
+function projectReadbackRecordFixture(round, projectId, marker, overrides = {}) {
+  return writeRecordFile({
+    schema: 'business-test-project-readback-record/1',
+    synthetic: false,
+    appId: APPID, envId: ENV_ID,
+    businessRoundId: round,
+    projectId, projectReadyMarker: marker,
+    subject: { role: 'owner', userId: SYN_USERS.owner.userId },
+    capturedAt: '2026-10-14T00:00:00Z',
+    content: 'P 项目回读原文（project-guard 业务项目记录；合成夹具）',
+    persistentReceipt: { recordId: 'pgrecfixture01', note: '合成回执夹具' },
+    ...overrides
+  });
+}
+
 // ── 候选加载器（服务端 / 前端） ─────────────────────────────────────────────
 /** 把候选服务端 index.js（含候选 gate.js / vendor）载入 vm，注入合成 db。 */
 function loadCandidateServer(candidateDir, db, context = {}) {
@@ -251,17 +289,19 @@ test('A1 计划校验：real 缺回读证据 / E 缺 projectId / 绑定不符 / 
       users: { owner: { userId: OWNER, source: '人工声明' }, manager: { userId: MANAGER, source: '人工声明' }, worker: { userId: WORKER, source: '人工声明' } }
     }), 'P'),
     e => e.code === tool.ERR.PLAN_USER_INVALID);
-  // real 带齐回读证据 → 接受（来源声明与回读证据同时在场且被区分）
+  // real 带齐回读证据 + 实际记录文件 → 接受（R5-a：kind+摘要+记录文件三方一致）
   const realOk = {
     synthetic: false,
     users: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
       [r, { userId: SYN_USERS[r].userId, source: '人工声明（完整身份待用户核实）' }])),
-    participantEvidence: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
-      [r, { kind: 'readback-record', recordSha256: crypto.createHash('sha256').update(r).digest('hex') }]))
+    participantEvidence: Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+      const fx = participantRecordFixture(r, SYN_USERS[r].userId);
+      return [r, { kind: 'readback-record', recordSha256: fx.recordSha256, recordPath: fx.recordPath }];
+    }))
   };
   const parsed = tool.readPlan(writePlan('P', realOk), 'P');
   assert.equal(parsed.evidenceBound, true);
-  assert.equal(parsed.users.every(u => u.evidence && u.evidence.kind === 'readback-record'), true);
+  assert.equal(parsed.users.every(u => u.evidence && u.evidence.kind === 'readback-record' && u.evidence.recordPath), true);
   // 证据结构非法（kind 冒充 / 摘要缺失）→ 拒绝
   assert.throws(() => tool.readPlan(writePlan('P', {
     ...realOk,
@@ -364,6 +404,293 @@ test('A2 工具行为：完整项目23制品；同计划整体复用；真实半
   const closeOk = tool.checkCloseDir(p.outDir);
   assert.equal(closeOk.ok, true, closeOk.problems.join('; '));
   assert.equal(closeOk.files, 23);
+});
+
+test('A4 R1-a：manifest.files 的 plan.json 条目 bytes/sha256 纳入精确核对；篡改拒绝、合法对照通过', () => {
+  const p = buildWindow('P', null, 'a4-planentry-' + RUN_ID);
+  assert.equal(tool.checkDir(p.outDir).ok, true, '合法对照：check 通过');
+  // 篡改清单 plan.json 条目（保留合法 plan.json/planSha256/planDigest）
+  const mp = path.join(p.outDir, 'manifest.json');
+  const m = JSON.parse(fs.readFileSync(mp, 'utf8'));
+  const row = m.files.find(f => f.rel === 'plan.json');
+  row.sha256 = '0'.repeat(64);
+  row.bytes = -1;
+  fs.writeFileSync(mp, JSON.stringify(m));
+  const r = tool.checkDir(p.outDir);
+  assert.equal(r.ok, false, '顶层 planSha256 正确不代表整条清单正确');
+  assert.ok(r.problems.some(s => s.includes('plan.json') && s.includes('实际计划不符')),
+    '问题应指向 plan.json 清单条目：' + r.problems.join('; '));
+});
+
+test('A5 R2-a：check 逐文件读取边界与最终返回前重查时钟；中途到期/NaN/抛错均不成功', () => {
+  const round = 'synthetic-clock-a5-' + RUN_ID.slice(-8);
+  const p2 = 'p_sbx_' + crypto.createHash('sha256').update(round).digest('hex').slice(0, 32);
+  // 窗口以运行当下为基准：开始=now-1h，到期=now+1h（真实模式需覆盖当下时钟）
+  const startsIso = new Date(Date.now() - 3600e3).toISOString();
+  const expiresIso = new Date(Date.now() + 3600e3).toISOString();
+  const planOverrides = {
+    synthetic: false,
+    businessRoundId: round, projectId: p2,
+    projectReadyMarker: 'ready-' + round,
+    windowStartsAt: startsIso, windowExpiresAt: expiresIso,
+    users: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
+      [r, { userId: SYN_USERS[r].userId, source: '人工声明（完整身份待用户核实）' }])),
+    participantEvidence: Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+      const fx = participantRecordFixture(r, SYN_USERS[r].userId, { businessRoundId: round });
+      return [r, { kind: 'readback-record', recordSha256: fx.recordSha256, recordPath: fx.recordPath }];
+    })),
+    projectReadback: (() => {
+      const fx = projectReadbackRecordFixture(round, p2, 'ready-' + round, { businessRoundId: round });
+      return { source: 'readback', projectId: p2, businessRoundId: round, projectReadyMarker: 'ready-' + round, recordSha256: fx.recordSha256, recordPath: fx.recordPath };
+    })()
+  };
+  const b = buildWindow('E', planOverrides, 'a5-real-' + RUN_ID);
+  const target = path.join(b.outDir, 'server', 'index.js');
+  // 中途到期：读取候选 server/index.js 后把时钟推进到 expiresAt
+  const realRead = fs.readFileSync;
+  let now = Date.now(), calls = 0, triggered = false;
+  fs.readFileSync = function (f, ...args) {
+    const r = realRead.call(this, f, ...args);
+    if (f === target) { now = Date.parse(expiresIso); triggered = true; }
+    return r;
+  };
+  try {
+    const clock = () => { calls++; return now; };
+    const oldNow = Date.now; Date.now = clock;
+    let checked;
+    try { checked = tool.checkDir(b.outDir); } finally { Date.now = oldNow; }
+    assert.equal(triggered, true, '到期推进事件已发生');
+    assert.equal(calls > 1, true, 'check 必须多次重读当下时钟（实测 ' + calls + ' 次）');
+    assert.equal(checked.ok, false, '中途到期不得带成功结论');
+    assert.ok(checked.problems.some(s => s.includes('BTP_WINDOW_EXPIRED')), checked.problems.join('; '));
+    // NaN 时钟中途出现 → 不成功（需在覆盖时钟下运行 check）
+    const oldNowN = Date.now; Date.now = () => NaN;
+    let nanChecked;
+    try { nanChecked = tool.checkDir(b.outDir); } finally { Date.now = oldNowN; }
+    assert.equal(nanChecked.ok, false, 'NaN 时钟不得成功');
+    assert.ok(nanChecked.problems.some(s => s.includes('BTP_CLOCK_INVALID')));
+    // 时钟抛错 → 不成功（check 以问题记录暴露原错误，不带成功结论）
+    const oldNow2 = Date.now;
+    Date.now = () => { throw new Error('clock exploded mid-check'); };
+    let throwChecked;
+    try { throwChecked = tool.checkDir(b.outDir); } finally { Date.now = oldNow2; }
+    assert.equal(throwChecked.ok, false, '时钟抛错不得成功');
+    assert.ok(throwChecked.problems.some(s => s.includes('BTP_CLOCK_ERROR') && s.includes('clock exploded')),
+      throwChecked.problems.join('; '));
+    // 正常时钟对照 → 成功
+    now = Date.now();
+    assert.equal(tool.checkDir(b.outDir).ok, true, '正常对照 check 通过');
+    // 合成模式不受时钟守卫影响（关闭包/合成候选不依赖期限）
+    const syn = buildWindow('P', null, 'a5-syn-' + RUN_ID);
+    assert.equal(tool.checkDir(syn.outDir).ok, true);
+  } finally {
+    fs.readFileSync = realRead;
+  }
+});
+
+test('A6 R3：目录占位/多余目录预检零写；输出根 junction 拒绝；部分写副作用事实；竞态 EEXIST 不算本轮写入', () => {
+  // R3-a：预存空目录冒名 manifest.json → 预检拒绝、全树快照不变、零新写
+  const dirConflict = path.join(OUT_ROOT, 'a6-dirconflict-' + RUN_ID);
+  fs.mkdirSync(path.join(dirConflict, 'manifest.json'), { recursive: true });
+  const before = JSON.stringify(fs.readdirSync(dirConflict));
+  let err = null;
+  try { tool.build('P', writePlan('P'), dirConflict); } catch (e) { err = e; }
+  assert.equal(err && err.code, 'BTP_OUT_CONFLICT');
+  assert.equal(JSON.stringify(fs.readdirSync(dirConflict)), before, '预检冲突：目录快照不变');
+  assert.equal(err.wroteFiles, undefined, '预检失败零写（无写入事实）');
+  // R3-a：多余空目录 → 预检拒绝
+  const extraDir = path.join(OUT_ROOT, 'a6-extradir-' + RUN_ID);
+  fs.mkdirSync(path.join(extraDir, 'unrelated', 'nested'), { recursive: true });
+  err = null;
+  try { tool.build('P', writePlan('P'), extraDir); } catch (e) { err = e; }
+  assert.equal(err && err.code, 'BTP_OUT_CONFLICT', '多余目录预检拒绝');
+  assert.deepEqual(fs.readdirSync(extraDir), ['unrelated'], '不清理用户目录');
+  // R3-b：输出根本身是 junction（指向输出根之外）→ 拒绝且目标零写
+  const jTarget = path.join(OUT_ROOT, 'a6-junction-target-' + RUN_ID);
+  fs.mkdirSync(jTarget, { recursive: true });
+  const jLink = path.join(OUT_ROOT, 'a6-junction-' + RUN_ID);
+  let junctionCreated = true;
+  try { fs.symlinkSync(jTarget, jLink, 'junction'); } catch (_) { junctionCreated = false; }
+  if (junctionCreated) {
+    err = null;
+    try { tool.build('P', writePlan('P'), jLink); } catch (e) { err = e; }
+    assert.equal(err && err.code, 'BTP_OUT_CONFLICT', 'junction 输出根拒绝：' + (err && err.message));
+    assert.equal(fs.readdirSync(jTarget).length, 0, 'junction 目标零写');
+    // 检查入口也不认领 junction 目录
+    assert.throws(() => tool.checkDir(jLink), e => e.code === 'BTP_OUT_CONFLICT');
+    assert.throws(() => tool.checkCloseDir(jLink), e => e.code === 'BTP_OUT_CONFLICT');
+  }
+  // R3-c：首个文件排他创建后部分写 EIO → 副作用如实记录（written/wroteFiles）
+  const partialDir = path.join(OUT_ROOT, 'a6-partial-' + RUN_ID);
+  const pf = writePlan('P');
+  const realWrite = fs.writeFileSync;
+  fs.writeFileSync = function (f, buf, opts) {
+    if (typeof f === 'string' && f.endsWith('server' + path.sep + 'index.js')) {
+      realWrite.call(this, f, Buffer.from(buf).subarray(0, 7), opts);
+      const e = new Error('synthetic partial write'); e.code = 'EIO'; throw e;
+    }
+    return realWrite.call(this, f, buf, opts);
+  };
+  try { tool.build('P', pf, partialDir); } catch (e) { err = e; } finally { fs.writeFileSync = realWrite; }
+  assert.equal(err && err.code, 'EIO');
+  assert.equal(err.wroteFiles, 1, '部分写副作用必须计入 wroteFiles');
+  assert.deepEqual(err.written, ['server/index.js']);
+  assert.equal(fs.statSync(path.join(partialDir, 'server', 'index.js')).size, 7, '盘上为 7 字节部分文件');
+  // R3-c：竞态 EEXIST（他人抢先创建）→ 不算本轮写入、不覆盖不删除
+  const raceDir = path.join(OUT_ROOT, 'a6-race-' + RUN_ID);
+  const racePlan = writePlan('P');
+  const gateRel = path.join('server', 'gate.js');
+  fs.writeFileSync = function (f, buf, opts) {
+    if (typeof f === 'string' && f.endsWith(gateRel)) {
+      realWrite.call(this, f, Buffer.from('other-writer'), opts); // 他人文件
+      const e = new Error('EEXIST race'); e.code = 'EEXIST'; throw e;
+    }
+    return realWrite.call(this, f, buf, opts);
+  };
+  try { tool.build('P', racePlan, raceDir); } catch (e) { err = e; } finally { fs.writeFileSync = realWrite; }
+  assert.equal(err && err.code, 'EEXIST');
+  assert.ok(!err.written || !err.written.includes('server/gate.js'), '他人 EEXIST 文件不算本轮写入');
+  assert.equal(fs.readFileSync(path.join(raceDir, gateRel), 'utf8'), 'other-writer', '不覆盖他人文件');
+});
+
+test('A7 R4-a：关闭包受审装配（正确根/唯一页面/完整依赖）；checkCloseDir 独立重建；关闭 App/Page 禁用零发送', async () => {
+  const p = buildWindow('P', null, 'a7-close-' + RUN_ID);
+  const close = path.join(p.outDir, 'close');
+  // 装配正确：根路径 + 唯一页面 + 页面文件齐备
+  const cfg = JSON.parse(fs.readFileSync(path.join(close, 'project.config.json'), 'utf8'));
+  assert.equal(cfg.miniprogramRoot, 'frontend/');
+  assert.equal(cfg.cloudfunctionRoot, 'server/');
+  const appJson = JSON.parse(fs.readFileSync(path.join(close, 'frontend', 'app.json'), 'utf8'));
+  assert.deepEqual(appJson.pages, ['pages/schedule-sandbox/schedule-sandbox'], '关闭包唯一页面');
+  for (const page of appJson.pages) {
+    for (const ext of ['.js', '.json', '.wxml', '.wxss']) {
+      assert.equal(fs.existsSync(path.join(close, 'frontend', page + ext)), true, page + ext + ' 存在');
+    }
+  }
+  // 独立重建核对（不读 manifest/计划；不受开启候选损坏影响）
+  const closeOk = tool.checkCloseDir(p.outDir);
+  assert.equal(closeOk.ok, true, closeOk.problems.join('; '));
+  assert.equal(closeOk.files, 23);
+  // 篡改关闭装配（恢复 9 页面）→ 独立重建拒绝
+  const closeApp = path.join(close, 'frontend', 'app.json');
+  const original = fs.readFileSync(closeApp);
+  fs.writeFileSync(closeApp, original.toString('utf8').replace(
+    '"pages": [\n    "pages/schedule-sandbox/schedule-sandbox"\n  ]',
+    '"pages": [\n    "pages/index/index",\n    "pages/schedule-sandbox/schedule-sandbox"\n  ]'));
+  const broken = tool.checkCloseDir(p.outDir);
+  assert.equal(broken.ok, false, '关闭装配篡改被独立重建拒绝');
+  assert.ok(broken.problems.some(s => s.includes('app.json')));
+  fs.writeFileSync(closeApp, original);
+  assert.equal(tool.checkCloseDir(p.outDir).ok, true, '还原后恢复');
+  // 关闭 App/Page 实际加载：入口禁用、驱动零发送（不依赖开启窗口期限）
+  const { api, calls } = makeChainWx(close, seedUsers(), 'manager');
+  const app = loadCandidateApp(close, api);
+  assert.ok(app.globalData, '关闭 App 壳可加载');
+  const page = loadCandidatePage(close, api);
+  page.onLoad();
+  assert.equal(page.data.entryAllowed, false, '关闭包入口禁用');
+  await page.runAction('identify');
+  assert.ok(page.data.lastError, '禁用状态下动作被拒：' + page.data.lastError);
+  const callsAfterPage = calls.length;
+  const driver = candidateFrontend(close, 'utils/sandbox-test-driver.js');
+  const blocked = await driver.runCase({ api, testCaseId: 'V07-A', input: { projectId: SYN_PROJECT, userId: WORKER } });
+  assert.equal(blocked.ok, false);
+  assert.equal(blocked.code, 'TEST_DRIVER_GATE_BLOCKED');
+  assert.equal(blocked.report.sent, 0, '关闭驱动零发送');
+  assert.equal(calls.length, callsAfterPage, '关闭态全程零发送');
+  // 服务端关闭门槛：任何动作 SANDBOX_DISABLED
+  const srv = as(close, seedUsers(), 'owner');
+  const denied = await srv({ action: 'identify', requestId: 'a7-closed-1' });
+  assert.equal(denied.ok, false);
+  assert.equal(denied.code, 'SANDBOX_DISABLED');
+});
+
+test('A8 R5-a：真实模式必须核对实际记录文件（缺文件/摘要不符/合成标记/身份不符/缺回执全拒绝；合法对照通过）', () => {
+  const mkReal = (round, evidence) => ({
+    synthetic: false,
+    businessRoundId: round,
+    projectId: 'p_sbx_' + crypto.createHash('sha256').update(round).digest('hex').slice(0, 32),
+    projectReadyMarker: 'ready-' + round,
+    windowStartsAt: '2030-01-01T00:00:00Z', windowExpiresAt: '2030-01-01T02:00:00Z',
+    users: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
+      [r, { userId: SYN_USERS[r].userId, source: '人工声明（完整身份待用户核实）' }])),
+    participantEvidence: evidence.participant,
+    projectReadback: evidence.project
+  });
+  const validParticipant = () => Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+    const fx = participantRecordFixture(r, SYN_USERS[r].userId, { businessRoundId: 'synthetic-round-a8-' + RUN_ID.slice(-8) });
+    return [r, { kind: 'readback-record', recordSha256: fx.recordSha256, recordPath: fx.recordPath }];
+  }));
+  const roundA8 = 'synthetic-round-a8-' + RUN_ID.slice(-8);
+  const projA8 = 'p_sbx_' + crypto.createHash('sha256').update(roundA8).digest('hex').slice(0, 32);
+  const validProject = () => {
+    const fx = projectReadbackRecordFixture(roundA8, projA8, 'ready-' + roundA8, { businessRoundId: roundA8 });
+    return { source: 'readback', projectId: projA8, businessRoundId: roundA8, projectReadyMarker: 'ready-' + roundA8, recordSha256: fx.recordSha256, recordPath: fx.recordPath };
+  };
+  // 合法对照：E 窗口真实模式（含记录文件）→ 接受
+  const parsed = tool.readPlan(writePlan('E', mkReal(roundA8, { participant: validParticipant(), project: validProject() })), 'E');
+  assert.equal(parsed.evidenceBound, true);
+  assert.equal(parsed.projectReadback.recordPath !== null, true);
+  // 反例 1：kind+64hex 但缺记录文件 → 拒绝（自报摘要不等于已核对记录）
+  assert.throws(() => tool.readPlan(writePlan('P', mkReal(roundA8, {
+    participant: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
+      [r, { kind: 'readback-record', recordSha256: 'a'.repeat(64) }])),
+    project: null
+  })), 'P'), e => e.code === tool.ERR.PLAN_USER_INVALID);
+  // 反例 2：记录文件不存在
+  assert.throws(() => tool.readPlan(writePlan('P', mkReal(roundA8, {
+    participant: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
+      [r, { kind: 'readback-record', recordSha256: 'a'.repeat(64), recordPath: path.join(RECORD_DIR, 'missing-' + r + '.json') }])),
+    project: null
+  })), 'P'), e => e.code === tool.ERR.PLAN_USER_INVALID);
+  // 反例 3：摘要与记录内容不符
+  assert.throws(() => tool.readPlan(writePlan('P', mkReal(roundA8, {
+    participant: Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+      const fx = participantRecordFixture(r, SYN_USERS[r].userId, { businessRoundId: roundA8 });
+      return [r, { kind: 'readback-record', recordSha256: 'b'.repeat(64), recordPath: fx.recordPath }];
+    })),
+    project: null
+  })), 'P'), e => e.code === tool.ERR.PLAN_USER_INVALID && /摘要/.test(e.message));
+  // 反例 4：记录标记 synthetic=true → 不能为真实候选背书
+  assert.throws(() => tool.readPlan(writePlan('P', mkReal(roundA8, {
+    participant: Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+      const fx = participantRecordFixture(r, SYN_USERS[r].userId, { businessRoundId: roundA8, synthetic: true });
+      return [r, { kind: 'readback-record', recordSha256: fx.recordSha256, recordPath: fx.recordPath }];
+    })),
+    project: null
+  })), 'P'), e => e.code === tool.ERR.PLAN_USER_INVALID && /合成/.test(e.message));
+  // 反例 5：记录 subject.userId 与计划账号不一致（冒用他人记录）
+  assert.throws(() => tool.readPlan(writePlan('P', mkReal(roundA8, {
+    participant: Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+      const other = r === 'owner' ? MANAGER : OWNER;
+      const fx = participantRecordFixture(r, other, { businessRoundId: roundA8 });
+      return [r, { kind: 'readback-record', recordSha256: fx.recordSha256, recordPath: fx.recordPath }];
+    })),
+    project: null
+  })), 'P'), e => e.code === tool.ERR.PLAN_USER_INVALID && /身份\/角色/.test(e.message));
+  // 反例 6：P 回读记录缺持久回执（persistentReceipt）→ 拒绝
+  const noReceipt = projectReadbackRecordFixture(roundA8, projA8, 'ready-' + roundA8, { businessRoundId: roundA8 });
+  const noReceiptObj = JSON.parse(fs.readFileSync(noReceipt.recordPath, 'utf8'));
+  delete noReceiptObj.persistentReceipt;
+  fs.writeFileSync(noReceipt.recordPath, JSON.stringify(noReceiptObj, null, 2));
+  noReceipt.recordSha256 = crypto.createHash('sha256').update(fs.readFileSync(noReceipt.recordPath)).digest('hex');
+  assert.throws(() => tool.readPlan(writePlan('E', mkReal(roundA8, {
+    participant: validParticipant(), project: {
+      source: 'readback', projectId: projA8, businessRoundId: roundA8,
+      projectReadyMarker: 'ready-' + roundA8, recordSha256: noReceipt.recordSha256, recordPath: noReceipt.recordPath
+    }
+  })), 'E'), e => e.code === tool.ERR.PLAN_PROJECT_INVALID && /persistentReceipt|持久回执/.test(e.message));
+  // 反例 7：P 回读记录 projectId 与计划不一致 → 拒绝
+  const wrongProj = projectReadbackRecordFixture(roundA8, 'p_sbx_' + '0'.repeat(32), 'ready-' + roundA8, { businessRoundId: roundA8 });
+  assert.throws(() => tool.readPlan(writePlan('E', mkReal(roundA8, {
+    participant: validParticipant(), project: {
+      source: 'readback', projectId: projA8, businessRoundId: roundA8,
+      projectReadyMarker: 'ready-' + roundA8, recordSha256: wrongProj.recordSha256, recordPath: wrongProj.recordPath
+    }
+  })), 'E'), e => e.code === tool.ERR.PLAN_PROJECT_INVALID && /projectId/.test(e.message));
+  // 合成模式保持：无记录文件仍可构建（合成候选不受影响）
+  const syn = buildWindow('P', null, 'a8-syn-' + RUN_ID);
+  assert.equal(syn.manifest.synthetic, true);
 });
 
 test('A3 R1 反例：空清单 / 越界变换同步哈希 / 模式篡改 / 多余文件 全部拒绝；关闭包不受开启候选损坏影响', () => {
