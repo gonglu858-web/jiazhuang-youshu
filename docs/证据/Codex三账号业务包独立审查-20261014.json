@@ -1,0 +1,242 @@
+{
+  "reviewedCommit": "b5aff19",
+  "generatedAt": "2026-10-14T03:28:02.869Z",
+  "implementationSha256": "e559c4d68db4e7cf57b4825b07d0a2800c09ee579f352231b012e9331ca3b060",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/codex-review-03b8f4fc-5f6a-401b-b0e1-b0ac53f1a298",
+  "verificationKind": "offline synthetic counterexamples; no SDK/platform/credentials",
+  "results": [
+    {
+      "id": "C01_source_count_and_missing_project",
+      "assertionsPassed": true,
+      "actual": {
+        "sourceFiles": 19,
+        "pinnedFactsKeys": 19,
+        "candidateFiles": 19,
+        "closeFiles": 19,
+        "missing": [
+          "frontend/app.js",
+          "frontend/app.json",
+          "project.config.json",
+          "close/frontend/app.js",
+          "close/frontend/app.json",
+          "close/project.config.json"
+        ],
+        "checkOk": true
+      }
+    },
+    {
+      "id": "C02_empty_self_declared_manifest_accepted",
+      "assertionsPassed": true,
+      "actual": {
+        "ok": true,
+        "files": 0,
+        "closeFiles": 0
+      }
+    },
+    {
+      "id": "C03_gate_tamper_plus_self_hash_accepted",
+      "assertionsPassed": true,
+      "actual": {
+        "addedAction": "reassignSchedule",
+        "checkOk": true,
+        "planDigestUnchanged": true
+      }
+    },
+    {
+      "id": "C04_synthetic_to_real_manifest_flip_accepted",
+      "assertionsPassed": true,
+      "actual": {
+        "checkOk": true,
+        "changedOnly": "manifest.synthetic"
+      }
+    },
+    {
+      "id": "C05_build_expiry_after_first_write_ignored",
+      "assertionsPassed": true,
+      "actual": {
+        "returnedSuccess": true,
+        "dateNowCalls": 1,
+        "written": 39,
+        "expiredBeforeReturn": true
+      }
+    },
+    {
+      "id": "C06_expired_check_accepted",
+      "assertionsPassed": true,
+      "actual": {
+        "checkOk": true,
+        "expired": true
+      }
+    },
+    {
+      "id": "C07_invalid_clock_accepted",
+      "assertionsPassed": true,
+      "actual": {
+        "nanClockAccepted": true
+      }
+    },
+    {
+      "id": "C08_preexisting_manifest_conflict_writes_38_files",
+      "assertionsPassed": true,
+      "actual": {
+        "code": "BTP_OUT_CONFLICT",
+        "newFiles": 38,
+        "oldManifestUnchanged": true,
+        "errorHasWritten": false,
+        "errorHasWroteFiles": false
+      }
+    },
+    {
+      "id": "C09_partial_io_failure_loses_written_facts",
+      "assertionsPassed": true,
+      "actual": {
+        "code": "EIO",
+        "diskFiles": 2,
+        "errorHasWritten": false,
+        "errorHasWroteFiles": false
+      }
+    },
+    {
+      "id": "C10_close_not_independent",
+      "assertionsPassed": true,
+      "actual": {
+        "checkCloseDirectoryError": "BTP_MANIFEST_INVALID",
+        "closeFilesIntact": true,
+        "pairedCheckOk": false
+      }
+    },
+    {
+      "id": "C11_real_accepts_synthetic_sources_and_unwitnessed_project",
+      "assertionsPassed": true,
+      "actual": {
+        "accepted": true,
+        "sources": "synthetic fixture only",
+        "projectFromFormulaOnly": true,
+        "projectReadbackEvidenceProvided": false
+      }
+    },
+    {
+      "id": "C12_x_page_keeps_v06_buttons_and_all_normal_actions",
+      "assertionsPassed": true,
+      "actual": {
+        "testCardVisible": true,
+        "buttons": [
+          "V06-a",
+          "V06-b",
+          "V06-c",
+          "V07-A",
+          "V07-B"
+        ],
+        "normalActions": [
+          {
+            "key": "identify",
+            "label": "身份登记",
+            "phase": "prepare"
+          },
+          {
+            "key": "requestBindingNumber",
+            "label": "取绑定编号",
+            "phase": "prepare"
+          },
+          {
+            "key": "createProject",
+            "label": "建立本轮测试项目",
+            "phase": "prepare"
+          },
+          {
+            "key": "assignManager",
+            "label": "指定管家（填绑定编号）",
+            "phase": "prepare"
+          },
+          {
+            "key": "createInvitation",
+            "label": "发出邀请（填角色与工种）",
+            "phase": "prepare"
+          },
+          {
+            "key": "applyInvitation",
+            "label": "申请加入（填邀请码）",
+            "phase": "prepare"
+          },
+          {
+            "key": "approveInvitation",
+            "label": "批准加入（填邀请编号与申请者编号）",
+            "phase": "prepare"
+          },
+          {
+            "key": "getMembers",
+            "label": "核对成员",
+            "phase": "prepare"
+          },
+          {
+            "key": "listInvitations",
+            "label": "核对邀请",
+            "phase": "prepare"
+          },
+          {
+            "key": "createSchedule",
+            "label": "新增施工安排",
+            "phase": "execute"
+          },
+          {
+            "key": "updateSchedule",
+            "label": "调整施工安排（填编号与版本）",
+            "phase": "execute"
+          },
+          {
+            "key": "reassignSchedule",
+            "label": "改派施工安排（填编号与版本）",
+            "phase": "execute"
+          },
+          {
+            "key": "cancelSchedule",
+            "label": "取消施工安排（填编号与版本）",
+            "phase": "execute"
+          },
+          {
+            "key": "listSchedules",
+            "label": "查看安排列表",
+            "phase": "execute"
+          },
+          {
+            "key": "getSchedule",
+            "label": "查看单条安排（填编号）",
+            "phase": "execute"
+          },
+          {
+            "key": "listScheduleRevisions",
+            "label": "查看变更历史（填编号）",
+            "phase": "execute"
+          },
+          {
+            "key": "getScheduleContext",
+            "label": "查看施工上下文",
+            "phase": "execute"
+          }
+        ]
+      }
+    },
+    {
+      "id": "C13_valid_partial_reuse_control",
+      "assertionsPassed": true,
+      "actual": {
+        "written": 1,
+        "reused": 38,
+        "checkOk": true
+      }
+    },
+    {
+      "id": "C14_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "unexpectedBeforeProbes": 0,
+        "probeHits": 2
+      }
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "assertionsPassed": 14,
+    "unexpectedGuardAttempts": 0
+  }
+}
