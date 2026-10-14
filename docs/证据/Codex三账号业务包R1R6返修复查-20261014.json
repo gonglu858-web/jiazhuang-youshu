@@ -1,0 +1,186 @@
+{
+  "reviewedCommit": "c62f32d",
+  "reviewBasis": "3cbdd7f",
+  "generatedAt": "2026-10-14T04:38:40.739Z",
+  "implementationSha256": "b35c86b6fecd98cc43125c1a38684facf56450b29eaca2c0defc865c5c91e672",
+  "verificationKind": "local synthetic filesystem/time/VM only; no SDK or platform verification",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/codex-c62-adf72271-3057-4fd9-98f2-cf5303946d9c",
+  "results": [
+    {
+      "id": "C01",
+      "kind": "control",
+      "assertionsPassed": true,
+      "actual": {
+        "files": 48,
+        "completeReuse": true,
+        "resumeWritten": 1,
+        "resumeReused": 47
+      }
+    },
+    {
+      "id": "C02",
+      "kind": "remaining-R1",
+      "assertionsPassed": true,
+      "actual": {
+        "tamperedPlanEntryAccepted": true,
+        "planChecked": true,
+        "declaredBytes": -1
+      }
+    },
+    {
+      "id": "C03",
+      "kind": "remaining-R2",
+      "assertionsPassed": true,
+      "actual": {
+        "expiredDuringCheckAccepted": true,
+        "dateNowCalls": 1,
+        "advanceEvent": "candidate server/index.js read"
+      }
+    },
+    {
+      "id": "C04",
+      "kind": "remaining-R3",
+      "assertionsPassed": true,
+      "actual": {
+        "error": "EEXIST",
+        "wroteFiles": 47,
+        "filesAfter": 47,
+        "preexistingConflict": "manifest.json is directory"
+      }
+    },
+    {
+      "id": "C05",
+      "kind": "remaining-R3",
+      "assertionsPassed": true,
+      "actual": {
+        "error": "EIO",
+        "filesOnDisk": [
+          "server/index.js"
+        ],
+        "bytes": 7,
+        "reportedWritten": null,
+        "reportedWroteFiles": null
+      }
+    },
+    {
+      "id": "C06",
+      "kind": "remaining-R3",
+      "assertionsPassed": true,
+      "actual": {
+        "rootJunctionAccepted": true,
+        "filesOutsideBusinessTestRoot": 48,
+        "checkOk": true
+      }
+    },
+    {
+      "id": "C07",
+      "kind": "remaining-R4",
+      "assertionsPassed": true,
+      "actual": {
+        "checkCloseOk": true,
+        "miniprogramRoot": "miniprogram/",
+        "cloudfunctionRoot": "cloudfunctions/",
+        "actualRoots": [
+          "frontend",
+          "server"
+        ],
+        "declaredPages": 9,
+        "missingPages": [
+          "pages/index/index",
+          "pages/project/project",
+          "pages/schedule/schedule",
+          "pages/schedule-detail/schedule-detail",
+          "pages/record/record",
+          "pages/members/members",
+          "pages/access/access",
+          "pages/permission-check/permission-check"
+        ]
+      }
+    },
+    {
+      "id": "C08",
+      "kind": "remaining-R5",
+      "assertionsPassed": true,
+      "actual": {
+        "realModeAccepted": true,
+        "checkOk": true,
+        "evidenceFileCount": 0,
+        "allEvidenceHashesInvented": true,
+        "userSourceBinding": "readback-evidence-bound：三账号均带可本地核对的回读证据摘要（recordSha256）。"
+      }
+    },
+    {
+      "id": "C09",
+      "kind": "closed-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "expiresEqualRejected": true,
+        "alreadyExpiredCheckRejected": true,
+        "closeClockIndependent": true
+      }
+    },
+    {
+      "id": "C10",
+      "kind": "remaining-R6",
+      "assertionsPassed": true,
+      "actual": {
+        "injectedBlockedUnexpectedAttempt": 1,
+        "reportedUnexpected": 0,
+        "exitCode": 0,
+        "reportedCommit": "3cbdd7f"
+      }
+    },
+    {
+      "id": "C11",
+      "kind": "closed-build-clock-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "matrix": [
+          {
+            "mode": "first-write",
+            "dateNowCalls": 4,
+            "writes": 1,
+            "reportedWritten": 1
+          },
+          {
+            "mode": "final-write",
+            "dateNowCalls": 51,
+            "writes": 48,
+            "reportedWritten": 48
+          },
+          {
+            "mode": "reuse",
+            "dateNowCalls": 3,
+            "writes": 0,
+            "reportedWritten": 0
+          },
+          {
+            "mode": "resume",
+            "dateNowCalls": 4,
+            "writes": 1,
+            "reportedWritten": 1
+          }
+        ],
+        "clockInvalidAndThrowDistinct": true,
+        "notOpenRejected": true
+      }
+    },
+    {
+      "id": "C12",
+      "kind": "closed-R1-original-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "selfReportedFileHashInsufficient": true,
+        "manifestModeFlipRejected": true,
+        "independentCloseHashCheck": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "assertionsPassed": 12,
+    "guardSensitivityHits": 2,
+    "unexpectedGuardAttempts": 0,
+    "accepted": false
+  }
+}
