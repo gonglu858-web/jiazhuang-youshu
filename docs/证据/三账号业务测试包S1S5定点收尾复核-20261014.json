@@ -1,0 +1,110 @@
+{
+  "schema": "business-test-s15-review/1",
+  "title": "三账号业务测试包 S1–S5 定点收尾复核",
+  "reviewedCommit": "816ab89",
+  "reviewBasis": "docs/Codex复查-三账号业务包第二轮返修-20261014.md §3（S1–S5）；接手 master 5ed9f60",
+  "implementationPath": "miniapp/scripts/package-business-test.cjs",
+  "implementationSha256": "c36643a3661f8c97aea8c5b18d58bf6ee25f6c77307bdeecca8d31527746a703",
+  "generatedAt": "2026-10-14T08:02:02.144Z",
+  "verificationKind": "offline synthetic files/time only; no SDK/platform/real identity/network",
+  "results": [
+    {
+      "id": "T0_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityProbeHits": 2,
+        "note": "敏感性探针实际触发并单独记账；业务期基线自此固定"
+      }
+    },
+    {
+      "id": "T1_s1_receipt_contract",
+      "assertionsPassed": true,
+      "actual": {
+        "contract": "sbx-create-project: + sha256(businessRoundId)[0:40]",
+        "actualContractReceipt": "sbx-create-project:26640ef8c421b1789367978474f0a2450daa0bfa",
+        "legitimateAccepted": true,
+        "legitimateBuildCheckOk": true,
+        "otherRoundRejected": true,
+        "unrelatedRejected": true,
+        "missingRejected": true
+      }
+    },
+    {
+      "id": "T2_s2_absolute_path_contract",
+      "assertionsPassed": true,
+      "actual": {
+        "relativeRejectedBeforeWrite": true,
+        "zeroWrite": true,
+        "absolutePositive": "见 T1 legitimateBuildCheckOk"
+      }
+    },
+    {
+      "id": "T3_s3_fixed_plan_file",
+      "assertionsPassed": true,
+      "actual": {
+        "normalPackageOk": true,
+        "renamedRejected": true,
+        "aliasRejected": true
+      }
+    },
+    {
+      "id": "T4_s4_close_root_boundary",
+      "assertionsPassed": true,
+      "actual": {
+        "normalCloseOk": true,
+        "closeClockIndependent": true,
+        "junctionCloseRejected": true,
+        "noFollowNoCleanup": true
+      }
+    },
+    {
+      "id": "T5_s5_partial_and_eexist_projection",
+      "assertionsPassed": true,
+      "actual": {
+        "partialWrite": {
+          "code": "EIO",
+          "written": [
+            "server/index.js"
+          ],
+          "wroteFiles": 1,
+          "partialWrites": [
+            {
+              "rel": "server/index.js",
+              "bytesOnDisk": 7
+            }
+          ],
+          "bytesOnDiskOnDisk": 7
+        },
+        "eexist": {
+          "code": "EEXIST",
+          "sideEffect": "EEXIST:目标已被他人创建，未计入本轮写入，未覆盖未删除",
+          "written": [
+            "server/index.js"
+          ],
+          "wroteFiles": 1
+        }
+      }
+    },
+    {
+      "id": "T6_closed_controls",
+      "assertionsPassed": true,
+      "actual": {
+        "controlsKept": true,
+        "resumeWritten": 1,
+        "reused": 47,
+        "expiredBuild": "BTP_WINDOW_EXPIRED(目录未创建)"
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true,
+    "note": "敏感性与业务期命中分别记账；业务期命中含被调用方捕获的尝试"
+  },
+  "summary": {
+    "total": 7,
+    "assertionsPassed": 7,
+    "unexpectedGuardAttempts": 0
+  }
+}

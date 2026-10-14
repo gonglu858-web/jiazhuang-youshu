@@ -1,3 +1,11 @@
+## 2026-10-14 三账号业务测试包S1–S5定点收尾完成（第三轮，仅本地合成验证，待Codex复核；云端未放行）
+
+- 依据 docs/Codex复查-三账号业务包第二轮返修-20261014.md §3，接手 master 5ed9f60（受审实现 816ab89）。仅改 package-business-test.cjs、business-test-package.test.cjs、操作说明、新证据与状态记录；源App/Page/client/驱动、云函数/vendor（project-guard 未改）、管理员链、P4、旧生成器、历史证据零改动。
+- S1 持久回执契约：recordId 必须精确等于未改 project-guard 的 roundRecordId(businessRoundId)（sbx-create-project: + sha256(businessRoundId)[0:40]）；本轮合法编号正向通过（build/check 全链一致），他轮确定性编号、格式合法但不相关编号、缺回执均拒绝——非仅放开冒号。
+- S2 路径契约：recordPath 只接受绝对路径，相对路径在写入前拒绝（零写）；绝对路径 build/check/复用/续建一致。S3 固定计划文件名：manifest.planFile 必须精确为 plan.json（读取前验证），改名 replacement.json、路径别名 ../escape.json 均拒绝，正常包通过。
+- S4 close 根边界：checkCloseDir 对实际 close 根本身执行链接边界拒绝（junction 顶替 close 即拒），不跟随链接清理文件；普通 close 仍独立可检查、NaN 时钟下不受影响。S5 事实投影：公开异常逐字段保留 error.partialWrites（rel+bytesOnDisk），CLI 同步输出；新证据分别保存部分写（EIO）与竞态 EEXIST 两类异常，JSON 从实际结果组装，修掉上一轮 N5 partialWrite.written 误记 null。
+- 复跑：交付测试 18/18（A9 为本轮新增 S1–S5 正反例）、新证据 7/7 exit0（守卫敏感性 2 次单独记账、业务期意外 0；实现摘要 c36643a3661f8c97aea8c5b18d58bf6ee25f6c77307bdeecca8d31527746a703）。控制组保持：48 文件、续建 1/复用 47、过期真实构建零写且目录未创建。
+- 未验证项：SDK 本地转换未执行、平台部署/真实传输/真实三账号身份未验证；R5-a 本地记录核对不替代平台侧核验。不进入真实P执行包，不重复登记/管理员初始化，不处理A/B/C。真实操作仍须执行包与用户确认。
 ## 2026-10-14 Codex复查816ab89：R2/R4/R6闭合，剩余S1–S5定点收尾
 
 - 依据 docs/Codex复查-三账号业务包第二轮返修-20261014.md。交付测试独立复跑17/17，证据10/10均exit0；新增Codex三账号业务包第二轮复查-20261014.cjs/.json，8/8组断言符合预期（含缺陷复现，不等于验收通过）。工具摘要与交付d0733cfb…一致。

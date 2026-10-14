@@ -244,7 +244,13 @@ function verifyEvidenceRecord(label, errCode, recordPath, expectSha, baseDir, bi
   if (typeof recordPath !== 'string' || !recordPath.trim()) {
     fail(errCode, label + ' 缺少可本地核对的来源记录文件路径（recordPath）。');
   }
-  const abs = path.isAbsolute(recordPath) ? path.resolve(recordPath) : path.resolve(baseDir, recordPath);
+  // S2 路径契约：只接受绝对路径。相对路径在写入前即明确拒绝——
+  // build 把原始计划字节复制进输出 plan.json，check 以输出目录为基准重解析，
+  // 相对基准会在两处含义漂移（产物无法通过自身检查），故不引入隐式工作目录。
+  if (!path.isAbsolute(recordPath)) {
+    fail(errCode, label + ' recordPath 必须是绝对路径（相对路径在 build/check 两处基准不同，写入前即拒绝）：' + recordPath);
+  }
+  const abs = path.resolve(recordPath);
   let st = null;
   try { st = fs.lstatSync(abs); } catch (_) { st = null; }
   if (!st || !st.isFile()) fail(errCode, label + ' 来源记录文件不存在或不是普通文件：' + abs);
@@ -304,8 +310,14 @@ function verifyEvidenceRecord(label, errCode, recordPath, expectSha, baseDir, bi
     for (const k of Object.keys(pr)) {
       if (!['recordId', 'note'].includes(k)) fail(errCode, label + ' persistentReceipt 含未知字段：' + k);
     }
-    if (typeof pr.recordId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{5,}$/.test(pr.recordId)) {
-      fail(errCode, label + ' persistentReceipt.recordId 缺失或格式无效（project-guard 业务项目记录回执编号）。');
+    // S1 回执契约：沿用未改 project-guard 的实际持久记录键——
+    // 'sbx-create-project:' + sha256(businessRoundId)[0:40]（roundRecordId，确定性轮次绑定）。
+    // 仅放开冒号不够：recordId 必须精确等于本轮确定性编号，他轮/无关编号一律拒绝。
+    const expectedReceipt = projectGuard.roundRecordId(bind.businessRoundId);
+    if (typeof pr.recordId !== 'string' || pr.recordId !== expectedReceipt) {
+      fail(errCode, label + ' persistentReceipt.recordId 与本轮持久回执编号不一致' +
+        '（须为 project-guard 确定性编号：sbx-create-project: + sha256(businessRoundId)[0:40]，' +
+        '即 ' + expectedReceipt + '；他轮或不相关编号不构成关联）。');
     }
   } else if (bind.requireReceipt) {
     fail(errCode, label + ' 缺少持久回执关联（persistentReceipt.recordId）。');
@@ -1026,6 +1038,16 @@ function build(windowId, planPath, outOverride) {
       error.wroteFiles = written.length;
       error.writtenFacts = { outDir: path.relative(ROOT, outDir).split(path.sep).join('/'), note: '以上为本次实际新写的文件；既有不同字节未被覆盖。' };
     }
+    // S5：部分写是交付事实——公开异常逐字段投影（rel + bytesOnDisk），
+    // 调用方无需触碰内部 io 即可得知盘上留下了哪些未完整文件。
+    const partials = io.filter(x => x.action === 'written' && x.partial);
+    if (partials.length) {
+      error.partialWrites = partials.map(x => ({
+        rel: path.relative(outDir, x.path).split(path.sep).join('/'),
+        bytesOnDisk: x.bytesOnDisk
+      }));
+      error.partialWritesNote = '部分写事实：以下文件已由本轮独占创建但未完整写盘（bytesOnDisk 为失败时盘上字节数）。';
+    }
     throw error;
   }
 }
@@ -1042,6 +1064,10 @@ function checkDir(dir) {
     fail(ERR.MANIFEST_INVALID, 'manifest.json 无法读取（缺失或目录占位等）：' + error.message);
   }
   if (manifest.schema !== MANIFEST_SCHEMA) fail(ERR.MANIFEST_INVALID, 'manifest schema 不符（须 ' + MANIFEST_SCHEMA + '）。');
+  // S3：受审固定计划文件名——manifest 自报的 planFile 不得改名、路径别名或越界引用。
+  if (manifest.planFile !== undefined && manifest.planFile !== 'plan.json') {
+    fail(ERR.MANIFEST_INVALID, 'manifest.planFile 必须固定为 plan.json（S3；不接受改名/路径别名/越界引用）：' + manifest.planFile);
+  }
   const problems = [];
   const bad = msg => problems.push(msg);
   // R2-a：check 各读取边界与最终成功返回前都重查当下时钟（中途到期/NaN/抛错均不得带成功结论）
@@ -1056,8 +1082,9 @@ function checkDir(dir) {
       clockStopped = true;
     }
   };
-  // 1) 目录内严格计划：plan.json 必须存在且与 manifest.planSha256 一致
-  const planPath = path.join(dir, manifest.planFile || 'plan.json');
+  // 1) 目录内严格计划：plan.json 必须存在且与 manifest.planSha256 一致（S3：固定文件名）
+  const planRel = 'plan.json';
+  const planPath = path.join(dir, planRel);
   if (!fs.existsSync(planPath)) { bad('缺少目录内计划 plan.json'); return finish(); }
   const planBytes = fs.readFileSync(planPath);
   if (manifest.planSha256 !== sha256Buffer(planBytes)) { bad('plan.json 与 manifest.planSha256 不一致'); return finish(); }
@@ -1142,7 +1169,6 @@ function checkDir(dir) {
   }
   if (!fs.existsSync(path.join(dir, 'manifest.json'))) bad('缺失 manifest.json');
   // R1-a：plan.json 自身的清单条目同样纳入精确核对（顶层 planSha256 正确不代表整条清单正确）
-  const planRel = manifest.planFile || 'plan.json';
   const planRec = manifestFiles.find(f => f && f.rel === planRel);
   if (!planRec) {
     bad('清单未声明 ' + planRel);
@@ -1194,6 +1220,14 @@ function checkCloseDir(dir) {
   const closeDir = path.join(dir, 'close');
   const problems = [];
   let files = 0;
+  // S4：close 根本身也在链接边界检查内——候选根普通不等于 close 子目录普通，
+  // junction/symlink 顶替 close 即拒绝；不跟随链接读取或清理任何文件。
+  let closeSt = null;
+  try { closeSt = fs.lstatSync(closeDir); } catch (_) { closeSt = null; }
+  if (!closeSt || closeSt.isSymbolicLink() || !closeSt.isDirectory()) {
+    problems.push('close 根缺失或为符号链接/junction（S4 链接边界）：' + closeDir);
+    return { ok: false, problems, files: 0, expectedFiles: 0 };
+  }
   let expected;
   try {
     expected = computeCloseArtifacts(readPinnedSources());
@@ -1274,6 +1308,9 @@ function main() {
     console.error('[' + (error.code || 'BTP_ERROR') + ']', error.message);
     if (error.wroteFiles) {
       console.error('[已写事实] 本次已写入 ' + error.wroteFiles + ' 个文件：' + error.written.join(', '));
+    }
+    if (error.partialWrites) {
+      console.error('[部分写事实] ' + error.partialWrites.map(p => p.rel + '(' + p.bytesOnDisk + 'B)').join(', '));
     }
     process.exitCode = 1;
   }

@@ -21,6 +21,7 @@ const vm = require('node:vm');
 const { createRequire } = require('node:module');
 
 const tool = require('../scripts/package-business-test.cjs');
+const projectGuard = require('../cloudfunctions/scheduleSandbox/project-guard');
 const gateSource = require('../cloudfunctions/scheduleSandbox/gate');
 const { createSandboxTestDb, PREFIX } = require('./helpers/sandbox-test-db.cjs');
 const { APPID, ENV_ID } = require('./helpers/sandbox-entry-loader.cjs');
@@ -115,7 +116,7 @@ function projectReadbackRecordFixture(round, projectId, marker, overrides = {}) 
     subject: { role: 'owner', userId: SYN_USERS.owner.userId },
     capturedAt: '2026-10-14T00:00:00Z',
     content: 'P 项目回读原文（project-guard 业务项目记录；合成夹具）',
-    persistentReceipt: { recordId: 'pgrecfixture01', note: '合成回执夹具' },
+    persistentReceipt: { recordId: projectGuard.roundRecordId(round), note: '合成回执夹具（确定性轮次编号）' },
     ...overrides
   });
 }
@@ -536,6 +537,9 @@ test('A6 R3：目录占位/多余目录预检零写；输出根 junction 拒绝�
   assert.equal(err.wroteFiles, 1, '部分写副作用必须计入 wroteFiles');
   assert.deepEqual(err.written, ['server/index.js']);
   assert.equal(fs.statSync(path.join(partialDir, 'server', 'index.js')).size, 7, '盘上为 7 字节部分文件');
+  // S5：部分写是交付事实——公开异常逐字段投影 rel + bytesOnDisk
+  assert.deepEqual(err.partialWrites, [{ rel: 'server/index.js', bytesOnDisk: 7 }],
+    'partialWrites 必须出现在公开异常上');
   // R3-c：竞态 EEXIST（他人抢先创建）→ 不算本轮写入、不覆盖不删除
   const raceDir = path.join(OUT_ROOT, 'a6-race-' + RUN_ID);
   const racePlan = writePlan('P');
@@ -551,6 +555,8 @@ test('A6 R3：目录占位/多余目录预检零写；输出根 junction 拒绝�
   assert.equal(err && err.code, 'EEXIST');
   assert.ok(!err.written || !err.written.includes('server/gate.js'), '他人 EEXIST 文件不算本轮写入');
   assert.equal(fs.readFileSync(path.join(raceDir, gateRel), 'utf8'), 'other-writer', '不覆盖他人文件');
+  // S5：EEXIST 异常自带 sideEffect 事实说明
+  assert.ok(/EEXIST/.test(err.sideEffect || ''), 'EEXIST 异常须携带 sideEffect 事实');
 });
 
 test('A7 R4-a：关闭包受审装配（正确根/唯一页面/完整依赖）；checkCloseDir 独立重建；关闭 App/Page 禁用零发送', async () => {
@@ -691,6 +697,73 @@ test('A8 R5-a：真实模式必须核对实际记录文件（缺文件/摘要不
   // 合成模式保持：无记录文件仍可构建（合成候选不受影响）
   const syn = buildWindow('P', null, 'a8-syn-' + RUN_ID);
   assert.equal(syn.manifest.synthetic, true);
+});
+
+test('A9 S1–S5 收尾：回执确定性契约/绝对路径契约/固定计划文件名/close 根链接边界', () => {
+  const round = 'synthetic-round-s9-' + RUN_ID.slice(-8);
+  const proj = 'p_sbx_' + crypto.createHash('sha256').update(round).digest('hex').slice(0, 32);
+  const mkReal = (receipt) => {
+    const participant = Object.fromEntries(['owner', 'manager', 'worker'].map(r => {
+      const fx = participantRecordFixture(r, SYN_USERS[r].userId, { businessRoundId: round });
+      return [r, { kind: 'readback-record', recordSha256: fx.recordSha256, recordPath: fx.recordPath }];
+    }));
+    const fx = projectReadbackRecordFixture(round, proj, 'ready-' + round, Object.assign({ businessRoundId: round },
+      receipt === undefined ? {} : { persistentReceipt: { recordId: receipt, note: '回执反例夹具' } }));
+    return {
+      synthetic: false, businessRoundId: round, projectId: proj,
+      projectReadyMarker: 'ready-' + round,
+      windowStartsAt: '2030-01-01T00:00:00Z', windowExpiresAt: '2030-01-01T02:00:00Z',
+      users: Object.fromEntries(['owner', 'manager', 'worker'].map(r =>
+        [r, { userId: SYN_USERS[r].userId, source: '人工声明（完整身份待用户核实）' }])),
+      participantEvidence: participant,
+      projectReadback: { source: 'readback', projectId: proj, businessRoundId: round,
+        projectReadyMarker: 'ready-' + round, recordSha256: fx.recordSha256, recordPath: fx.recordPath }
+    };
+  };
+  // S1 正向：project-guard 实际契约编号（未改业务核心）→ 接受
+  const okParsed = tool.readPlan(writePlan('E', mkReal(projectGuard.roundRecordId(round))), 'E');
+  assert.equal(okParsed.projectReadback.recordPath !== null, true, '真实契约回执编号必须被接受');
+  // S1 反例 1：他轮确定性编号 → 拒绝
+  assert.throws(() => tool.readPlan(writePlan('E', mkReal(projectGuard.roundRecordId('other-round-xyz'))), 'E'),
+    e => e.code === tool.ERR.PLAN_PROJECT_INVALID && /recordId|持久回执/.test(e.message));
+  // S1 反例 2：格式任意但不相关编号 → 拒绝
+  assert.throws(() => tool.readPlan(writePlan('E', mkReal('unrelated_receipt_123456')), 'E'),
+    e => e.code === tool.ERR.PLAN_PROJECT_INVALID && /recordId|持久回执/.test(e.message));
+  // S2 反例：相对 recordPath 在写入前即拒绝（不得等写满包后才发现自身无法核验）
+  const relPlan = mkReal(projectGuard.roundRecordId(round));
+  relPlan.projectReadback.recordPath = path.basename(relPlan.projectReadback.recordPath);
+  for (const ev of Object.values(relPlan.participantEvidence)) ev.recordPath = path.basename(ev.recordPath);
+  assert.throws(() => tool.build('E', writePlan('E', relPlan), path.join(OUT_ROOT, 'a9-rel-' + RUN_ID)),
+    e => /绝对路径/.test(e.message), '相对路径必须在 build 前即拒绝');
+  // S3 反例：plan.json 改名 + 同步 manifest.planFile/清单 rel → 拒绝（固定文件名）
+  const b3 = buildWindow('P', null, 'a9-rename-' + RUN_ID);
+  fs.renameSync(path.join(b3.outDir, 'plan.json'), path.join(b3.outDir, 'replacement.json'));
+  const m3 = JSON.parse(fs.readFileSync(path.join(b3.outDir, 'manifest.json'), 'utf8'));
+  m3.planFile = 'replacement.json';
+  m3.files.find(x => x.rel === 'plan.json').rel = 'replacement.json';
+  fs.writeFileSync(path.join(b3.outDir, 'manifest.json'), JSON.stringify(m3, null, 2));
+  assert.throws(() => tool.checkDir(b3.outDir),
+    e => e.code === tool.ERR.MANIFEST_INVALID && /planFile 必须固定为 plan.json/.test(e.message),
+    '改名 planFile 不得改变受审固定文件集');
+  // S3 反例：路径别名越界引用 → 同一检查拒绝
+  const b3b = buildWindow('P', null, 'a9-alias-' + RUN_ID);
+  const m3b = JSON.parse(fs.readFileSync(path.join(b3b.outDir, 'manifest.json'), 'utf8'));
+  m3b.planFile = '..' + path.sep + 'escape.json';
+  fs.writeFileSync(path.join(b3b.outDir, 'manifest.json'), JSON.stringify(m3b, null, 2));
+  assert.throws(() => tool.checkDir(b3b.outDir),
+    e => e.code === tool.ERR.MANIFEST_INVALID && /planFile 必须固定为 plan.json/.test(e.message),
+    '越界 planFile 引用拒绝');
+  // S3 正常对照：未篡改包 checkCloseDir/checkDir 通过
+  const b3c = buildWindow('P', null, 'a9-control-' + RUN_ID);
+  assert.equal(tool.checkCloseDir(b3c.outDir).ok, true);
+  // S4 反例：close 子目录本身被 junction 顶替 → 独立关闭检查拒绝，不跟随链接
+  const externalClose = path.join(OUT_ROOT, 'a9-ext-close-' + RUN_ID);
+  fs.renameSync(path.join(b3c.outDir, 'close'), externalClose);
+  fs.symlinkSync(externalClose, path.join(b3c.outDir, 'close'), 'junction');
+  const r4 = tool.checkCloseDir(b3c.outDir);
+  assert.equal(r4.ok, false, 'close 根 junction 必须被独立关闭检查拒绝');
+  assert.ok(r4.problems.some(x => /close 根缺失或为符号链接\/junction/.test(x)), r4.problems.join('; '));
+  assert.equal(fs.existsSync(path.join(externalClose, 'server', 'gate.js')), true, '不跟随链接清理文件');
 });
 
 test('A3 R1 反例：空清单 / 越界变换同步哈希 / 模式篡改 / 多余文件 全部拒绝；关闭包不受开启候选损坏影响', () => {
