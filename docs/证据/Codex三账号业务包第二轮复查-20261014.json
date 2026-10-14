@@ -1,0 +1,123 @@
+{
+  "reviewedCommit": "816ab89",
+  "reviewBasis": "be993ce",
+  "implementationSha256": "d0733cfb7cac8ba383ce0011bda70552fe7687a1d249cf40abfba8776a71b7f2",
+  "generatedAt": "2026-10-14T07:42:56.987Z",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/codex-816-2ae044f7-bb41-4442-8251-3a5a1b357656",
+  "verificationKind": "offline synthetic files/time only; no SDK/platform/real identity",
+  "results": [
+    {
+      "id": "D01",
+      "kind": "closed-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "normalAndCloseOk": true,
+        "fullReuse": true,
+        "resumeWritten": 1,
+        "wrongPlanBytesRejected": true
+      }
+    },
+    {
+      "id": "D02",
+      "kind": "R1-fixed-path-gap",
+      "assertionsPassed": true,
+      "actual": {
+        "planJsonExists": false,
+        "renamedPlanAccepted": true,
+        "planChecked": true
+      }
+    },
+    {
+      "id": "D03",
+      "kind": "R3-close-root-junction-gap",
+      "assertionsPassed": true,
+      "actual": {
+        "closeRootIsJunction": true,
+        "checkCloseAccepted": true,
+        "fullCheckRejected": true
+      }
+    },
+    {
+      "id": "D04",
+      "kind": "R5-real-contract-gap",
+      "assertionsPassed": true,
+      "actual": {
+        "actualContractReceipt": "sbx-create-project:24d37a78eef54616da1d0da8fc185d4e011b3cec",
+        "actualContractRejected": "BTP_PLAN_PROJECT_INVALID",
+        "unrelatedReceiptAccepted": true
+      }
+    },
+    {
+      "id": "D05",
+      "kind": "R5-relative-record-path-gap",
+      "assertionsPassed": true,
+      "actual": {
+        "buildSucceeded": true,
+        "ownCheckOk": false,
+        "problems": [
+          "计划校验失败[BTP_PLAN_USER_INVALID]：owner 回读记录 来源记录文件不存在或不是普通文件：C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\codex-816-2ae044f7-bb41-4442-8251-3a5a1b357656\\out-21\\record-17.json"
+        ]
+      }
+    },
+    {
+      "id": "D06",
+      "kind": "partial-report-projection-gap",
+      "assertionsPassed": true,
+      "actual": {
+        "wroteFiles": 1,
+        "written": [
+          "server/index.js"
+        ],
+        "bytesOnDisk": 7,
+        "exportedErrorKeys": [
+          "code",
+          "written",
+          "wroteFiles",
+          "writtenFacts"
+        ],
+        "partialMetadataExported": false
+      }
+    },
+    {
+      "id": "D07",
+      "kind": "closed-clock-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "matrix": [
+          {
+            "mode": "expired",
+            "ok": false,
+            "count": 2
+          },
+          {
+            "mode": "nan",
+            "ok": false,
+            "count": 2
+          },
+          {
+            "mode": "throw",
+            "ok": false,
+            "count": 2
+          }
+        ],
+        "closeClockIndependent": true
+      }
+    },
+    {
+      "id": "D08",
+      "kind": "closed-directory-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "directoryConflictZeroWrite": true,
+        "candidateRootJunctionAllThreeRejected": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "assertionsPassed": 8,
+    "sensitivityHits": 2,
+    "unexpectedAttempts": 0,
+    "accepted": false
+  }
+}
