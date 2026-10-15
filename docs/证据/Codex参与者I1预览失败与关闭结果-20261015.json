@@ -1,0 +1,53 @@
+{
+  "schema": "codex-i1-outcome/1",
+  "recordedAt": "2026-10-15T12:34:11.570485+00:00",
+  "roundId": "i1-20261015-5e086327dce9",
+  "authorization": "同意本轮 I1 核验并关闭，允许必要凭据获取和现有套餐用量",
+  "status": "PREVIEW_FAILED_CLOSED_VERIFIED",
+  "credentialBatches": 2,
+  "associationStagesPassed": 6,
+  "scfReadCalls": 5,
+  "deployments": 2,
+  "zipDownloads": 2,
+  "candidateFilesMatched": 3,
+  "closedFilesMatched": 8,
+  "candidateArchiveSha256": "921cc09fe5c4c11d60f07b38a3febd4c6ec3fb52e83dbdbf22ee7d0ab113efa5",
+  "closedArchiveSha256": "e77a31ce89677ffc6af6116f1754f11fe870599bd83d53f2e693a1522ab5b058",
+  "wxServerSdk": "3.0.1",
+  "databaseVersion": "1.4.1",
+  "preview": {
+    "attempts": 1,
+    "tool": "create_preview_qrcode",
+    "format": "window",
+    "page": "pages/identity-check/identity-check",
+    "success": false,
+    "error": "aborted (code 10)",
+    "outerProcessExitCode": 0,
+    "retried": false,
+    "rootCauseConfirmed": false,
+    "source": "本轮命令工具返回净化字段，未保存原始CLI输出"
+  },
+  "devtoolsStatus": {
+    "calls": 2,
+    "firstResult": "PowerShell整段JSON解析失败，原始输出未留存；未据此判定登录失败",
+    "secondSafeProjection": {
+      "success": true,
+      "loginExpired": false,
+      "versionRelation": "equal",
+      "cliTokenRequired": false
+    },
+    "skillVersion": "0.3.11"
+  },
+  "passphraseDelivered": false,
+  "participantInvocationRequested": false,
+  "participantIdentityVerified": false,
+  "participantRegistrationState": "UNVERIFIED",
+  "agentFunctionInvocations": 0,
+  "agentBusinessDatabaseCalls": 0,
+  "closureVerifiedAt": "2026-10-15T12:33:27.068600+00:00",
+  "limits": [
+    "本轮未调查平台日志，不据此宣称全平台零调用或零费用。",
+    "ZIP证据中的platformWritePermissionVerified=false仅表示未做一般写权限审计；本轮两次代码覆盖及回读已实际成功，数据库写权限未验证。",
+    "窗口即使未过期也不复用本轮；再次尝试须新轮次与具体包。"
+  ]
+}

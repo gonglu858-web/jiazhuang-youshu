@@ -1,0 +1,8 @@
+{
+  "runId": "codex-i1-candidate-001ac4da-af17-4ce8-bb59-310c44ac7763",
+  "startedAt": "2026-10-15T12:30:16.903Z",
+  "authorization": "同意本轮 I1 核验并关闭，允许必要凭据获取和现有套餐用量",
+  "roundId": "i1-20261015-5e086327dce9",
+  "mode": "candidate",
+  "scope": "具体执行页第2节；本阶段一批凭据、一次覆盖及回读，不重试部署"
+}
