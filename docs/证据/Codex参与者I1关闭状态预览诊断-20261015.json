@@ -1,0 +1,22 @@
+{
+  "basisCommit": "747bc79",
+  "roundId": "i1-20261015-5e086327dce9",
+  "finishedAt": "2026-10-15T12:49:13.7741406Z",
+  "tool": "create_preview_qrcode",
+  "attempts": 1,
+  "outerProcessExitCode": 0,
+  "safeObservedFields": [
+    "\"message\": \"错误 Error: aborted (code 10)\"",
+    "\"code\": \"10\"",
+    "\"success\": false",
+    "\"code\": \"10\"",
+    "\"reason\": \"10\""
+  ],
+  "rawOutputSaved": false,
+  "deploymentAttempts": 0,
+  "credentialFetches": 0,
+  "identityCallsByAgent": 0,
+  "passphraseDelivered": false,
+  "remoteClosedBasis": "Codex参与者I1部署关闭字节核对-20261015.closed.json",
+  "remoteRecheckedThisTurn": false
+}

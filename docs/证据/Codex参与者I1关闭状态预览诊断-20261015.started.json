@@ -1,0 +1,11 @@
+{
+  "authorization": "同意关闭状态下预览一次",
+  "startedAt": "2026-10-15T12:49:04.5369550Z",
+  "project": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-i1-20261015-5e086327dce9-d12d6db0376a",
+  "tool": "create_preview_qrcode",
+  "qrFormat": "window",
+  "page": "pages/identity-check/identity-check",
+  "allowedAttempts": 1,
+  "remoteDeploymentAllowed": false,
+  "identityCallAllowed": false
+}
