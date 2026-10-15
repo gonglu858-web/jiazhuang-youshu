@@ -1,0 +1,6 @@
+{
+  "runId": "codex-i1-baseline-7d24de0a-b651-469d-8b67-42e09b975c9e",
+  "startedAt": "2026-10-15T12:05:23.056Z",
+  "authorization": "同意本次只读核对，允许临时凭据获取及现有套餐用量。",
+  "scope": "I1 v2 第3节：一批凭据、同批三阶段、两项SCF读取、一次ZIP下载；失败停止无重试"
+}
