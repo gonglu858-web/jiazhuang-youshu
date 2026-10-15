@@ -1,0 +1,38 @@
+{
+  "schema": "codex-participant-close-binding-review/1",
+  "reviewedCommit": "0c2eb99",
+  "baselineValid": true,
+  "checks": [
+    {
+      "name": "server sourceRel",
+      "accepted": false
+    },
+    {
+      "name": "mapping",
+      "accepted": false
+    },
+    {
+      "name": "missing sourceRel",
+      "accepted": false
+    },
+    {
+      "name": "unknown field",
+      "accepted": false
+    },
+    {
+      "name": "missing entry",
+      "accepted": false
+    },
+    {
+      "name": "bytes drift",
+      "accepted": false
+    },
+    {
+      "name": "closePackage.sourceDir metadata",
+      "accepted": true
+    }
+  ],
+  "restoredValid": true,
+  "note": "sourceDir 为关闭清单中的重复说明字段；计划及 manifest 顶部来源字段未改且继续受校验。",
+  "scope": "仅本地合成包及忽略目录；未访问平台或真实凭据"
+}
