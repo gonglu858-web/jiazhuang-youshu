@@ -1,0 +1,14 @@
+{
+  "schema": "codex-i1-window-diagnosis/1",
+  "basisCommit": "bc44c0a",
+  "observedAt": "2026-10-15T12:45:11.839Z",
+  "roundId": "i1-20261015-5e086327dce9",
+  "project": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-i1-20261015-5e086327dce9-d12d6db0376a",
+  "frozenFileHashesMatched": 38,
+  "screenshot": {
+    "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261015-5e086327dce9\\opened-project-diagnostic.jpg",
+    "sha256": "a05901400a3e9378eb306a1e4b9806b7029fada00f7cd0727787b12ded5fb629",
+    "bytes": 48446
+  },
+  "scope": "offline artifact verification only; IDE observations recorded separately in report; no cloud or preview replay"
+}
