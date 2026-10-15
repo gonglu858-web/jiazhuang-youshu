@@ -1,3 +1,9 @@
+## 2026-10-15 两位参与者本人身份只读核验包本地实现完成（仅本地实现与合成自测，待Codex审查；云端未放行）
+
+- 依据 docs/WorkBuddy任务-两位参与者本人身份只读核验包-20261015.md §2–§6 与草案 §8；接手 master 104aea8，工作区起始干净。仅新增本任务模块、模板、打包器、测试、说明与证据；源App/Page/client/驱动、memberAccess、connectionCheck、scheduleSandbox（index/gate/map/project-guard/vendor）、管理员链/P4/凭据链、旧登记生成器与 P/E/X 生成器、历史证据零改动。
+- 实现要点：固定 AppID/环境/函数/测试集合，仅 inspectSelf（业务动作全部 DB 前拒绝）；userId 按 u_ + sha256(APPID:OPENID)[0:40] 派生，仅一次 doc(userId).get()；不创建用户、不写审计、不授予角色、不取号；口令只限制持有者，不证明现实1号/2号对应，服务端只存摘要，本轮仅合成口令、不生成真实口令、不落证据；零持久写故不承诺一次性口令或全局限流；状态闭集 ACTIVE/ABSENT/DISABLED/MISMATCH/UNKNOWN，读失败一律 UNKNOWN 且 readAttempted 保留；读后与成功返回前重读时钟；结果净化只出尾号，不含 OPENID/凭据/原始 SDK 异常；页面加载与切前台零发送、单击单发、失败不自动重试、口令调用后清除；关闭包复制自已受审业务关闭包（先经未改 checkCloseDir 校验），独立核验不受开启窗口影响。
+- 实测：交付测试 8/8（business-test-package 18/18 回归无变化）、新独立证据 10/10 exit 0（守卫敏感性 2 次单独记账、业务期意外 0）。候选 14 文件 + 关闭包 23 文件；首次构建 written 38、完整复用 written 0/reused 38；非法计划 9 类拒绝且零写；目录占位预检快照不变；输出根 junction 拒绝且目标零写；部分写 partialWrites=[{rel:server/index.js,bytesOnDisk:11}]；竞态 EEXIST 不计他人文件且不覆盖；写/事务方法陷阱全矩阵零业务写。实现摘要 fc64b2c9d6ee7b87b82cb75b0d4eaf1478696d336a7bf1a352cdaa6844c02696，打包器摘要 1ee77e7c0c61df6fc79937a26bd1d87e6cbd601a996d253b9f5f3f162ba1a82f。
+- 未验证项：SDK 本地转换未执行；真实平台部署、真实 wx 传输、真实1号/2号身份与云端登记状态完全未验证；本轮记录不以 business-test-participant-record/1 伪装 P 证据。未联网、未取凭据、未部署/预览/上传/启用、未登记/初始化、未写库/建资源、未改权限费用、未清缓存、未处理A/B/C。真实 I1/I2 核验须另行形成执行包并由用户确认。
 ## 2026-10-15 本人身份核验办法定案：独立只读I1/I2，先本地实现后审查
 
 - 用户要求先确定两人身份核验办法再补真实执行包；已形成docs/WorkBuddy任务-两位参与者本人身份只读核验包-20261015.md，并补P草案§8。0号本人、1号管家、2号师傅分工保持；1/2号真实身份与登记状态仍未知。

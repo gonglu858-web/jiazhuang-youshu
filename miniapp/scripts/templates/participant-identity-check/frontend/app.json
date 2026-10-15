@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "pages/identity-check/identity-check"
+  ],
+  "window": {
+    "navigationBarTitleText": "本人身份核验",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f8ff"
+  }
+}

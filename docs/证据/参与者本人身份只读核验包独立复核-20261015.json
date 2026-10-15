@@ -1,0 +1,217 @@
+{
+  "schema": "participant-identity-check-evidence/1",
+  "title": "两位参与者本人身份只读核验包 · 本地准备独立复核证据",
+  "reviewedCommit": "104aea8（接手基线）",
+  "reviewBasis": "docs/WorkBuddy任务-两位参与者本人身份只读核验包-20261015.md §6；docs/Codex执行包草案-三账号P准备窗口-20261015.md §8",
+  "implementationPath": "miniapp/scripts/lib/participant-identity-check.cjs",
+  "implementationSha256": "fc64b2c9d6ee7b87b82cb75b0d4eaf1478696d336a7bf1a352cdaa6844c02696",
+  "packerPath": "miniapp/scripts/package-participant-identity-check.cjs",
+  "packerSha256": "1ee77e7c0c61df6fc79937a26bd1d87e6cbd601a996d253b9f5f3f162ba1a82f",
+  "generatedAt": "2026-10-15T01:30:58.533Z",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/pic-db9c2407-6197-4155-96c4-12daa34821ba",
+  "verificationKind": "Node 真实应用代码 + 合成 wx/db/时钟；SDK 本地转换未执行；真实平台/真实三账号/真实部署完全未验证",
+  "passphraseSample": "synthetic（仅验证准入路径；不生成真实口令；不落证据）",
+  "claims": {
+    "oneTimePassphrase": false,
+    "globalRateLimit": false,
+    "provesRealPersonIdentity": false,
+    "zeroPlatformLogOrCost": false
+  },
+  "results": [
+    {
+      "id": "E0_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityProbeHits": 2,
+        "note": "敏感性探针实际触发并单独记账"
+      }
+    },
+    {
+      "id": "E1_identity_derivation",
+      "assertionsPassed": true,
+      "actual": {
+        "appId": "wxfb4db1615ac15531",
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "collection": "schtest_v1_users",
+        "functionName": "scheduleSandbox",
+        "differentContextsDifferentIds": true,
+        "stableRepeat": true
+      }
+    },
+    {
+      "id": "E2_registration_states",
+      "assertionsPassed": true,
+      "actual": {
+        "states": {
+          "ACTIVE": "ACTIVE",
+          "ABSENT": "ABSENT",
+          "DISABLED": "DISABLED",
+          "MISMATCH": "MISMATCH",
+          "UNKNOWN_MULTI": "UNKNOWN",
+          "UNKNOWN_STATUS": "UNKNOWN"
+        },
+        "readFailure": "UNKNOWN",
+        "readAttemptedKept": true,
+        "totalReads": 6,
+        "writeAttempts": 0,
+        "onlyFixedCollectionAndSelfDoc": true
+      }
+    },
+    {
+      "id": "E3_pre_database_rejection",
+      "assertionsPassed": true,
+      "actual": {
+        "rejectedCount": 18,
+        "distinctCodes": [
+          "PIC_ACTION_REJECTED",
+          "PIC_CLOCK_ERROR",
+          "PIC_CLOCK_INVALID",
+          "PIC_CONTEXT_UNVERIFIED",
+          "PIC_PASSPHRASE_INVALID",
+          "PIC_PASSPHRASE_REQUIRED",
+          "PIC_REQUEST_INVALID",
+          "PIC_ROUND_MISMATCH",
+          "PIC_TARGET_MISMATCH",
+          "PIC_WINDOW_EXPIRED",
+          "PIC_WINDOW_NOT_OPEN"
+        ],
+        "zeroDatabaseAccess": true
+      }
+    },
+    {
+      "id": "E4_post_read_clock_guard",
+      "assertionsPassed": true,
+      "actual": {
+        "cases": [
+          {
+            "label": "expired_after_read",
+            "code": "PIC_WINDOW_EXPIRED",
+            "readAttempted": true,
+            "reads": 1
+          },
+          {
+            "label": "nan_after_read",
+            "code": "PIC_CLOCK_INVALID",
+            "readAttempted": true,
+            "reads": 1
+          },
+          {
+            "label": "throw_after_read",
+            "code": "PIC_CLOCK_ERROR",
+            "readAttempted": true,
+            "reads": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "E5_sanitized_output",
+      "assertionsPassed": true,
+      "actual": {
+        "fields": [
+          "checkRoundId",
+          "code",
+          "identityConfirmed",
+          "message",
+          "ok",
+          "readAttempted",
+          "recordMatched",
+          "registrationState",
+          "schema",
+          "serverTimeIso",
+          "userIdTail"
+        ],
+        "userIdTail": "3c37be",
+        "registrationState": "ACTIVE",
+        "noOpenidNoCredentials": true
+      }
+    },
+    {
+      "id": "E6_artifacts_and_close_package",
+      "assertionsPassed": true,
+      "actual": {
+        "candidateFiles": 14,
+        "closeFiles": 23,
+        "writtenOnFirstBuild": 38,
+        "fullReuseWritten": 0,
+        "reusedOnSecondBuild": 38,
+        "closeIndependentCheckOk": true,
+        "closeFilesVerified": 23,
+        "cleartextPassphraseInArtifacts": false
+      }
+    },
+    {
+      "id": "E7_zero_write_and_failure_facts",
+      "assertionsPassed": true,
+      "actual": {
+        "rejectedInvalidPlans": 9,
+        "precheckSnapshotUnchanged": true,
+        "junctionTargetZeroWrite": true,
+        "partialWrite": {
+          "code": "EIO",
+          "partialWrites": [
+            {
+              "rel": "server/index.js",
+              "bytesOnDisk": 11
+            }
+          ],
+          "wroteFiles": 2
+        },
+        "eexist": {
+          "code": "EEXIST",
+          "sideEffect": "EEXIST:目标已被他人创建，未计入本轮写入，未覆盖未删除",
+          "otherWriterFileUntouched": true
+        }
+      }
+    },
+    {
+      "id": "E8_generated_chain",
+      "assertionsPassed": true,
+      "actual": {
+        "appLoaded": true,
+        "pageLoaded": true,
+        "autoCallOnLoad": false,
+        "singleTapSingleCall": true,
+        "functionTarget": "scheduleSandbox",
+        "action": "inspectSelf",
+        "registrationState": "ACTIVE",
+        "identityConfirmed": true,
+        "passphraseClearedAfterCall": true,
+        "noAutoRetryOnFailure": true,
+        "stopHintShown": true
+      }
+    },
+    {
+      "id": "E9_close_package_rejects",
+      "assertionsPassed": true,
+      "actual": {
+        "closeFrontendHasIdentityPage": false,
+        "closeFrontendHasIdentityClient": false,
+        "rejectedActions": [
+          "inspectSelf",
+          "identify",
+          "createProject",
+          "removeMember"
+        ],
+        "rejectCodes": [
+          "SANDBOX_DISABLED",
+          "SANDBOX_DISABLED",
+          "SANDBOX_DISABLED",
+          "SANDBOX_DISABLED"
+        ],
+        "zeroDatabaseAccess": true
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true,
+    "note": "敏感性与业务期命中分别记账；业务期命中含被调用方捕获的尝试"
+  },
+  "summary": {
+    "total": 10,
+    "assertionsPassed": 10,
+    "unexpectedGuardAttempts": 0
+  }
+}

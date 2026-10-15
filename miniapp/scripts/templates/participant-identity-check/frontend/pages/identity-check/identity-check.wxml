@@ -1,0 +1,31 @@
+<!-- 核验页：只有一个核验动作；无角色切换/登记/取号/重试/清缓存/项目操作控件。 -->
+<view class="wrap">
+  <view class="card">
+    <view class="title">本人测试账号只读核验</view>
+    <view class="desc">本页面只读取你自己这一个测试账号的登记状态，不会创建账号、不会写入任何记录、不会授予角色。请在本窗口内输入临时核验口令，由你本人操作。</view>
+
+    <view class="label">本窗口临时核验口令</view>
+    <input class="pass" password="true" value="{{passphrase}}" bindinput="onPassphraseInput" placeholder="请输入临时口令" disabled="{{sending}}" />
+    <view class="tip">口令只在本页临时使用，不会保存，也不会显示在结果或截图中。</view>
+
+    <button class="btn" bindtap="onCheckTap" loading="{{sending}}" disabled="{{sending}}">核对我的测试账号</button>
+    <view class="tip">请只点一次。失败不会自动重试，重复点击在本次请求返回前无效。</view>
+  </view>
+
+  <view class="card" wx:if="{{result}}">
+    <view class="title">本次核验结果</view>
+    <view class="row">身份已确认：{{result.identityConfirmed ? '是' : '否'}}</view>
+    <view class="row">登记状态：{{result.registrationState}}</view>
+    <view class="row">记录归属一致：{{result.recordMatched === null ? '未核实' : (result.recordMatched ? '是' : '否')}}</view>
+    <view class="row">是否已发起读取：{{result.readAttempted ? '是' : '否'}}</view>
+    <view class="row">内部编号尾号：{{result.userIdTail || '—'}}</view>
+    <view class="row">核验轮次：{{result.checkRoundId}}</view>
+    <view class="row">服务端时间：{{result.serverTime || '—'}}</view>
+    <view class="row" wx:if="{{result.code}}">结果码：{{result.code}}</view>
+    <view class="stop">{{stopHint}}</view>
+  </view>
+
+  <view class="card" wx:if="{{!result && stopHint}}">
+    <view class="stop">{{stopHint}}</view>
+  </view>
+</view>
