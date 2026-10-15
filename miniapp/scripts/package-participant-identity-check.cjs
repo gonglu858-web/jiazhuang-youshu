@@ -81,6 +81,11 @@ function adaptCloseRel(sourceRel) {
     ? SERVER_FN_ROOT + sourceRel.slice('server/'.length)
     : sourceRel;
 }
+/** C1-a：关闭清单 mapping 的受审固定声明（build 写入、checkDir 精确核对）。 */
+const CLOSE_MAPPING_DECLARATION =
+  'close/server/** -> close/server/scheduleSandbox/**（其余 close/<rel> 逐字节保留）';
+/** C1-a：关闭清单条目的允许字段（精确绑定，未知字段拒绝）。 */
+const CLOSE_MANIFEST_FIELDS = Object.freeze(['rel', 'sourceRel', 'bytes', 'sha256']);
 /** 关闭包内（映射后）必须满足的同名函数目录校验：配置根 + 仅同名子目录 + 入口齐备。 */
 function assertCloseMappingInvariants(expectedMap) {
   // 关闭包项目配置所指 server/ 下，所有制品必须全部位于同名函数子目录
@@ -646,7 +651,7 @@ function build(planPath, outOverride) {
       note: '配对关闭包：复制自已受审本地业务关闭包（先经未改 checkCloseDir 独立校验）；' +
             '来源 server/** 已映射为本包 close/server/scheduleSandbox/**（同名函数目录），其余文件逐字节保留；关闭端无需口令、不依赖开启窗口时效。',
       sourceDir: relOf(path.relative(ROOT, plan.closeSourceDir)),
-      mapping: 'close/server/** -> close/server/scheduleSandbox/**（其余 close/<rel> 逐字节保留）',
+      mapping: CLOSE_MAPPING_DECLARATION,
       files: closeFiles.map(f => ({
         rel: adaptCloseRel(f.rel),
         sourceRel: f.rel,
@@ -766,7 +771,7 @@ function checkDir(dir) {
     // C1：来源 server/** 映射为本包 close/server/scheduleSandbox/**，其余逐字节保留；
     // 来源侧校验（未改 checkCloseDir）仍按来源原布局执行。
     closeFiles = verifyCloseSource(plan.closeSourceDir)
-      .map(f => ({ rel: adaptCloseRel(f.rel), buf: f.buf }));
+      .map(f => ({ rel: adaptCloseRel(f.rel), sourceRel: f.rel, buf: f.buf }));
     assertCloseMappingInvariants(new Map(closeFiles.map(cf => [cf.rel, cf.buf])));
   } catch (error) {
     bad('来源重建失败[' + (error.code || 'PIC_ERROR') + ']：' + error.message);
@@ -786,6 +791,11 @@ function checkDir(dir) {
     if (!f || typeof f.rel !== 'string' || !REL_PATH_RE.test(f.rel)) { bad('closePackage.files 清单含非法条目'); continue; }
     if (declaredClose.has(f.rel)) bad('重复关闭清单条目：' + f.rel);
     declaredClose.add(f.rel);
+  }
+  // C1-a：关闭清单来源绑定——mapping 固定声明 + 每条 sourceRel→rel/bytes/sha256
+  // 必须与受审来源重建结果精确一致；缺字段/错字段/伪造来源/错映射均拒绝。
+  if (manifest.closePackage && manifest.closePackage.mapping !== CLOSE_MAPPING_DECLARATION) {
+    bad('closePackage.mapping 与受审固定映射声明不一致');
   }
   const checkOne = (rel, expectedBuf, isClose) => {
     const list = isClose ? manifestCloseFiles : manifestFiles;
@@ -808,6 +818,29 @@ function checkDir(dir) {
   };
   for (const [rel, buf] of expected) checkOne(rel, buf, false);
   for (const f of closeFiles) checkOne(f.rel, f.buf, true);
+
+  // C1-a：关闭清单来源绑定——逐条与受审来源重建结果精确比对。
+  // 期望集：closeFiles（rel=映射后、sourceRel=来源原相对路径）。
+  const expectedCloseByKey = new Map(closeFiles.map(cf => [cf.rel, {
+    rel: cf.rel, sourceRel: cf.sourceRel, bytes: cf.buf.length, sha256: sha256Buffer(cf.buf)
+  }]));
+  for (const rec of manifestCloseFiles) {
+    if (!rec || typeof rec !== 'object' || Array.isArray(rec)) continue; // 非法条目已在上方记录
+    const exp = expectedCloseByKey.get(rec.rel);
+    if (!exp) { bad('关闭清单条目无法由受审来源重建：' + rec.rel); continue; }
+    for (const k of CLOSE_MANIFEST_FIELDS) {
+      if (k === 'rel') continue; // rel 已作为键比对
+      if (!Object.prototype.hasOwnProperty.call(rec, k) || rec[k] !== exp[k]) {
+        bad('关闭清单字段与受审来源重建不符（' + k + '）：' + rec.rel);
+      }
+    }
+    for (const k of Object.keys(rec)) {
+      if (!CLOSE_MANIFEST_FIELDS.includes(k)) bad('关闭清单含未知字段（' + k + '）：' + rec.rel);
+    }
+  }
+  for (const exp of expectedCloseByKey.values()) {
+    if (!declaredClose.has(exp.rel)) bad('关闭清单缺少来源映射条目：' + exp.rel);
+  }
 
   const planRec = manifestFiles.find(f => f && f.rel === planRel);
   if (!planRec) bad('清单未声明 plan.json');
@@ -969,6 +1002,8 @@ module.exports = Object.freeze({
   computeArtifacts,
   assertCloseMappingInvariants,
   adaptCloseRel,
+  CLOSE_MAPPING_DECLARATION,
+  CLOSE_MAPPING_DECLARATION,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,

@@ -1,0 +1,84 @@
+{
+  "schema": "wb-participant-identity-manifest-binding-evidence/1",
+  "reviewedCommit": "10e47f9",
+  "reviewedBaseline": "be31af2",
+  "implementationSha256": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a",
+  "packerSha256": "da453d8dbb68fbe6a12d8d75a75625764e11c5b62968b0a92249cd987045edd7",
+  "verificationKind": "本地合成验证：实际生成链（模板→打包器→候选+关闭包）+ 合成 wx/db/时钟；不证明真实上传、远端关闭覆盖与回读",
+  "versionBoundary": {
+    "locallyVerifiedSdk": "wx-server-sdk 3.0.1（本机唯一可执行副本）",
+    "declaredSdk": "~2.6.3（候选 package.json 声明）",
+    "preciseTargetVersionVerified": false,
+    "changelogWord": "CHANGELOG 未列数据库 API 行为变更（不等于行为相同证明）"
+  },
+  "codexCounterexample": {
+    "script": "docs/证据/Codex参与者关闭映射清单反例-20261015.cjs",
+    "reproExitCodeAfterFix": 1,
+    "note": "修复后 Codex 反例脚本的 accepted.ok===true 断言不再成立（exit 1），即 sourceRel/mapping 篡改已被精确校验拒绝"
+  },
+  "results": [
+    {
+      "id": "B0_source_verified_unchanged_tool",
+      "assertionsPassed": true,
+      "actual": {
+        "sourceCheckOk": true
+      }
+    },
+    {
+      "id": "B1_manifest_binding_rejects_forgery",
+      "assertionsPassed": true,
+      "actual": {
+        "legitimateCheckOk": true,
+        "mappingDeclaration": "close/server/** -> close/server/scheduleSandbox/**（其余 close/<rel> 逐字节保留）",
+        "sourceRelTamperNowRejected": true,
+        "mappingTamperNowRejected": true,
+        "bytesTamperControlRejected": true,
+        "closeFileCount": 23
+      }
+    },
+    {
+      "id": "B2_manifest_field_matrix_rejected",
+      "assertionsPassed": true,
+      "actual": {
+        "attempts": [
+          {
+            "label": "缺 sourceRel",
+            "rejected": true
+          },
+          {
+            "label": "未知字段",
+            "rejected": true
+          },
+          {
+            "label": "伪造条目",
+            "rejected": true
+          },
+          {
+            "label": "缺条目",
+            "rejected": true
+          }
+        ],
+        "allRestoredLegit": true
+      }
+    },
+    {
+      "id": "B3_no_regression_close_reuse_resume",
+      "assertionsPassed": true,
+      "actual": {
+        "independentCheckOk": true,
+        "reuseWritten": 0,
+        "resumeWritten": 1
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true
+  },
+  "summary": {
+    "total": 4,
+    "assertionsPassed": 4,
+    "unexpectedGuardAttempts": 0
+  }
+}

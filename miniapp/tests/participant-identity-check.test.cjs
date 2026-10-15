@@ -1658,3 +1658,81 @@ test('N3 关闭映射反例：旧布局散文件/缺 package.json 不变量拒�
   assert.equal(packer.checkDir(resumeDir).ok, true);
 });
 
+
+// ════════════════════════════════════════════════════════════════════════════
+// N4：关闭清单来源绑定（Codex 复查 be31af2 C1-a）——sourceRel/mapping/逐字段精确核对
+// ════════════════════════════════════════════════════════════════════════════
+
+test('N4 关闭清单来源绑定：sourceRel/mapping/字段篡改与伪造均拒绝；合法对照与复用续建无回归', () => {
+  const closeSource = makeCloseSourceDir();
+  const planPath = writePicPlan(closeSource);
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n4-' + RUN_ID);
+  const built = packer.build(planPath, outDir);
+  // (1) 合法对照：checkDir 通过且 mapping 与固定声明一致
+  assert.equal(packer.checkDir(outDir).ok, true);
+  const manifestPath = path.join(outDir, 'manifest.json');
+  const original = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  assert.equal(original.closePackage.mapping, packer.CLOSE_MAPPING_DECLARATION);
+  assert.equal(original.closePackage.files.length, built.manifest.closePackage.files.length);
+  const rewrite = obj => fs.writeFileSync(manifestPath, JSON.stringify(obj, null, 2) + '\n');
+  // (2) sourceRel 篡改为不存在路径 → 拒绝（Codex 反例直接堵住）
+  const tam1 = structuredClone(original);
+  tam1.closePackage.files[0].sourceRel = 'server/nonexistent.js';
+  rewrite(tam1);
+  const r1 = packer.checkDir(outDir);
+  assert.equal(r1.ok, false, '伪造 sourceRel 必须拒绝');
+  assert.ok(r1.problems.some(x => /字段与受审来源重建不符（sourceRel）/.test(x)), JSON.stringify(r1.problems));
+  // (3) mapping 改为无关文字 → 拒绝
+  const tam2 = structuredClone(original);
+  tam2.closePackage.mapping = 'unrelated mapping';
+  rewrite(tam2);
+  const r2 = packer.checkDir(outDir);
+  assert.equal(r2.ok, false, '错 mapping 必须拒绝');
+  assert.ok(r2.problems.some(x => /closePackage.mapping 与受审固定映射声明不一致/.test(x)), JSON.stringify(r2.problems));
+  // (4) 伪造清单条目（rel 无法由来源重建）→ 拒绝
+  const tam3 = structuredClone(original);
+  tam3.closePackage.files.push({ rel: 'server/fake.js', sourceRel: 'server/fake.js', bytes: 3, sha256: '0'.repeat(64) });
+  rewrite(tam3);
+  const r3 = packer.checkDir(outDir);
+  assert.equal(r3.ok, false, '伪造条目必须拒绝');
+  assert.ok(r3.problems.some(x => /无法由受审来源重建：server\/fake\.js/.test(x)), JSON.stringify(r3.problems));
+  // (5) 缺字段（sourceRel 删除）→ 拒绝
+  const tam4 = structuredClone(original);
+  delete tam4.closePackage.files[0].sourceRel;
+  rewrite(tam4);
+  const r4 = packer.checkDir(outDir);
+  assert.equal(r4.ok, false, '缺 sourceRel 必须拒绝');
+  assert.ok(r4.problems.some(x => /字段与受审来源重建不符（sourceRel）/.test(x)), JSON.stringify(r4.problems));
+  // (6) 未知字段 → 拒绝
+  const tam5 = structuredClone(original);
+  tam5.closePackage.files[0].note = 'extra';
+  rewrite(tam5);
+  const r5 = packer.checkDir(outDir);
+  assert.equal(r5.ok, false, '未知字段必须拒绝');
+  assert.ok(r5.problems.some(x => /含未知字段（note）/.test(x)), JSON.stringify(r5.problems));
+  // (7) 缺条目（删除一条声明）→ 拒绝
+  const tam6 = structuredClone(original);
+  tam6.closePackage.files.splice(0, 1);
+  rewrite(tam6);
+  const r6 = packer.checkDir(outDir);
+  assert.equal(r6.ok, false, '缺条目必须拒绝');
+  assert.ok(r6.problems.some(x => /关闭清单缺少来源映射条目/.test(x)), JSON.stringify(r6.problems));
+  // (8) bytes 篡改对照仍拒绝（既有字节校验保留）
+  const tam7 = structuredClone(original);
+  tam7.closePackage.files[0].bytes++;
+  rewrite(tam7);
+  assert.equal(packer.checkDir(outDir).ok, false, 'bytes 篡改对照仍拒绝');
+  // (9) 还原后合法对照 + 完整复用/续建 + 独立校验无回归
+  rewrite(original);
+  assert.equal(packer.checkDir(outDir).ok, true, '还原后合法对照');
+  const reused = packer.build(planPath, outDir);
+  assert.equal(reused.io.filter(x => x.action === 'written').length, 0, '完整复用零新写');
+  process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
+  try { assert.equal(packer.checkCloseDir(outDir).ok, true, '独立校验无回归'); }
+  finally { delete process.env.PIC_CLOSE_SOURCE_DIR; }
+  const resumeDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n4-resume-' + RUN_ID);
+  const rb = packer.build(planPath, resumeDir);
+  fs.unlinkSync(path.join(resumeDir, 'close', rb.manifest.closePackage.files[0].rel));
+  assert.equal(packer.build(planPath, resumeDir).io.filter(x => x.action === 'written').length, 1, '续建补 1');
+  assert.equal(packer.checkDir(resumeDir).ok, true);
+});
