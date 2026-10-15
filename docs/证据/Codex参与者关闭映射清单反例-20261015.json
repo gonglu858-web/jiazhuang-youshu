@@ -1,0 +1,11 @@
+{
+  "schema": "codex-participant-close-manifest-counterexample/1",
+  "reviewedCommit": "10e47f9",
+  "baselineValid": true,
+  "sourceRelAndMappingTamperedAccepted": true,
+  "tamperedSourceRel": "server/nonexistent.js",
+  "tamperedMapping": "unrelated mapping",
+  "bytesTamperControlRejected": true,
+  "diskSourceUnchanged": true,
+  "scope": "本地合成计划及忽略目录；未访问平台或凭据"
+}
