@@ -1,0 +1,43 @@
+{
+  "schema": "codex-participant-i1-sdk-evidence-counterexample/1",
+  "reviewedCommit": "8a2bb00",
+  "baseline": "2bd9c9c",
+  "evidenceScriptSha256": "a61b9890b9d8f3fc213cc0441631a6b892a884e90954c6ff580f6cd897f869ce",
+  "packerSha256": "3ae3ae91de3fcaa7d28d67fa8a11cdf2fe67759955044f40733225fc616be352",
+  "variants": [
+    {
+      "directSdk": false,
+      "dropNotFoundOption": false,
+      "exitCode": 0,
+      "w2Passed": true,
+      "w2ErrorClass": null,
+      "unexpectedGuardAttempts": 0
+    },
+    {
+      "directSdk": false,
+      "dropNotFoundOption": true,
+      "exitCode": 0,
+      "w2Passed": true,
+      "w2ErrorClass": null,
+      "unexpectedGuardAttempts": 0
+    },
+    {
+      "directSdk": true,
+      "dropNotFoundOption": false,
+      "exitCode": 0,
+      "w2Passed": true,
+      "w2ErrorClass": null,
+      "unexpectedGuardAttempts": 0
+    },
+    {
+      "directSdk": true,
+      "dropNotFoundOption": true,
+      "exitCode": 1,
+      "w2Passed": false,
+      "w2ErrorClass": "ABSENT_PATH_REJECTED",
+      "unexpectedGuardAttempts": 0
+    }
+  ],
+  "conclusion": "真实 SDK 直接接入的未改入口三路通过；交付 W2 的预建 database 替身使删除 throwOnNotFound:false 后仍全绿，故其“仅替换传输”的范围表述及入口参数覆盖不成立。",
+  "boundaries": "全程本地合成上下文和传输；未取凭据、未联网、未触云端。"
+}
