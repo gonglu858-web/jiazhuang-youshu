@@ -69,6 +69,42 @@ const SERVER_TEMPLATE_FILES = Object.freeze(['index.js', 'package.json']);
  */
 const SERVER_FN_DIR = 'scheduleSandbox';
 const SERVER_FN_ROOT = 'server/' + SERVER_FN_DIR + '/';
+/**
+ * 配对关闭目录映射（Codex 复查 C1）：
+ * 关闭来源（业务关闭包）的 server/** 直接位于 close/server/ 根下，与同名函数约定
+ * 不符；本包在装配/重建时把来源 server/** 精确映射为 close/server/scheduleSandbox/**，
+ * 其余关闭文件（frontend/**、project.config.json）逐字节保留原相对路径。
+ * 来源侧校验仍由未改 package-business-test.checkCloseDir 以**来源原布局**执行。
+ */
+function adaptCloseRel(sourceRel) {
+  return sourceRel.startsWith('server/')
+    ? SERVER_FN_ROOT + sourceRel.slice('server/'.length)
+    : sourceRel;
+}
+/** 关闭包内（映射后）必须满足的同名函数目录校验：配置根 + 仅同名子目录 + 入口齐备。 */
+function assertCloseMappingInvariants(expectedMap) {
+  // 关闭包项目配置所指 server/ 下，所有制品必须全部位于同名函数子目录
+  const serverKeys = [...expectedMap.keys()].filter(k => k.startsWith('server/'));
+  if (serverKeys.length === 0) fail(ERR.CLOSE_SOURCE_INVALID, '关闭包映射后 server/ 下没有任何制品。');
+  for (const k of serverKeys) {
+    if (!k.startsWith(SERVER_FN_ROOT)) {
+      fail(ERR.CLOSE_SOURCE_INVALID, '关闭包 server/ 根下出现无法映射到同名函数的制品：' + k);
+    }
+  }
+  for (const must of [SERVER_FN_ROOT + 'index.js', SERVER_FN_ROOT + 'package.json']) {
+    if (!expectedMap.has(must)) fail(ERR.CLOSE_SOURCE_INVALID, '关闭包同名函数子目录缺少制品：' + must);
+  }
+  // 关闭包项目配置的 cloudfunctionRoot 必须为 server/（与同名子目录构成可上传函数目录）
+  const cfgBuf = expectedMap.get('project.config.json');
+  if (!cfgBuf) fail(ERR.CLOSE_SOURCE_INVALID, '关闭包缺少 project.config.json。');
+  let cfg = null;
+  try { cfg = JSON.parse(cfgBuf.toString('utf8')); } catch (error) {
+    fail(ERR.CLOSE_SOURCE_INVALID, '关闭包 project.config.json 不是合法 JSON：' + error.message);
+  }
+  if (cfg.cloudfunctionRoot !== 'server/') {
+    fail(ERR.CLOSE_SOURCE_INVALID, '关闭包 project.config.json cloudfunctionRoot 必须为 server/：' + cfg.cloudfunctionRoot);
+  }
+}
 /** 前端模板文件（完整可导入项目的最小闭包）。 */
 const FRONTEND_TEMPLATE_FILES = Object.freeze([
   'app.js', 'app.json', 'app.wxss',
@@ -607,17 +643,27 @@ function build(planPath, outOverride) {
     ],
     files: entries,
     closePackage: {
-      note: '配对关闭包：复制自已受审本地业务关闭包（先经未改 checkCloseDir 独立校验）；关闭端无需口令、不依赖开启窗口时效。',
+      note: '配对关闭包：复制自已受审本地业务关闭包（先经未改 checkCloseDir 独立校验）；' +
+            '来源 server/** 已映射为本包 close/server/scheduleSandbox/**（同名函数目录），其余文件逐字节保留；关闭端无需口令、不依赖开启窗口时效。',
       sourceDir: relOf(path.relative(ROOT, plan.closeSourceDir)),
-      files: closeFiles.map(f => ({ rel: f.rel, bytes: f.buf.length, sha256: sha256Buffer(f.buf) }))
+      mapping: 'close/server/** -> close/server/scheduleSandbox/**（其余 close/<rel> 逐字节保留）',
+      files: closeFiles.map(f => ({
+        rel: adaptCloseRel(f.rel),
+        sourceRel: f.rel,
+        bytes: f.buf.length,
+        sha256: sha256Buffer(f.buf)
+      }))
     }
   };
 
   const expected = new Map();
   for (const [rel, buf] of artifacts) expected.set(rel, buf);
-  for (const f of closeFiles) expected.set('close/' + f.rel, f.buf);
+  for (const f of closeFiles) expected.set('close/' + adaptCloseRel(f.rel), f.buf);
   expected.set('plan.json', planBytes);
   expected.set('manifest.json', Buffer.from(JSON.stringify(manifest, null, 2) + '\n'));
+  // 关闭映射不变量（写前拒绝）：close 内 server/ 下仅同名函数子目录且入口齐备
+  assertCloseMappingInvariants(new Map([...expected].filter(([k]) => k.startsWith('close/'))
+    .map(([k, v]) => [k.slice('close/'.length), v])));
 
   const io = [];
   try {
@@ -717,7 +763,11 @@ function checkDir(dir) {
   let closeFiles;
   try {
     expected = computeArtifacts(plan);
-    closeFiles = verifyCloseSource(plan.closeSourceDir);
+    // C1：来源 server/** 映射为本包 close/server/scheduleSandbox/**，其余逐字节保留；
+    // 来源侧校验（未改 checkCloseDir）仍按来源原布局执行。
+    closeFiles = verifyCloseSource(plan.closeSourceDir)
+      .map(f => ({ rel: adaptCloseRel(f.rel), buf: f.buf }));
+    assertCloseMappingInvariants(new Map(closeFiles.map(cf => [cf.rel, cf.buf])));
   } catch (error) {
     bad('来源重建失败[' + (error.code || 'PIC_ERROR') + ']：' + error.message);
     return finish();
@@ -817,7 +867,15 @@ function checkCloseDir(closePackageDir) {
     return { ok: false, problems: ['来源重建失败：' + error.message], files: 0 };
   }
   let files = 0;
-  const expectedMap = new Map(sourceFiles.map(f => [f.rel, f.buf]));
+  // C1：独立核验同样按映射后布局重建预期（server/** -> server/scheduleSandbox/**），
+  // 并要求映射后满足同名函数目录不变量；不读 manifest/计划/时钟。
+  let expectedMap;
+  try {
+    expectedMap = new Map(sourceFiles.map(f => [adaptCloseRel(f.rel), f.buf]));
+    assertCloseMappingInvariants(expectedMap);
+  } catch (error) {
+    return { ok: false, problems: ['关闭映射不变量失败[' + (error.code || 'PIC_ERROR') + ']：' + error.message], files: 0 };
+  }
   for (const [rel, expectedBuf] of expectedMap) {
     const abs = path.join(closeDir, rel);
     let fst = null;
@@ -909,6 +967,8 @@ module.exports = Object.freeze({
   SERVER_FN_ROOT,
   verifyProjectLayout,
   computeArtifacts,
+  assertCloseMappingInvariants,
+  adaptCloseRel,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,

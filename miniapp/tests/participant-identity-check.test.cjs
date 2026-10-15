@@ -737,7 +737,7 @@ test('P8 完整链：生成候选 App/Page→wx 替身→候选 main→核心→
           throw new Error('TRAP: 关闭态不得访问数据库');
         }
       })
-    }, '.');
+    }, 'scheduleSandbox');
     for (const action of ['inspectSelf', 'identify', 'createProject', 'removeMember']) {
       const r = await closeMain.main({ action, passphrase: SYNTHETIC_PASSPHRASE });
       // 关闭端返回的是业务入口的关闭拒绝（无核验结果字段），关键事实：ok=false
@@ -1457,8 +1457,6 @@ test('V 真实 SDK 形状兼容：单对象=存在、null=明确不存在、数�
   const openid = 'openid-v-' + RUN_ID;
   const userId = core.deriveUserId(APPID, openid);
   // (1) 真实 wx-server-sdk 形状：存在 → data 为单个文档对象（非数组）
-  const hit = await makeChecker(makeTrapDb({ rows: [{ _id: userId, openid, status: 'active' }] }).data === undefined ? makeTrapDb({ rows: [{ _id: userId, openid, status: 'active' }] }) : null, {}).handle; // 占位（下方用 rChecker 风格）
-  // 单对象形状（直接用 rChecker 替身风格）
   const r1 = await rChecker({ collection(name) {
     assert.equal(name, core.FIXED_TARGET.collection);
     return { doc(id) {
@@ -1542,3 +1540,121 @@ test('M 同名函数部署映射：候选制品全部位于 server/scheduleSandb
   assert.equal(r.ok, true);
   assert.equal(r.files, 14, '候选清单 14 文件（仅 rel 调整，数量不变）');
 });
+
+// ════════════════════════════════════════════════════════════════════════════
+// N 组：配对关闭目录映射（Codex 复查 C1）——来源 server/** → close/server/scheduleSandbox/**
+// ════════════════════════════════════════════════════════════════════════════
+
+test('N1 关闭目录映射：来源 server/** 映射为 close/server/scheduleSandbox/**，其余逐字节一致，配置与入口可解析', () => {
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n1-' + RUN_ID);
+  const built = packer.build(writePicPlan(closeSource), outDir);
+  const closeDir = path.join(outDir, 'close');
+  // (1) 映射布局：close/server/ 下只有同名函数子目录
+  assert.deepEqual(fs.readdirSync(path.join(closeDir, 'server')), ['scheduleSandbox'],
+    'close/server/ 下必须只有同名函数子目录');
+  assert.equal(packer.SERVER_FN_DIR, core.FIXED_TARGET.functionName);
+  // (2) 逐字节一致：非 server 文件原 rel 原字节；server 文件新 rel 原字节
+  const srcClose = path.join(closeSource, 'close');
+  for (const f of built.manifest.closePackage.files) {
+    const srcAbs = path.join(srcClose, f.sourceRel);
+    assert.equal(fs.readFileSync(path.join(closeDir, f.rel)).length, f.bytes, '映射后字节数一致：' + f.rel);
+    assert.equal(fs.readFileSync(srcAbs).length, f.bytes, '来源字节数一致：' + f.sourceRel);
+    assert.deepEqual(fs.readFileSync(path.join(closeDir, f.rel)), fs.readFileSync(srcAbs),
+      '逐字节一致：' + f.sourceRel + ' -> ' + f.rel);
+    if (f.sourceRel.startsWith('server/')) {
+      assert.ok(f.rel.startsWith('server/scheduleSandbox/'), 'server 来源必须映射：' + f.rel);
+    } else {
+      assert.equal(f.rel, f.sourceRel, '非 server 文件 rel 保持：' + f.rel);
+    }
+  }
+  // (3) 关闭包项目配置与入口可解析：cloudfunctionRoot=server/ 且 server/ 下仅同名子目录三件套
+  const cfg = JSON.parse(fs.readFileSync(path.join(closeDir, 'project.config.json'), 'utf8'));
+  assert.equal(cfg.cloudfunctionRoot, 'server/');
+  const fnDir = path.join(closeDir, 'server', 'scheduleSandbox');
+  for (const must of ['index.js', 'package.json', 'gate.js', 'collection-map.js', 'project-guard.js']) {
+    assert.equal(fs.existsSync(path.join(fnDir, must)), true, '函数目录含 ' + must);
+  }
+  const entrySrc = fs.readFileSync(path.join(fnDir, 'index.js'), 'utf8');
+  assert.ok(entrySrc.length > 0, '关闭端入口可读取');
+  // vendor 等非 server 根文件逐字节（frontend/project.config.json）
+  assert.equal(fs.readFileSync(path.join(closeDir, 'project.config.json')).length,
+    fs.readFileSync(path.join(srcClose, 'project.config.json')).length);
+  // (4) checkDir（含关闭映射重建）通过；closeFiles 数与来源一致
+  const r = packer.checkDir(outDir);
+  assert.equal(r.ok, true, JSON.stringify(r.problems));
+  assert.equal(r.closeFiles, built.manifest.closePackage.files.length);
+});
+
+test('N2 关闭映射独立校验：checkCloseDir 按映射后布局重建；不依赖候选窗口（NaN 时钟）；NaN 与过期候选无关', () => {
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n2-' + RUN_ID);
+  packer.build(writePicPlan(closeSource), outDir);
+  process.env.PIC_CLOSE_SOURCE_DIR = closeSource; // checkCloseDir 须显式受审来源
+  const realNow = Date.now;
+  const at = (v, fn) => { Date.now = typeof v === 'function' ? v : () => v; try { return fn(); } finally { Date.now = realNow; } };
+  // 独立校验（NaN 时钟）按映射后布局通过
+  const r = at(NaN, () => packer.checkCloseDir(outDir));
+  assert.equal(r.ok, true, JSON.stringify(r.problems));
+  assert.equal(r.files, r.expectedFiles);
+  // 来源失效 → 独立校验拒绝（关闭包不能凭空重建）
+  const closeDirPath = path.join(closeSource, 'close');
+  const saved = fs.readdirSync(closeDirPath);
+  fs.rmSync(closeDirPath, { recursive: true, force: true });
+  const r2 = at(NaN, () => packer.checkCloseDir(outDir));
+  fs.mkdirSync(closeDirPath, { recursive: true });
+  assert.equal(r2.ok, false, '来源失效须拒绝');
+  assert.ok(r2.problems.some(x => /来源重建失败|关闭映射不变量失败/.test(x)), JSON.stringify(r2.problems));
+  assert.deepEqual(fs.readdirSync(closeDirPath), [], '来源目录仅测试内清空');
+  // check 全程不写不删候选
+  assert.equal(fs.existsSync(path.join(outDir, 'close', 'server', 'scheduleSandbox', 'index.js')), true);
+  assert.equal(saved.length > 0, true);
+  delete process.env.PIC_CLOSE_SOURCE_DIR;
+});
+
+test('N3 关闭映射反例：旧布局散文件/缺 package.json 不变量拒绝；checkDir 拒绝盘上根下散文件；复用续建对照', () => {
+  const closeSource = makeCloseSourceDir();
+  const planPath = writePicPlan(closeSource);
+  const plan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
+  const legit = packer.computeArtifacts(plan);
+  // computeArtifacts 生成候选（server/scheduleSandbox/**）；模拟旧业务关闭包布局（server/ 直接根）
+  const fnKeys = [...legit.keys()].filter(k => k.startsWith('server/scheduleSandbox/'));
+  const legacyMap = new Map(fnKeys.map(k => [k.replace('server/scheduleSandbox/', 'server/'), legit.get(k)]));
+  assert.ok(legacyMap.has('server/index.js'), '旧布局含 server/index.js');
+  assert.ok(legacyMap.has('server/package.json'));
+  assert.throws(() => packer.assertCloseMappingInvariants(legacyMap),
+    e => e.code === packer.ERR.CLOSE_SOURCE_INVALID && /无法映射到同名函数/.test(e.message),
+    '旧布局必须被不变量拒绝');
+  // (2) 正确布局但函数目录缺 package.json → 拒绝
+  const noPkg = new Map(fnKeys.map(k => [k, legit.get(k)]).filter(([k]) => k !== 'server/scheduleSandbox/package.json'));
+  assert.throws(() => packer.assertCloseMappingInvariants(noPkg),
+    e => e.code === packer.ERR.CLOSE_SOURCE_INVALID && /同名函数子目录缺少制品/.test(e.message));
+  // (3) 映射函数语义：server/** 映射、其余保持
+  assert.equal(packer.adaptCloseRel('server/gate.js'), 'server/scheduleSandbox/gate.js');
+  assert.equal(packer.adaptCloseRel('frontend/app.json'), 'frontend/app.json');
+  assert.equal(packer.adaptCloseRel('project.config.json'), 'project.config.json');
+  // (4) checkDir 拒绝盘上根下散文件（额外文件），且不删除候选文件
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n3-' + RUN_ID);
+  packer.build(planPath, outDir);
+  fs.writeFileSync(path.join(outDir, 'close', 'server', 'stray-legacy.js'), Buffer.from('// stray\n'));
+  const r = packer.checkDir(outDir);
+  assert.equal(r.ok, false, '根下散文件必须拒绝');
+  assert.ok(r.problems.some(x => /额外文件：close\/server\/stray-legacy\.js/.test(x)), JSON.stringify(r.problems));
+  assert.equal(fs.existsSync(path.join(outDir, 'close', 'server', 'stray-legacy.js')), true, 'check 不删除候选文件');
+  // (5) 正常对照 + 完整复用/续建
+  const okDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n3-ok-' + RUN_ID);
+  packer.build(planPath, okDir);
+  assert.equal(packer.checkDir(okDir).ok, true, '正常对照');
+  process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
+  assert.equal(packer.checkCloseDir(okDir).ok, true, '关闭独立校验');
+  delete process.env.PIC_CLOSE_SOURCE_DIR;
+  const reused = packer.build(planPath, okDir);
+  assert.equal(reused.io.filter(x => x.action === 'written').length, 0, '完整复用零新写');
+  const resumeDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'n3-resume-' + RUN_ID);
+  const rb = packer.build(planPath, resumeDir);
+  fs.unlinkSync(path.join(resumeDir, 'close', rb.manifest.closePackage.files[0].rel));
+  const resumed = packer.build(planPath, resumeDir);
+  assert.equal(resumed.io.filter(x => x.action === 'written').length, 1, '关闭文件续建补 1');
+  assert.equal(packer.checkDir(resumeDir).ok, true);
+});
+
