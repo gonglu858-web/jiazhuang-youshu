@@ -211,7 +211,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
   'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
   'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '97125d43626f2bef9c3e2be4005acd6d1fe98b4a059e75ea0b984fcd56e5b73c',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '137d19d4931d5ec19184c9663fd206f987ed60fbcb1034ffd8a4c8b6e8b750a1',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '6c7c2866491238826f3feb404ee738de9695430af7b228a341bf8b986729f77b',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss': 'e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442'

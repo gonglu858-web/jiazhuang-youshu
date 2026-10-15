@@ -1,0 +1,78 @@
+{
+  "schema": "wb-participant-identity-s1b-evidence/1",
+  "reviewedCommit": "6b89ea0",
+  "reviewBasis": "Codex复查-参与者只读核验包S1S2收尾-20261015.md（复查提交 7d1969f，独立证据 C1 复现取消当下旧完整编号仍显示）；本轮修复以运行时内容摘要精确定位，不以 Codex 旧反例不再复现作为闭合依据",
+  "implementationSha256": "00abff26dc4e949437a9781fedf44e946aa57a7ad1f79993d8e03001d0141afe",
+  "packerSha256": "5fcbbb161bd80e02f671f67d023ed513466a88962f4ffeecae16181d4164ac2a",
+  "pageTemplateSha256": "137d19d4931d5ec19184c9663fd206f987ed60fbcb1034ffd8a4c8b6e8b750a1",
+  "verificationKind": "本地合成验证：实际生成的 App/Page/client/server/core + 合成 wx/db；未验证真实 SDK 转换、平台行为、真实1号/2号身份与登记状态、真实部署/传输/费用/日志",
+  "results": [
+    {
+      "id": "G0_close_source_pinned_check",
+      "assertionsPassed": true,
+      "actual": {
+        "closeCheckOk": true
+      }
+    },
+    {
+      "id": "G1_cancel_event_hides_full_id_immediately",
+      "assertionsPassed": true,
+      "actual": {
+        "afterCancel": {
+          "wantFullUserId": false,
+          "fullIdAvailable": false,
+          "fullIdShown": false,
+          "tailShown": true,
+          "requestCount": 1
+        },
+        "afterRecheck": {
+          "wantFullUserId": true,
+          "fullIdAvailable": false,
+          "fullIdShown": false,
+          "tailShown": true,
+          "requestCount": 1
+        }
+      }
+    },
+    {
+      "id": "G2_resubmit_branches_preserved",
+      "assertionsPassed": true,
+      "actual": {
+        "requests": [
+          {
+            "includeFullUserId": true
+          },
+          {},
+          {
+            "includeFullUserId": true
+          }
+        ],
+        "fullIdShownAfterResubmit": true,
+        "passphraseCleared": true,
+        "dbGets": 3,
+        "dbWrites": 0
+      }
+    },
+    {
+      "id": "G3_inflight_lock_and_template_drift",
+      "assertionsPassed": true,
+      "actual": {
+        "inflightLockKept": true,
+        "driftRejected": true,
+        "driftCode": "PIC_SOURCE_DRIFT",
+        "zeroArtifact": true
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true,
+    "note": "G0 探针实际触发 2 次作为敏感性记账基线；其后一切命中（含被 catch 者）计入业务期意外"
+  },
+  "summary": {
+    "total": 4,
+    "assertionsPassed": 4,
+    "unexpectedGuardAttempts": 0
+  }
+}

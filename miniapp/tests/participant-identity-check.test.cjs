@@ -1353,3 +1353,94 @@ test('S2 缺字段筛选能力时保守 UNKNOWN：无field/field抛错/field返�
   // 白名单覆盖新代码
   assert.equal(typeof core.ERROR_PUBLIC_TEXT.PIC_FIELD_PROJECTION_UNAVAILABLE, 'string');
 });
+
+// ════════════════════════════════════════════════════════════════════════════
+// S1 收尾（Codex 复查 7d1969f 报告 §S1 剩余展示时点）：取消事件当下立即隐藏旧完整编号
+// ════════════════════════════════════════════════════════════════════════════
+
+test('S1b 取消勾选当下立即隐藏旧完整编号：取消后/重勾未提交/再提交三时点断言', async () => {
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 's1b-' + RUN_ID);
+  packer.build(writePicPlan(closeSource, { synthetic: false }), outDir);
+  const openid = 'openid-s1b-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  const requests = [];
+  const wxStub = {
+    cloud: {
+      _identityCheckEnvInited: false,
+      init() {},
+      callFunction(opts) {
+        requests.push(JSON.parse(JSON.stringify(opts.data)));
+        const main = loadCandidateMain(outDir, {
+          appId: APPID, envId: ENV_ID, openid,
+          db: makeTrapDb({ rows: [rowFor(openid)] })
+        });
+        return main.main(opts.data).then(result => ({ result }));
+      }
+    }
+  };
+  const hadWx = Object.prototype.hasOwnProperty.call(globalThis, 'wx');
+  globalThis.wx = wxStub;
+  try {
+    // 装载实际生成的页面（模板→打包器→候选 App/Page/client/server/core + 合成 wx/db）
+    const pageFile = path.join(outDir, 'frontend', 'pages', 'identity-check', 'identity-check.js');
+    const pageDef = {};
+    const page = { data: {}, setData(patch) { Object.assign(this.data, patch); } };
+    const pageCtx = vm.createContext({
+      Page(d) { Object.assign(pageDef, d); },
+      wx: wxStub, require: createRequire(pageFile), console
+    });
+    new vm.Script('(function(){' + fs.readFileSync(pageFile, 'utf8') + '\n}).call(globalThis)', { filename: pageFile }).runInContext(pageCtx);
+    Object.assign(page, pageDef);
+    page.onLoad(); page.onShow();
+    assert.equal(requests.length, 0, '加载零发送');
+    // 步骤 1：勾选 + 成功核验 → 显示完整编号
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].includeFullUserId, true);
+    assert.equal(page.data.result.userId, userId, '勾选核验后显示完整编号');
+    assert.equal(page.data.result.fullUserIdAvailable, true);
+    assert.equal(page.data.result.userIdTail, userId.slice(-6), '尾号保留');
+    // 步骤 2（验收要求 1）：取消勾选（detail.value=[]）当下、下一次提交之前——
+    // 立即隐藏旧完整编号、保留尾号、不产生新请求
+    page.onWantFullIdChange({ detail: { value: [] } });
+    assert.equal(page.data.wantFullUserId, false);
+    assert.equal(page.data.result.fullUserIdAvailable, false, '取消当下 fullUserIdAvailable 必须为 false');
+    assert.equal(page.data.result.userId, '', '取消当下旧完整编号必须已清空');
+    assert.equal(page.data.result.userIdTail, userId.slice(-6), '取消当下尾号必须保留');
+    assert.equal(requests.length, 1, '取消事件不得产生新请求');
+    // 步骤 3（验收要求 2）：重新勾选但尚未再次完成有效核验 → 不恢复旧完整编号
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
+    assert.equal(page.data.wantFullUserId, true);
+    assert.equal(page.data.result.fullUserIdAvailable, false, '重勾未提交不得恢复完整编号');
+    assert.equal(page.data.result.userId, '', '重勾未提交不得恢复旧编号值');
+    assert.equal(page.data.result.userIdTail, userId.slice(-6), '尾号仍保留');
+    assert.equal(requests.length, 1, '重勾本身不得产生新请求');
+    // 步骤 4：取消状态下再次核验 → 不请求完整编号，返回后只显示尾号（既有正确分支保持）
+    page.onWantFullIdChange({ detail: { value: [] } });
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests.length, 2);
+    assert.equal(requests[1].includeFullUserId, undefined, '取消后再次核验不请求完整编号');
+    assert.equal(page.data.result.userId, '', '取消后再核验不显示完整编号');
+    assert.equal(page.data.result.userIdTail, userId.slice(-6));
+    // 步骤 5：重新勾选 + 再次核验 → 新一次有效核验返回后才显示完整编号
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests.length, 3);
+    assert.equal(requests[2].includeFullUserId, true, '重新勾选后才请求完整编号');
+    assert.equal(page.data.result.userId, userId, '新一次有效核验返回后显示');
+    assert.equal(page.data.result.fullUserIdAvailable, true);
+    // 非回归：口令清除 + 在途锁
+    assert.equal(page.data.passphrase, '', '口令调用后清除');
+    const before = requests.length;
+    page.setData({ sending: true });
+    await page.onCheckTap();
+    assert.equal(requests.length, before, '在途锁保持');
+  } finally {
+    delete globalThis.wx;
+  }
+});

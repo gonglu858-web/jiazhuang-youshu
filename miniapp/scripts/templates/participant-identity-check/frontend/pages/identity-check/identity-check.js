@@ -45,7 +45,17 @@ Page({
     // S1：checkbox-group 取消勾选时 detail.value 为空数组，Boolean([]) 是 true——
     // 必须按**选中值是否包含 full** 判断，兑现用户的显式选择。
     const checked = Array.isArray(e.detail.value) && e.detail.value.indexOf('full') !== -1;
-    this.setData({ wantFullUserId: checked });
+    const patch = { wantFullUserId: checked };
+    // S1 收尾（展示时点）：取消勾选的当下、下一次提交之前，立即隐藏旧完整编号并
+    // 保留尾号——不产生新请求；重新勾选**不恢复**旧编号，只有新一次有效核验返回后
+    // 才会随新结果再次展示。
+    if (!checked && this.data.result && this.data.result.fullUserIdAvailable) {
+      patch.result = Object.assign({}, this.data.result, {
+        userId: '',
+        fullUserIdAvailable: false
+      });
+    }
+    this.setData(patch);
   },
 
   async onCheckTap() {
