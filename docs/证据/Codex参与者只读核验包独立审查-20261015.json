@@ -1,0 +1,226 @@
+{
+  "schema": "codex-participant-identity-review/1",
+  "reviewedCommit": "39ac526",
+  "baseline": "104aea8",
+  "implementationSha256": "fc64b2c9d6ee7b87b82cb75b0d4eaf1478696d336a7bf1a352cdaa6844c02696",
+  "packerSha256": "1ee77e7c0c61df6fc79937a26bd1d87e6cbd601a996d253b9f5f3f162ba1a82f",
+  "verificationKind": "LOCAL actual code + synthetic db/clock; no SDK or platform",
+  "findings": [
+    {
+      "id": "C00",
+      "kind": "guard-control",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityHits": 2
+      }
+    },
+    {
+      "id": "C01",
+      "kind": "positive-control",
+      "assertionsPassed": true,
+      "actual": {
+        "state": "ACTIVE",
+        "reads": 1,
+        "writes": 0,
+        "buildWritten": 38,
+        "reuseWritten": 0,
+        "reused": 38,
+        "closeAtNaNOk": true,
+        "closeFiles": 23
+      }
+    },
+    {
+      "id": "C02",
+      "kind": "R1-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "miniprogramRoot": "miniprogram/",
+        "cloudfunctionRoot": "cloudfunctions/",
+        "miniprogramRootExists": false,
+        "cloudfunctionRootExists": false,
+        "checkOk": true
+      }
+    },
+    {
+      "id": "C03",
+      "kind": "R2-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "states": [
+          "ACTIVE",
+          "ABSENT"
+        ],
+        "fullUserIdReturned": false,
+        "tailLength": 6,
+        "fields": [
+          "schema",
+          "checkRoundId",
+          "ok",
+          "identityConfirmed",
+          "registrationState",
+          "recordMatched",
+          "readAttempted",
+          "userIdTail",
+          "code",
+          "message",
+          "serverTimeIso"
+        ]
+      }
+    },
+    {
+      "id": "C04",
+      "kind": "R3-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "sourceDriftAccepted": true,
+        "written": 38,
+        "checkOk": true,
+        "originalSourceUnchanged": true
+      }
+    },
+    {
+      "id": "C05",
+      "kind": "R4-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "expired": {
+          "name": "ReferenceError",
+          "code": null,
+          "message": "Cannot access 'manifestFiles' before initialization"
+        },
+        "invalid": {
+          "name": "ReferenceError",
+          "code": null,
+          "message": "Cannot access 'manifestFiles' before initialization"
+        },
+        "error": {
+          "name": "ReferenceError",
+          "code": null,
+          "message": "Cannot access 'manifestFiles' before initialization"
+        },
+        "planHashMismatch": {
+          "name": "ReferenceError",
+          "code": null,
+          "message": "Cannot access 'manifestFiles' before initialization"
+        }
+      }
+    },
+    {
+      "id": "C06",
+      "kind": "R5-expiry-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "coreConfirmedAtExpiry": true,
+        "reads": 1,
+        "buildWrittenAtExpiry": 38,
+        "checkOkAtExpiry": true
+      }
+    },
+    {
+      "id": "C07",
+      "kind": "R5-window-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "nonpositiveWindowsAccepted": [
+          {
+            "minutes": 0,
+            "written": 38,
+            "checkOk": true
+          },
+          {
+            "minutes": -1,
+            "written": 38,
+            "checkOk": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "C08",
+      "kind": "R5-round-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "invalidOrAbsentRoundAccepted": [
+          {
+            "type": "undefined",
+            "reads": 1
+          },
+          {
+            "type": "string",
+            "reads": 1
+          },
+          {
+            "type": "number",
+            "reads": 1
+          }
+        ],
+        "wrongStringRoundRejected": true
+      }
+    },
+    {
+      "id": "C09",
+      "kind": "R6-projection-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "rawSdkMessageReflected": true,
+        "unlistedCodeReturned": "PIC_UNREVIEWED",
+        "reads": 1
+      }
+    },
+    {
+      "id": "C10",
+      "kind": "R6-read-facts-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "getCalls": 0,
+        "reportedReadAttempted": true,
+        "state": "UNKNOWN"
+      }
+    },
+    {
+      "id": "C11",
+      "kind": "R6-missing-fields-reproduction",
+      "assertionsPassed": true,
+      "actual": [
+        {
+          "missing": "_id",
+          "actual": "MISMATCH"
+        },
+        {
+          "missing": "openid",
+          "actual": "MISMATCH"
+        }
+      ]
+    },
+    {
+      "id": "C12",
+      "kind": "R6-minimal-read-reproduction",
+      "assertionsPassed": true,
+      "actual": {
+        "getCalls": 1,
+        "projectionCalls": 0,
+        "minimalFieldsSelected": false
+      }
+    },
+    {
+      "id": "C13",
+      "kind": "rejection-and-postread-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "wrongActionCollectionCalls": 0,
+        "postReadExpiredConfirmed": false,
+        "postReadAttempted": true,
+        "ordinarySdkFailureUnknown": true
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivity": 2,
+    "unexpected": 0
+  },
+  "summary": {
+    "total": 14,
+    "assertionsPassed": 14,
+    "meaning": "Assertions confirm recorded behavior, including defects; NOT acceptance."
+  }
+}
