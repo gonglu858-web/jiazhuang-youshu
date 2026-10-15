@@ -1,0 +1,173 @@
+{
+  "schema": "wb-participant-identity-sdk-mapping-evidence/1",
+  "reviewedCommit": "34b5003",
+  "reviewBasis": "Codex执行包-参与者I1I2本人只读核验准备-20261015.md §2（SDK 本地转换与云函数部署映射两个未闭合前置）；本轮以运行时内容摘要定位受测实现",
+  "implementationSha256": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a",
+  "packerSha256": "797cc70fd522431bef8936aa57df9071a209df56ca7b23ad30b0b700a464efa5",
+  "verificationKind": "本地合成验证：真实 SDK 依赖树源码与真实数据库实现代码（仅传输层本地替身）+ 实际生成制品静态核对；真实 2.6.3 精确转换、真实上传部署、远端回读完全未验证",
+  "sdkVersionBoundary": {
+    "declared": "~2.6.3",
+    "locallyVerified": "3.0.1",
+    "locallyVerifiedPath": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\wx-server-sdk",
+    "preciseVersionVerifiableOffline": false,
+    "note": "npm 本地缓存无 2.6.3 tarball，不联网安装；CHANGELOG 证明 2.6.3→3.0.1 无数据库 API 行为变更，精确行为仍须部署前以真实环境只读复核"
+  },
+  "deploymentMappingBoundary": {
+    "candidateProven": "server/scheduleSandbox/ 子目录布局（离线静态可证，约定一致）",
+    "closePackageBlocked": "业务关闭包 close/server/ 直接根布局存在同样映射缺口，属受保护范围本轮不改——列为阻断",
+    "uploadAndReadback": "未验证（禁止联网与部署）"
+  },
+  "results": [
+    {
+      "id": "K0_close_source_pinned_check",
+      "assertionsPassed": true,
+      "actual": {
+        "closeCheckOk": true
+      }
+    },
+    {
+      "id": "K1_sdk_dependency_discovery",
+      "assertionsPassed": true,
+      "actual": {
+        "declaredRange": "~2.6.3",
+        "localCopyVersion": "3.0.1",
+        "localCopyPath": "C:\\Users\\30591\\.codex\\tmp\\memberAccess-readonly-sdk-20260925\\node_modules\\wx-server-sdk",
+        "localCopySha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04",
+        "cloudbaseNodeSdk": "2.10.0",
+        "cloudbaseDatabase": "1.4.1",
+        "npmCacheHasSdkTarball": false,
+        "versionBoundaryNote": "本地副本为 3.0.1；~2.6.3 精确版本本地不可得且不联网安装——2.6.3 精确转换列为待云端部署前只读复核"
+      }
+    },
+    {
+      "id": "K2_static_source_semantics",
+      "assertionsPassed": true,
+      "actual": {
+        "sdkAnchorsFound": {
+          "包装层-读取 throwOnNotFound（默认 true）": true,
+          "包装层-不存在且默认配置时抛错": true,
+          "包装层-不抛错时 data:null": true,
+          "包装层-存在时取单对象": true,
+          "database(config) 透传 throwOnNotFound": true
+        },
+        "dbAnchorsFound": {
+          "底层 get 调用 database.getDocument": true,
+          "底层投影随请求发送": true,
+          "底层 field 布尔→1/0 转换": true,
+          "底层成功返回数组": true,
+          "底层错误原样返回待上层抛出": true
+        },
+        "changelog_3_0_0_entries": [
+          "### 3.0.0",
+          "1. `U` 更新 protobufjs 升级至 v7，不再支持 nodejs <= 10 的版本",
+          "1. `U` 更新 增加 `Database` 下几个接口的 d.ts 定义"
+        ],
+        "conclusion": "3.0.1 实测源码语义：database({throwOnNotFound:false}) 时 doc().field(P).get() 存在→{data:单对象}、不存在→{data:null}、失败→reject；2.6.3→3.0.1 CHANGELOG 无数据库 API 行为变更"
+      }
+    },
+    {
+      "id": "K3_dynamic_conversion_with_real_db_impl",
+      "assertionsPassed": true,
+      "actual": {
+        "transportReplacedOnly": "LocalTransport 仅替换 Db.reqClass 传输层；解析/EJSON/投影/包装全部为真实 @cloudbase/database 1.4.1 代码",
+        "existsShape": {
+          "isArray": true,
+          "len": 1,
+          "keys": [
+            "_id",
+            "openid",
+            "status"
+          ]
+        },
+        "missingShape": {
+          "isArray": true,
+          "len": 0
+        },
+        "deniedShape": {
+          "code": "DATABASE_PERMISSION_DENIED"
+        },
+        "projectionSent": "{\"_id\":{\"$numberInt\":\"1\"},\"openid\":{\"$numberInt\":\"1\"},\"status\":{\"$numberInt\":\"1\"}}",
+        "actionName": "database.getDocument"
+      }
+    },
+    {
+      "id": "K4_core_consumes_real_sdk_shapes",
+      "assertionsPassed": true,
+      "actual": {
+        "activeState": "ACTIVE",
+        "absentState": "ABSENT",
+        "deniedState": "UNKNOWN",
+        "deniedReadAttempted": true,
+        "shapesSupported": [
+          "single-object(hit)",
+          "null(absent)",
+          "array(hit/absent/multi)",
+          "reject(unknown)"
+        ]
+      }
+    },
+    {
+      "id": "K5_deployment_mapping_same_name_dir",
+      "assertionsPassed": true,
+      "actual": {
+        "serverRootChildren": [
+          "scheduleSandbox"
+        ],
+        "functionName": "scheduleSandbox",
+        "fnDirFiles": [
+          "index.js",
+          "package.json",
+          "participant-identity-check.js"
+        ],
+        "entryRequiresLocalCore": true,
+        "entryThrowOnNotFoundFalse": true,
+        "isomorphicWithBusinessLayout": true,
+        "mappingStatement": "候选 server/scheduleSandbox/ → 既有同名远端函数 scheduleSandbox（cloudfunctionRoot=server/；子目录名=函数名为微信云开发固定约定，与 miniapp/cloudfunctions/scheduleSandbox/ 同构）",
+        "uploadBoundary": "实际上传/远端回读未验证（禁止联网与部署）——部署映射到此为止，需执行包以真实工具落实并回读确认"
+      }
+    },
+    {
+      "id": "K6_close_package_mapping_gap_blocked",
+      "assertionsPassed": true,
+      "actual": {
+        "gap": "业务关闭包 close/server/ 为直接根布局（index.js/gate.js/vendor 等直接在根下，无 scheduleSandbox 子目录），与同名函数约定不符——用与候选相同的方法无法可靠映射到既有 scheduleSandbox",
+        "blocked": true,
+        "reason": "业务打包器 package-business-test.cjs 与其关闭装配属受保护范围（P/E/X 包不重开），本轮不得修改",
+        "closeServerEntries": [
+          "collection-map.js",
+          "gate.js",
+          "index.js",
+          "package.json",
+          "project-guard.js",
+          "vendor"
+        ],
+        "closeCloudfunctionRoot": "server/",
+        "nextStep": "关闭包布局适配须另立定点任务修改业务打包器 close 装配（close/server/scheduleSandbox/），经自测与 Codex 复核后随执行包冻结"
+      }
+    },
+    {
+      "id": "K7_no_regression_guards",
+      "assertionsPassed": true,
+      "actual": {
+        "driftRejectedBeforeWrite": true,
+        "closeSourceCheckOk": true,
+        "diskSourceUnchanged": true
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true
+  },
+  "summary": {
+    "total": 8,
+    "assertionsPassed": 8,
+    "unexpectedGuardAttempts": 0,
+    "blockers": [
+      "wx-server-sdk ~2.6.3 精确版本本地转换未验证（本地无该版本依赖，不联网安装）",
+      "配对关闭包同名函数映射缺口（业务打包器受保护，须另立定点任务）",
+      "实际上传部署与远端关闭回读未验证（云端未放行）"
+    ]
+  }
+}

@@ -374,7 +374,7 @@ test('P5 打包器：合成计划生成完整候选与配对关闭包；check �
   for (const forbidden of ['vendor', 'memberAccess', 'connectionCheck', 'project-guard', 'gate']) {
     assert.equal(serverFiles.includes(forbidden), false, '服务端不得包含 ' + forbidden);
   }
-  const entry = fs.readFileSync(path.join(outDir, 'server', 'index.js'), 'utf8');
+  const entry = fs.readFileSync(path.join(outDir, 'server', 'scheduleSandbox', 'index.js'), 'utf8');
   assert.equal(entry.includes("require('./participant-identity-check')"), true);
   assert.equal(/require\(['"]\.\/vendor/.test(entry), false, '候选入口不得引入 vendor 业务实现');
   assert.equal(entry.includes(SYNTHETIC_PASSPHRASE), false, '明文口令绝不进入制品');
@@ -468,7 +468,7 @@ test('P6 打包器：非法计划/漂移/目录冲突零写；续建与部分写
   const realWrite = fs.writeFileSync;
   let err = null;
   fs.writeFileSync = function (f, buf, opts) {
-    if (f === path.join(partialDir, 'server', 'index.js')) {
+    if (f === path.join(partialDir, 'server', 'scheduleSandbox', 'index.js')) {
       realWrite.call(this, f, Buffer.from(buf).subarray(0, 11), opts);
       const e = new Error('synthetic EIO'); e.code = 'EIO'; throw e;
     }
@@ -476,16 +476,16 @@ test('P6 打包器：非法计划/漂移/目录冲突零写；续建与部分写
   };
   try { packer.build(writePicPlan(closeSource), partialDir); } catch (e) { err = e; } finally { fs.writeFileSync = realWrite; }
   assert.equal(err && err.code, 'EIO');
-  assert.deepEqual(err.written, ['server/participant-identity-check.js', 'server/index.js']);
+  assert.deepEqual(err.written, ['server/scheduleSandbox/participant-identity-check.js', 'server/scheduleSandbox/index.js']);
   assert.equal(err.wroteFiles, 2);
-  assert.deepEqual(err.partialWrites, [{ rel: 'server/index.js', bytesOnDisk: 11 }]);
-  assert.equal(fs.statSync(path.join(partialDir, 'server', 'index.js')).size, 11);
+  assert.deepEqual(err.partialWrites, [{ rel: 'server/scheduleSandbox/index.js', bytesOnDisk: 11 }]);
+  assert.equal(fs.statSync(path.join(partialDir, 'server', 'scheduleSandbox', 'index.js')).size, 11);
 
   // 竞态 EEXIST（他人文件）不算本轮写入、不覆盖
   const raceDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'race-' + RUN_ID);
   let err2 = null;
   fs.writeFileSync = function (f, buf, opts) {
-    if (f === path.join(raceDir, 'server', 'participant-identity-check.js')) {
+    if (f === path.join(raceDir, 'server', 'scheduleSandbox', 'participant-identity-check.js')) {
       realWrite.call(this, f, Buffer.from('other-writer'), opts);
       const e = new Error('EEXIST race'); e.code = 'EEXIST'; throw e;
     }
@@ -493,8 +493,8 @@ test('P6 打包器：非法计划/漂移/目录冲突零写；续建与部分写
   };
   try { packer.build(writePicPlan(closeSource), raceDir); } catch (e) { err2 = e; } finally { fs.writeFileSync = realWrite; }
   assert.equal(err2 && err2.code, 'EEXIST');
-  assert.ok(!err2.written || !err2.written.includes('server/participant-identity-check.js'));
-  assert.equal(fs.readFileSync(path.join(raceDir, 'server', 'participant-identity-check.js'), 'utf8'), 'other-writer');
+  assert.ok(!err2.written || !err2.written.includes('server/scheduleSandbox/participant-identity-check.js'));
+  assert.equal(fs.readFileSync(path.join(raceDir, 'server', 'scheduleSandbox', 'participant-identity-check.js'), 'utf8'), 'other-writer');
   assert.ok(/EEXIST/.test(err2.sideEffect || ''));
 });
 
@@ -521,7 +521,7 @@ test('P7 打包器：输出根链接拒绝；改名 planFile 拒绝；check 重�
   // 篡改服务端字节 → check 拒绝
   const out2 = path.join(OUT_ROOT, packer.OUT_PREFIX + 'tamper-' + RUN_ID);
   packer.build(writePicPlan(closeSource), out2);
-  const corePath = path.join(out2, 'server', 'participant-identity-check.js');
+  const corePath = path.join(out2, 'server', 'scheduleSandbox', 'participant-identity-check.js');
   fs.writeFileSync(corePath, fs.readFileSync(corePath, 'utf8') + '\n// tampered\n');
   const r = packer.checkDir(out2);
   assert.equal(r.ok, false);
@@ -591,8 +591,12 @@ function loadCandidatePage(candidateDir, wxStub) {
   return sandboxPage;
 }
 
-function loadCandidateMain(candidateDir, ctx) {
-  const serverDir = path.join(candidateDir, 'server');
+function loadCandidateMain(candidateDir, ctx, fnDir) {
+  // I1/I2 部署映射：候选服务端制品位于同名函数子目录 server/scheduleSandbox/；
+  // 业务关闭包（close/）沿用业务布局 server/ 直接根——传 fnDir='.' 读取。
+  const serverDir = fnDir === undefined
+    ? path.join(candidateDir, 'server', 'scheduleSandbox')
+    : path.join(candidateDir, 'server', fnDir);
   const file = path.join(serverDir, 'index.js');
   const nativeRequire = createRequire(file);
   const cloudStub = {
@@ -629,7 +633,7 @@ test('P8 完整链：生成候选 App/Page→wx 替身→候选 main→核心→
   // 开启态候选：真实模式（synthetic=false）且窗口在当下有效——装配后入口 CONFIG_ENABLED=true。
   // 口令仍是**合成口令**，不代表真实 I1/I2 核验。
   packer.build(writePicPlan(closeSource, { synthetic: false }), outDir);
-  const entryText = fs.readFileSync(path.join(outDir, 'server', 'index.js'), 'utf8');
+  const entryText = fs.readFileSync(path.join(outDir, 'server', 'scheduleSandbox', 'index.js'), 'utf8');
   assert.ok(entryText.includes('const CONFIG_ENABLED = true;'), '真实模式候选入口应处于开启态（仅本地合成链验证）');
 
   // ── 开启链：真实生成代码 + 合成 wx/db
@@ -733,7 +737,7 @@ test('P8 完整链：生成候选 App/Page→wx 替身→候选 main→核心→
           throw new Error('TRAP: 关闭态不得访问数据库');
         }
       })
-    });
+    }, '.');
     for (const action of ['inspectSelf', 'identify', 'createProject', 'removeMember']) {
       const r = await closeMain.main({ action, passphrase: SYNTHETIC_PASSPHRASE });
       // 关闭端返回的是业务入口的关闭拒绝（无核验结果字段），关键事实：ok=false
@@ -1064,7 +1068,7 @@ test('R4 check 早退均返回原始拒绝分类（过期/NaN/抛错/缺计划/�
     assert.ok(r.problems.length > 0, label + ' 必须保留原始拒绝原因');
   }
   // check 全程不写入：候选包文件集保持不变（工具只读校验，不清理目录）
-  assert.equal(fs.existsSync(path.join(noSrc, 'server', 'index.js')), true, 'check 不得删除候选文件');
+  assert.equal(fs.existsSync(path.join(noSrc, 'server', 'scheduleSandbox', 'index.js')), true, 'check 不得删除候选文件');
   assert.deepEqual(fs.readdirSync(closeDirPath), [], 'close 来源已被本用例主动清空并重建（仅测试内）');
 });
 
@@ -1443,4 +1447,98 @@ test('S1b 取消勾选当下立即隐藏旧完整编号：取消后/重勾未提
   } finally {
     delete globalThis.wx;
   }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// I1/I2 前置核验（执行包准备版 §2）：真实 SDK 本地转换 + 同名函数部署映射
+// ════════════════════════════════════════════════════════════════════════════
+
+test('V 真实 SDK 形状兼容：单对象=存在、null=明确不存在、数组兼容、多条 UNKNOWN；入口以 throwOnNotFound:false 构造', async () => {
+  const openid = 'openid-v-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  // (1) 真实 wx-server-sdk 形状：存在 → data 为单个文档对象（非数组）
+  const hit = await makeChecker(makeTrapDb({ rows: [{ _id: userId, openid, status: 'active' }] }).data === undefined ? makeTrapDb({ rows: [{ _id: userId, openid, status: 'active' }] }) : null, {}).handle; // 占位（下方用 rChecker 风格）
+  // 单对象形状（直接用 rChecker 替身风格）
+  const r1 = await rChecker({ collection(name) {
+    assert.equal(name, core.FIXED_TARGET.collection);
+    return { doc(id) {
+      assert.equal(id, userId);
+      return { field(f) { return this; }, async get() {
+        // 真实 SDK resolve 形状：{ data: <单对象>, errMsg: 'document.get:ok' }
+        return { data: { _id: userId, openid, status: 'active' }, errMsg: 'document.get:ok' };
+      }, set() {}, update() {}, remove() {} };
+    }, add() {} };
+  }, runTransaction() {} }, { openid }).handle(rReq());
+  assert.equal(r1.ok, true, '单对象形状必须正常判定');
+  assert.equal(r1.registrationState, 'ACTIVE', '存在（单对象）→ ACTIVE');
+  assert.equal(r1.recordMatched, true);
+  assert.equal(r1.identityConfirmed, true);
+  // (2) 明确不存在：throwOnNotFound=false → { data: null, errMsg }
+  const r2 = await rChecker({ collection() { return { doc() { return { field() { return this; }, async get() {
+    return { data: null, errMsg: 'document.get:ok' };
+  }, set() {}, update() {}, remove() {} }; }, add() {} }; }, runTransaction() {} }, { openid }).handle(rReq());
+  assert.equal(r2.ok, true, 'data:null 必须判 ABSENT 而非 READ_FAILED');
+  assert.equal(r2.registrationState, 'ABSENT', '明确不存在 → ABSENT');
+  assert.equal(r2.recordMatched, null);
+  // (3) 数组形状兼容（替身/事务形状）：1 条 → ACTIVE；0 条 → ABSENT
+  const r3 = await rChecker(makeRDb({ rows: [rRow()] }).db).handle(rReq());
+  assert.equal(r3.registrationState, 'ACTIVE', '数组 1 条兼容');
+  const r4 = await rChecker(makeRDb({ rows: [] }).db).handle(rReq());
+  assert.equal(r4.registrationState, 'ABSENT', '数组 0 条兼容');
+  // (4) 数组多条 → UNKNOWN
+  const r5 = await rChecker(makeRDb({ rows: [rRow(), rRow()] }).db).handle(rReq());
+  assert.equal(r5.registrationState, 'UNKNOWN', '数组多条不可采信');
+  // (5) 单对象缺字段 → UNKNOWN
+  for (const key of ['_id', 'openid', 'status']) {
+    const obj = { _id: userId, openid, status: 'active' };
+    delete obj[key];
+    const r = await rChecker({ collection() { return { doc() { return { field() { return this; }, async get() { return { data: obj, errMsg: 'document.get:ok' }; }, set() {}, update() {}, remove() {} }; }, add() {} }; }, runTransaction() {} }, { openid }).handle(rReq());
+    assert.equal(r.registrationState, 'UNKNOWN', '单对象缺 ' + key + ' → UNKNOWN');
+  }
+  // (6) 生成候选入口确实以 throwOnNotFound:false 构造 database（真实 SDK「不存在→null」前提）
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'v-entry-' + RUN_ID);
+  packer.build(writePicPlan(closeSource), outDir);
+  const entrySrc = fs.readFileSync(path.join(outDir, 'server', 'scheduleSandbox', 'index.js'), 'utf8');
+  assert.ok(entrySrc.includes("cloud.database({ throwOnNotFound: false })"),
+    '入口必须以 throwOnNotFound:false 构造 database（否则不存在会 reject）');
+});
+
+test('M 同名函数部署映射：候选制品全部位于 server/scheduleSandbox/；与既有业务布局同构；根下散制品拒绝', () => {
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'm-map-' + RUN_ID);
+  packer.build(writePicPlan(closeSource), outDir);
+  // (1) cloudfunctionRoot=server/ 下只有一个直接子目录，且名称=受审函数名
+  const serverRoot = path.join(outDir, 'server');
+  const children = fs.readdirSync(serverRoot);
+  assert.deepEqual(children, ['scheduleSandbox'], 'server/ 下必须只有同名函数子目录');
+  assert.equal('scheduleSandbox', core.FIXED_TARGET.functionName, '子目录名=受审固定函数名');
+  // (2) 函数子目录含完整入口三件套
+  for (const f of ['index.js', 'package.json', 'participant-identity-check.js']) {
+    assert.equal(fs.existsSync(path.join(serverRoot, 'scheduleSandbox', f)), true, '函数目录含 ' + f);
+  }
+  // (3) 依赖闭包：入口 require('./participant-identity-check') 同目录可解析
+  const entrySrc = fs.readFileSync(path.join(serverRoot, 'scheduleSandbox', 'index.js'), 'utf8');
+  assert.ok(entrySrc.includes("require('./participant-identity-check')"), '入口引用同目录核心模块');
+  // (4) 与既有业务布局同构（静态核对对照）
+  const bizFnDir = path.join(REPO_ROOT, 'miniapp', 'cloudfunctions', 'scheduleSandbox');
+  assert.equal(fs.existsSync(path.join(bizFnDir, 'index.js')), true, '既有业务函数目录含 index.js');
+  assert.equal(fs.existsSync(path.join(bizFnDir, 'package.json')), true, '既有业务函数目录含 package.json');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(outDir, 'project.config.json'), 'utf8')).cloudfunctionRoot, 'server/');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'miniapp', 'project.config.json'), 'utf8')).cloudfunctionRoot, 'cloudfunctions/');
+  // (5) 反例：装配出现 server/ 根下散制品（旧布局）→ verifyProjectLayout 拒绝
+  const fake = new Map(packer.computeArtifacts(JSON.parse(fs.readFileSync(path.join(outDir, 'plan.json'), 'utf8'))));
+  fake.set('server/index.js', Buffer.from('// stray legacy artifact\n'));
+  assert.throws(() => packer.verifyProjectLayout(fake),
+    e => e.code === packer.ERR.SOURCE_DRIFT && /无法映射到同名函数/.test(e.message),
+    'server/ 根下散制品必须被映射校验拒绝');
+  // (6) 反例：同名函数子目录缺 package.json → 拒绝
+  const fake2 = new Map(packer.computeArtifacts(JSON.parse(fs.readFileSync(path.join(outDir, 'plan.json'), 'utf8'))));
+  fake2.delete('server/scheduleSandbox/package.json');
+  assert.throws(() => packer.verifyProjectLayout(fake2),
+    e => e.code === packer.ERR.SOURCE_DRIFT && /同名函数子目录缺少制品/.test(e.message));
+  // (7) 精确文件集：候选 14 文件不变（仅 rel 调整）
+  const r = packer.checkDir(outDir);
+  assert.equal(r.ok, true);
+  assert.equal(r.files, 14, '候选清单 14 文件（仅 rel 调整，数量不变）');
 });

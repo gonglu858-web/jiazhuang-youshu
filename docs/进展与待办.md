@@ -1,3 +1,11 @@
+## 2026-10-15 I1/I2 前置核验完成（第五轮：真实SDK转换与同名函数部署映射，仅本地，待Codex复核；云端未放行）
+
+- 依据 docs/Codex执行包-参与者I1I2本人只读核验准备-20261015.md §2 两个未闭合前置，接手 master 24e02d1，工作区起始干净。仅改核验核心/打包器/测试/操作说明、新证据与状态记录；源业务页面、云函数/vendor、P/E/X 包（package-business-test.cjs）、管理员/P4/凭据链、旧生成器与历史证据零改动（不回写旧 JSON）。S2 与 R1–R6 已闭合结论不重做。
+- 部署映射定点修正：cloudfunctionRoot 下直接子目录名=云函数名为微信云开发固定约定（既有业务布局 miniapp/cloudfunctions/scheduleSandbox/ 同构）；候选服务端制品由 server/ 直接根改为 server/scheduleSandbox/（index.js/package.json/participant-identity-check.js 三件套，入口 require('./participant-identity-check') 同目录闭包）；verifyProjectLayout 新增映射校验——server/ 根下散制品、函数目录缺 package.json 均 SOURCE_DRIFT 拒绝；候选 14 文件仅 rel 调整数量不变。
+- 真实 SDK 转换核验：本地副本 wx-server-sdk 3.0.1（依赖树完整含 @cloudbase/node-sdk 2.10.0、@cloudbase/database 1.4.1；npm 本地缓存无 wx-server-sdk tarball）。静态源码锚点证明：database(config) 透传 throwOnNotFound（默认 true）；包装层 get() 存在→{data:单对象}、不存在→默认 reject / throwOnNotFound:false 时 {data:null}、失败→reject CloudSDKError；底层 field 布尔→1/0 投影随 database.getDocument 发送、EJSON 解析返回数组。动态转换（仅传输层本地替身，数据库实现全部真实代码）：存在→{data:[1条]}、不存在→{data:[]}、权限失败→{code}。核心 readRegistration 归一化兼容单对象/null/数组三形状（单对象缺字段与数组多条归 UNKNOWN），候选入口以 throwOnNotFound:false 构造。CHANGELOG 证明 2.6.3→3.0.1 仅 protobufjs/d.ts 变更、无数据库 API 行为修改。
+- 阻断如实列出（不以测试全绿代替）：①~2.6.3 精确版本本地不可得（不联网安装），精确转换待部署前真实环境只读复核；②业务关闭包 close/server/ 直接根布局存在同样同名映射缺口（业务打包器受保护不改，须另立定点任务返修 close 装配）；③实际上传部署、远端关闭回读未验证（云端未放行）。
+- 实测：核验包测试 19/19（新增 V 真实形状兼容/M 部署映射两组）、business-test-package 18/18 无回归、新独立证据 8/8 exit 0（守卫敏感性 2 次单独记账、业务期意外 0）。实现摘要 c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a，打包器摘要 797cc70fd522431bef8936aa57df9071a209df56ca7b23ad30b0b700a464efa5。
+- 未验证项：真实 2.6.3 精确转换、真实上传部署、远端关闭回读、真实1号/2号身份与登记状态完全未验证；不承诺一次性口令、全局限流、平台零日志或零费用。未联网、未安装、未取真实凭据或口令、未读认证缓存、未部署/预览/上传/启用、未登记/初始化、未写库建资源、未改权限费用、未清用户缓存、未处理A/B/C。真实 I1/I2 操作仍须复核通过、I1 最终执行页经用户批准。
 ## 2026-10-15 Codex整理 I1/I2 本人只读核验执行包准备版（云端未放行）
 
 - 依据本地验收 `cdf1ea8`、`docs/Codex验收-参与者只读核验包S1展示时点收尾-20261015.md`、既有任务与操作说明，新增 `docs/Codex执行包-参与者I1I2本人只读核验准备-20261015.md`。仅准备两轮目标、一次本人操作预算、独立口令与UTC窗口、候选/关闭核对、结果矩阵、失败后服务端先关及远端/手机分别核对；未形成真实批准。

@@ -29,6 +29,11 @@
 // 10. **R6 读取边界**：字段投影只取 _id/openid/status（用 doc().field() 选择字段）；
 //    readAttempted 只在实际调用 get() 之前置真；缺字段归 UNKNOWN；错误只输出白名单代码与
 //    固定文案（内部错误标记，不看外部错误的 code 前缀）。
+// 11. **真实 SDK 形状兼容（I1/I2 前置核验）**：wx-server-sdk（3.0.1 实测源码，2.6.3→3.0.1
+//     CHANGELOG 无数据库 API 行为变更）单文档 get() 在入口以 throwOnNotFound:false 构造时：
+//     存在 → resolve `{ data: <单个文档对象>, errMsg }`；明确不存在 → resolve `{ data: null }`；
+//     权限/读取失败 → reject CloudSDKError。读取结果统一归一为「单文档对象 / 明确无记录 /
+//     数组形状（合成替身兼容）」三种，均不误判。
 
 /** 受审固定目标：与既有 gate/工具常量一致，不新增可变目标。 */
 const FIXED_TARGET = Object.freeze({
@@ -280,14 +285,33 @@ function createIdentityChecker(deps) {
       // 数据库错误/权限/超时：不得当作不存在，也不得回传原始异常
       deny(ERR_CODES.READ_FAILED, '读取本人测试账号记录失败（结果未知）。');
     }
-    const rows = response && Array.isArray(response.data) ? response.data : null;
-    if (rows === null) deny(ERR_CODES.READ_FAILED, '读取结果形状未知（结果未知）。');
-    if (rows.length === 0) {
-      // 明确无记录（SDK 以空数组表示文档不存在）
+    // 归一化读取结果（真实 SDK 转换 + 合成替身兼容）：
+    // - 真实 wx-server-sdk 单文档 get()（入口以 throwOnNotFound:false 构造 database）：
+    //   存在 → data 为【单个文档对象】；明确不存在 → data 为【null】；失败 → reject（上方 catch）。
+    // - 合成替身/测试形状：data 为数组（0 条=不存在、1 条=命中、多条=不可采信）。
+    let row = null;
+    let explicitlyAbsent = false;
+    if (response && response.data === null) {
+      // 真实 SDK：明确无记录（throwOnNotFound=false 时的 data:null）
+      explicitlyAbsent = true;
+    } else if (response && Array.isArray(response.data)) {
+      if (response.data.length === 0) {
+        explicitlyAbsent = true; // 数组形状的明确无记录
+      } else if (response.data.length === 1) {
+        row = response.data[0];
+      } else {
+        // 多条：单文档读取不应出现，形状不可采信
+        return { state: 'UNKNOWN', recordMatched: null };
+      }
+    } else if (response && response.data && typeof response.data === 'object') {
+      row = response.data; // 真实 SDK：单文档对象
+    } else {
+      deny(ERR_CODES.READ_FAILED, '读取结果形状未知（结果未知）。');
+    }
+    if (explicitlyAbsent) {
+      // 明确无记录（真实 SDK data:null 或数组形状空结果）
       return { state: 'ABSENT', recordMatched: null };
     }
-    if (rows.length > 1) return { state: 'UNKNOWN', recordMatched: null };
-    const row = rows[0];
     if (!row || typeof row !== 'object' || Array.isArray(row)) return { state: 'UNKNOWN', recordMatched: null };
     // R6：字段缺失属未知（形状不可采信），不是归属不符。
     if (!Object.prototype.hasOwnProperty.call(row, '_id') || row._id === undefined || row._id === null) {

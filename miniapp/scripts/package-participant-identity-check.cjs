@@ -60,6 +60,15 @@ const PLAN_FIELDS = Object.freeze([
 
 /** 服务端模板文件（受审来源）。participant-identity-check.js 由核心模块复制而来。 */
 const SERVER_TEMPLATE_FILES = Object.freeze(['index.js', 'package.json']);
+/**
+ * I1/I2 前置核验（部署映射）：cloudfunctionRoot 下的【直接子目录名 = 云函数名】
+ * 是微信云开发/CloudBase 的固定约定（既有业务布局 miniapp/cloudfunctions/scheduleSandbox/
+ * 即为此形态，且官方接入文档示例一致）。因此候选服务端制品必须装配到
+ * server/scheduleSandbox/ 子目录——server/index.js 直接置于 cloudfunctionRoot 根下
+ * 无法映射到既有同名函数 scheduleSandbox。
+ */
+const SERVER_FN_DIR = 'scheduleSandbox';
+const SERVER_FN_ROOT = 'server/' + SERVER_FN_DIR + '/';
 /** 前端模板文件（完整可导入项目的最小闭包）。 */
 const FRONTEND_TEMPLATE_FILES = Object.freeze([
   'app.js', 'app.json', 'app.wxss',
@@ -202,7 +211,7 @@ function writeExclusive(abs, buf, io, rel) {
  * 源码变更必须先受审更新本表；否则 build 与 check 一律 SOURCE_DRIFT 拒绝。
  */
 const PINNED_SOURCES = Object.freeze({
-  'miniapp/scripts/lib/participant-identity-check.cjs': '00abff26dc4e949437a9781fedf44e946aa57a7ad1f79993d8e03001d0141afe',
+  'miniapp/scripts/lib/participant-identity-check.cjs': 'c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
   'miniapp/scripts/templates/participant-identity-check/server/index.js': '0ddb5f6a759edc71998a325c1f02518119021f4aaa002512e369e16f592cd452',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': '9f155f07ede42a71c7bd63ad39b2488d1bcde3bc7fa67f9344b6dfa355cd6c82',
@@ -474,9 +483,21 @@ function verifyProjectLayout(expected /* Map<rel, Buffer> */) {
   if (envName !== FIXED_TARGET.envId) {
     fail(ERR.PLAN_TARGET_INVALID, '前端固定环境目标与受审常量不一致：' + envName);
   }
+  // 部署映射校验（I1/I2 前置）：cloudfunctionRoot=server/ 下必须有且仅有同名函数
+  // 子目录 scheduleSandbox/，且含 index.js 与 package.json——与既有业务布局
+  // miniapp/cloudfunctions/scheduleSandbox/ 同构，目录名即远端函数名。
+  const fnDirKeys = [...expected.keys()].filter(k => k.startsWith('server/'));
+  for (const k of fnDirKeys) {
+    if (!k.startsWith(SERVER_FN_ROOT)) {
+      fail(ERR.SOURCE_DRIFT, 'server/ 根下出现无法映射到同名函数的制品（须全部位于 ' + SERVER_FN_ROOT + '）：' + k);
+    }
+  }
+  for (const must of [SERVER_FN_ROOT + 'index.js', SERVER_FN_ROOT + 'package.json']) {
+    if (!expected.has(must)) fail(ERR.SOURCE_DRIFT, '同名函数子目录缺少制品：' + must);
+  }
   // 服务端固定目标（装配后入口中的常量）
-  const entry = expected.get('server/index.js');
-  if (!entry) fail(ERR.SOURCE_DRIFT, '装配缺少 server/index.js。');
+  const entry = expected.get(SERVER_FN_ROOT + 'index.js');
+  if (!entry) fail(ERR.SOURCE_DRIFT, '装配缺少 ' + SERVER_FN_ROOT + 'index.js。');
   const entrySrc = entry.toString('utf8');
   if (!entrySrc.includes("const CONFIG_APP_ID = '" + FIXED_TARGET.appId + "';")) {
     fail(ERR.PLAN_TARGET_INVALID, '服务端 appId 常量与受审固定目标不一致。');
@@ -491,28 +512,28 @@ function computeArtifacts(plan) {
   const artifacts = new Map();
   // 服务端：核心模块（逐字节复制）+ 入口（唯一锚点替换写入本轮配置）
   const coreBytes = readCoreModuleBytes();
-  artifacts.set('server/participant-identity-check.js', coreBytes);
+  artifacts.set(SERVER_FN_ROOT + 'participant-identity-check.js', coreBytes);
   for (const rel of SERVER_TEMPLATE_FILES) {
     const raw = readTemplateBytes('server/' + rel);
     if (rel !== 'index.js') {
-      artifacts.set('server/' + rel, raw);
+      artifacts.set(SERVER_FN_ROOT + rel, raw);
       continue;
     }
     let buf = anchorReplace(raw, 'const CONFIG_ENABLED = false;',
-      'const CONFIG_ENABLED = ' + (!plan.synthetic) + ';', 'server/index.js#CONFIG_ENABLED');
+      'const CONFIG_ENABLED = ' + (!plan.synthetic) + ';', 'server/scheduleSandbox/index.js#CONFIG_ENABLED');
     buf = anchorReplace(buf, "const CONFIG_APP_ID = '';",
-      "const CONFIG_APP_ID = '" + plan.appId + "';", 'server/index.js#CONFIG_APP_ID');
+      "const CONFIG_APP_ID = '" + plan.appId + "';", 'server/scheduleSandbox/index.js#CONFIG_APP_ID');
     buf = anchorReplace(buf, "const CONFIG_ENV_ID = '';",
-      "const CONFIG_ENV_ID = '" + plan.envId + "';", 'server/index.js#CONFIG_ENV_ID');
+      "const CONFIG_ENV_ID = '" + plan.envId + "';", 'server/scheduleSandbox/index.js#CONFIG_ENV_ID');
     buf = anchorReplace(buf, "const CONFIG_CHECK_ROUND_ID = '';",
-      "const CONFIG_CHECK_ROUND_ID = '" + plan.checkRoundId + "';", 'server/index.js#CONFIG_CHECK_ROUND_ID');
+      "const CONFIG_CHECK_ROUND_ID = '" + plan.checkRoundId + "';", 'server/scheduleSandbox/index.js#CONFIG_CHECK_ROUND_ID');
     buf = anchorReplace(buf, "const CONFIG_PASSPHRASE_DIGEST = '';",
-      "const CONFIG_PASSPHRASE_DIGEST = '" + plan.passphraseDigest + "';", 'server/index.js#CONFIG_PASSPHRASE_DIGEST');
+      "const CONFIG_PASSPHRASE_DIGEST = '" + plan.passphraseDigest + "';", 'server/scheduleSandbox/index.js#CONFIG_PASSPHRASE_DIGEST');
     buf = anchorReplace(buf, 'const CONFIG_WINDOW_STARTS_AT_MS = 0;',
-      'const CONFIG_WINDOW_STARTS_AT_MS = ' + plan.windowStartsAtMs + ';', 'server/index.js#CONFIG_WINDOW_STARTS_AT_MS');
+      'const CONFIG_WINDOW_STARTS_AT_MS = ' + plan.windowStartsAtMs + ';', 'server/scheduleSandbox/index.js#CONFIG_WINDOW_STARTS_AT_MS');
     buf = anchorReplace(buf, 'const CONFIG_WINDOW_EXPIRES_AT_MS = 0;',
-      'const CONFIG_WINDOW_EXPIRES_AT_MS = ' + plan.windowExpiresAtMs + ';', 'server/index.js#CONFIG_WINDOW_EXPIRES_AT_MS');
-    artifacts.set('server/index.js', buf);
+      'const CONFIG_WINDOW_EXPIRES_AT_MS = ' + plan.windowExpiresAtMs + ';', 'server/scheduleSandbox/index.js#CONFIG_WINDOW_EXPIRES_AT_MS');
+    artifacts.set(SERVER_FN_ROOT + 'index.js', buf);
   }
   // 前端模板：逐字节复制（页面已收窄为唯一核验页面）；
   // config/cloud.js 按唯一锚点注入**本轮核验轮次**（R5 计划→前端绑定）。
@@ -884,6 +905,10 @@ module.exports = Object.freeze({
   PASS_ENTROPY_MIN_BITS,
   TEMPLATE_DIR,
   SERVER_TEMPLATE_FILES,
+  SERVER_FN_DIR,
+  SERVER_FN_ROOT,
+  verifyProjectLayout,
+  computeArtifacts,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,
