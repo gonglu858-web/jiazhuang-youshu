@@ -1,0 +1,151 @@
+{
+  "schema": "codex-participant-identity-r1r6-second-review/1",
+  "reviewedCommit": "c5d58ff",
+  "reviewBasis": "ece7659",
+  "implementationSha256": "c454a4dc283a0e4e7b8ec27a4242ceee8ab4862fd67a46766d0525222a615dbc",
+  "packerSha256": "8bcc46684c759ce563b853e833b34163fe7156d83392c974754f72ab629c7997",
+  "verificationKind": "LOCAL actual generated code + synthetic wx/db/clock; SDK/platform not executed",
+  "probes": [
+    {
+      "id": "D0",
+      "kind": "guard-control",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivity": 2
+      }
+    },
+    {
+      "id": "D1",
+      "kind": "R1-layout-and-reuse",
+      "assertionsPassed": true,
+      "actual": {
+        "rootsExist": true,
+        "checkOk": true,
+        "reused": 38,
+        "resumeWritten": 1,
+        "resumeReused": 37
+      }
+    },
+    {
+      "id": "D2",
+      "kind": "R3-all-pinned-sources",
+      "assertionsPassed": true,
+      "actual": {
+        "pinnedEntries": 13,
+        "buildDriftRejectedZeroArtifacts": 13,
+        "checkDriftRejected": 13,
+        "diskSourcesUnchanged": true
+      }
+    },
+    {
+      "id": "D3",
+      "kind": "R4-early-returns",
+      "assertionsPassed": true,
+      "actual": {
+        "classifiedClockFailures": [
+          "PIC_WINDOW_EXPIRED",
+          "PIC_CLOCK_INVALID",
+          "PIC_CLOCK_ERROR"
+        ],
+        "otherEarlyReturns": 4,
+        "referenceErrors": 0
+      }
+    },
+    {
+      "id": "D4",
+      "kind": "R5-window-and-round",
+      "assertionsPassed": true,
+      "actual": {
+        "clockEdgesCorrect": true,
+        "badRoundsRejectedBeforeCollection": 5,
+        "nonpositiveWindowsRejected": 2,
+        "expiryBuildZeroWrite": true,
+        "postReadExpiryPreservesAttempt": true
+      }
+    },
+    {
+      "id": "D5",
+      "kind": "R6-fixed-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "projectionKeys": [
+          "_id",
+          "openid",
+          "status"
+        ],
+        "preGetAttempted": false,
+        "getFailureAttempted": true,
+        "rawErrorsSuppressed": 3,
+        "missingFieldsUnknown": 3,
+        "controlledFullIdActiveAndAbsent": true
+      }
+    },
+    {
+      "id": "D6",
+      "kind": "generated-page-positive-controls",
+      "assertionsPassed": true,
+      "actual": {
+        "chain": "generated App/Page/client/main/copied core + synthetic wx/db",
+        "outcomes": [
+          {
+            "selected": false,
+            "fullIdAvailable": false,
+            "sends": 1,
+            "reads": 1
+          },
+          {
+            "selected": true,
+            "fullIdAvailable": true,
+            "sends": 1,
+            "reads": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "D7",
+      "kind": "S1-cancel-checkbox-defect",
+      "assertionsPassed": true,
+      "actual": {
+        "cancellationEventValue": [],
+        "storedChoiceAfterCancel": true,
+        "requestIncludesFullId": true,
+        "fullIdDisplayed": true,
+        "sends": 1,
+        "writes": 0
+      }
+    },
+    {
+      "id": "D8",
+      "kind": "S2-missing-field-defect",
+      "assertionsPassed": true,
+      "actual": {
+        "fieldCalls": 0,
+        "getCalls": 1,
+        "fetchedUnrelatedField": true,
+        "identityConfirmed": true,
+        "fullIdDelivered": true,
+        "writes": 0
+      }
+    },
+    {
+      "id": "D9",
+      "kind": "close-control",
+      "assertionsPassed": true,
+      "actual": {
+        "atNaN": true,
+        "files": 23
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivity": 2,
+    "unexpected": 0
+  },
+  "summary": {
+    "total": 10,
+    "assertionsPassed": 10,
+    "defectsReproduced": 2,
+    "meaning": "Includes defect reproduction assertions; not acceptance."
+  }
+}
