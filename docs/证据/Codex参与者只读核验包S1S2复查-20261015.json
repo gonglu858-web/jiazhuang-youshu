@@ -1,0 +1,65 @@
+{
+  "schema": "codex-participant-identity-s12-review/1",
+  "reviewedCommit": "6b89ea0",
+  "implementationSha256": "00abff26dc4e949437a9781fedf44e946aa57a7ad1f79993d8e03001d0141afe",
+  "pageTemplateSha256": "97125d43626f2bef9c3e2be4005acd6d1fe98b4a059e75ea0b984fcd56e5b73c",
+  "verificationKind": "actual generated App/Page/client/server/core with synthetic wx/db; no SDK or platform",
+  "results": [
+    {
+      "id": "C1_cancel_before_next_submit",
+      "observedGap": true,
+      "actual": {
+        "wantFullUserId": false,
+        "shownFullId": true,
+        "requests": 1,
+        "wxmlShowsOnResultFlagOnly": true
+      }
+    },
+    {
+      "id": "C2_next_submit_after_cancel",
+      "passed": true,
+      "actual": {
+        "requests": 2,
+        "fullIdRequested": false,
+        "fullIdShown": false,
+        "tailShown": true
+      }
+    },
+    {
+      "id": "C3_projection_fail_closed",
+      "passed": true,
+      "actual": [
+        {
+          "kind": "missing",
+          "gets": 0,
+          "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+          "readAttempted": false
+        },
+        {
+          "kind": "throws",
+          "gets": 0,
+          "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+          "readAttempted": false
+        },
+        {
+          "kind": "noGet",
+          "gets": 0,
+          "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+          "readAttempted": false
+        }
+      ]
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0
+  },
+  "summary": {
+    "checked": 3,
+    "gap": "C1",
+    "positiveControls": [
+      "C2",
+      "C3"
+    ]
+  }
+}
