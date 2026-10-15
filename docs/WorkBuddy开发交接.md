@@ -1,3 +1,14 @@
+## 2026-10-15 R1–R6 定点返修完成（第二轮，仅本地实现与合成自测，待Codex复核；云端未放行）
+
+- 依据 docs/Codex复查-参与者本人身份只读核验包-20261015.md §3（R1–R6），接手 master ece7659（受审实现 39ac526），工作区起始干净。仅改本次新增核心、打包器、候选模板、测试、操作说明、新证据与状态记录；P/E/X 包、源业务 App/Page/client、云函数/vendor、管理员链/P4/凭据链、旧生成器与历史证据零改动（含原 miniapp/project.config.json）。
+- R1：项目配置改由受审模板生成，miniprogramRoot=frontend/、cloudfunctionRoot=server/ 与实际目录一致；新增 verifyProjectLayout 在装配后校验根目录存在、唯一页面四件套、页面→client→config 依赖闭包、前后端固定函数/环境目标；不修改原项目配置迁就新包。
+- R2：受控完整 userId 交付路径——默认只返回 6 位尾号；本次有效核验结果（ACTIVE/ABSENT/DISABLED/MISMATCH）在调用方显式请求时携带完整内部 userId，并与 checkRoundId、serverTimeIso 一起构成后续执行包绑定事实；页面新增勾选开关；失败结果一律不交付完整 ID；完整 ID 不是 OPENID/UNIONID，也不构成 P 登记证据。
+- R3：打包器内置 13 项受审来源内容基线（核心模块 + 12 个模板文件），build 与 check 均按基线校验；漂移即 PIC_SOURCE_DRIFT 且写前零产物拒绝（目录不创建）；磁盘源文件零改动；基线为受审值，非当下源码自算或 manifest 自报。
+- R4：checkDir 把 finish() 依赖的 manifest/清单量提前到函数入口初始化，七类早退（过期/NaN/时钟抛错/缺计划/计划哈希不符/非法计划/来源重建失败）均返回原定分类 problems，planChecked 失败时为 false，不再抛 ReferenceError 遮盖原因。
+- R5：核心与工具统一 now>=expires 即拒绝；计划强制 expires>starts（0/负窗口写前拒绝）；checkRoundId 由计划同时注入服务端 CONFIG 与前端 config，client 原样带回，缺失/空值/非字符串/错误轮次一律在集合访问前拒绝。
+- R6：读取改为 doc().field({_id,openid,status}).get() 只投影三字段；readAttempted 仅在实际调用 get 前置真（集合构造失败 false、get 失败 true）；_id/openid/status 缺失归 UNKNOWN，字段齐备不符才 MISMATCH；错误改用内部 Symbol 标记 + 白名单代码/固定文案映射，外部异常（含伪造 PIC_ code）一律净化为固定文案。
+- 实测：本轮测试 14/14（P1–P8 基线 + R1–R6 返修断言）、既有 business-test-package 18/18 无回归、新独立证据 9/9 exit 0（守卫敏感性 2 次单独记账、业务期意外 0）。候选 14 文件 + 关闭包 23 文件；written 38、完整复用 0/38、续建 1/37；部分写 partialWrites=[{rel:server/index.js,bytesOnDisk:11}]；实现摘要 c454a4dc283a0e4e7b8ec27a4242ceee8ab4862fd67a46766d0525222a615dbc，打包器摘要 8bcc46684c759ce563b853e833b34163fe7156d83392c974754f72ab629c7997。
+- 未验证项：SDK 本地转换未执行；真实平台部署、真实 wx 传输、真实1号/2号身份与云端登记状态完全未验证；不承诺一次性口令、全局限流、平台零日志或零费用。未联网、未取凭据或口令、未部署/预览/上传/启用、未登记/初始化、未写库建资源、未改权限费用、未清用户缓存、未处理A/B/C。I1/I2 真实操作仍须复核通过后另形成执行包并由用户确认。
 ## 2026-10-15 Codex复查39ac526：本人身份只读核验包R1–R6待返修，云端未放行
 
 - 依据本地任务书§3–§6，独立复查39ac526（基线104aea8）。报告：docs/Codex复查-参与者本人身份只读核验包-20261015.md；新证据：docs/证据/Codex参与者只读核验包独立审查-20261015.cjs/.json。仅审查与记录，未改实现。

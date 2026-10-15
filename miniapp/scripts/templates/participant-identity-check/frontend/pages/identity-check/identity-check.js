@@ -18,6 +18,8 @@ Page({
     sending: false,
     result: null,
     stopHint: '',
+    // R2：默认只展示尾号；勾选后才向服务端请求完整内部 userId（供负责人核对）
+    wantFullUserId: false,
     // 仅用于展示核验轮次/时间；不含任何口令内容
     lastCheckedAt: ''
   },
@@ -39,6 +41,10 @@ Page({
     this.setData({ passphrase: e.detail.value });
   },
 
+  onWantFullIdChange(e) {
+    this.setData({ wantFullUserId: Boolean(e.detail.value) });
+  },
+
   async onCheckTap() {
     // 已锁在途请求：重复点击不产生第二次调用。
     if (this.data.sending) return;
@@ -49,7 +55,12 @@ Page({
 
     this.setData({ sending: true, stopHint: '', result: null });
 
-    const request = { action: 'inspectSelf', passphrase: this.data.passphrase };
+    const request = {
+      action: 'inspectSelf',
+      passphrase: this.data.passphrase,
+      // R2：仅在负责人显式勾选时请求完整内部 userId
+      includeFullUserId: this.data.wantFullUserId === true
+    };
     let response = null;
     let failed = false;
     try {
@@ -84,6 +95,9 @@ Page({
         recordMatched: response.recordMatched,
         readAttempted: response.readAttempted,
         userIdTail: response.userIdTail,
+        // R2：完整内部 userId（仅本次有效结果且显式请求时才有值）
+        userId: response.userId || '',
+        fullUserIdAvailable: Boolean(response.userId),
         checkRoundId: response.checkRoundId,
         serverTime: response.serverTimeIso || '',
         code: response.code || ''

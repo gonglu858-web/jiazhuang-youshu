@@ -1,0 +1,366 @@
+{
+  "schema": "participant-identity-r1r6-review/1",
+  "title": "两位参与者本人身份只读核验包 R1–R6 定点返修 · 独立复核证据",
+  "reviewedCommit": "39ac526",
+  "reviewBasis": "docs/Codex复查-参与者本人身份只读核验包-20261015.md §3（R1–R6）；复查提交 ece7659",
+  "implementationPath": "miniapp/scripts/lib/participant-identity-check.cjs",
+  "implementationSha256": "c454a4dc283a0e4e7b8ec27a4242ceee8ab4862fd67a46766d0525222a615dbc",
+  "packerPath": "miniapp/scripts/package-participant-identity-check.cjs",
+  "packerSha256": "8bcc46684c759ce563b853e833b34163fe7156d83392c974754f72ab629c7997",
+  "generatedAt": "2026-10-15T02:20:50.618Z",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/pic-r1r6-61b28f8f-65ff-49d9-8ba9-628af235fc06",
+  "verificationKind": "Node 真实本地应用代码 + 合成 wx/db/时钟；SDK 本地转换未执行；真实平台/真实三账号/真实部署完全未验证",
+  "passphraseSample": "synthetic（仅验证准入路径；不生成真实口令；不落证据）",
+  "claims": {
+    "oneTimePassphrase": false,
+    "globalRateLimit": false,
+    "provesRealPersonIdentity": false,
+    "zeroPlatformLogOrCost": false,
+    "fullUserIdIsNotOpenid": true,
+    "fullUserIdIsNotPreregistrationEvidence": true
+  },
+  "results": [
+    {
+      "id": "F0_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityProbeHits": 2,
+        "note": "敏感性探针实际触发并单独记账"
+      }
+    },
+    {
+      "id": "F1_r1_project_layout",
+      "assertionsPassed": true,
+      "actual": {
+        "miniprogramRoot": "frontend/",
+        "cloudfunctionRoot": "server/",
+        "rootsExist": true,
+        "uniquePage": "pages/identity-check/identity-check",
+        "dependencyClosureResolvable": true,
+        "fixedFunctionTarget": "scheduleSandbox",
+        "fixedEnvTarget": "cloud1-d8gcq5ag39d847723",
+        "inconsistentConfigRejected": true,
+        "zeroArtifactsOnReject": true,
+        "repoProjectConfigUnchanged": true
+      }
+    },
+    {
+      "id": "F2_r2_full_userid_delivery",
+      "assertionsPassed": true,
+      "actual": {
+        "defaultDeliversTailOnly": true,
+        "fullIdStates": [
+          {
+            "label": "ACTIVE",
+            "state": "ACTIVE",
+            "userIdDelivered": true,
+            "tailLength": 6
+          },
+          {
+            "label": "ABSENT",
+            "state": "ABSENT",
+            "userIdDelivered": true,
+            "tailLength": 6
+          },
+          {
+            "label": "DISABLED",
+            "state": "DISABLED",
+            "userIdDelivered": true,
+            "tailLength": 6
+          },
+          {
+            "label": "MISMATCH",
+            "state": "MISMATCH",
+            "userIdDelivered": true,
+            "tailLength": 6
+          }
+        ],
+        "failureNeverDeliversFullId": true,
+        "neverReturnsOpenidUnionidPassphraseCredentials": true,
+        "roundAndTimeCorrelated": true
+      }
+    },
+    {
+      "id": "F3_r3_pinned_source_baseline",
+      "assertionsPassed": true,
+      "actual": {
+        "driftCases": [
+          {
+            "label": "核心模块",
+            "rejectedWith": "PIC_SOURCE_DRIFT",
+            "zeroArtifacts": true,
+            "diskSourceUnchanged": true
+          },
+          {
+            "label": "页面模板",
+            "rejectedWith": "PIC_SOURCE_DRIFT",
+            "zeroArtifacts": true,
+            "diskSourceUnchanged": true
+          },
+          {
+            "label": "客户端模板",
+            "rejectedWith": "PIC_SOURCE_DRIFT",
+            "zeroArtifacts": true,
+            "diskSourceUnchanged": true
+          },
+          {
+            "label": "项目配置模板",
+            "rejectedWith": "PIC_SOURCE_DRIFT",
+            "zeroArtifacts": true,
+            "diskSourceUnchanged": true
+          }
+        ],
+        "checkAlsoRejects": true,
+        "fullReuse": {
+          "written": 0,
+          "reused": 38
+        },
+        "resume": {
+          "written": 1,
+          "reused": 37
+        }
+      }
+    },
+    {
+      "id": "F4_r4_check_early_returns",
+      "assertionsPassed": true,
+      "actual": {
+        "earlyReturns": [
+          {
+            "label": "expired",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "窗口时效检查失败[PIC_WINDOW_EXPIRED]（check.start）：核验窗口已截止[check.start]。"
+          },
+          {
+            "label": "nan",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "窗口时效检查失败[PIC_CLOCK_INVALID]（check.start）：服务端时钟无效[check.start]。"
+          },
+          {
+            "label": "clockThrow",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "窗口时效检查失败[PIC_CLOCK_ERROR]（check.start）：服务端时钟异常[check.start]。"
+          },
+          {
+            "label": "planHashMismatch",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "plan.json 与 manifest.planSha256 不一致"
+          },
+          {
+            "label": "missingPlan",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "缺少目录内计划 plan.json"
+          },
+          {
+            "label": "invalidPlan",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "计划校验失败[PIC_PLAN_TARGET_INVALID]：collection 必须是受审固定值。"
+          },
+          {
+            "label": "sourceFailure",
+            "ok": false,
+            "planChecked": false,
+            "firstProblem": "来源重建失败[PIC_CLOSE_SOURCE_INVALID]：关闭包来源缺少真实 close 目录（不得以链接顶替）：C:/Users/30591/Documents/Chat"
+          }
+        ],
+        "noReferenceError": true,
+        "normalControlsPass": true
+      }
+    },
+    {
+      "id": "F5_r5_time_and_round_contract",
+      "assertionsPassed": true,
+      "actual": {
+        "timePoints": [
+          {
+            "label": "未到开始",
+            "ok": false,
+            "code": "PIC_WINDOW_NOT_OPEN",
+            "gets": 0
+          },
+          {
+            "label": "恰开始",
+            "ok": true,
+            "code": "",
+            "gets": 1
+          },
+          {
+            "label": "窗口内",
+            "ok": true,
+            "code": "",
+            "gets": 1
+          },
+          {
+            "label": "恰截止",
+            "ok": false,
+            "code": "PIC_WINDOW_EXPIRED",
+            "gets": 0
+          },
+          {
+            "label": "超过截止",
+            "ok": false,
+            "code": "PIC_WINDOW_EXPIRED",
+            "gets": 0
+          }
+        ],
+        "windowCases": [
+          {
+            "label": "0分钟",
+            "rejectedWith": "PIC_PLAN_WINDOW_INVALID",
+            "zeroWrite": true
+          },
+          {
+            "label": "负1分钟",
+            "rejectedWith": "PIC_PLAN_WINDOW_INVALID",
+            "zeroWrite": true
+          }
+        ],
+        "realModeAtExpiry": "WINDOW_EXPIRED(零写)",
+        "realModeInsideWindowOk": true,
+        "roundCases": [
+          {
+            "label": "缺失",
+            "code": "PIC_ROUND_REQUIRED",
+            "gets": 0
+          },
+          {
+            "label": "空串",
+            "code": "PIC_ROUND_REQUIRED",
+            "gets": 0
+          },
+          {
+            "label": "数字",
+            "code": "PIC_ROUND_REQUIRED",
+            "gets": 0
+          },
+          {
+            "label": "null",
+            "code": "PIC_ROUND_REQUIRED",
+            "gets": 0
+          },
+          {
+            "label": "错误轮次",
+            "code": "PIC_ROUND_MISMATCH",
+            "gets": 0
+          }
+        ],
+        "roundBindingPlanToFrontendToClientToServer": true,
+        "round": "synthetic-round-r1r6-f235fc06"
+      }
+    },
+    {
+      "id": "F6_r6_read_boundary_and_sanitisation",
+      "assertionsPassed": true,
+      "actual": {
+        "minimalFieldProjection": {
+          "_id": true,
+          "openid": true,
+          "status": true
+        },
+        "getsPerRun": 1,
+        "writes": 0,
+        "readAttemptedOnConstructionFailure": false,
+        "readAttemptedOnGetFailure": true,
+        "missingFieldStates": [
+          {
+            "missing": "_id",
+            "state": "UNKNOWN"
+          },
+          {
+            "missing": "openid",
+            "state": "UNKNOWN"
+          },
+          {
+            "missing": "status",
+            "state": "UNKNOWN"
+          }
+        ],
+        "mismatchStillDetected": "MISMATCH",
+        "sanitised": [
+          {
+            "label": "伪造白名单 code",
+            "externalCode": "PIC_READ_FAILED",
+            "outputCode": "PIC_READ_FAILED",
+            "outputMessage": "读取本人测试账号记录失败（结果未知）。"
+          },
+          {
+            "label": "未列举 code",
+            "externalCode": "PIC_UNREVIEWED",
+            "outputCode": "PIC_READ_FAILED",
+            "outputMessage": "读取本人测试账号记录失败（结果未知）。"
+          },
+          {
+            "label": "第三方 code",
+            "externalCode": "SDK_DATABASE_ERROR",
+            "outputCode": "PIC_READ_FAILED",
+            "outputMessage": "读取本人测试账号记录失败（结果未知）。"
+          },
+          {
+            "label": "无 code",
+            "externalCode": null,
+            "outputCode": "PIC_READ_FAILED",
+            "outputMessage": "读取本人测试账号记录失败（结果未知）。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "F7_page_chain_and_close_package",
+      "assertionsPassed": true,
+      "actual": {
+        "appLoads": true,
+        "pageLoads": true,
+        "autoCallOnLoad": false,
+        "singleTapSingleCall": true,
+        "requestCarriesRound": "synthetic-round-r1r6-f235fc06",
+        "defaultTailOnly": true,
+        "fullUserIdOnExplicitRequest": "u_3cd2dfe30ffe93b1a286a6d9c99c1742d0c789cd",
+        "fullUserIdTail": "c789cd",
+        "round": "synthetic-round-r1r6-f235fc06",
+        "passphraseClearedAfterCall": true,
+        "closeIndependentCheckOkAtNaNClock": true,
+        "closeFiles": 23,
+        "closeFrontendHasIdentityPage": false
+      }
+    },
+    {
+      "id": "F8_exclusive_write_and_failure_facts",
+      "assertionsPassed": true,
+      "actual": {
+        "partialWrite": {
+          "code": "EIO",
+          "partialWrites": [
+            {
+              "rel": "server/index.js",
+              "bytesOnDisk": 11
+            }
+          ],
+          "wroteFiles": 2
+        },
+        "eexist": {
+          "code": "EEXIST",
+          "sideEffect": "EEXIST:目标已被他人创建，未计入本轮写入，未覆盖未删除",
+          "otherWriterFileUntouched": true
+        },
+        "precheckSnapshotUnchanged": true
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true,
+    "note": "敏感性与业务期命中分别记账；业务期命中含被调用方捕获的尝试"
+  },
+  "summary": {
+    "total": 9,
+    "assertionsPassed": 9,
+    "unexpectedGuardAttempts": 0
+  }
+}

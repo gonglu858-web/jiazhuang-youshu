@@ -19,7 +19,16 @@
 // 6. **结果净化**：registrationState 仅 ACTIVE/ABSENT/DISABLED/MISMATCH/UNKNOWN；
 //    读取失败一律 UNKNOWN，绝不报「未登记」；不回传 OPENID/UNIONID/凭据，
 //    也不透传原始 SDK 异常；userId 只出尾号。
-// 7. **时钟**：读前、读后与成功返回前各重读当下时钟；NaN/抛错/过期均不可确认。
+// 7. **时钟**：读前、读后与成功返回前各重读当下时钟；NaN/抛错/**now >= expires** 均不可确认。
+// 8. **R2 受控完整 ID 交付**：本次有效核验结果（identityConfirmed 且状态可采信）可携带
+//    **完整内部 userId**（u_ + 40 位十六进制），供后续执行包绑定允许名单/必要登记/P 证据；
+//    页面默认只展示尾号，需显式请求才由服务端返回完整 ID。完整 userId 是标识而非密码：
+//    **不是** OPENID/UNIONID，任何情况下都不返回口令、凭据或原始 SDK 异常。
+// 9. **R5 轮次绑定**：checkRoundId 由计划写入服务端配置，**必须**由页面→client→服务端逐层
+//    带回；缺失/空值/非字符串/与配置不符一律在数据库读取前拒绝，不得靠服务端自述绕过。
+// 10. **R6 读取边界**：字段投影只取 _id/openid/status（用 doc().field() 选择字段）；
+//    readAttempted 只在实际调用 get() 之前置真；缺字段归 UNKNOWN；错误只输出白名单代码与
+//    固定文案（内部错误标记，不看外部错误的 code 前缀）。
 
 /** 受审固定目标：与既有 gate/工具常量一致，不新增可变目标。 */
 const FIXED_TARGET = Object.freeze({
@@ -36,16 +45,47 @@ const ALLOWED_ACTIONS = Object.freeze(['inspectSelf']);
 const REGISTRATION_STATES = Object.freeze(['ACTIVE', 'ABSENT', 'DISABLED', 'MISMATCH', 'UNKNOWN']);
 
 /**
- * 请求体允许字段：仅 action + 口令 + 可选 checkRoundId（用于轮次不符检测）。
+ * 请求体允许字段：仅 action + 口令 + **必填** checkRoundId（R5 轮次绑定）+ 可选
+ * includeFullUserId（R2 受控完整 ID 交付开关；只影响返回，不影响判定）。
  * 自报 openid/appId/userId/集合/角色/文档键一律不在其中，出现即拒绝。
  */
-const REQUEST_FIELDS = Object.freeze(['action', 'passphrase', 'checkRoundId']);
+const REQUEST_FIELDS = Object.freeze(['action', 'passphrase', 'checkRoundId', 'includeFullUserId']);
 
-const RESULT_SCHEMA = 'participant-identity-check-result/1';
+const RESULT_SCHEMA = 'participant-identity-check-result/2';
+
+/** R6：错误白名单——只有本模块产生的错误才允许其 code 与文案外传。 */
+const ERROR_PUBLIC_TEXT = Object.freeze({
+  PIC_ACTION_REJECTED: '本入口只提供本人身份只读核验（inspectSelf）。',
+  PIC_REQUEST_INVALID: '请求含未登记字段。',
+  PIC_CONTEXT_UNVERIFIED: '无法确认当前微信身份，请重新进入。',
+  PIC_TARGET_MISMATCH: '当前小程序身份或环境与受审目标不一致。',
+  PIC_PASSPHRASE_REQUIRED: '需要本窗口的核验口令。',
+  PIC_PASSPHRASE_INVALID: '核验口令不正确。',
+  PIC_ROUND_REQUIRED: '缺少核验轮次。',
+  PIC_ROUND_MISMATCH: '核验轮次与本窗口不一致。',
+  PIC_WINDOW_NOT_OPEN: '核验窗口尚未开始。',
+  PIC_WINDOW_EXPIRED: '核验窗口已截止。',
+  PIC_CLOCK_INVALID: '服务端时钟无效。',
+  PIC_CLOCK_ERROR: '服务端时钟不可用。',
+  PIC_READ_FAILED: '读取本人测试账号记录失败（结果未知）。',
+  PIC_DB_UNAVAILABLE: '固定测试集合或主键读取不可用（结果未知）。'
+});
+/** 未在白名单内的内部错误：统一净化为结果未知。 */
+const GENERIC_CODE = 'PIC_RESULT_UNKNOWN';
+const GENERIC_TEXT = '核验未完成（结果未知）。';
+
+/** R2：可对外返回完整内部 userId 的登记状态（这些结果不构成 P 登记证据）。 */
+const FULL_ID_STATES = Object.freeze(['ACTIVE', 'ABSENT', 'DISABLED', 'MISMATCH']);
+
+/** R6 内部错误标记键（Symbol，不可被外部伪造）。 */
+const INTERNAL_ERROR = Symbol.for('participant-identity-check.internal-error');
 
 /** 明确支持的停用状态字面量；其余 status 一律 UNKNOWN。 */
 const SUPPORTED_DISABLED_STATUS = 'disabled';
 const ACTIVE_STATUS = 'active';
+
+/** R6：最小字段投影——只取 _id/openid/status（任务书 §4 要求）。 */
+const READ_FIELD_PROJECTION = Object.freeze({ _id: true, openid: true, status: true });
 
 const ERR_CODES = Object.freeze({
   ACTION_REJECTED: 'PIC_ACTION_REJECTED',
@@ -54,6 +94,7 @@ const ERR_CODES = Object.freeze({
   TARGET_MISMATCH: 'PIC_TARGET_MISMATCH',
   PASSPHRASE_REQUIRED: 'PIC_PASSPHRASE_REQUIRED',
   PASSPHRASE_INVALID: 'PIC_PASSPHRASE_INVALID',
+  ROUND_REQUIRED: 'PIC_ROUND_REQUIRED',
   ROUND_MISMATCH: 'PIC_ROUND_MISMATCH',
   WINDOW_NOT_OPEN: 'PIC_WINDOW_NOT_OPEN',
   WINDOW_EXPIRED: 'PIC_WINDOW_EXPIRED',
@@ -68,10 +109,13 @@ class ParticipantIdentityCheckError extends Error {
     super(message);
     this.name = 'ParticipantIdentityCheckError';
     this.code = code;
+    // R6：内部错误标记。用 Symbol 而非 code 前缀——外部异常可以伪造 code。
+    this[INTERNAL_ERROR] = true;
   }
 }
 
 const deny = (code, message) => { throw new ParticipantIdentityCheckError(code, message); };
+const isInternalError = e => Boolean(e && e[INTERNAL_ERROR] === true);
 
 /** 与未改业务逐字一致的 userId 算法（u_ + sha256(APPID:OPENID)[0:40]）。 */
 function deriveUserId(appId, openid) {
@@ -139,7 +183,8 @@ function createIdentityChecker(deps) {
   function assertWindowOpen() {
     const t = readNowMs();
     if (t < config.windowStartsAtMs) deny(ERR_CODES.WINDOW_NOT_OPEN, '核验窗口尚未开始。');
-    if (t > config.windowExpiresAtMs) deny(ERR_CODES.WINDOW_EXPIRED, '核验窗口已截止。');
+    // R5：恰到截止即拒绝（now >= expires），与打包器口径统一。
+    if (t >= config.windowExpiresAtMs) deny(ERR_CODES.WINDOW_EXPIRED, '核验窗口已截止。');
     return t;
   }
 
@@ -170,31 +215,60 @@ function createIdentityChecker(deps) {
     if (payload.action !== 'inspectSelf') {
       deny(ERR_CODES.ACTION_REJECTED, '本入口只提供本人身份只读核验（inspectSelf）。');
     }
-    if (isNonEmptyString(payload.checkRoundId) && payload.checkRoundId !== config.checkRoundId) {
+    // R5：轮次必须由客户端逐层带回，缺失/空值/非字符串/不符一律在读取前拒绝。
+    if (payload.checkRoundId === undefined || payload.checkRoundId === null || payload.checkRoundId === '') {
+      deny(ERR_CODES.ROUND_REQUIRED, '缺少核验轮次。');
+    }
+    if (typeof payload.checkRoundId !== 'string') {
+      deny(ERR_CODES.ROUND_REQUIRED, '核验轮次格式无效。');
+    }
+    if (payload.checkRoundId !== config.checkRoundId) {
       deny(ERR_CODES.ROUND_MISMATCH, '核验轮次与本窗口不一致。');
     }
     assertPassphrase(payload);
   }
 
   /**
-   * 单次固定读取：db.collection('schtest_v1_users').doc(userId).get()
-   * 不 list/where、不读其它集合、不跑事务。返回分类结果。
+   * 单次固定读取（R6 收紧）：
+   * - 固定集合 + 固定主键 + **字段投影**（只取 _id/openid/status），不 list/where、
+   *   不读其它集合、不跑事务；
+   * - readAttempted 只在**实际调用 get() 之前**置真：集合/主键构造失败或无 get 方法时为 false；
+   * - 外部异常一律净化为固定代码/文案，绝不透传原始 message 或未列举 code。
    */
-  async function readRegistration(userId, openid) {
-    let response;
+  async function readRegistration(userId, openid, onGetAttempt) {
+    let collection = null;
+    let docRef = null;
     try {
-      const collection = db.collection(FIXED_TARGET.collection);
-      if (!collection || typeof collection.doc !== 'function') {
-        deny(ERR_CODES.DB_UNAVAILABLE, '固定测试集合不可用。');
-      }
-      const docRef = collection.doc(userId);
-      if (!docRef || typeof docRef.get !== 'function') {
-        deny(ERR_CODES.DB_UNAVAILABLE, '固定主键读取不可用。');
-      }
-      response = await docRef.get();
-    } catch (error) {
-      if (error && error.code && String(error.code).startsWith('PIC_')) throw error;
-      // 数据库错误/权限/超时/异常形状：不得当作不存在
+      collection = db.collection(FIXED_TARGET.collection);
+    } catch (_) {
+      deny(ERR_CODES.DB_UNAVAILABLE, '固定测试集合不可用。');
+    }
+    if (!collection || typeof collection.doc !== 'function') {
+      deny(ERR_CODES.DB_UNAVAILABLE, '固定测试集合不可用。');
+    }
+    try {
+      docRef = collection.doc(userId);
+    } catch (_) {
+      deny(ERR_CODES.DB_UNAVAILABLE, '固定主键读取不可用。');
+    }
+    if (!docRef || typeof docRef.get !== 'function') {
+      deny(ERR_CODES.DB_UNAVAILABLE, '固定主键读取不可用。');
+    }
+    // R6 最小读取：用 SDK 已支持的 field() 选择字段，避免取回整份用户文档。
+    let queryRef = docRef;
+    if (typeof docRef.field === 'function') {
+      queryRef = docRef.field(READ_FIELD_PROJECTION);
+    }
+    if (!queryRef || typeof queryRef.get !== 'function') {
+      deny(ERR_CODES.DB_UNAVAILABLE, '固定主键读取不可用。');
+    }
+    // 到这里才置「已发起读取」——构造阶段失败保持 false。
+    onGetAttempt();
+    let response = null;
+    try {
+      response = await queryRef.get();
+    } catch (_) {
+      // 数据库错误/权限/超时：不得当作不存在，也不得回传原始异常
       deny(ERR_CODES.READ_FAILED, '读取本人测试账号记录失败（结果未知）。');
     }
     const rows = response && Array.isArray(response.data) ? response.data : null;
@@ -206,13 +280,23 @@ function createIdentityChecker(deps) {
     if (rows.length > 1) return { state: 'UNKNOWN', recordMatched: null };
     const row = rows[0];
     if (!row || typeof row !== 'object' || Array.isArray(row)) return { state: 'UNKNOWN', recordMatched: null };
+    // R6：字段缺失属未知（形状不可采信），不是归属不符。
+    if (!Object.prototype.hasOwnProperty.call(row, '_id') || row._id === undefined || row._id === null) {
+      return { state: 'UNKNOWN', recordMatched: null };
+    }
+    if (!Object.prototype.hasOwnProperty.call(row, 'openid') || row.openid === undefined || row.openid === null) {
+      return { state: 'UNKNOWN', recordMatched: null };
+    }
+    if (!Object.prototype.hasOwnProperty.call(row, 'status') || typeof row.status !== 'string') {
+      return { state: 'UNKNOWN', recordMatched: null };
+    }
+    // 字段齐备但与当前上下文不一致 → 归属不符（绝不回传原值）
     if (row._id !== userId || row.openid !== openid) {
-      // 归属不符：绝不回传原值
       return { state: 'MISMATCH', recordMatched: false };
     }
     if (row.status === ACTIVE_STATUS) return { state: 'ACTIVE', recordMatched: true };
     if (row.status === SUPPORTED_DISABLED_STATUS) return { state: 'DISABLED', recordMatched: true };
-    // 未知 status / 字段缺失：归 UNKNOWN
+    // 未知 status：归 UNKNOWN
     return { state: 'UNKNOWN', recordMatched: true };
   }
 
@@ -226,6 +310,8 @@ function createIdentityChecker(deps) {
       recordMatched: null,
       readAttempted: false,
       userIdTail: '',
+      // R2：完整内部 userId 仅在有效结果且显式请求时出现；默认缺省（不返回）。
+      userId: null,
       code: '',
       message: ''
     }, extra);
@@ -238,21 +324,26 @@ function createIdentityChecker(deps) {
   async function handle(event) {
     let userId = '';
     let readAttempted = false;
+    const markGetAttempt = () => { readAttempted = true; };
     try {
-      // 1) 请求与目标门槛（DB 前）
+      // 1) 请求与目标门槛（全部在数据库访问之前）
       assertRequest(event);
       assertTrustedTarget();
       assertWindowOpen();
       userId = deriveUserId(FIXED_TARGET.appId, trusted.openid);
 
-      // 2) 至多一次固定集合/固定主键读取
-      readAttempted = true;
-      const outcome = await readRegistration(userId, trusted.openid);
+      // 2) 至多一次固定集合/固定主键/最小字段投影读取
+      const outcome = await readRegistration(userId, trusted.openid, markGetAttempt);
 
-      // 3) 读后与成功返回前重读时钟；过期/无效即不可确认
+      // 3) 读后与成功返回前重读时钟；到期/无效即不可确认
       const serverNowMs = assertWindowOpen();
 
-      return baseResult({
+      // R2：受控完整 ID 交付。仅在「本次有效核验结果」且调用方显式请求时携带；
+      // 与 checkRoundId + serverTimeIso 一起构成后续执行包可核对的绑定事实。
+      // ABSENT/UNKNOWN 也可交付完整 ID（ABSENT 无落盘记录可反查，UNKNOWN 需人工核对）。
+      const wantFullId = Boolean(event && typeof event === 'object' && event.includeFullUserId === true);
+      const fullIdDeliverable = wantFullId && FULL_ID_STATES.includes(outcome.state);
+      const result = baseResult({
         ok: true,
         identityConfirmed: true,
         registrationState: outcome.state,
@@ -262,19 +353,23 @@ function createIdentityChecker(deps) {
         serverTimeIso: new Date(serverNowMs).toISOString(),
         message: '本人身份只读核验完成。'
       });
+      if (fullIdDeliverable) result.userId = userId;
+      return result;
     } catch (error) {
-      const code = error && error.code ? String(error.code) : 'PIC_ERROR';
-      const message = error && typeof error.message === 'string' ? error.message : '核验未完成。';
-      // 读后失败：保留已可信取得的身份事实（尾号），但状态一律 UNKNOWN
+      // R6：只输出白名单代码与固定文案；外部异常（含伪造 PIC_ code）一律净化。
+      const internal = isInternalError(error);
+      const code = internal && Object.prototype.hasOwnProperty.call(ERROR_PUBLIC_TEXT, error.code)
+        ? error.code
+        : GENERIC_CODE;
+      // 失败结果不构成可采信绑定：不返回完整 userId，仅保留尾号（供人工核对）。
       return baseResult({
         identityConfirmed: false,
         registrationState: 'UNKNOWN',
         recordMatched: null,
         readAttempted: readAttempted,
         userIdTail: userId ? userIdTail(userId) : '',
-        code: code.startsWith('PIC_') ? code : 'PIC_ERROR',
-        // 不透传原始 SDK 异常文本；只保留本模块自身定义的净化文案
-        message: code.startsWith('PIC_') ? message : '核验未完成（结果未知）。'
+        code: code,
+        message: internal ? ERROR_PUBLIC_TEXT[error.code] || GENERIC_TEXT : GENERIC_TEXT
       });
     }
   }
@@ -287,6 +382,10 @@ module.exports = Object.freeze({
   ALLOWED_ACTIONS,
   REGISTRATION_STATES,
   REQUEST_FIELDS,
+  FULL_ID_STATES,
+  READ_FIELD_PROJECTION,
+  ERROR_PUBLIC_TEXT,
+  GENERIC_CODE,
   RESULT_SCHEMA,
   ERR_CODES,
   MAX_WINDOW_MS: 30 * 60 * 1000,

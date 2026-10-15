@@ -1,0 +1,30 @@
+{
+  "appid": "wxfb4db1615ac15531",
+  "projectname": "本人身份只读核验（本地候选）",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "frontend/",
+  "cloudfunctionRoot": "server/",
+  "cloudfunctionRootExplicit": true,
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": false,
+    "minified": false,
+    "urlCheck": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
+}

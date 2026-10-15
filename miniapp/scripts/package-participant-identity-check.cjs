@@ -196,6 +196,40 @@ function writeExclusive(abs, buf, io, rel) {
   }
 }
 
+/**
+ * R3：**独立受审内容基线**。
+ * 这些摘要来自受审提交，不是在 build/check 时用当下源码自算，也不是 manifest 自报值。
+ * 源码变更必须先受审更新本表；否则 build 与 check 一律 SOURCE_DRIFT 拒绝。
+ */
+const PINNED_SOURCES = Object.freeze({
+  'miniapp/scripts/lib/participant-identity-check.cjs': 'c454a4dc283a0e4e7b8ec27a4242ceee8ab4862fd67a46766d0525222a615dbc',
+  'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
+  'miniapp/scripts/templates/participant-identity-check/server/index.js': '0ddb5f6a759edc71998a325c1f02518119021f4aaa002512e369e16f592cd452',
+  'miniapp/scripts/templates/participant-identity-check/server/package.json': '9f155f07ede42a71c7bd63ad39b2488d1bcde3bc7fa67f9344b6dfa355cd6c82',
+  'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
+  'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
+  'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
+  'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '225378a411840f582d60057f7078dd121d4be2303b72674363ba8f058fdee586',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '6c7c2866491238826f3feb404ee738de9695430af7b228a341bf8b986729f77b',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss': 'e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442'
+});
+
+/** 按独立基线校验一组来源字节；漂移即 SOURCE_DRIFT（写前调用）。 */
+function assertPinnedSource(absPath, buf, label) {
+  const key = relOf(path.relative(ROOT, path.resolve(absPath))).split(path.sep).join('/');
+  const pinned = Object.prototype.hasOwnProperty.call(PINNED_SOURCES, key) ? PINNED_SOURCES[key] : undefined;
+  if (typeof pinned !== 'string' || !/^[0-9a-f]{64}$/.test(pinned)) {
+    fail(ERR.SOURCE_DRIFT, '受审基线缺失或格式无效（须先受审更新）：' + label);
+  }
+  const actual = sha256Buffer(buf);
+  if (actual !== pinned) {
+    fail(ERR.SOURCE_DRIFT, '受审来源漂移，拒绝装配/重建（基线 ' + pinned + ' ≠ 实际 ' + actual + '）：' + label);
+  }
+}
+
 // ── 受审来源读取（模板 + 核心模块），源漂移即拒绝 ────────────────────────────
 function readTemplateBytes(rel) {
   const abs = path.join(TEMPLATE_DIR, rel);
@@ -204,14 +238,20 @@ function readTemplateBytes(rel) {
   if (!st || !st.isFile() || st.isSymbolicLink()) {
     fail(ERR.SOURCE_MISSING, '受审模板缺失或非普通文件：' + relOf(path.relative(ROOT, abs)));
   }
-  return fs.readFileSync(abs);
+  const buf = fs.readFileSync(abs);
+  // R3：内容基线校验（写前拒绝）
+  assertPinnedSource(abs, buf, '模板 ' + rel);
+  return buf;
 }
 
 function readCoreModuleBytes() {
   let st = null;
   try { st = fs.lstatSync(LIB_PATH); } catch (_) { st = null; }
   if (!st || !st.isFile() || st.isSymbolicLink()) fail(ERR.SOURCE_MISSING, '核验核心模块缺失或非普通文件。');
-  return fs.readFileSync(LIB_PATH);
+  const buf = fs.readFileSync(LIB_PATH);
+  // R3：内容基线校验（写前拒绝）
+  assertPinnedSource(LIB_PATH, buf, '核验核心模块');
+  return buf;
 }
 
 /** 唯一锚点替换：缺失或多处命中即拒（源码漂移防护）。 */
@@ -279,6 +319,10 @@ function readPlan(planPath, options) {
   if (!Number.isFinite(starts) || !Number.isFinite(expires)) {
     fail(ERR.PLAN_WINDOW_INVALID, '窗口起止时间无效。');
   }
+  // R5：必须 expires > starts（0/负窗口不可运行，写前即拒绝）
+  if (!(expires > starts)) {
+    fail(ERR.PLAN_WINDOW_INVALID, '核验窗口截止时间必须晚于开始时间（expires > starts）。');
+  }
   if (expires - starts > MAX_WINDOW_MS) {
     fail(ERR.PLAN_WINDOW_INVALID, '核验窗口不得超过 30 分钟（工具上限）。');
   }
@@ -316,7 +360,8 @@ function windowClockCheck(plan, at) {
   }
   if (plan.synthetic) return; // 合成模式跳过时效
   if (nowMs < plan.windowStartsAtMs) fail(ERR.WINDOW_NOT_OPEN, '核验窗口尚未开始[' + at + ']。');
-  if (nowMs > plan.windowExpiresAtMs) fail(ERR.WINDOW_EXPIRED, '核验窗口已截止[' + at + ']。');
+  // R5：恰到截止即拒绝（now >= expires），与核心模块口径统一。
+  if (nowMs >= plan.windowExpiresAtMs) fail(ERR.WINDOW_EXPIRED, '核验窗口已截止[' + at + ']。');
 }
 
 /** 关闭包来源校验：调用未改的 checkCloseDir，不改旧生成器、不改其哈希基线。 */
@@ -356,6 +401,92 @@ function verifyCloseSource(closeSourceDir) {
 }
 
 // ── 制品装配 ─────────────────────────────────────────────────────────────────
+/**
+ * R1：装配布局校验——声明的根目录必须真实存在、app.json 页面唯一且四件套齐备、
+ * 页面依赖闭包可解析、固定函数目标与受审常量一致。
+ * 这些断言针对**磁盘实际产物**，不依赖「文件被复制」或 VM 手动加载即可判定。
+ */
+function verifyProjectLayout(expected /* Map<rel, Buffer> */) {
+  const configBuf = expected.get('project.config.json');
+  if (!configBuf) fail(ERR.SOURCE_DRIFT, '装配缺少 project.config.json。');
+  let config;
+  try { config = JSON.parse(configBuf.toString('utf8')); } catch (error) {
+    fail(ERR.MANIFEST_INVALID, 'project.config.json 不是合法 JSON：' + error.message);
+  }
+  if (config.appid !== FIXED_TARGET.appId) {
+    fail(ERR.PLAN_TARGET_INVALID, 'project.config.json appid 与受审固定目标不一致。');
+  }
+  if (config.miniprogramRoot !== 'frontend/') {
+    fail(ERR.PLAN_TARGET_INVALID, 'project.config.json miniprogramRoot 必须为 frontend/：' + config.miniprogramRoot);
+  }
+  if (config.cloudfunctionRoot !== 'server/') {
+    fail(ERR.PLAN_TARGET_INVALID, 'project.config.json cloudfunctionRoot 必须为 server/：' + config.cloudfunctionRoot);
+  }
+  // 根目录必须真实存在于产物集内
+  for (const root of ['frontend/', 'server/']) {
+    const has = [...expected.keys()].some(k => k.startsWith(root));
+    if (!has) fail(ERR.SOURCE_DRIFT, '声明的根目录没有任何制品：' + root);
+  }
+  // app.json：唯一页面 + 四件套齐备
+  const appJsonBuf = expected.get('frontend/app.json');
+  if (!appJsonBuf) fail(ERR.SOURCE_DRIFT, '装配缺少 frontend/app.json。');
+  let appJson;
+  try { appJson = JSON.parse(appJsonBuf.toString('utf8')); } catch (error) {
+    fail(ERR.MANIFEST_INVALID, 'frontend/app.json 不是合法 JSON：' + error.message);
+  }
+  if (!Array.isArray(appJson.pages) || appJson.pages.length !== 1) {
+    fail(ERR.SOURCE_DRIFT, 'frontend/app.json 必须只声明唯一页面，实际 ' + JSON.stringify(appJson.pages));
+  }
+  const page = appJson.pages[0];
+  for (const ext of ['.js', '.json', '.wxml', '.wxss']) {
+    if (!expected.has('frontend/' + page + ext)) {
+      fail(ERR.SOURCE_DRIFT, '唯一页面缺少依赖文件：frontend/' + page + ext);
+    }
+  }
+  // 页面依赖闭包：页面 → 专用客户端 → 固定目标配置
+  const clientRel = 'frontend/utils/identity-check-client.js';
+  const cloudRel = 'frontend/config/cloud.js';
+  if (!expected.has(clientRel)) fail(ERR.SOURCE_DRIFT, '装配缺少核验客户端：' + clientRel);
+  if (!expected.has(cloudRel)) fail(ERR.SOURCE_DRIFT, '装配缺少固定目标配置：' + cloudRel);
+  const pageSrc = expected.get('frontend/' + page + '.js').toString('utf8');
+  if (!pageSrc.includes("require('../../utils/identity-check-client')")) {
+    fail(ERR.SOURCE_DRIFT, '唯一页面未引用受审核验客户端（依赖闭包不可解析）。');
+  }
+  const clientSrc = expected.get(clientRel).toString('utf8');
+  if (!clientSrc.includes("require('../config/cloud')")) {
+    fail(ERR.SOURCE_DRIFT, '核验客户端未引用固定目标配置（依赖闭包不可解析）。');
+  }
+  // 固定函数/环境目标必须与受审常量一致（从合成 config/cloud.js 实际解析）
+  const cloudSrc = expected.get(cloudRel).toString('utf8');
+  // 从 config/cloud.js 实际源码解析固定函数名与环境（字符串解析，避免正则回溯歧义）
+  const readCloudConstant = (key) => {
+    const marker = key + ": '";
+    const i = cloudSrc.indexOf(marker);
+    if (i < 0) return '';
+    const j = cloudSrc.indexOf("'", i + marker.length);
+    return j < 0 ? '' : cloudSrc.slice(i + marker.length, j);
+  };
+  const fnName = readCloudConstant('identityCheckFunction');
+  const envName = readCloudConstant('envId');
+  if (fnName !== FIXED_TARGET.functionName) {
+    fail(ERR.PLAN_TARGET_INVALID, '前端固定函数目标与受审常量不一致：' + fnName);
+  }
+  if (envName !== FIXED_TARGET.envId) {
+    fail(ERR.PLAN_TARGET_INVALID, '前端固定环境目标与受审常量不一致：' + envName);
+  }
+  // 服务端固定目标（装配后入口中的常量）
+  const entry = expected.get('server/index.js');
+  if (!entry) fail(ERR.SOURCE_DRIFT, '装配缺少 server/index.js。');
+  const entrySrc = entry.toString('utf8');
+  if (!entrySrc.includes("const CONFIG_APP_ID = '" + FIXED_TARGET.appId + "';")) {
+    fail(ERR.PLAN_TARGET_INVALID, '服务端 appId 常量与受审固定目标不一致。');
+  }
+  if (!entrySrc.includes("const CONFIG_ENV_ID = '" + FIXED_TARGET.envId + "';")) {
+    fail(ERR.PLAN_TARGET_INVALID, '服务端 envId 常量与受审固定目标不一致。');
+  }
+  return true;
+}
+
 function computeArtifacts(plan) {
   const artifacts = new Map();
   // 服务端：核心模块（逐字节复制）+ 入口（唯一锚点替换写入本轮配置）
@@ -383,13 +514,24 @@ function computeArtifacts(plan) {
       'const CONFIG_WINDOW_EXPIRES_AT_MS = ' + plan.windowExpiresAtMs + ';', 'server/index.js#CONFIG_WINDOW_EXPIRES_AT_MS');
     artifacts.set('server/index.js', buf);
   }
-  // 前端模板：逐字节复制（页面已收窄为唯一核验页面）
+  // 前端模板：逐字节复制（页面已收窄为唯一核验页面）；
+  // config/cloud.js 按唯一锚点注入**本轮核验轮次**（R5 计划→前端绑定）。
   for (const rel of FRONTEND_TEMPLATE_FILES) {
-    artifacts.set('frontend/' + rel, readTemplateBytes('frontend/' + rel));
+    const raw = readTemplateBytes('frontend/' + rel);
+    if (rel !== 'config/cloud.js') {
+      artifacts.set('frontend/' + rel, raw);
+      continue;
+    }
+    const withRound = anchorReplace(raw, "  checkRoundId: ''",
+      "  checkRoundId: '" + plan.checkRoundId + "'", 'frontend/config/cloud.js#checkRoundId');
+    artifacts.set('frontend/' + rel, withRound);
   }
-  // 项目配置：受审基线逐字节复制（不改 appid 等固定值）
-  const projectConfig = fs.readFileSync(path.join(ROOT, 'miniapp', 'project.config.json'));
-  artifacts.set('project.config.json', projectConfig);
+  // R1：项目配置来自**本次受审模板**，根路径与实际目录一致：
+  // miniprogramRoot=frontend/、cloudfunctionRoot=server/。
+  // 原 miniapp/project.config.json 保持零改动（不迁就新包）。
+  artifacts.set('project.config.json', readTemplateBytes('project.config.json'));
+  // R1：装配完成后立即校验布局（配置根/唯一页面/依赖闭包/固定目标）
+  verifyProjectLayout(artifacts);
   return artifacts;
 }
 
@@ -437,6 +579,9 @@ function build(planPath, outOverride) {
       '口令只限制持有者，不证明持有者是现实中的1号/2号；不承诺一次性或全局限流（零持久写）。',
       '核验只读取调用者本人 schtest_v1_users 一条记录，不创建用户、不写审计、不授予角色、不取号。',
       '结果严格区分 ACTIVE/ABSENT/DISABLED/MISMATCH/UNKNOWN；读取失败一律 UNKNOWN。',
+      'R2：本次有效核验结果可受控取得完整内部 userId（页面默认只展示尾号，需显式勾选）；',
+      '      完整 userId 是标识不是密码，不等于 OPENID/UNIONID，也不构成 P 登记证据。',
+      'R5：本轮核验轮次由计划写入服务端配置与前端配置，客户端必须原样带回。',
       'SDK 本地转换未执行；真实平台行为完全未验证。'
     ],
     files: entries,
@@ -491,6 +636,11 @@ function checkDir(dir) {
   assertRealDirChain(dir, 'check 输入');
   const problems = [];
   const bad = msg => problems.push(msg);
+  // R4：finish() 会被所有早退路径调用，因此它依赖的量必须在此处完成初始化，
+  // 不能留在后面的 const 声明里（否则早退会抛 ReferenceError 遮盖原始拒绝原因）。
+  let manifest = null;
+  let manifestFiles = [];
+  let manifestCloseFiles = [];
   let plan = null;
   let clockStopped = false;
   const clockCheck = at => {
@@ -503,12 +653,14 @@ function checkDir(dir) {
     }
   };
   const manifestPath = path.join(dir, 'manifest.json');
-  let manifest;
   try {
     manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   } catch (error) {
     fail(ERR.MANIFEST_INVALID, 'manifest.json 无法读取：' + error.message);
   }
+  manifestFiles = Array.isArray(manifest.files) ? manifest.files : [];
+  manifestCloseFiles = manifest.closePackage && Array.isArray(manifest.closePackage.files)
+    ? manifest.closePackage.files : [];
   if (manifest.schema !== MANIFEST_SCHEMA) fail(ERR.MANIFEST_INVALID, 'manifest schema 不符。');
   if (manifest.planFile !== undefined && manifest.planFile !== 'plan.json') {
     fail(ERR.MANIFEST_INVALID, 'manifest.planFile 必须固定为 plan.json：' + manifest.planFile);
@@ -551,9 +703,6 @@ function checkDir(dir) {
   }
   const declared = new Set();
   const declaredClose = new Set();
-  const manifestFiles = Array.isArray(manifest.files) ? manifest.files : [];
-  const manifestCloseFiles = manifest.closePackage && Array.isArray(manifest.closePackage.files)
-    ? manifest.closePackage.files : [];
   if (manifestFiles.length === 0) bad('files 清单为空');
   if (manifestCloseFiles.length === 0) bad('closePackage.files 清单为空');
   // 候选清单与关闭清单是两个独立命名空间（关闭条目 rel 不带 close/ 前缀）
@@ -618,7 +767,7 @@ function checkDir(dir) {
     return {
       manifest, problems, ok: problems.length === 0,
       files: manifestFiles.length, closeFiles: manifestCloseFiles.length,
-      planChecked: problems.length === 0
+      planChecked: problems.length === 0 && Boolean(manifest)
     };
   }
   return finish();

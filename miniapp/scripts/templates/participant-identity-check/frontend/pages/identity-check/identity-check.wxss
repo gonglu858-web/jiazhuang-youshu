@@ -7,4 +7,5 @@
 .btn { background: #2f6bff; color: #ffffff; border-radius: 12rpx; margin-top: 24rpx; }
 .tip { font-size: 24rpx; color: #7a8896; line-height: 36rpx; margin-top: 12rpx; }
 .row { font-size: 28rpx; line-height: 44rpx; }
+.checkline { font-size: 26rpx; color: #5a6b7c; line-height: 40rpx; }
 .stop { margin-top: 20rpx; font-size: 26rpx; color: #b45309; line-height: 38rpx; }
