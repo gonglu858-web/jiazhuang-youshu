@@ -1,0 +1,78 @@
+{
+  "schema": "wb-participant-identity-sdk-pin-evidence/1",
+  "reviewedCommit": "0c2eb99",
+  "reviewedBaseline": "2bd9c9c",
+  "implementationSha256": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a",
+  "packerSha256": "3ae3ae91de3fcaa7d28d67fa8a11cdf2fe67759955044f40733225fc616be352",
+  "candidateTemplatePkgSha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+  "verificationKind": "本地合成验证：生成后候选入口装载真实 wx-server-sdk 3.0.1 包装层与真实 @cloudbase/database 1.4.1 实现；微信上下文经 SDK 原生 process.env 通道合成注入、仅底层传输本地替身。这不是平台验证：云端自动安装的实际版本、真实上传部署、远端关闭覆盖与回读完全未验证",
+  "versionBoundary": {
+    "candidatePinned": "3.0.1",
+    "locallyVerifiedSdk": "3.0.1",
+    "previousDeclared": "~2.6.3（已钉定为精确 3.0.1；波浪号范围不能称精确版本）",
+    "cloudInstallStillUnverified": true,
+    "deploymentReadbackRequired": "I1 部署后必须下载实际远端 ZIP 核对最终安装版本与代码"
+  },
+  "results": [
+    {
+      "id": "W0_source_and_version_facts",
+      "assertionsPassed": true,
+      "actual": {
+        "localSdkVersion": "3.0.1",
+        "localCloudbaseDatabase": "1.4.1",
+        "candidateTemplatePinned": "3.0.1",
+        "closeSourcePinned": "3.0.1",
+        "sourceCheckOk": true
+      }
+    },
+    {
+      "id": "W1_generated_artifact_versions",
+      "assertionsPassed": true,
+      "actual": {
+        "candidatePackageSha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+        "closePackageSha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84",
+        "candidateDeps": {
+          "wx-server-sdk": "3.0.1"
+        },
+        "closeDeps": {
+          "wx-server-sdk": "3.0.1"
+        },
+        "closeCheckOk": true
+      }
+    },
+    {
+      "id": "W2_generated_entry_with_real_sdk_three_paths",
+      "assertionsPassed": true,
+      "actual": {
+        "transportReplacedOnly": "仅 Db.reqClass 传输层本地替身；微信上下文经 SDK 原生 getWXContext 的 process.env 通道合成注入；SDK 代码零修改",
+        "hit": {
+          "state": "ACTIVE",
+          "confirmed": true
+        },
+        "miss": {
+          "state": "ABSENT"
+        },
+        "denied": {
+          "state": "UNKNOWN",
+          "readAttempted": true
+        },
+        "gets": 3,
+        "projectionKeys": [
+          "_id",
+          "openid",
+          "status"
+        ]
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true
+  },
+  "summary": {
+    "total": 3,
+    "assertionsPassed": 3,
+    "unexpectedGuardAttempts": 0
+  }
+}

@@ -86,6 +86,12 @@ const CLOSE_MAPPING_DECLARATION =
   'close/server/** -> close/server/scheduleSandbox/**（其余 close/<rel> 逐字节保留）';
 /** C1-a：关闭清单条目的允许字段（精确绑定，未知字段拒绝）。 */
 const CLOSE_MANIFEST_FIELDS = Object.freeze(['rel', 'sourceRel', 'bytes', 'sha256']);
+/**
+ * I1 SDK 精确版本接线（Codex 执行页 §2）：候选直接依赖钉为**精确** 3.0.1——
+ * 本机离线实跑的版本（包装层 + @cloudbase/database 1.4.1 三路转换证据）；
+ * 波浪号范围（~2.6.3）不能称精确版本。装配与关闭映射不变量双侧核对。
+ */
+const PINNED_WX_SERVER_SDK_VERSION = '3.0.1';
 /** 关闭包内（映射后）必须满足的同名函数目录校验：配置根 + 仅同名子目录 + 入口齐备。 */
 function assertCloseMappingInvariants(expectedMap) {
   // 关闭包项目配置所指 server/ 下，所有制品必须全部位于同名函数子目录
@@ -108,6 +114,19 @@ function assertCloseMappingInvariants(expectedMap) {
   }
   if (cfg.cloudfunctionRoot !== 'server/') {
     fail(ERR.CLOSE_SOURCE_INVALID, '关闭包 project.config.json cloudfunctionRoot 必须为 server/：' + cfg.cloudfunctionRoot);
+  }
+  // I1 SDK 精确版本：关闭包同名函数目录的 package.json 同样必须精确 3.0.1
+  const closePkgBuf = expectedMap.get(SERVER_FN_ROOT + 'package.json');
+  if (!closePkgBuf) fail(ERR.CLOSE_SOURCE_INVALID, '关闭包缺少 ' + SERVER_FN_ROOT + 'package.json。');
+  let closePkg = null;
+  try { closePkg = JSON.parse(closePkgBuf.toString('utf8')); } catch (error) {
+    fail(ERR.CLOSE_SOURCE_INVALID, '关闭包 package.json 不是合法 JSON：' + error.message);
+  }
+  const closeSdk = closePkg.dependencies && closePkg.dependencies['wx-server-sdk'];
+  if (closeSdk !== PINNED_WX_SERVER_SDK_VERSION) {
+    fail(ERR.CLOSE_SOURCE_INVALID,
+      '关闭包 wx-server-sdk 依赖必须精确为 ' + PINNED_WX_SERVER_SDK_VERSION +
+      '（与候选一致、本机已离线验证），实际：' + closeSdk);
   }
 }
 /** 前端模板文件（完整可导入项目的最小闭包）。 */
@@ -255,7 +274,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/lib/participant-identity-check.cjs': 'c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
   'miniapp/scripts/templates/participant-identity-check/server/index.js': '0ddb5f6a759edc71998a325c1f02518119021f4aaa002512e369e16f592cd452',
-  'miniapp/scripts/templates/participant-identity-check/server/package.json': '9f155f07ede42a71c7bd63ad39b2488d1bcde3bc7fa67f9344b6dfa355cd6c82',
+  'miniapp/scripts/templates/participant-identity-check/server/package.json': 'e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
@@ -535,6 +554,19 @@ function verifyProjectLayout(expected /* Map<rel, Buffer> */) {
   }
   for (const must of [SERVER_FN_ROOT + 'index.js', SERVER_FN_ROOT + 'package.json']) {
     if (!expected.has(must)) fail(ERR.SOURCE_DRIFT, '同名函数子目录缺少制品：' + must);
+  }
+  // I1 SDK 精确版本：候选函数 package.json 的 wx-server-sdk 必须精确等于本机已验证版本
+  const fnPkgBuf = expected.get(SERVER_FN_ROOT + 'package.json');
+  if (!fnPkgBuf) fail(ERR.SOURCE_DRIFT, '装配缺少 ' + SERVER_FN_ROOT + 'package.json。');
+  let fnPkg = null;
+  try { fnPkg = JSON.parse(fnPkgBuf.toString('utf8')); } catch (error) {
+    fail(ERR.MANIFEST_INVALID, SERVER_FN_ROOT + 'package.json 不是合法 JSON：' + error.message);
+  }
+  const declaredSdk = fnPkg.dependencies && fnPkg.dependencies['wx-server-sdk'];
+  if (declaredSdk !== PINNED_WX_SERVER_SDK_VERSION) {
+    fail(ERR.PLAN_TARGET_INVALID,
+      '候选 wx-server-sdk 依赖必须精确为 ' + PINNED_WX_SERVER_SDK_VERSION +
+      '（本机已离线验证版本），实际：' + declaredSdk);
   }
   // 服务端固定目标（装配后入口中的常量）
   const entry = expected.get(SERVER_FN_ROOT + 'index.js');
@@ -1003,7 +1035,7 @@ module.exports = Object.freeze({
   assertCloseMappingInvariants,
   adaptCloseRel,
   CLOSE_MAPPING_DECLARATION,
-  CLOSE_MAPPING_DECLARATION,
+  PINNED_WX_SERVER_SDK_VERSION,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,

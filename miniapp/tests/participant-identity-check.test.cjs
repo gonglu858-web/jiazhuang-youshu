@@ -1736,3 +1736,70 @@ test('N4 关闭清单来源绑定：sourceRel/mapping/字段篡改与伪造均�
   assert.equal(packer.build(planPath, resumeDir).io.filter(x => x.action === 'written').length, 1, '续建补 1');
   assert.equal(packer.checkDir(resumeDir).ok, true);
 });
+// ════════════════════════════════════════════════════════════════════════════
+// P9：I1 SDK 精确版本接线（执行页 §2）——候选/关闭双侧精确 3.0.1 + 漂移拒绝
+// ════════════════════════════════════════════════════════════════════════════
+
+test('P9 SDK 精确版本：候选与关闭 package.json 均精确 3.0.1；模板漂移写前拒绝；版本不符双侧拒绝', () => {
+  const closeSource = makeCloseSourceDir();
+  const planPath = writePicPlan(closeSource);
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'p9-' + RUN_ID);
+  packer.build(planPath, outDir);
+  // (1) 生成候选的函数 package.json 精确 3.0.1
+  const fnPkg = JSON.parse(fs.readFileSync(path.join(outDir, 'server', 'scheduleSandbox', 'package.json'), 'utf8'));
+  assert.equal(fnPkg.dependencies['wx-server-sdk'], '3.0.1',
+    '候选声明必须为精确 3.0.1（非 ~2.6.3 波浪号范围）');
+  assert.equal(fnPkg.dependencies['wx-server-sdk'], packer.PINNED_WX_SERVER_SDK_VERSION);
+  // (2) 配对关闭包（受审来源逐字节映射）的 package.json 同样精确 3.0.1
+  const closePkg = JSON.parse(fs.readFileSync(path.join(outDir, 'close', 'server', 'scheduleSandbox', 'package.json'), 'utf8'));
+  assert.equal(closePkg.dependencies['wx-server-sdk'], '3.0.1', '关闭包声明必须为精确 3.0.1');
+  // (3) 模板依赖声明漂移（改回 ~2.6.3，内存注入不改磁盘）→ build SOURCE_DRIFT 零产物
+  const tmplPath = path.join(packer.TEMPLATE_DIR, 'server', 'package.json');
+  const realRead = fs.readFileSync;
+  const original = realRead.call(fs, tmplPath);
+  const drifted = Buffer.from(original.toString('utf8').replace('"3.0.1"', '"~2.6.3"'));
+  fs.readFileSync = function (p, ...args) {
+    if (typeof p === 'string' && path.resolve(p) === tmplPath) {
+      return typeof args[0] === 'string' ? drifted.toString(args[0]) : drifted;
+    }
+    return realRead.call(this, p, ...args);
+  };
+  const driftOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'p9-drift-' + RUN_ID);
+  let buildErr = null;
+  try { packer.build(planPath, driftOut); } catch (e) { buildErr = e; } finally { fs.readFileSync = realRead; }
+  assert.ok(buildErr && buildErr.code === packer.ERR.SOURCE_DRIFT, '模板依赖漂移必须写前拒绝：' + (buildErr && buildErr.code));
+  assert.equal(fs.existsSync(driftOut), false, '漂移拒绝零产物');
+  assert.equal(crypto.createHash('sha256').update(original).digest('hex'),
+    crypto.createHash('sha256').update(fs.readFileSync(tmplPath)).digest('hex'), '磁盘模板零改动');
+  // (4) 候选侧版本不符反例（内存构造：依赖 ~2.6.3）→ 装配校验拒绝
+  const plan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
+  const artifacts = packer.computeArtifacts(plan);
+  const badPkg = new Map(artifacts);
+  const badFnPkg = JSON.parse(badPkg.get('server/scheduleSandbox/package.json').toString('utf8'));
+  badFnPkg.dependencies['wx-server-sdk'] = '~2.6.3';
+  badPkg.set('server/scheduleSandbox/package.json', Buffer.from(JSON.stringify(badFnPkg, null, 2)));
+  assert.throws(() => packer.verifyProjectLayout(badPkg),
+    e => e.code === packer.ERR.PLAN_TARGET_INVALID && /必须精确为 3.0.1/.test(e.message),
+    '候选侧版本不符必须拒绝');
+  // (5) 关闭侧版本不符反例（内存构造：关闭函数目录依赖 ~2.6.3）→ 不变量拒绝
+  const closeMap = new Map();
+  for (const [k, v] of artifacts) {
+    if (!k.startsWith('server/')) continue;
+    const ck = k.replace('server/scheduleSandbox/', 'server/scheduleSandbox/');
+    closeMap.set(ck, v);
+  }
+  // 不变量还需项目配置（cloudfunctionRoot=server/）与候选一致
+  closeMap.set('project.config.json', artifacts.get('project.config.json'));
+  // 不变量还需项目配置（cloudfunctionRoot=server/）与候选一致
+  closeMap.set('project.config.json', artifacts.get('project.config.json'));
+  const badClosePkg = JSON.parse(JSON.stringify(badFnPkg));
+  closeMap.set('server/scheduleSandbox/package.json', Buffer.from(JSON.stringify(badClosePkg, null, 2)));
+  assert.throws(() => packer.assertCloseMappingInvariants(closeMap),
+    e => (e.code === packer.ERR.CLOSE_SOURCE_INVALID || e.code === packer.ERR.PLAN_TARGET_INVALID) &&
+      /精确为 3.0.1/.test(e.message), '关闭侧版本不符必须拒绝');
+  // (6) 正常对照：checkDir/checkCloseDir 通过
+  assert.equal(packer.checkDir(outDir).ok, true);
+  process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
+  try { assert.equal(packer.checkCloseDir(outDir).ok, true); }
+  finally { delete process.env.PIC_CLOSE_SOURCE_DIR; }
+});

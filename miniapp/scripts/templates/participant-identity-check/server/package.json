@@ -5,6 +5,6 @@
   "description": "两位参与者本人身份只读核验候选（本地准备，未部署）",
   "main": "index.js",
   "dependencies": {
-    "wx-server-sdk": "~2.6.3"
+    "wx-server-sdk": "3.0.1"
   }
 }
