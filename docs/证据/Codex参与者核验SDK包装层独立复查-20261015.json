@@ -1,0 +1,20 @@
+{
+  "schema": "codex-participant-sdk-wrapper-review/1",
+  "reviewedCommit": "c9df59b",
+  "sdkVersion": "3.0.1",
+  "databaseVersion": "1.4.1",
+  "candidateDeclaredVersion": "~2.6.3",
+  "transport": "synthetic local; node-sdk init and Db.reqClass replaced",
+  "exists": "single object",
+  "absent": "null",
+  "failure": "rejected",
+  "projection": {
+    "_id": 1,
+    "openid": 1,
+    "status": 1
+  },
+  "calls": 3,
+  "unexpectedGuardAttempts": 0,
+  "caveat": "未运行 ~2.6.3；未访问真实平台；关闭包部署映射未在此脚本验证",
+  "scriptSha256": "c04049e953a355f77d90f06c0e4ec839357570d517708c2ed721b4561cc3fdb2"
+}
