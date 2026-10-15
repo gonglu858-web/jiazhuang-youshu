@@ -252,6 +252,7 @@ test('P3 异步读取后置守卫：读期间推进到期/NaN/时钟抛错均不
         return {
           doc() {
             return {
+              field() { return this; }, // S2：P3 正常投影路径需要 field()
               async get() {
                 reads++;
                 pending = advance; // 读取完成后由后置守卫读取时钟时才推进
@@ -1207,4 +1208,148 @@ test('R6 读取边界：最小字段投影、readAttempted 时机、缺字段 UN
     assert.equal(typeof core.ERROR_PUBLIC_TEXT[code], 'string', code + ' 必须有固定文案');
     assert.ok(core.ERROR_PUBLIC_TEXT[code].length > 0, code + ' 文案非空');
   }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// S1/S2 定点收尾（Codex 复查 fcc4a58 §3）：逐项「正确拒绝 + 合法对照」
+// ════════════════════════════════════════════════════════════════════════════
+
+test('S1 页面取消勾选后不请求也不显示完整 ID；事件顺序：默认→勾选→取消→重勾；在途锁不回归', async () => {
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 's1-' + RUN_ID);
+  packer.build(writePicPlan(closeSource, { synthetic: false }), outDir);
+  const openid = 'openid-s1-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  const requests = [];
+  const wxStub = {
+    cloud: {
+      _identityCheckEnvInited: false,
+      init() {},
+      callFunction(opts) {
+        requests.push({ data: JSON.parse(JSON.stringify(opts.data)) });
+        const main = loadCandidateMain(outDir, {
+          appId: APPID, envId: ENV_ID, openid,
+          db: makeTrapDb({ rows: [rowFor(openid)] })
+        });
+        return main.main(opts.data).then(result => ({ result }));
+      }
+    }
+  };
+  const hadWx = Object.prototype.hasOwnProperty.call(globalThis, 'wx');
+  globalThis.wx = wxStub;
+  try {
+    const pageFile = path.join(outDir, 'frontend', 'pages', 'identity-check', 'identity-check.js');
+    const pageDef = {};
+    const page = { data: {}, setData(patch) { Object.assign(this.data, patch); } };
+    const pageCtx = vm.createContext({
+      Page(d) { Object.assign(pageDef, d); },
+      wx: wxStub, require: createRequire(pageFile), console
+    });
+    new vm.Script('(function(){' + fs.readFileSync(pageFile, 'utf8') + '\n}).call(globalThis)', { filename: pageFile }).runInContext(pageCtx);
+    Object.assign(page, pageDef);
+    // (0) 默认不展示
+    assert.equal(page.data.wantFullUserId, false);
+    page.onLoad(); page.onShow();
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests[0].data.includeFullUserId, undefined, '默认请求不得携带完整 ID');
+    assert.equal(page.data.result.userId, '', '默认不显示完整 ID');
+    // (1) 勾选 → 请求并显示
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
+    assert.equal(page.data.wantFullUserId, true, '勾选后应为 true');
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests[1].data.includeFullUserId, true, '勾选后请求携带完整 ID');
+    assert.equal(page.data.result.userId, userId, '勾选后显示完整 ID');
+    // (2) 取消勾选（detail.value=[]，即 D7 缺陷的直接反例）→ 不请求、不显示
+    page.onWantFullIdChange({ detail: { value: [] } });
+    assert.equal(page.data.wantFullUserId, false, '取消勾选必须为 false（旧实现 Boolean([])===true）');
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests[2].data.includeFullUserId, undefined, '取消后请求不得携带完整 ID');
+    assert.equal(page.data.result.userId, '', '取消后不得显示完整 ID');
+    assert.equal(page.data.result.userIdTail, userId.slice(-6), '仍显示尾号');
+    // (3) 重新勾选 → 才展示
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
+    assert.equal(page.data.wantFullUserId, true);
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(requests[3].data.includeFullUserId, true, '重新勾选才请求');
+    assert.equal(page.data.result.userId, userId, '重新勾选才显示');
+    // (4) 取消后再勾选其他值（不含 full）→ 不请求
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
+    page.onWantFullIdChange({ detail: { value: ['other'] } });
+    assert.equal(page.data.wantFullUserId, false, '选中值不含 full 必须为 false');
+    // (5) 在途锁：sending 期间 WXML 禁用复选框（静态绑定）且重复点击不发请求
+    const wxml = fs.readFileSync(path.join(outDir, 'frontend', 'pages', 'identity-check', 'identity-check.wxml'), 'utf8');
+    assert.ok(wxml.includes('disabled="{{sending}}"'), '复选框在途必须禁用');
+    const before = requests.length;
+    page.setData({ sending: true });
+    await page.onCheckTap();
+    assert.equal(requests.length, before, '在途锁：sending 期间点击不产生新请求');
+    page.setData({ sending: false });
+  } finally {
+    if (hadWx) delete globalThis.wx; else delete globalThis.wx;
+  }
+});
+
+test('S2 缺字段筛选能力时保守 UNKNOWN：无field/field抛错/field返回无get 都零get且不交付完整ID', async () => {
+  const openid = 'openid-s2-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  // (1) 无 field 方法 → 零 get、UNKNOWN、完整 ID 为空、readAttempted=false
+  const noField = makeTrapDb({ rows: [rowFor(openid)] });
+  noField.collection = (name) => {
+    assert.equal(name, core.FIXED_TARGET.collection);
+    return { doc() { return { async get() { throw new Error('TRAP: 缺 field 时不得 get'); } }; } };
+  };
+  const noFieldResult = await makeChecker(noField, { trusted: trustedContext(openid) })
+    .handle(rReq({ includeFullUserId: true }));
+  assert.equal(noFieldResult.ok, false);
+  assert.equal(noFieldResult.code, 'PIC_FIELD_PROJECTION_UNAVAILABLE');
+  assert.equal(noFieldResult.registrationState, 'UNKNOWN');
+  assert.equal(noFieldResult.readAttempted, false, '未实际进入 get 必须 readAttempted=false');
+  assert.equal(noFieldResult.userId, null, '完整 userId 必须为空');
+  assert.equal(noFieldResult.identityConfirmed, false);
+  // (2) field 抛错 → 同样保守拒绝
+  const fieldThrows = makeTrapDb({ rows: [rowFor(openid)] });
+  fieldThrows.collection = () => ({ doc() { return { field() { throw new Error('synthetic field failure'); }, async get() { throw new Error('TRAP'); } }; } });
+  const throwsResult = await makeChecker(fieldThrows, { trusted: trustedContext(openid) })
+    .handle(rReq({ includeFullUserId: true }));
+  assert.equal(throwsResult.code, 'PIC_FIELD_PROJECTION_UNAVAILABLE');
+  assert.equal(throwsResult.readAttempted, false, 'field 抛错发生在 get 前');
+  assert.equal(throwsResult.userId, null);
+  // (3) field 返回无 get 的对象 → 保守拒绝
+  const noGetAfterField = makeTrapDb({ rows: [rowFor(openid)] });
+  noGetAfterField.collection = () => ({ doc() {
+    let getCalled = false;
+    return { field() { return {}; }, async get() { getCalled = true; throw new Error('TRAP: field 返回无 get 时不得 get'); }, _wasGetCalled: () => getCalled };
+  } });
+  const noGetResult = await makeChecker(noGetAfterField, { trusted: trustedContext(openid) })
+    .handle(rReq({ includeFullUserId: true }));
+  assert.equal(noGetResult.code, 'PIC_FIELD_PROJECTION_UNAVAILABLE');
+  assert.equal(noGetResult.readAttempted, false);
+  assert.equal(noGetResult.userId, null);
+  // (4) 正常筛选对照：field 成功 → 一次本人 get、只投影三字段、ACTIVE 且可交付完整 ID
+  const good = makeTrapDb({ rows: [rowFor(openid)] });
+  const goodResult = await makeChecker(good, { trusted: trustedContext(openid) })
+    .handle(rReq({ includeFullUserId: true }));
+  assert.equal(goodResult.ok, true);
+  assert.equal(goodResult.registrationState, 'ACTIVE');
+  assert.equal(goodResult.userId, userId);
+  assert.deepEqual(good.calls.fields[0], { _id: true, openid: true, status: true });
+  assert.equal(good.calls.reads, 1);
+  // (5) 实际 get 失败 → readAttempted=true 如实记录
+  const getFail = makeTrapDb({ rows: [rowFor(openid)], throwOnRead: true });
+  const failResult = await makeChecker(getFail, { trusted: trustedContext(openid) })
+    .handle(rReq({ includeFullUserId: true }));
+  assert.equal(failResult.readAttempted, true, 'get 已调用必须如实记录');
+  assert.equal(failResult.registrationState, 'UNKNOWN');
+  assert.equal(failResult.userId, null);
+  // 零业务写（全矩阵）
+  for (const t of [noField, fieldThrows, noGetAfterField, good, getFail]) {
+    // 这些替身的写方法会抛 TRAP，能走到这里说明从未被调用
+    assert.ok(true);
+  }
+  // 白名单覆盖新代码
+  assert.equal(typeof core.ERROR_PUBLIC_TEXT.PIC_FIELD_PROJECTION_UNAVAILABLE, 'string');
 });

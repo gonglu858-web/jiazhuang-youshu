@@ -68,6 +68,7 @@ const ERROR_PUBLIC_TEXT = Object.freeze({
   PIC_CLOCK_INVALID: '服务端时钟无效。',
   PIC_CLOCK_ERROR: '服务端时钟不可用。',
   PIC_READ_FAILED: '读取本人测试账号记录失败（结果未知）。',
+  PIC_FIELD_PROJECTION_UNAVAILABLE: '无法按最小字段范围读取（结果未知）。',
   PIC_DB_UNAVAILABLE: '固定测试集合或主键读取不可用（结果未知）。'
 });
 /** 未在白名单内的内部错误：统一净化为结果未知。 */
@@ -101,6 +102,7 @@ const ERR_CODES = Object.freeze({
   CLOCK_INVALID: 'PIC_CLOCK_INVALID',
   CLOCK_ERROR: 'PIC_CLOCK_ERROR',
   READ_FAILED: 'PIC_READ_FAILED',
+  FIELD_PROJECTION_UNAVAILABLE: 'PIC_FIELD_PROJECTION_UNAVAILABLE',
   DB_UNAVAILABLE: 'PIC_DB_UNAVAILABLE'
 });
 
@@ -254,13 +256,20 @@ function createIdentityChecker(deps) {
     if (!docRef || typeof docRef.get !== 'function') {
       deny(ERR_CODES.DB_UNAVAILABLE, '固定主键读取不可用。');
     }
-    // R6 最小读取：用 SDK 已支持的 field() 选择字段，避免取回整份用户文档。
-    let queryRef = docRef;
-    if (typeof docRef.field === 'function') {
+    // R6+S2 最小读取：**必须**用 field() 选择字段；筛选能力缺失/调用失败/返回无 get
+    // 时保守返回 UNKNOWN 且**不发 get**——绝不回退读取整份用户记录
+    //（读取范围最小化是任务硬性要求，不能用「响应投影」替代「读取范围最小化」）。
+    if (typeof docRef.field !== 'function') {
+      deny(ERR_CODES.FIELD_PROJECTION_UNAVAILABLE, '无法按最小字段范围读取（结果未知）。');
+    }
+    let queryRef = null;
+    try {
       queryRef = docRef.field(READ_FIELD_PROJECTION);
+    } catch (_) {
+      deny(ERR_CODES.FIELD_PROJECTION_UNAVAILABLE, '无法按最小字段范围读取（结果未知）。');
     }
     if (!queryRef || typeof queryRef.get !== 'function') {
-      deny(ERR_CODES.DB_UNAVAILABLE, '固定主键读取不可用。');
+      deny(ERR_CODES.FIELD_PROJECTION_UNAVAILABLE, '无法按最小字段范围读取（结果未知）。');
     }
     // 到这里才置「已发起读取」——构造阶段失败保持 false。
     onGetAttempt();

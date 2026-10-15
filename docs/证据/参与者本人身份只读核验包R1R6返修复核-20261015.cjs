@@ -761,7 +761,7 @@ function emitReport() {
   const report = {
     schema: 'participant-identity-r1r6-review/1',
     title: '两位参与者本人身份只读核验包 R1–R6 定点返修 · 独立复核证据',
-    reviewedCommit: process.env.PIC_REVIEWED_COMMIT || '39ac526',
+    reviewedCommit: process.env.PIC_REVIEWED_COMMIT || 'c5d58ff',
     reviewBasis: 'docs/Codex复查-参与者本人身份只读核验包-20261015.md §3（R1–R6）；复查提交 ece7659',
     implementationPath: 'miniapp/scripts/lib/participant-identity-check.cjs',
     implementationSha256,

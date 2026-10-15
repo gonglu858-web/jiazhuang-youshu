@@ -202,7 +202,7 @@ function writeExclusive(abs, buf, io, rel) {
  * 源码变更必须先受审更新本表；否则 build 与 check 一律 SOURCE_DRIFT 拒绝。
  */
 const PINNED_SOURCES = Object.freeze({
-  'miniapp/scripts/lib/participant-identity-check.cjs': 'c454a4dc283a0e4e7b8ec27a4242ceee8ab4862fd67a46766d0525222a615dbc',
+  'miniapp/scripts/lib/participant-identity-check.cjs': '00abff26dc4e949437a9781fedf44e946aa57a7ad1f79993d8e03001d0141afe',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
   'miniapp/scripts/templates/participant-identity-check/server/index.js': '0ddb5f6a759edc71998a325c1f02518119021f4aaa002512e369e16f592cd452',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': '9f155f07ede42a71c7bd63ad39b2488d1bcde3bc7fa67f9344b6dfa355cd6c82',
@@ -211,7 +211,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
   'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
   'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '225378a411840f582d60057f7078dd121d4be2303b72674363ba8f058fdee586',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '97125d43626f2bef9c3e2be4005acd6d1fe98b4a059e75ea0b984fcd56e5b73c',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '6c7c2866491238826f3feb404ee738de9695430af7b228a341bf8b986729f77b',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss': 'e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442'

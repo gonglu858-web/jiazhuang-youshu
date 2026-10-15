@@ -1,0 +1,164 @@
+{
+  "schema": "participant-identity-s12-review/1",
+  "title": "两位参与者本人身份只读核验包 S1/S2 定点收尾 · 独立复核证据",
+  "reviewedCommit": "c5d58ff",
+  "reviewBasis": "docs/Codex复查-参与者只读核验包R1R6返修-20261015.md §3（S1/S2）；复查提交 fcc4a58",
+  "implementationPath": "miniapp/scripts/lib/participant-identity-check.cjs",
+  "implementationSha256": "00abff26dc4e949437a9781fedf44e946aa57a7ad1f79993d8e03001d0141afe",
+  "packerPath": "miniapp/scripts/package-participant-identity-check.cjs",
+  "packerSha256": "7645d33017a4b1ccd5fd790a6ec59515b2a756091ded34f2998c9fe79b949e8f",
+  "labelNote": "reviewedCommit 为受测实现基线（c5d58ff）；本轮 S1/S2 返修后的实际受测代码以 implementationSha256 为准。历史证据不回写。",
+  "generatedAt": "2026-10-15T03:00:02.989Z",
+  "artifactDirectory": "artifacts/schedule-sandbox/business-test/pic-s12-483a5fdc-2b53-477e-9274-90b26c403904",
+  "verificationKind": "Node 真实本地应用代码（含实际生成链）+ 合成 wx/db/时钟；SDK 本地转换未执行；真实平台/真实三账号/真实部署完全未验证",
+  "passphraseSample": "synthetic（仅验证准入路径；不生成真实口令；不落证据）",
+  "claims": {
+    "oneTimePassphrase": false,
+    "globalRateLimit": false,
+    "provesRealPersonIdentity": false,
+    "zeroPlatformLogOrCost": false,
+    "fullUserIdIsNotOpenid": true,
+    "fullUserIdIsNotPreregistrationEvidence": true
+  },
+  "results": [
+    {
+      "id": "G0_guard_sensitivity",
+      "assertionsPassed": true,
+      "actual": {
+        "sensitivityProbeHits": 2,
+        "note": "敏感性探针实际触发并单独记账"
+      }
+    },
+    {
+      "id": "G1_s1_cancel_checkbox_sequence",
+      "assertionsPassed": true,
+      "actual": {
+        "sequence": [
+          {
+            "step": "default",
+            "wantFull": false,
+            "requested": false,
+            "shown": ""
+          },
+          {
+            "step": "checked",
+            "wantFull": true,
+            "requested": true,
+            "shown": "u_53fe5f94f247f40e7f84a9e39c70855eb09b2758"
+          },
+          {
+            "step": "cancelled",
+            "wantFull": false,
+            "requested": false,
+            "shown": ""
+          },
+          {
+            "step": "rechecked",
+            "wantFull": true,
+            "requested": true,
+            "shown": "u_53fe5f94f247f40e7f84a9e39c70855eb09b2758"
+          }
+        ],
+        "inFlightLockKept": true,
+        "passphraseCleared": true,
+        "sends": 4
+      }
+    },
+    {
+      "id": "G2_s2_field_projection_required",
+      "assertionsPassed": true,
+      "actual": {
+        "outcomes": [
+          {
+            "case": "noFieldMethod",
+            "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+            "gets": 0,
+            "readAttempted": false,
+            "userId": null
+          },
+          {
+            "case": "fieldThrows",
+            "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+            "gets": 0,
+            "readAttempted": false,
+            "userId": null
+          },
+          {
+            "case": "fieldReturnsNoGet",
+            "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+            "gets": 0,
+            "readAttempted": false,
+            "userId": null
+          },
+          {
+            "case": "normalProjection",
+            "gets": 1,
+            "projection": {
+              "_id": true,
+              "openid": true,
+              "status": true
+            },
+            "state": "ACTIVE"
+          },
+          {
+            "case": "getFails",
+            "readAttempted": true,
+            "state": "UNKNOWN"
+          }
+        ]
+      }
+    },
+    {
+      "id": "G3_drift_still_rejected_pre_write",
+      "assertionsPassed": true,
+      "actual": {
+        "driftCases": [
+          {
+            "label": "核心模块",
+            "rejectedWith": "PIC_SOURCE_DRIFT",
+            "zeroArtifacts": true,
+            "diskSourceUnchanged": true
+          },
+          {
+            "label": "页面模板",
+            "rejectedWith": "PIC_SOURCE_DRIFT",
+            "zeroArtifacts": true,
+            "diskSourceUnchanged": true
+          }
+        ],
+        "normalControlOk": true
+      }
+    },
+    {
+      "id": "G4_controls",
+      "assertionsPassed": true,
+      "actual": {
+        "candidateFiles": 14,
+        "closeFiles": 23,
+        "writtenFirstBuild": 38,
+        "fullReuse": {
+          "written": 0,
+          "reused": 38
+        },
+        "closeIndependentCheckOkAtNaNClock": true,
+        "partialWrite": [
+          {
+            "rel": "server/index.js",
+            "bytesOnDisk": 11
+          }
+        ]
+      }
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0,
+    "caughtAttemptsCounted": true,
+    "note": "敏感性与业务期命中分别记账；业务期命中含被调用方捕获的尝试"
+  },
+  "summary": {
+    "total": 5,
+    "assertionsPassed": 5,
+    "unexpectedGuardAttempts": 0
+  }
+}

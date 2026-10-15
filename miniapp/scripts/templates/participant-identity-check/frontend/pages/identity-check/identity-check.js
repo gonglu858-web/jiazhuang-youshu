@@ -42,7 +42,10 @@ Page({
   },
 
   onWantFullIdChange(e) {
-    this.setData({ wantFullUserId: Boolean(e.detail.value) });
+    // S1：checkbox-group 取消勾选时 detail.value 为空数组，Boolean([]) 是 true——
+    // 必须按**选中值是否包含 full** 判断，兑现用户的显式选择。
+    const checked = Array.isArray(e.detail.value) && e.detail.value.indexOf('full') !== -1;
+    this.setData({ wantFullUserId: checked });
   },
 
   async onCheckTap() {
