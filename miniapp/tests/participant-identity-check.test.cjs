@@ -1785,11 +1785,8 @@ test('P9 SDK 精确版本：候选与关闭 package.json 均精确 3.0.1；模�
   const closeMap = new Map();
   for (const [k, v] of artifacts) {
     if (!k.startsWith('server/')) continue;
-    const ck = k.replace('server/scheduleSandbox/', 'server/scheduleSandbox/');
-    closeMap.set(ck, v);
+    closeMap.set(k, v);
   }
-  // 不变量还需项目配置（cloudfunctionRoot=server/）与候选一致
-  closeMap.set('project.config.json', artifacts.get('project.config.json'));
   // 不变量还需项目配置（cloudfunctionRoot=server/）与候选一致
   closeMap.set('project.config.json', artifacts.get('project.config.json'));
   const badClosePkg = JSON.parse(JSON.stringify(badFnPkg));

@@ -1,8 +1,9 @@
 'use strict';
 // WorkBuddy 独立证据：I1 候选 SDK 精确版本本地接线（执行页 §2）。
-// 生成后的候选入口装载**真实 wx-server-sdk 3.0.1 包装层**与真实 @cloudbase/database 1.4.1
-// 数据库实现；微信上下文用合成 process.env 注入（SDK 原生 getWXContext 通道），
-// 仅底层传输以本地替身替换。全程离线、无真实凭据；不是平台验证。
+// 生成后的候选入口**直接调用真实 wx-server-sdk 3.0.1** 的 init 与
+// database({throwOnNotFound:false})（无入口级替身）；替换范围仅三处：合成微信上下文
+// （process.env 原生通道）、node-sdk init 工厂替身、Db.reqClass 传输层本地替身。
+// 全程离线、无真实凭据；不是平台验证。
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -187,58 +188,74 @@ async function main() {
         return { code: 'DATABASE_PERMISSION_DENIED', requestId: 'synthetic-denied' };
       }
     }
-    tcbDb.Db.reqClass = LocalTransport; // 替换传输类（先于入口装载，不会被合成实例重置）
-    // 主上下文完成 init 与 database 预建（vm 内调用会使方法 this 绑定失效）
-    realSdk.init({ env: ENV_ID });
-    const prebuiltDb = realSdk.database({ throwOnNotFound: false });
-    const sdkForEntry = Object.create(realSdk);
-    sdkForEntry.init = () => {};
-    sdkForEntry.database = () => prebuiltDb;
-    try {
-      // 4) 装载生成后的候选入口（vm context；require 映射到预初始化真实 SDK 与候选内核心副本）
+    tcbDb.Db.reqClass = LocalTransport; // 替换传输类（先于入口装载；合成实例的 database() 不重置）
+    // 入口装载与 main 调用辅助：require('wx-server-sdk') 直达真实 SDK 对象——
+    // 入口的 init({env}) 与 database({throwOnNotFound:false}) **原样进入真实 SDK**，
+    // 不做任何入口级替身（真实包装层的 throwOnNotFound 语义因此被真实检验）。
+    const entrySource = fs.readFileSync(serverFile, 'utf8');
+    const loadEntry = (sourceText) => {
       const module_ = { exports: {} };
       const ctx = vm.createContext({
         require(id) {
-          if (id === 'wx-server-sdk') return sdkForEntry;
+          if (id === 'wx-server-sdk') return realSdk;
           return nativeRequire(id); // './participant-identity-check' 解析到候选内核心副本
         },
         module: module_, exports: module_.exports,
-        cloud: sdkForEntry,
+        cloud: realSdk,
         process: { env: process.env },
         console
       });
-      new vm.Script(fs.readFileSync(serverFile, 'utf8'), { filename: serverFile }).runInContext(ctx);
-      assert.equal(typeof module_.exports.main, 'function', '生成入口导出 main');
+      new vm.Script(sourceText, { filename: serverFile }).runInContext(ctx);
+      return module_.exports;
+    };
+    try {
+      // 4) 装载生成后的候选入口（未改源码）
+      const entry = loadEntry(entrySource);
+      assert.equal(typeof entry.main, 'function', '生成入口导出 main');
+      // 入口必须显式携带 throwOnNotFound:false（真实包装层默认 true，缺失会让不存在路 reject）
+      assert.ok(entrySource.includes('throwOnNotFound: false'), '生成入口须显式传递 throwOnNotFound:false');
       const req = { action: 'inspectSelf', passphrase: PASSPHRASE, checkRoundId: ROUND };
       // 三路：存在 → ACTIVE
       mode = 'hit';
-      const hit = await module_.exports.main(req);
+      const hit = await entry.main(req);
       assert.equal(hit.ok, true, '存在路 ok：' + hit.message);
       assert.equal(hit.registrationState, 'ACTIVE');
       assert.equal(hit.identityConfirmed, true);
       assert.equal(hit.userId, null, '默认不交付完整 ID');
       // 明确不存在 → ABSENT（真实 SDK 包装层 data:null → 核心归一化）
       mode = 'miss';
-      const miss = await module_.exports.main(req);
+      const miss = await entry.main(req);
       assert.equal(miss.ok, true, '不存在路 ok：' + miss.message);
       assert.equal(miss.registrationState, 'ABSENT');
       // 权限失败 → UNKNOWN（readAttempted 保留）
       mode = 'denied';
-      const denied = await module_.exports.main(req);
+      const denied = await entry.main(req);
       assert.equal(denied.ok, false, '失败路不确认身份');
       assert.equal(denied.registrationState, 'UNKNOWN');
       assert.equal(denied.readAttempted, true, 'get 已调用如实记录');
       assert.equal(denied.userId, null, '失败不交付完整 ID');
       assert.equal(JSON.stringify(denied).includes('DATABASE_PERMISSION_DENIED'), false, '平台错误码不外传');
-      // 投影与读取次数：三次请求各一次本人主键 get，仅 _id/openid/status
-      assert.equal(calls.gets, 3);
+      // 敏感性反例（C1）：内存删除入口的 throwOnNotFound:false 后重新装载——
+      // 真实包装层默认 throwOnNotFound=true，「明确不存在」会 reject 而非返回 data:null，
+      // 因此不存在路必须失败（UNKNOWN），证明三路对照真实检验了入口参数。
+      const tamperedSource = entrySource.replace('throwOnNotFound: false', '');
+      assert.notEqual(tamperedSource, entrySource, '敏感性改写须生效');
+      const tamperedEntry = loadEntry(tamperedSource);
+      mode = 'miss';
+      const tamMiss = await tamperedEntry.main(req);
+      mode = 'denied'; // 还原供后续计数
+      assert.equal(tamMiss.ok, false, '删除 throwOnNotFound:false 后不存在路必须失败');
+      assert.equal(tamMiss.registrationState, 'UNKNOWN', '失败归 UNKNOWN');
+      assert.equal(tamMiss.readAttempted, true, 'get 已调用如实记录');
+      // 投影与读取次数：三次主装载 + 一次敏感性装载，各一次本人主键 get，仅 _id/openid/status
+      assert.equal(calls.gets, 4);
       for (const s of calls.sends) {
         assert.equal(s.action, 'database.getDocument');
         assert.ok(s.projection, '投影必须随请求发送');
         assert.deepEqual(Object.keys(s.projection).sort(), ['_id', 'openid', 'status'], '只投影三字段');
       }
       return {
-        transportReplacedOnly: '仅 Db.reqClass 传输层本地替身；微信上下文经 SDK 原生 getWXContext 的 process.env 通道合成注入；SDK 代码零修改',
+        replacementScope: '替换范围共三处（全部已披露）：①合成微信上下文（process.env 原生通道）②node-sdk init 工厂替身（合成实例，防 reqClass 重置）③Db.reqClass 传输层本地替身。入口的 init({env}) 与 database({throwOnNotFound:false}) **原样进入真实 wx-server-sdk 3.0.1**——无入口级替身；敏感性反例证明删除入口 throwOnNotFound:false 后不存在路必失败',
         hit: { state: hit.registrationState, confirmed: hit.identityConfirmed },
         miss: { state: miss.registrationState },
         denied: { state: denied.registrationState, readAttempted: denied.readAttempted },
@@ -262,7 +279,7 @@ async function main() {
     implementationSha256: sha(fs.readFileSync(path.join(ROOT, 'miniapp/scripts/lib/participant-identity-check.cjs'))),
     packerSha256: sha(fs.readFileSync(path.join(ROOT, 'miniapp/scripts/package-participant-identity-check.cjs'))),
     candidateTemplatePkgSha256: sha(fs.readFileSync(path.join(ROOT, 'miniapp/scripts/templates/participant-identity-check/server/package.json'))),
-    verificationKind: '本地合成验证：生成后候选入口装载真实 wx-server-sdk 3.0.1 包装层与真实 @cloudbase/database 1.4.1 实现；微信上下文经 SDK 原生 process.env 通道合成注入、仅底层传输本地替身。这不是平台验证：云端自动安装的实际版本、真实上传部署、远端关闭覆盖与回读完全未验证',
+    verificationKind: '本地合成验证：生成后候选入口直接调用真实 wx-server-sdk 3.0.1 的 init 与 database({throwOnNotFound:false})（无入口级替身）；替换范围仅限已披露三处——合成微信上下文（process.env 原生通道）、node-sdk init 工厂替身、Db.reqClass 传输层本地替身。这不是平台验证：云端自动安装的实际版本、真实上传部署、远端关闭覆盖与回读完全未验证',
     versionBoundary: {
       candidatePinned: packer.PINNED_WX_SERVER_SDK_VERSION,
       locallyVerifiedSdk: '3.0.1',

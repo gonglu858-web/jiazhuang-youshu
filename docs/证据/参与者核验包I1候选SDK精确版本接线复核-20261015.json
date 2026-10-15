@@ -5,7 +5,7 @@
   "implementationSha256": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a",
   "packerSha256": "3ae3ae91de3fcaa7d28d67fa8a11cdf2fe67759955044f40733225fc616be352",
   "candidateTemplatePkgSha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
-  "verificationKind": "本地合成验证：生成后候选入口装载真实 wx-server-sdk 3.0.1 包装层与真实 @cloudbase/database 1.4.1 实现；微信上下文经 SDK 原生 process.env 通道合成注入、仅底层传输本地替身。这不是平台验证：云端自动安装的实际版本、真实上传部署、远端关闭覆盖与回读完全未验证",
+  "verificationKind": "本地合成验证：生成后候选入口直接调用真实 wx-server-sdk 3.0.1 的 init 与 database({throwOnNotFound:false})（无入口级替身）；替换范围仅限已披露三处——合成微信上下文（process.env 原生通道）、node-sdk init 工厂替身、Db.reqClass 传输层本地替身。这不是平台验证：云端自动安装的实际版本、真实上传部署、远端关闭覆盖与回读完全未验证",
   "versionBoundary": {
     "candidatePinned": "3.0.1",
     "locallyVerifiedSdk": "3.0.1",
@@ -44,7 +44,7 @@
       "id": "W2_generated_entry_with_real_sdk_three_paths",
       "assertionsPassed": true,
       "actual": {
-        "transportReplacedOnly": "仅 Db.reqClass 传输层本地替身；微信上下文经 SDK 原生 getWXContext 的 process.env 通道合成注入；SDK 代码零修改",
+        "replacementScope": "替换范围共三处（全部已披露）：①合成微信上下文（process.env 原生通道）②node-sdk init 工厂替身（合成实例，防 reqClass 重置）③Db.reqClass 传输层本地替身。入口的 init({env}) 与 database({throwOnNotFound:false}) **原样进入真实 wx-server-sdk 3.0.1**——无入口级替身；敏感性反例证明删除入口 throwOnNotFound:false 后不存在路必失败",
         "hit": {
           "state": "ACTIVE",
           "confirmed": true
@@ -56,7 +56,7 @@
           "state": "UNKNOWN",
           "readAttempted": true
         },
-        "gets": 3,
+        "gets": 4,
         "projectionKeys": [
           "_id",
           "openid",
