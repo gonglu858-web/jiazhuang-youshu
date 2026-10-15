@@ -1,0 +1,92 @@
+{
+  "schema": "codex-participant-identity-s1b-review/1",
+  "reviewedCommit": "34b5003",
+  "implementationSha256": "00abff26dc4e949437a9781fedf44e946aa57a7ad1f79993d8e03001d0141afe",
+  "packerSha256": "5fcbbb161bd80e02f671f67d023ed513466a88962f4ffeecae16181d4164ac2a",
+  "pageTemplateSha256": "137d19d4931d5ec19184c9663fd206f987ed60fbcb1034ffd8a4c8b6e8b750a1",
+  "verificationKind": "actual generated App/Page/client/server/core with synthetic wx/db; no SDK or platform",
+  "results": [
+    {
+      "id": "C1_cancel_immediately_hides_prior_full_id",
+      "passed": true,
+      "actual": {
+        "wantFullUserId": false,
+        "fullIdAvailable": false,
+        "fullIdEmpty": true,
+        "tailKept": true,
+        "requests": 1,
+        "wxmlShowsOnResultFlagOnly": true
+      }
+    },
+    {
+      "id": "C2_recheck_without_submit_stays_hidden",
+      "passed": true,
+      "actual": {
+        "requests": 1,
+        "fullIdAvailable": false,
+        "fullIdEmpty": true
+      }
+    },
+    {
+      "id": "C3_next_submit_after_cancel",
+      "passed": true,
+      "actual": {
+        "requests": 2,
+        "fullIdRequested": false,
+        "fullIdShown": false,
+        "tailShown": true
+      }
+    },
+    {
+      "id": "C4_new_success_after_recheck_restores_full_id",
+      "passed": true,
+      "actual": {
+        "requests": 3,
+        "newRequestIncludesFullId": true,
+        "fullIdShown": true,
+        "passphraseCleared": true
+      }
+    },
+    {
+      "id": "C5_inflight_lock",
+      "passed": true,
+      "actual": {
+        "requests": 3,
+        "wxmlDisabledBinding": true
+      }
+    },
+    {
+      "id": "C6_projection_fail_closed_control",
+      "passed": true,
+      "actual": [
+        {
+          "kind": "missing",
+          "gets": 0,
+          "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+          "readAttempted": false
+        },
+        {
+          "kind": "throws",
+          "gets": 0,
+          "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+          "readAttempted": false
+        },
+        {
+          "kind": "noGet",
+          "gets": 0,
+          "code": "PIC_FIELD_PROJECTION_UNAVAILABLE",
+          "readAttempted": false
+        }
+      ]
+    }
+  ],
+  "guardAccounting": {
+    "sensitivityProbeHits": 2,
+    "businessPeriodUnexpectedAttempts": 0
+  },
+  "summary": {
+    "checked": 6,
+    "passed": true,
+    "gap": null
+  }
+}
