@@ -55,8 +55,14 @@ const PLAN_FIELDS = Object.freeze([
   'schema', 'synthetic', 'checkRoundId', 'participantCode',
   'appId', 'envId', 'functionName', 'collection',
   'passphraseDigest', 'windowStartsAtIso', 'windowExpiresAtIso',
-  'closeSourceDir', 'note'
+  'closeSourceDir', 'note', 'keyDiagnostic'
 ]);
+/**
+ * 受控键诊断协议版本（与核心模块 KEY_DIAGNOSTIC_SCHEMA 逐字一致）；
+ * 通过来源字节断言绑定（下方 assertCoreDiagnosticBinding），防止手改绕过。
+ */
+const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
+const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
 
 /** 服务端模板文件（受审来源）。participant-identity-check.js 由核心模块复制而来。 */
 const SERVER_TEMPLATE_FILES = Object.freeze(['index.js', 'package.json']);
@@ -271,18 +277,18 @@ function writeExclusive(abs, buf, io, rel) {
  * 源码变更必须先受审更新本表；否则 build 与 check 一律 SOURCE_DRIFT 拒绝。
  */
 const PINNED_SOURCES = Object.freeze({
-  'miniapp/scripts/lib/participant-identity-check.cjs': 'c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a',
+  'miniapp/scripts/lib/participant-identity-check.cjs': '31ba75bb2127c7ed9607965b11b9147ea9af4e00dce80f989999540d6d684c09',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
-  'miniapp/scripts/templates/participant-identity-check/server/index.js': '0ddb5f6a759edc71998a325c1f02518119021f4aaa002512e369e16f592cd452',
+  'miniapp/scripts/templates/participant-identity-check/server/index.js': '0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': 'e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
   'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '137d19d4931d5ec19184c9663fd206f987ed60fbcb1034ffd8a4c8b6e8b750a1',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '3cb639c8fa494b977873ce7db15136abc2e8304b0e553fb07ed158bf3dda8e49',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '6c7c2866491238826f3feb404ee738de9695430af7b228a341bf8b986729f77b',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss': 'e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442'
 });
 
@@ -313,6 +319,19 @@ function readTemplateBytes(rel) {
   return buf;
 }
 
+/** 诊断协议绑定：核心字节必须逐字包含固定协议版本/范围标签（来源漂移即拒绝）。 */
+function assertCoreDiagnosticBinding(coreBuf) {
+  const text = coreBuf.toString('utf8');
+  for (const marker of [
+    "const KEY_DIAGNOSTIC_SCHEMA = '" + KEY_DIAGNOSTIC_SCHEMA + "';",
+    "const KEY_DIAGNOSTIC_SCOPE = '" + KEY_DIAGNOSTIC_SCOPE + "';"
+  ]) {
+    if (!text.includes(marker)) {
+      fail(ERR.SOURCE_DRIFT, '核心模块缺少受审诊断协议绑定（' + marker + '）。');
+    }
+  }
+}
+
 function readCoreModuleBytes() {
   let st = null;
   try { st = fs.lstatSync(LIB_PATH); } catch (_) { st = null; }
@@ -320,6 +339,8 @@ function readCoreModuleBytes() {
   const buf = fs.readFileSync(LIB_PATH);
   // R3：内容基线校验（写前拒绝）
   assertPinnedSource(LIB_PATH, buf, '核验核心模块');
+  // 诊断协议版本与核心字节逐字绑定（防手改绕过）
+  assertCoreDiagnosticBinding(buf);
   return buf;
 }
 
@@ -347,7 +368,8 @@ function planDigest(plan) {
     windowStartsAtIso: plan.windowStartsAtIso,
     windowExpiresAtIso: plan.windowExpiresAtIso,
     closeSourceDir: plan.closeSourceDir,
-    note: plan.note || ''
+    note: plan.note || '',
+    keyDiagnostic: plan.keyDiagnostic === true
   });
   return sha256Buffer(Buffer.from(canonical));
 }
@@ -401,6 +423,10 @@ function readPlan(planPath, options) {
   if (typeof raw.closeSourceDir !== 'string' || !path.isAbsolute(raw.closeSourceDir)) {
     fail(ERR.PLAN_INVALID, 'closeSourceDir 必须是已受审关闭包目录的绝对路径。');
   }
+  // 受控键诊断开关：缺省即关闭；出现则必须为布尔（普通核验包保持关闭）。
+  if (raw.keyDiagnostic !== undefined && typeof raw.keyDiagnostic !== 'boolean') {
+    fail(ERR.PLAN_INVALID, 'keyDiagnostic 必须是布尔或缺省。');
+  }
   return Object.freeze({
     schema: raw.schema,
     synthetic: raw.synthetic,
@@ -413,7 +439,8 @@ function readPlan(planPath, options) {
     windowStartsAtIso: raw.windowStartsAtIso,
     windowExpiresAtIso: raw.windowExpiresAtIso,
     closeSourceDir: path.resolve(raw.closeSourceDir),
-    note: raw.note || ''
+    note: raw.note || '',
+    keyDiagnostic: raw.keyDiagnostic === true
   });
 }
 
@@ -578,6 +605,10 @@ function verifyProjectLayout(expected /* Map<rel, Buffer> */) {
   if (!entrySrc.includes("const CONFIG_ENV_ID = '" + FIXED_TARGET.envId + "';")) {
     fail(ERR.PLAN_TARGET_INVALID, '服务端 envId 常量与受审固定目标不一致。');
   }
+  // 受控键诊断：入口必须包含诊断开关锚点行（值由装配锚点替换与 check 重建比对保证）。
+  if (!entrySrc.includes('const CONFIG_KEY_DIAGNOSTIC = ')) {
+    fail(ERR.PLAN_TARGET_INVALID, '服务端入口缺少受控键诊断开关锚点。');
+  }
   return true;
 }
 
@@ -606,6 +637,9 @@ function computeArtifacts(plan) {
       'const CONFIG_WINDOW_STARTS_AT_MS = ' + plan.windowStartsAtMs + ';', 'server/scheduleSandbox/index.js#CONFIG_WINDOW_STARTS_AT_MS');
     buf = anchorReplace(buf, 'const CONFIG_WINDOW_EXPIRES_AT_MS = 0;',
       'const CONFIG_WINDOW_EXPIRES_AT_MS = ' + plan.windowExpiresAtMs + ';', 'server/scheduleSandbox/index.js#CONFIG_WINDOW_EXPIRES_AT_MS');
+    // 受控键诊断开关：默认关闭；仅计划显式 keyDiagnostic:true 的诊断轮替换为 true。
+    buf = anchorReplace(buf, 'const CONFIG_KEY_DIAGNOSTIC = false;',
+      'const CONFIG_KEY_DIAGNOSTIC = ' + (plan.keyDiagnostic === true) + ';', 'server/scheduleSandbox/index.js#CONFIG_KEY_DIAGNOSTIC');
     artifacts.set(SERVER_FN_ROOT + 'index.js', buf);
   }
   // 前端模板：逐字节复制（页面已收窄为唯一核验页面）；
@@ -663,6 +697,10 @@ function build(planPath, outOverride) {
     passphraseDigestRecorded: true,
     // 只记摘要，永不记明文口令
     userIdentitySource: 'trusted-wx-context：APPID/OPENID 只来自 cloud.getWXContext，本地产物不含任何 OPENID 或凭据',
+    // 受控键诊断绑定：开关来自计划；协议版本与核心字节逐字绑定（见 assertCoreDiagnosticBinding）
+    keyDiagnostic: plan.keyDiagnostic === true,
+    keyDiagnosticSchema: KEY_DIAGNOSTIC_SCHEMA,
+    keyDiagnosticScope: KEY_DIAGNOSTIC_SCOPE,
     planFile: 'plan.json',
     planSha256: sha256Buffer(planBytes),
     planDigest: digest,
@@ -676,6 +714,7 @@ function build(planPath, outOverride) {
       'R2：本次有效核验结果可受控取得完整内部 userId（页面默认只展示尾号，需显式勾选）；',
       '      完整 userId 是标识不是密码，不等于 OPENID/UNIONID，也不构成 P 登记证据。',
       'R5：本轮核验轮次由计划写入服务端配置与前端配置，客户端必须原样带回。',
+      'keyDiagnostic 默认关闭；仅具体诊断轮显式开启；诊断只含固定候选标签/计数/键名长度分桶，绝不含原键名、值或前后缀，且仅在全部准入门槛通过时附加。',
       'SDK 本地转换未执行；真实平台行为完全未验证。'
     ],
     files: entries,
@@ -789,12 +828,17 @@ function checkDir(dir) {
     synthetic: plan.synthetic, appId: plan.appId, envId: plan.envId,
     functionName: plan.functionName, collection: plan.collection,
     windowStartsAtIso: plan.windowStartsAtIso, windowExpiresAtIso: plan.windowExpiresAtIso,
-    closeSourceDir: relOf(path.relative(ROOT, plan.closeSourceDir))
+    closeSourceDir: relOf(path.relative(ROOT, plan.closeSourceDir)),
+    keyDiagnostic: plan.keyDiagnostic === true
   };
   for (const [k, v] of Object.entries(expectFields)) {
     if (JSON.stringify(manifest[k]) !== JSON.stringify(v)) bad('manifest.' + k + ' 与计划不一致');
   }
   if (manifest.passphraseDigestRecorded !== true) bad('manifest 缺少口令摘要存在标记');
+  if (plan.keyDiagnostic === true) {
+    if (manifest.keyDiagnosticSchema !== KEY_DIAGNOSTIC_SCHEMA) bad('manifest.keyDiagnosticSchema 与受审诊断协议不一致');
+    if (manifest.keyDiagnosticScope !== KEY_DIAGNOSTIC_SCOPE) bad('manifest.keyDiagnosticScope 与受审诊断范围不一致');
+  }
 
   let expected;
   let closeFiles;
@@ -1036,6 +1080,8 @@ module.exports = Object.freeze({
   adaptCloseRel,
   CLOSE_MAPPING_DECLARATION,
   PINNED_WX_SERVER_SDK_VERSION,
+  KEY_DIAGNOSTIC_SCHEMA,
+  KEY_DIAGNOSTIC_SCOPE,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,

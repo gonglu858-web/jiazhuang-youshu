@@ -82,15 +82,17 @@ function makeChecker(db, overrides) {
   const o = overrides || {};
   const starts = o.windowStartsAtMs === undefined ? 1000 : o.windowStartsAtMs;
   const expires = o.windowExpiresAtMs === undefined ? starts + 10 * 60 * 1000 : o.windowExpiresAtMs;
+  const config = {
+    checkRoundId: o.checkRoundId === undefined ? 'synthetic-round-pic-1' : o.checkRoundId,
+    passphraseDigest: o.passphraseDigest === undefined ? SYNTHETIC_DIGEST : o.passphraseDigest,
+    windowStartsAtMs: starts,
+    windowExpiresAtMs: expires
+  };
+  if (o.keyDiagnostic !== undefined) config.keyDiagnostic = o.keyDiagnostic;
   return core.createIdentityChecker({
     db,
     trusted: o.trusted === undefined ? trustedContext('openid-participant-1') : o.trusted,
-    config: {
-      checkRoundId: o.checkRoundId === undefined ? 'synthetic-round-pic-1' : o.checkRoundId,
-      passphraseDigest: o.passphraseDigest === undefined ? SYNTHETIC_DIGEST : o.passphraseDigest,
-      windowStartsAtMs: starts,
-      windowExpiresAtMs: expires
-    },
+    config,
     now: o.now || (() => starts + 1000)
   });
 }
@@ -1799,4 +1801,249 @@ test('P9 SDK 精确版本：候选与关闭 package.json 均精确 3.0.1；模�
   process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
   try { assert.equal(packer.checkCloseDir(outDir).ok, true); }
   finally { delete process.env.PIC_CLOSE_SOURCE_DIR; }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// D1–D2 受控键诊断（Codex 复查 a187998 C2/C3）：
+// 默认关闭；开启且动作/轮次/口令/可信目标/当下窗口全部通过才附净化诊断；
+// 只含固定候选标签/计数/键名长度分桶；不含原键名/值/前后缀；零DB；协议绑定。
+// ════════════════════════════════════════════════════════════════════════════
+
+test('D1 受控键诊断：默认关闭；全门槛准入；门控反例无诊断；秘密键名不泄漏；getter不访问；枚举异常净化', async () => {
+  const openid = 'openid-diag-' + RUN_ID;
+  const secretInKey = 'synthetic_secret_' + crypto.randomBytes(8).toString('hex');
+  // 每次请求带两个额外键：userInfo（固定候选）+ 含合成秘密的长键名（33字符）
+  const req = () => Object.assign(
+    { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND },
+    { userInfo: { openId: 'synthetic-untrusted-envelope' }, [secretInKey]: { synthetic: true } }
+  );
+
+  // (1) 默认关闭：即便全部门槛成立也不附诊断；零DB
+  {
+    const db = makeTrapDb({ rows: [] });
+    const r = await makeChecker(db).handle(req());
+    assert.equal(r.code, 'PIC_REQUEST_INVALID');
+    assert.equal(r.ok, false);
+    assert.equal(Object.prototype.hasOwnProperty.call(r, 'keyDiagnostic'), false, '默认关闭无诊断字段');
+    assert.equal(db.calls.reads, 0, '零读取');
+    assert.equal(db.calls.collections.length, 0, '零集合访问');
+  }
+
+  // (2) 开启 + 全门槛通过：净化诊断可见；秘密与原键名/值均不泄漏
+  {
+    const db = makeTrapDb({ rows: [] });
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req());
+    assert.equal(r.code, 'PIC_REQUEST_INVALID');
+    assert.equal(r.ok, false);
+    assert.equal(r.registrationState, 'UNKNOWN');
+    assert.equal(r.readAttempted, false, 'REQUEST_INVALID 分支零读取事实');
+    const d = r.keyDiagnostic;
+    assert.ok(d, '诊断应存在');
+    assert.equal(d.schema, core.KEY_DIAGNOSTIC_SCHEMA);
+    assert.equal(d.diagnosticScope, core.KEY_DIAGNOSTIC_SCOPE);
+    assert.equal(d.otherKeyCount, 1, 'userInfo 计入候选标签，秘密键计入其它键');
+    assert.deepEqual(d.candidateLabels, ['CANDIDATE_USERINFO']);
+    assert.equal(d.truncated, false);
+    assert.deepEqual(d.otherKeyNameLengthBuckets,
+      { 'len<=4': 0, 'len5-8': 0, 'len9-16': 0, 'len17-32': 0, lenOver32: 1 },
+      '33字符秘密键名落入溢出桶（只给长度，不给名字）');
+    const serialized = JSON.stringify(r);
+    assert.equal(serialized.includes(secretInKey), false, '合成秘密键名不得出现在结果');
+    assert.equal(serialized.includes('userInfo'), false, '原键名不得出现（仅固定标签，大小写敏感区分 CANDIDATE_USERINFO）');
+    assert.equal(serialized.includes('synthetic-untrusted-envelope'), false, '键值不得泄漏');
+    assert.equal(db.calls.reads, 0);
+    assert.equal(db.calls.collections.length, 0);
+  }
+
+  // (3) 门控反例：错口令/错轮次/错上下文/过期/NaN时钟 → 行为不变（REQUEST_INVALID）且无诊断
+  const gateCases = [
+    ['错口令', { reqPatch: { passphrase: 'synthetic-wrong-passphrase' } }],
+    ['错轮次', { reqPatch: { checkRoundId: 'synthetic-other-round' } }],
+    ['错上下文', { checker: { trusted: trustedContext(openid, { appId: 'wx-synthetic-wrong' }) } }],
+    ['过期窗口', { checker: { windowStartsAtMs: 1000, windowExpiresAtMs: 2000, now: () => 5000 } }],
+    ['NaN时钟', { checker: { now: () => NaN } }]
+  ];
+  for (const [name, cfg] of gateCases) {
+    const db = makeTrapDb({ rows: [] });
+    const r = await makeChecker(db, Object.assign({ keyDiagnostic: true }, cfg.checker || {}))
+      .handle(Object.assign(req(), cfg.reqPatch || {}));
+    assert.equal(r.code, 'PIC_REQUEST_INVALID', name + '：请求键门槛仍最先（历史行为保持）');
+    assert.equal(Object.prototype.hasOwnProperty.call(r, 'keyDiagnostic'), false, name + '：无诊断');
+    assert.equal(db.calls.reads, 0, name + '：零读取');
+  }
+
+  // (4) getter 值不被读取：诊断只枚举键名
+  {
+    const db = makeTrapDb({ rows: [] });
+    const event = { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND };
+    let getterHits = 0;
+    Object.defineProperty(event, 'syntheticGetterKey', {
+      enumerable: true,
+      get() { getterHits++; return 'synthetic-value'; }
+    });
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(event);
+    assert.equal(r.code, 'PIC_REQUEST_INVALID');
+    assert.equal(getterHits, 0, '诊断路径不得读取任何值/getter');
+    assert.equal(r.keyDiagnostic.otherKeyCount, 1);
+  }
+
+  // (5) 键枚举本身异常（Proxy ownKeys 抛错）：保持净化失败、无诊断、零读取
+  {
+    const db = makeTrapDb({ rows: [] });
+    const event = new Proxy(
+      { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND },
+      { ownKeys() { throw new Error('synthetic ownKeys failure'); } }
+    );
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(event);
+    assert.equal(r.ok, false);
+    assert.equal(r.code, core.GENERIC_CODE, '非内部异常净化为通用未知');
+    assert.equal(Object.prototype.hasOwnProperty.call(r, 'keyDiagnostic'), false, '枚举异常无诊断');
+    assert.equal(r.readAttempted, false);
+    assert.equal(db.calls.reads, 0);
+  }
+
+  // (6) 非布尔开关配置直接拒绝；buildKeyDiagnostic 直接单元（分桶边界）
+  assert.throws(() => core.createIdentityChecker({
+    db: makeTrapDb({ rows: [] }),
+    trusted: trustedContext(openid),
+    config: {
+      checkRoundId: TEST_ROUND, passphraseDigest: SYNTHETIC_DIGEST,
+      windowStartsAtMs: 1000, windowExpiresAtMs: 2000, keyDiagnostic: 'yes'
+    },
+    now: () => 1500
+  }), e => e.code === core.ERR_CODES.TARGET_MISMATCH && /诊断开关无效/.test(e.message), '非布尔诊断开关拒绝');
+  const unit = core.buildKeyDiagnostic({ a: 1, bb: 2, ccc: 3, userInfo: { synthetic: true } });
+  assert.equal(unit.otherKeyCount, 3);
+  assert.equal(unit.otherKeyNameLengthBuckets['len<=4'], 3);
+  assert.deepEqual(unit.candidateLabels, ['CANDIDATE_USERINFO']);
+  assert.equal(unit.truncated, false);
+});
+
+test('D2 全链诊断（生成候选 App/Page→client→server→core）：诊断可见且不泄漏；非诊断轮/错口令无诊断；关闭包无诊断能力；手改被拒', async () => {
+  const closeSource = makeCloseSourceDir();
+  const openid = 'openid-diag-chain-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  /**
+   * 平台信封合成：额外键只由 wx 替身在**服务端入口边界**注入（模拟平台入站行为），
+   * 客户端发送的数据保持 3 键——与既有事实（客户端只发 action/passphrase/round[+fullId]）一致。
+   */
+  const mkChain = (outDir, envelope, rows) => {
+    const sent = [];
+    const db = makeTrapDb({ rows: rows || [] });
+    const stub = {
+      cloud: {
+        _identityCheckEnvInited: false,
+        init() {},
+        callFunction(opts) {
+          sent.push({ keys: Object.keys(opts.data).slice().sort() });
+          const main = loadCandidateMain(outDir, { appId: APPID, envId: ENV_ID, openid, db });
+          return main.main(Object.assign({}, opts.data, envelope || {})).then(result => ({ result }));
+        }
+      }
+    };
+    return { stub, sent, dbCalls: db.calls };
+  };
+  const envelope = { userInfo: { appId: 'synthetic-envelope-appid', openId: 'synthetic-envelope-openid' } };
+
+  // (1) 诊断轮候选：开关 true、manifest 绑定、check 重建一致
+  const diagPlanPath = writePicPlan(closeSource, { synthetic: false, keyDiagnostic: true });
+  const diagOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'diag-' + RUN_ID);
+  const builtDiag = packer.build(diagPlanPath, diagOut);
+  assert.equal(builtDiag.manifest.keyDiagnostic, true, 'manifest 记录诊断开启');
+  assert.equal(builtDiag.manifest.keyDiagnosticSchema, packer.KEY_DIAGNOSTIC_SCHEMA, 'manifest 绑定协议版本');
+  assert.equal(builtDiag.manifest.keyDiagnosticScope, packer.KEY_DIAGNOSTIC_SCOPE);
+  assert.ok(fs.readFileSync(path.join(diagOut, 'server', 'scheduleSandbox', 'index.js'), 'utf8')
+    .includes('const CONFIG_KEY_DIAGNOSTIC = true;'), '诊断轮入口开关为 true');
+  assert.equal(packer.checkDir(diagOut).ok, true, '诊断轮候选 check 重建一致');
+
+  // (2) 诊断轮全链：信封键注入 → 净化诊断在手机页面可见；原键名/值不外泄；客户端仍只发3键
+  const diag = mkChain(diagOut, envelope);
+  await withGlobalWx(diag.stub, async () => {
+    const page = loadCandidatePage(diagOut, diag.stub);
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
+    assert.equal(page.data.result.readAttempted, false);
+    assert.equal(page.data.passphrase, '', '口令照常清除');
+    assert.ok(page.data.result.keyDiagnosticText.includes('其它键 0 个'), '诊断文本可见（userInfo 走固定标签、其它键 0 个）');
+    assert.ok(page.data.result.keyDiagnosticText.includes('CANDIDATE_USERINFO'), '固定候选标签可见');
+    const pageDump = JSON.stringify(page.data);
+    assert.equal(pageDump.includes('userInfo'), false, '原键名不出现在页面数据');
+    assert.equal(pageDump.includes('synthetic-envelope'), false, '注入值不出现在页面数据');
+    assert.equal(diag.sent.length, 1, '只发送一次');
+    assert.deepEqual(diag.sent[0].keys, ['action', 'checkRoundId', 'passphrase'], '客户端仍只发3键');
+    assert.equal(diag.dbCalls.reads, 0, '诊断路径零读取');
+    assert.equal(diag.dbCalls.collections.length, 0, '诊断路径零集合访问');
+  });
+
+  // (3) 诊断轮 + 干净请求（无信封键）：正常核验不受影响，无诊断字段
+  {
+    const ok = mkChain(diagOut, null, [{ _id: userId, openid, status: 'active' }]);
+    await withGlobalWx(ok.stub, async () => {
+      const page = loadCandidatePage(diagOut, ok.stub);
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.registrationState, 'ACTIVE');
+      assert.equal(page.data.result.code, '');
+      assert.equal(page.data.result.keyDiagnosticText, '', '干净请求无诊断展示');
+      assert.equal(JSON.stringify(page.data).includes('"keyDiagnostic"'), false, '干净结果无诊断对象字段');
+    });
+  }
+
+  // (4) 错口令 + 信封键（诊断轮）：行为不变且无诊断
+  {
+    const bad = mkChain(diagOut, envelope);
+    await withGlobalWx(bad.stub, async () => {
+      const page = loadCandidatePage(diagOut, bad.stub);
+      page.onPassphraseInput({ detail: { value: 'synthetic-wrong-passphrase' } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID', '错口令+额外键仍为请求键拒绝');
+      assert.equal(page.data.result.keyDiagnosticText, '', '错口令无诊断');
+      assert.equal(bad.dbCalls.reads, 0);
+    });
+  }
+
+  // (5) 非诊断轮（同真实模式、开关缺省）：信封键注入也不附诊断
+  const plainOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'plaindiag-' + RUN_ID);
+  packer.build(writePicPlan(closeSource, { synthetic: false }), plainOut);
+  assert.ok(fs.readFileSync(path.join(plainOut, 'server', 'scheduleSandbox', 'index.js'), 'utf8')
+    .includes('const CONFIG_KEY_DIAGNOSTIC = false;'), '普通核验包诊断开关保持 false');
+  const plain = mkChain(plainOut, envelope);
+  await withGlobalWx(plain.stub, async () => {
+    const page = loadCandidatePage(plainOut, plain.stub);
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
+    assert.equal(page.data.result.keyDiagnosticText, '', '非诊断轮无诊断展示');
+    assert.equal(JSON.stringify(page.data).includes('"keyDiagnostic"'), false, '非诊断轮结果无诊断对象字段');
+  });
+
+  // (6) 关闭包无诊断能力：close/ 全部文件无任何诊断字符串
+  let closeHits = 0;
+  (function scanClose(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) scanClose(p);
+      else if (fs.readFileSync(p, 'utf8').includes('keyDiagnostic')) closeHits++;
+    }
+  })(path.join(diagOut, 'close'));
+  assert.equal(closeHits, 0, '关闭包不含任何诊断代码或字符串');
+
+  // (7) 手改绕过被拒：manifest 开关翻转、入口开关翻转均被 checkDir 拒绝
+  const manifestPath = path.join(diagOut, 'manifest.json');
+  const tampered = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  tampered.keyDiagnostic = false;
+  fs.writeFileSync(manifestPath, JSON.stringify(tampered, null, 2) + '\n');
+  assert.equal(packer.checkDir(diagOut).ok, false, '手改 manifest 诊断开关被拒');
+  fs.writeFileSync(manifestPath, JSON.stringify(builtDiag.manifest, null, 2) + '\n');
+  const entryPath = path.join(diagOut, 'server', 'scheduleSandbox', 'index.js');
+  const origEntry = fs.readFileSync(entryPath, 'utf8');
+  fs.writeFileSync(entryPath, origEntry.replace('const CONFIG_KEY_DIAGNOSTIC = true;', 'const CONFIG_KEY_DIAGNOSTIC = false;'));
+  assert.equal(packer.checkDir(diagOut).ok, false, '手改入口诊断开关被重建比对拒绝');
+  fs.writeFileSync(entryPath, origEntry);
+  assert.equal(packer.checkDir(diagOut).ok, true, '还原后重建一致');
+
+  // (8) 非布尔诊断开关计划写前拒绝
+  assert.throws(() => packer.build(writePicPlan(closeSource, { keyDiagnostic: 'yes' })),
+    e => e.code === packer.ERR.PLAN_INVALID && /keyDiagnostic/.test(e.message), '计划诊断开关必须为布尔或缺省');
 });

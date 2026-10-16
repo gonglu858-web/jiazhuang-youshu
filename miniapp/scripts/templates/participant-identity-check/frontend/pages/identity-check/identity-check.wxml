@@ -28,6 +28,8 @@
     <view class="row">核验轮次：{{result.checkRoundId}}</view>
     <view class="row">服务端时间：{{result.serverTime || '—'}}</view>
     <view class="row" wx:if="{{result.code}}">结果码：{{result.code}}</view>
+    <!-- 受控键诊断：仅诊断轮且全部准入通过时出现；只含固定标签/计数/长度分桶，无原键名或值 -->
+    <view class="row" wx:if="{{result.keyDiagnosticText}}">请求键诊断：{{result.keyDiagnosticText}}</view>
     <view class="stop">{{stopHint}}</view>
   </view>
 

@@ -9,8 +9,28 @@
 // - 口令只存在于本页内存 data，不写 storage、不打日志；调用结束（含失败）
 //   立即清空输入与内存副本。
 // - 页面不含角色切换、登记、取号、重试、清缓存或项目操作按钮。
+// - 受控键诊断（C3）：仅展示客户端按固定 schema 净化后的固定标签/计数/长度分桶；
+//   不含原键名或值；无自动请求、无重试、无新增操作按钮；口令照常只在本页内存。
 
 const { callIdentityCheck } = require('../../utils/identity-check-client');
+
+/** 把净化诊断渲染为固定格式的展示文本；只含数字、固定标签与固定分桶名。 */
+function describeKeyDiagnostic(d) {
+  if (!d || typeof d !== 'object') return '';
+  const bucketKeys = ['len<=4', 'len5-8', 'len9-16', 'len17-32', 'lenOver32'];
+  const parts = ['其它键 ' + d.otherKeyCount + ' 个'];
+  const bucketText = [];
+  for (const k of bucketKeys) {
+    const v = d.otherKeyNameLengthBuckets ? d.otherKeyNameLengthBuckets[k] : undefined;
+    if (typeof v === 'number') bucketText.push(k + '=' + v);
+  }
+  parts.push('键名长度 ' + bucketText.join('，'));
+  if (Array.isArray(d.candidateLabels) && d.candidateLabels.length) {
+    parts.push('候选标签 ' + d.candidateLabels.join('，'));
+  }
+  if (d.truncated === true) parts.push('已截断');
+  return parts.join('；');
+}
 
 Page({
   data: {
@@ -113,7 +133,9 @@ Page({
         fullUserIdAvailable: Boolean(response.userId),
         checkRoundId: response.checkRoundId,
         serverTime: response.serverTimeIso || '',
-        code: response.code || ''
+        code: response.code || '',
+        // C3：仅展示客户端净化后的受控键诊断（固定标签/计数/长度分桶，无原键名/值）
+        keyDiagnosticText: describeKeyDiagnostic(response.keyDiagnostic)
       },
       lastCheckedAt: response.serverTimeIso || '',
       stopHint: hint

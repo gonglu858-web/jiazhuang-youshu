@@ -29,6 +29,9 @@ const CONFIG_CHECK_ROUND_ID = '';
 const CONFIG_PASSPHRASE_DIGEST = '';
 const CONFIG_WINDOW_STARTS_AT_MS = 0;
 const CONFIG_WINDOW_EXPIRES_AT_MS = 0;
+// 受控键诊断开关：默认关闭；仅具体诊断轮由打包器按计划锚点替换开启。
+// 开启后也只在动作/轮次/口令/可信目标/当下窗口全部通过时附加净化诊断（见核心 §12）。
+const CONFIG_KEY_DIAGNOSTIC = false;
 
 function readTrustedRuntime() {
   let ctx = {};
@@ -71,7 +74,8 @@ exports.main = async event => {
       checkRoundId: CONFIG_CHECK_ROUND_ID,
       passphraseDigest: CONFIG_PASSPHRASE_DIGEST,
       windowStartsAtMs: CONFIG_WINDOW_STARTS_AT_MS,
-      windowExpiresAtMs: CONFIG_WINDOW_EXPIRES_AT_MS
+      windowExpiresAtMs: CONFIG_WINDOW_EXPIRES_AT_MS,
+      keyDiagnostic: CONFIG_KEY_DIAGNOSTIC
     }
   });
   return checker.handle(event);

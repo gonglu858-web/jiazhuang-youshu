@@ -34,6 +34,12 @@
 //     存在 → resolve `{ data: <单个文档对象>, errMsg }`；明确不存在 → resolve `{ data: null }`；
 //     权限/读取失败 → reject CloudSDKError。读取结果统一归一为「单文档对象 / 明确无记录 /
 //     数组形状（合成替身兼容）」三种，均不误判。
+// 12. **受控键诊断（默认关闭）**：仅当 config.keyDiagnostic === true 且请求顶层出现未登记键时，
+//     在动作/轮次/口令/可信目标/当下窗口**全部复核通过**后，向 REQUEST_INVALID 失败结果附加
+//     `keyDiagnostic`：只含源代码固定候选标签、其它键计数与键名长度分桶（固定边界）。
+//     任何原键名、值、前后缀一概不出现；只枚举 Object.keys，不读取值/getter/__proto__；
+//     不读数据库、不改 UNKNOWN/PIC_REQUEST_INVALID、不扩 REQUEST_FIELDS；构造异常一律吞掉
+//     保持净化失败，不影响读取事实。诊断协议版本 KEY_DIAGNOSTIC_SCHEMA 纳入打包器/manifest 绑定。
 
 /** 受审固定目标：与既有 gate/工具常量一致，不新增可变目标。 */
 const FIXED_TARGET = Object.freeze({
@@ -57,6 +63,27 @@ const REGISTRATION_STATES = Object.freeze(['ACTIVE', 'ABSENT', 'DISABLED', 'MISM
 const REQUEST_FIELDS = Object.freeze(['action', 'passphrase', 'checkRoundId', 'includeFullUserId']);
 
 const RESULT_SCHEMA = 'participant-identity-check-result/2';
+
+// ── 受控键诊断（默认关闭；协议版本纳入打包器/manifest/计划绑定） ──────────────
+/** 诊断对象协议版本；manifest 与客户端按此固定值验证，未知版本一律不展示。 */
+const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
+/** 诊断范围固定标签：只描述请求顶层键的枚举统计，不含任何值。 */
+const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
+/**
+ * 源代码固定的候选键名→固定标签字典：仅用于识别已知候选键是否出现。
+ * 字典中的键名不因此成为允许业务字段或可信身份；字典之外一律只计数/分桶。
+ */
+const KEY_DIAGNOSTIC_CANDIDATES = Object.freeze({ userInfo: 'CANDIDATE_USERINFO' });
+/** 候选标签输出上限；超过即截断并置 truncated（当前字典为 1，实际不可达，保留协议字段）。 */
+const KEY_DIAGNOSTIC_MAX_LABELS = 8;
+/** 键名长度分桶边界（源代码固定）；超过最后边界归 lenOver32。 */
+const KEY_DIAGNOSTIC_LENGTH_BUCKETS = Object.freeze([
+  Object.freeze({ max: 4, label: 'len<=4' }),
+  Object.freeze({ max: 8, label: 'len5-8' }),
+  Object.freeze({ max: 16, label: 'len9-16' }),
+  Object.freeze({ max: 32, label: 'len17-32' })
+]);
+const KEY_DIAGNOSTIC_OVERFLOW_LABEL = 'lenOver32';
 
 /** R6：错误白名单——只有本模块产生的错误才允许其 code 与文案外传。 */
 const ERROR_PUBLIC_TEXT = Object.freeze({
@@ -144,6 +171,52 @@ function isNonEmptyString(value) {
 }
 
 /**
+ * 受控键诊断构建（默认关闭路径不会调用）：
+ * - 只对请求顶层键做**枚举**（Object.keys 不读取值、不触发 getter、不触碰 __proto__）；
+ * - 候选键名按固定字典映射为固定标签（不回显原键名）；
+ * - 其余未登记键只输出计数与键名长度分桶（固定边界）；
+ * - 输出对象形状固定、总大小有界（≤ 数十字节级），截断以 truncated 标志表达；
+ * - 绝不输出任意原键名、值或前后缀，不记录原始 event。
+ */
+function buildKeyDiagnostic(event) {
+  const keys = Object.keys(Object(event));
+  const buckets = {};
+  for (const b of KEY_DIAGNOSTIC_LENGTH_BUCKETS) buckets[b.label] = 0;
+  buckets[KEY_DIAGNOSTIC_OVERFLOW_LABEL] = 0;
+  let otherKeyCount = 0;
+  const candidateLabels = [];
+  let truncated = false;
+  for (const k of keys) {
+    if (REQUEST_FIELDS.includes(k)) continue;
+    const label = Object.prototype.hasOwnProperty.call(KEY_DIAGNOSTIC_CANDIDATES, k)
+      ? KEY_DIAGNOSTIC_CANDIDATES[k]
+      : null;
+    if (typeof label === 'string') {
+      if (!candidateLabels.includes(label)) {
+        if (candidateLabels.length >= KEY_DIAGNOSTIC_MAX_LABELS) truncated = true;
+        else candidateLabels.push(label);
+      }
+      continue;
+    }
+    otherKeyCount++;
+    const len = k.length;
+    let placed = false;
+    for (const b of KEY_DIAGNOSTIC_LENGTH_BUCKETS) {
+      if (len <= b.max) { buckets[b.label]++; placed = true; break; }
+    }
+    if (!placed) buckets[KEY_DIAGNOSTIC_OVERFLOW_LABEL]++;
+  }
+  return Object.freeze({
+    schema: KEY_DIAGNOSTIC_SCHEMA,
+    diagnosticScope: KEY_DIAGNOSTIC_SCOPE,
+    otherKeyCount,
+    otherKeyNameLengthBuckets: Object.freeze(buckets),
+    candidateLabels: Object.freeze(candidateLabels),
+    truncated
+  });
+}
+
+/**
  * 构造核验器。
  *
  * @param {object} deps
@@ -172,6 +245,12 @@ function createIdentityChecker(deps) {
   if (config.windowExpiresAtMs - config.windowStartsAtMs > MAX_WINDOW_MS) {
     deny(ERR_CODES.TARGET_MISMATCH, '核验窗口不得超过 30 分钟。');
   }
+
+  // 受控键诊断开关：缺省即关闭；非布尔配置一律拒绝（防手改绕过协议绑定）。
+  if (config.keyDiagnostic !== undefined && typeof config.keyDiagnostic !== 'boolean') {
+    deny(ERR_CODES.TARGET_MISMATCH, '诊断开关无效。');
+  }
+  const keyDiagnosticEnabled = config.keyDiagnostic === true;
 
   // 时钟读取：NaN/抛错各自独立归类，不与「未登记」混淆。
   function readNowMs() {
@@ -214,10 +293,18 @@ function createIdentityChecker(deps) {
     if (digest !== config.passphraseDigest) deny(ERR_CODES.PASSPHRASE_INVALID, '核验口令不正确。');
   }
 
-  function assertRequest(event) {
+  /**
+   * 请求键门槛仍为第一道检查（行为与既有事实一致：错口令+额外键等组合仍返回
+   * PIC_REQUEST_INVALID）。onUnknownKey 仅在首个未登记键出现时被调用一次：
+   * 由 handle 注入受控诊断收集器（其内部复核其余全部门槛，任何异常吞掉）。
+   */
+  function assertRequest(event, onUnknownKey) {
     const payload = event && typeof event === 'object' ? event : {};
     for (const k of Object.keys(payload)) {
-      if (!REQUEST_FIELDS.includes(k)) deny(ERR_CODES.REQUEST_INVALID, '请求含未登记字段：' + k);
+      if (!REQUEST_FIELDS.includes(k)) {
+        if (typeof onUnknownKey === 'function') onUnknownKey(payload);
+        deny(ERR_CODES.REQUEST_INVALID, '请求含未登记字段：' + k);
+      }
     }
     if (payload.action !== 'inspectSelf') {
       deny(ERR_CODES.ACTION_REJECTED, '本入口只提供本人身份只读核验（inspectSelf）。');
@@ -358,9 +445,25 @@ function createIdentityChecker(deps) {
     let userId = '';
     let readAttempted = false;
     const markGetAttempt = () => { readAttempted = true; };
+    // 受控键诊断（默认关闭）：仅在 REQUEST_INVALID 路径上由 collectKeyDiagnostic 填充；
+    // 其内部复核动作/轮次/口令/可信目标/当下窗口，全部通过才构建，任何异常吞掉。
+    let keyDiagnostic = null;
+    const collectKeyDiagnostic = payload => {
+      if (!keyDiagnosticEnabled) return;
+      try {
+        if (payload.action !== 'inspectSelf') return;
+        if (payload.checkRoundId !== config.checkRoundId) return;
+        assertPassphrase(payload);
+        assertTrustedTarget();
+        assertWindowOpen();
+        keyDiagnostic = buildKeyDiagnostic(payload);
+      } catch (_) {
+        keyDiagnostic = null; // 缺上下文/错轮次/错口令/过期/时钟异常/构建失败：诊断为空
+      }
+    };
     try {
       // 1) 请求与目标门槛（全部在数据库访问之前）
-      assertRequest(event);
+      assertRequest(event, collectKeyDiagnostic);
       assertTrustedTarget();
       assertWindowOpen();
       userId = deriveUserId(FIXED_TARGET.appId, trusted.openid);
@@ -395,7 +498,7 @@ function createIdentityChecker(deps) {
         ? error.code
         : GENERIC_CODE;
       // 失败结果不构成可采信绑定：不返回完整 userId，仅保留尾号（供人工核对）。
-      return baseResult({
+      const failure = baseResult({
         identityConfirmed: false,
         registrationState: 'UNKNOWN',
         recordMatched: null,
@@ -404,6 +507,12 @@ function createIdentityChecker(deps) {
         code: code,
         message: internal ? ERROR_PUBLIC_TEXT[error.code] || GENERIC_TEXT : GENERIC_TEXT
       });
+      // 受控键诊断：仅在 REQUEST_INVALID 且收集器全门槛复核通过后存在；
+      // 不改变 UNKNOWN/PIC_REQUEST_INVALID 语义，不改变读取事实，默认关闭时字段缺席。
+      if (keyDiagnostic !== null && code === ERR_CODES.REQUEST_INVALID) {
+        failure.keyDiagnostic = keyDiagnostic;
+      }
+      return failure;
     }
   }
 
@@ -421,9 +530,15 @@ module.exports = Object.freeze({
   GENERIC_CODE,
   RESULT_SCHEMA,
   ERR_CODES,
+  KEY_DIAGNOSTIC_SCHEMA,
+  KEY_DIAGNOSTIC_SCOPE,
+  KEY_DIAGNOSTIC_CANDIDATES,
+  KEY_DIAGNOSTIC_MAX_LABELS,
+  KEY_DIAGNOSTIC_LENGTH_BUCKETS,
   MAX_WINDOW_MS: 30 * 60 * 1000,
   ParticipantIdentityCheckError,
   createIdentityChecker,
+  buildKeyDiagnostic,
   deriveUserId,
   userIdTail
 });
