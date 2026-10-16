@@ -1,0 +1,305 @@
+{
+  "schema": "codex-i1-specific-local-package/1",
+  "basisCommit": "09c0ef4",
+  "preparedAt": "2026-10-16T01:43:44.690Z",
+  "scriptSha256": "e60d0bb1868634d62e8792c685be9722d5087d6dd6971def3cff630e851c6949",
+  "powershellSha256": "fe23965691865d64cac63a337e4952ab22ed9818fe0ed2e6a2c5e5b1edd3e92a",
+  "plan": {
+    "schema": "participant-identity-plan/1",
+    "synthetic": false,
+    "checkRoundId": "i1-20261016-010b62cd534e",
+    "participantCode": "1",
+    "appId": "wxfb4db1615ac15531",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "functionName": "scheduleSandbox",
+    "collection": "schtest_v1_users",
+    "passphraseDigest": "6e08899cc207b49736c72c3df5773a19d7fb45201efdb9818c0874214b61501e",
+    "windowStartsAtIso": "2026-10-16T01:43:44.5089381Z",
+    "windowExpiresAtIso": "2026-10-16T02:13:44.5089381Z",
+    "closeSourceDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\pic-close-source-8b3a3b71-a82570",
+    "note": "I1 only; user 0 witnesses user 1; one inspectSelf; no registration or business writes; deployment not approved"
+  },
+  "planPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\plan.json",
+  "planSha256": "ad9c92199d477bb5e463f046c7b48ef3c3927b3ceb80d1bd87a710e225eef5f5",
+  "packageDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-i1-20261016-010b62cd534e-ba8b556ea6d5",
+  "manifestSha256": "740593156273fa33b4d7e3e3f63e17b2e65b23aacda68adb5e5ecb7b9185e32c",
+  "files": [
+    {
+      "rel": "close/frontend/app.js",
+      "bytes": 663,
+      "sha256": "26ac78fd5a7bd8f852c5c65231b4cb703b6f09e102e9b27991ac1ca1a8c3382d"
+    },
+    {
+      "rel": "close/frontend/app.json",
+      "bytes": 257,
+      "sha256": "f18fe4aa170d112d4287667792ed34adebd57a154eefcbfdddd5ed119fb4ec97"
+    },
+    {
+      "rel": "close/frontend/config/cloud.js",
+      "bytes": 95,
+      "sha256": "4c2a31031ed9e4df513522fdaf7163652b0bdab1896edf49361a1d109d305e93"
+    },
+    {
+      "rel": "close/frontend/config/sandbox-test-driver-proof.js",
+      "bytes": 7865,
+      "sha256": "15acb49fd8e6838950d56edb2ef0b22c6991103db7026cee817b9776fe59a348"
+    },
+    {
+      "rel": "close/frontend/config/schedule-entry-proof.js",
+      "bytes": 478,
+      "sha256": "85877c2227ac012edca2d4185123b21909bc7973162ca00175e650a2785fec13"
+    },
+    {
+      "rel": "close/frontend/config/schedule-sandbox-proof.js",
+      "bytes": 1348,
+      "sha256": "724bc3c16ca8d03b84d3d8498b06e011b2ad621599167fc78649b2b378c0cf33"
+    },
+    {
+      "rel": "close/frontend/pages/schedule-sandbox/schedule-sandbox.js",
+      "bytes": 31075,
+      "sha256": "fbb70b3cb2a9898fe1361804e354c096d457dbfb2cac4bf47e067d7e49e56cd3"
+    },
+    {
+      "rel": "close/frontend/pages/schedule-sandbox/schedule-sandbox.json",
+      "bytes": 59,
+      "sha256": "7713a1f63aec15f626eef5e42809b1a1cbdae561351d77c54856894ca1cd1609"
+    },
+    {
+      "rel": "close/frontend/pages/schedule-sandbox/schedule-sandbox.wxml",
+      "bytes": 10032,
+      "sha256": "672f0f9e63d90762914035dc239cd957725221c2eec9599d2e839a03d52b3044"
+    },
+    {
+      "rel": "close/frontend/pages/schedule-sandbox/schedule-sandbox.wxss",
+      "bytes": 233,
+      "sha256": "d30ca2ab51a2ff15179ace61f1b83a5c8d7a9e8514046262260dd923b25a1eb1"
+    },
+    {
+      "rel": "close/frontend/utils/env-gate.js",
+      "bytes": 1546,
+      "sha256": "538ec49ec8270ad20fbfd20a5ec073c2cb252ee21daaaa8a36bcd3286ec60aef"
+    },
+    {
+      "rel": "close/frontend/utils/sandbox-test-coordinator.js",
+      "bytes": 36589,
+      "sha256": "9f17ae44713d58d4b13b021387240e535bbe0dca3b8ca3890acf792e09597c2f"
+    },
+    {
+      "rel": "close/frontend/utils/sandbox-test-driver.js",
+      "bytes": 70929,
+      "sha256": "940a89c2bdc3a9fb8143f8d51bff2f311b88c4f1d8bf19409f8312ee9b075bfb"
+    },
+    {
+      "rel": "close/frontend/utils/schedule-sandbox-client.js",
+      "bytes": 55947,
+      "sha256": "fde6107ef00c49b9c34cf8cff507e6c0c5f28ae6e7e9a0913e58dba194ec7409"
+    },
+    {
+      "rel": "close/project.config.json",
+      "bytes": 817,
+      "sha256": "6caa121e5f974daef0fd37fa861793c6ee1d8aa301dc9756657e9ff8e97c78d1"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/gate.js",
+      "bytes": 11484,
+      "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/index.js",
+      "bytes": 7752,
+      "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/package.json",
+      "bytes": 303,
+      "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/project-guard.js",
+      "bytes": 14668,
+      "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/vendor/MANIFEST.json",
+      "bytes": 728,
+      "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/vendor/schedule-service.js",
+      "bytes": 73002,
+      "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec"
+    },
+    {
+      "rel": "close/server/scheduleSandbox/vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55"
+    },
+    {
+      "rel": "frontend/app.js",
+      "bytes": 517,
+      "sha256": "1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36"
+    },
+    {
+      "rel": "frontend/app.json",
+      "bytes": 253,
+      "sha256": "c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce"
+    },
+    {
+      "rel": "frontend/app.wxss",
+      "bytes": 70,
+      "sha256": "a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846"
+    },
+    {
+      "rel": "frontend/config/cloud.js",
+      "bytes": 458,
+      "sha256": "2e0920850376df9594abba4d38f09d93f72cdb8773b41b561574ddf151bd047e"
+    },
+    {
+      "rel": "frontend/pages/identity-check/identity-check.js",
+      "bytes": 4727,
+      "sha256": "137d19d4931d5ec19184c9663fd206f987ed60fbcb1034ffd8a4c8b6e8b750a1"
+    },
+    {
+      "rel": "frontend/pages/identity-check/identity-check.json",
+      "bytes": 78,
+      "sha256": "e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e"
+    },
+    {
+      "rel": "frontend/pages/identity-check/identity-check.wxml",
+      "bytes": 2527,
+      "sha256": "6c7c2866491238826f3feb404ee738de9695430af7b228a341bf8b986729f77b"
+    },
+    {
+      "rel": "frontend/pages/identity-check/identity-check.wxss",
+      "bytes": 789,
+      "sha256": "e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442"
+    },
+    {
+      "rel": "frontend/utils/identity-check-client.js",
+      "bytes": 1874,
+      "sha256": "4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5"
+    },
+    {
+      "rel": "manifest.json",
+      "bytes": 10228,
+      "sha256": "740593156273fa33b4d7e3e3f63e17b2e65b23aacda68adb5e5ecb7b9185e32c"
+    },
+    {
+      "rel": "plan.json",
+      "bytes": 785,
+      "sha256": "ad9c92199d477bb5e463f046c7b48ef3c3927b3ceb80d1bd87a710e225eef5f5"
+    },
+    {
+      "rel": "project.config.json",
+      "bytes": 686,
+      "sha256": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67"
+    },
+    {
+      "rel": "server/scheduleSandbox/index.js",
+      "bytes": 3363,
+      "sha256": "ec1cee6eefa838cb4ee8af1269f01f3f7828ccb13a29b3222ce033066d96bcf0"
+    },
+    {
+      "rel": "server/scheduleSandbox/package.json",
+      "bytes": 273,
+      "sha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9"
+    },
+    {
+      "rel": "server/scheduleSandbox/participant-identity-check.js",
+      "bytes": 21368,
+      "sha256": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a"
+    }
+  ],
+  "configs": {
+    "candidate": {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\candidate.cloudbaserc.json",
+      "sha256": "132df31f1411b213324aa64d28cad73aaa1406afe46d823e3e6603bf68c264a6",
+      "config": {
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "functionRoot": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/artifacts/schedule-sandbox/business-test/participant-identity-i1-20261016-010b62cd534e-ba8b556ea6d5/server",
+        "functions": [
+          {
+            "name": "scheduleSandbox",
+            "handler": "index.main",
+            "runtime": "Nodejs20.19",
+            "timeout": 3,
+            "memorySize": 256,
+            "type": "Event",
+            "installDependency": true,
+            "triggers": []
+          }
+        ]
+      }
+    },
+    "closed": {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\closed.cloudbaserc.json",
+      "sha256": "68447553d942e32ef14cd53087047f2008b9f514faa2a3a7129d27776ec165ab",
+      "config": {
+        "envId": "cloud1-d8gcq5ag39d847723",
+        "functionRoot": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/artifacts/schedule-sandbox/business-test/participant-identity-i1-20261016-010b62cd534e-ba8b556ea6d5/close/server",
+        "functions": [
+          {
+            "name": "scheduleSandbox",
+            "handler": "index.main",
+            "runtime": "Nodejs20.19",
+            "timeout": 3,
+            "memorySize": 256,
+            "type": "Event",
+            "installDependency": true,
+            "triggers": []
+          }
+        ]
+      }
+    }
+  },
+  "passphrase": {
+    "bits": 128,
+    "storage": "Windows CurrentUser DPAPI; separate control directory; no plaintext output",
+    "encryptedPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\passphrase.dpapi",
+    "notDelivered": true
+  },
+  "checks": {
+    "candidateAndManifest": true,
+    "close": true,
+    "closeFiles": 23,
+    "totalFiles": 38,
+    "written": 38,
+    "sensitivityAttempts": 2,
+    "unexpectedAttempts": 0
+  },
+  "manualPreviewObservation": {
+    "source": "user-message",
+    "quote": "正常显示了二维码，无报错",
+    "recordedAt": "2026-10-16T01:43:44.692Z",
+    "oldRoundOnly": true,
+    "automatedCode10Cause": "unknown"
+  },
+  "remoteBaseline": {
+    "source": "Codex参与者I1部署关闭执行-20261015.closed.json",
+    "observedAt": "2026-10-15T12:33:18.317Z",
+    "codeSha256": "e77a31ce89677ffc6af6116f1754f11fe870599bd83d53f2e693a1522ab5b058",
+    "matchedCloseFiles": 8,
+    "requeriedThisRound": false
+  },
+  "executionOrder": [
+    "approval",
+    "open-new-project",
+    "manual-preview-once-while-remote-closed",
+    "candidate-deploy-and-readback",
+    "participant-one-self-read",
+    "paired-close-and-readback"
+  ],
+  "remoteExecuted": false,
+  "deploymentApproved": false,
+  "limitations": [
+    "本轮关闭8个源文件与最近已核远端关闭文件一致；新部署ZIP须另读回，不能推定ZIP字节相同。",
+    "manifest 中 SDK 本地转换未执行为旧固定文案；20261015 directSdk 证据已验证3.0.1本地转换，真实候选平台行为仍待核验。",
+    "口令仅限制持有者，不证明本人、不承诺一次性或全局限流。",
+    "超时或窗口剩余不足15分钟不开始候选部署；窗口失效需新轮次，不能修改本证据。"
+  ]
+}
