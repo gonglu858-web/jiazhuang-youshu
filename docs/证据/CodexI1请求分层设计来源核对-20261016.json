@@ -1,0 +1,61 @@
+{
+  "schema": "codex-i1-request-layer-design-basis/1",
+  "recordedAt": "2026-10-16T14:30:46.899Z",
+  "basisCommit": "ba5e4f4",
+  "implementationCommit": "f0b7fa9",
+  "kind": "local-static-source-inspection-for-design; not implementation or runtime validation",
+  "sourceFiles": [
+    {
+      "rel": "miniapp/scripts/lib/participant-identity-check.cjs",
+      "bytes": 28458,
+      "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/server/index.js",
+      "bytes": 3518,
+      "sha256": "0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303"
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js",
+      "bytes": 6534,
+      "sha256": "4f2860962c478fe7fd80c8a5498dde3ec5cc071d6089369555d9d54bc218eb5e"
+    },
+    {
+      "rel": "miniapp/scripts/package-participant-identity-check.cjs",
+      "bytes": 55821,
+      "sha256": "262f8a737825f1061a416c3ab000138bcd3cc2bb28f1787d8978512f62e1e534"
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js",
+      "bytes": 5970,
+      "sha256": "0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605"
+    }
+  ],
+  "anchors": {
+    "coreFourFields": true,
+    "coreUnknownFieldReject": true,
+    "trustedTargetGate": true,
+    "coreSubjectDerivedFromTrusted": true,
+    "entryPassesWholeEvent": true,
+    "entryGetsSdkContext": true,
+    "clientSendsFlatPayload": true,
+    "currentPlanV1": true
+  },
+  "design": {
+    "path": "docs/Codex方案-I1请求分层兼容设计-20261016.md",
+    "sha256": "bb92d75905aedc6f20275a3e72f9ffca2bd278713c4a59fb566715bc0c08e778",
+    "status": "proposed-awaiting-user-selection",
+    "recommended": "versioned picRequest inner payload; strict inner schema; outer non-business data unused; no legacy fallback"
+  },
+  "implementationPerformed": false,
+  "newProtocolTestsExecuted": false,
+  "cloudOperations": 0,
+  "credentialFetches": 0,
+  "knownPlatformEvidence": "user screenshot of round i1diag2-20261016-2d90b36818a9; second exact candidate not matched",
+  "remainingUnknowns": [
+    "extra key name/value/source/injection time",
+    "whether platform preserves proposed nested request",
+    "real participant identity and registration state"
+  ],
+  "ok": true
+}
