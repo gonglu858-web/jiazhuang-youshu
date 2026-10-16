@@ -1,0 +1,45 @@
+{
+  "reviewedCommit": "5ef7d96",
+  "history": [
+    {
+      "path": "docs/进展与待办.md",
+      "oldBytes": 815115,
+      "suffixExact": true
+    },
+    {
+      "path": "docs/CodeBuddy开发交接.md",
+      "oldBytes": 6113,
+      "suffixExact": true
+    }
+  ],
+  "protectedPaths": [
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram",
+    "miniapp/project.config.json",
+    "miniapp/scripts/package-business-test.cjs",
+    "miniapp/scripts/package-sandbox.cjs",
+    "miniapp/scripts/package-sandbox-registration.cjs"
+  ],
+  "protectedDiff": "",
+  "historicalEvidenceJsonModified": "",
+  "reruns": {
+    "participant": {
+      "pass": 26,
+      "fail": 0
+    },
+    "business": {
+      "pass": 18,
+      "fail": 0
+    },
+    "memberAccessSdk": {
+      "pass": 1,
+      "fail": 0
+    },
+    "audit": {
+      "checks": 17,
+      "sourcePins": 13,
+      "unexpected": 0
+    }
+  },
+  "cloudOperations": 0
+}

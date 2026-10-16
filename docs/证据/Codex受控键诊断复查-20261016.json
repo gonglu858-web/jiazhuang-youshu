@@ -1,0 +1,90 @@
+{
+  "reviewedCommit": "5ef7d96",
+  "verificationKind": "offline synthetic independent counterexamples",
+  "audit": {
+    "baseline": {
+      "exitCode": 0,
+      "counters": {
+        "checksRun": 17,
+        "checkFailures": 0,
+        "sensitivityGuardAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "guardAttemptsTotal": 2,
+        "cloudOperations": 0
+      },
+      "driftHits": 0
+    },
+    "caughtAttempt": {
+      "exitCode": 0,
+      "counters": {
+        "checksRun": 17,
+        "checkFailures": 0,
+        "sensitivityGuardAttempts": 2,
+        "businessPhaseGuardAttempts": 1,
+        "guardAttemptsTotal": 3,
+        "cloudOperations": 0
+      },
+      "driftHits": 0
+    },
+    "sourceDrift": {
+      "exitCode": 1,
+      "counters": {
+        "checksRun": 17,
+        "checkFailures": 0,
+        "sensitivityGuardAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "guardAttemptsTotal": 2,
+        "cloudOperations": 0
+      },
+      "driftHits": 1
+    }
+  },
+  "diagnosticCases": [
+    {
+      "endState": "unchanged",
+      "clockReads": 1,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false,
+      "registrationState": "UNKNOWN"
+    },
+    {
+      "endState": "expires",
+      "clockReads": 1,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false,
+      "registrationState": "UNKNOWN"
+    },
+    {
+      "endState": "NaN",
+      "clockReads": 1,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false,
+      "registrationState": "UNKNOWN"
+    },
+    {
+      "endState": "throws",
+      "clockReads": 1,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false,
+      "registrationState": "UNKNOWN"
+    }
+  ],
+  "clientMalformedAccepted": true,
+  "falseModeManifestAccepted": true,
+  "coreSha256": "31ba75bb2127c7ed9607965b11b9147ea9af4e00dce80f989999540d6d684c09",
+  "packerSha256": "693272c1efb80296458d37c2db73ce24fbb8979777edd56b7ad53a0399bb19cd",
+  "cloudOperations": 0,
+  "productSourcesChanged": false,
+  "limitations": [
+    "Clock advancement is a synthetic enumeration hook, not platform evidence.",
+    "Client malformed data is a synthetic response, not observed cloud output."
+  ]
+}
