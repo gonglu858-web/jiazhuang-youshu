@@ -1,3 +1,7 @@
+## 2026-10-16 CodeBuddy 完成第二固定候选本地准备：待审查
+
+- 核心词表 +wxCloudApiToken→CANDIDATE_WX_CLOUD_API_TOKEN（仅识别假设）；客户端标签集同步；容量2仍拒绝 truncated=true；REQUEST_FIELDS 零扩展、零DB、失败语义保持；相似名不误识、候选getter零访问；生成链双标签可见且原键名不外泄。核验包 32/32、业务包 18/18、SDK 1/1；证据与审计 v5 意外 0。
+- 见[第二候选证据](证据/CodeBuddyI1第二候选诊断证据-20261016.json)与[审计v5](证据/CodeBuddyI1入站事件封装离线核实v5-20261016.json)。待 Codex 审查；真实平台未验证未放行；1号不重试，I2/P 不开展。
 ## 2026-10-16 I1手机结果已收到：两个额外键，仍未读库
 
 本轮2c8461b684ea截图显示UNKNOWN/PIC_REQUEST_INVALID/readAttempted=false，CANDIDATE_USERINFO加其它键1（9–16码元）。受审核心候选不计入其它，故共2个额外键。SDK源码存在15码元wxCloudApiToken，仅支持待验证候选；合成对照证明不同键可产生相同统计，未知名/来源不下结论。见[结果分析](Codex分析-I1受控诊断手机结果-20261016.md)及新独立证据。建议用户转交[CodeBuddy本地诊断任务](CodeBuddy任务-I1第二额外键固定候选诊断-20261016.md)，仅加固定识别标签，不扩业务白名单，不读值/凭据；先本地自测再Codex审查。本轮未改产品或云端，1号已结束无需重试/等待，I2/P不开展；最近已核关闭摘要仍为2f0a189a4cd1c224b048db500fb04af952148a7952804677abdf904b0a3d3c16。

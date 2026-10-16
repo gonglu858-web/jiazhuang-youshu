@@ -128,6 +128,7 @@ async function main() {
     finally { delete process.env.PIC_CLOSE_SOURCE_DIR; }
     assert.equal(modeResult.closeCheckIndependentOfCandidateWindow, true, mode + ' 关闭检查不依赖候选窗口');
     r3.modes[String(mode)] = modeResult;
+    if (mode) r3.candidateTrueDir = candidate;
   }
 
   // ── R4：客户端严格验证（畸形整份丢弃 / 合法保留）──────────────────────────
@@ -193,6 +194,73 @@ async function main() {
   assert.equal(r4Truncation.falseControlKept, true, 'truncated=false 空标签/单标签合法对照保留');
   r4.truncation = r4Truncation;
 
+  // ── R5（第二候选）：wxCloudApiToken 固定候选识别/泄漏/相似名/getter/生成链 ────
+  // 该候选仅为本机 node-sdk 静态锚点（15 码元）提出的待验证假设，不证明手机入站真实键名。
+  const r5 = {};
+  const r5Checker = core.createIdentityChecker({
+    db: { collection() { throw Error('DB forbidden'); } },
+    trusted: { appId: core.FIXED_TARGET.appId, envId: core.FIXED_TARGET.envId, openid: 'synthetic-r5-openid' },
+    config: { checkRoundId: TEST_ROUND, passphraseDigest: DIGEST, windowStartsAtMs: 1000, windowExpiresAtMs: 2000, keyDiagnostic: true },
+    now: () => 1500
+  });
+  const r5req = extra => Object.assign({ action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: PASSPHRASE }, extra || {});
+  const both = await r5Checker.handle(r5req({ userInfo: {}, wxCloudApiToken: {} }));
+  r5.bothLabels = JSON.parse(JSON.stringify(both.keyDiagnostic.candidateLabels));
+  r5.otherKeyCountBoth = both.keyDiagnostic.otherKeyCount;
+  assert.equal(r5.bothLabels.join(','), 'CANDIDATE_USERINFO,CANDIDATE_WX_CLOUD_API_TOKEN', '双候选两标签');
+  assert.equal(r5.otherKeyCountBoth, 0, '双候选其它键0');
+  assert.equal(JSON.stringify(both).includes('wxCloudApiToken'), false, '原键名不回显');
+  const secret = 'synthetic_secret_' + crypto.randomBytes(8).toString('hex');
+  const withSecret = await r5Checker.handle(r5req({ userInfo: {}, wxCloudApiToken: {}, [secret]: {} }));
+  r5.secretLeaked = JSON.stringify(withSecret).includes(secret);
+  r5.secretOtherCount = withSecret.keyDiagnostic.otherKeyCount;
+  assert.equal(r5.secretLeaked, false, '秘密键名不回显');
+  assert.equal(r5.secretOtherCount, 1, '秘密键计入其它键');
+  const similar = await r5Checker.handle(r5req({ WXCloudApiToken: {}, wxcloudapitoken: {}, wxCloudApiTokenX: {}, userInfo: {} }));
+  r5.similarMisidentified = JSON.parse(JSON.stringify(similar.keyDiagnostic.candidateLabels)).includes('CANDIDATE_WX_CLOUD_API_TOKEN');
+  r5.similarOtherCount = similar.keyDiagnostic.otherKeyCount;
+  assert.equal(r5.similarMisidentified, false, '大小写/相似名不误识别');
+  assert.equal(r5.similarOtherCount, 3, '相似名按其它键计数');
+  let getterHits = 0;
+  const getterEvent = r5req({});
+  Object.defineProperty(getterEvent, 'wxCloudApiToken', { enumerable: true, get() { getterHits++; throw Error('synthetic-token-read'); } });
+  const withGetter = await r5Checker.handle(getterEvent);
+  r5.candidateGetterReads = getterHits;
+  r5.candidateLabelOnGetter = JSON.parse(JSON.stringify(withGetter.keyDiagnostic.candidateLabels)).join(',');
+  assert.equal(getterHits, 0, '候选键值/getter 零访问');
+  assert.equal(r5.candidateLabelOnGetter, 'CANDIDATE_WX_CLOUD_API_TOKEN', 'getter 抛错仍仅枚举识别');
+  // 实际生成链：独立构建真实模式（synthetic:false、当前窗口）的诊断候选——入口 CONFIG_ENABLED=true
+  const r5PlanPath = write('pic-plan-r5.json', { schema: packer.PLAN_SCHEMA, synthetic: false, checkRoundId: TEST_ROUND,
+    participantCode: '1', ...core.FIXED_TARGET, passphraseDigest: DIGEST,
+    windowStartsAtIso: new Date(Date.now() - 60000).toISOString(), windowExpiresAtIso: new Date(Date.now() + 600000).toISOString(), closeSourceDir: source.outDir, keyDiagnostic: true });
+  const r5Candidate = path.join(path.dirname(scratch), 'participant-identity-r5diag-' + crypto.randomBytes(4).toString('hex'));
+  packer.build(r5PlanPath, r5Candidate);
+  assert.equal(packer.checkDir(r5Candidate).ok, true, 'R5 诊断候选重建一致');
+  assert.ok(fs.readFileSync(path.join(r5Candidate, 'server', 'scheduleSandbox', 'index.js'), 'utf8').includes('const CONFIG_KEY_DIAGNOSTIC = true;'), 'R5 候选诊断开关开启');
+  const serverFile = path.join(r5Candidate, 'server', 'scheduleSandbox', 'index.js');
+  const nativeRequireSrv = createRequire(serverFile);
+  const dbForbidden = { collection() { throw Error('DB forbidden'); } };
+  const wxSdkStubSrv = { init() {}, DYNAMIC_CURRENT_ENV: 'dynamic', getWXContext: () => ({ APPID: core.FIXED_TARGET.appId, OPENID: 'synthetic-r5-openid' }), database: () => dbForbidden };
+  const srvModule = { exports: {} };
+  vm.runInNewContext(fs.readFileSync(serverFile, 'utf8'), {
+    require: id => (id === 'wx-server-sdk' ? wxSdkStubSrv : id === './participant-identity-check' ? core : nativeRequireSrv(id)),
+    module: srvModule, exports: srvModule.exports, process: { env: { TCB_ENV: core.FIXED_TARGET.envId } }, console
+  });
+  const cfgCtx = { module: { exports: {} } };
+  vm.runInNewContext(fs.readFileSync(path.join(r5Candidate, 'frontend', 'config', 'cloud.js'), 'utf8'), cfgCtx, { filename: 'cloud.js' });
+  const generatedConfig = cfgCtx.module.exports;
+  assert.equal(generatedConfig.checkRoundId, TEST_ROUND, '生成配置含本轮轮次');
+  const clientGenCtx = { module: { exports: {} }, require: () => generatedConfig,
+    wx: { cloud: { _identityCheckEnvInited: false, init() {}, callFunction: async opts => ({ result: await srvModule.exports.main(Object.assign({}, opts.data, { userInfo: {}, wxCloudApiToken: {} })) }) } } };
+  vm.runInNewContext(fs.readFileSync(path.join(r5Candidate, 'frontend', 'utils', 'identity-check-client.js'), 'utf8'), clientGenCtx, { filename: 'client.js' });
+  const chainResult = await clientGenCtx.module.exports.callIdentityCheck({ action: 'inspectSelf', passphrase: PASSPHRASE });
+  r5.chainCode = chainResult.code;
+  r5.chainBothLabels = JSON.parse(JSON.stringify(chainResult.keyDiagnostic.candidateLabels));
+  r5.chainDbForbidden = true;
+  assert.equal(r5.chainCode, 'PIC_REQUEST_INVALID', '生成链失败语义保持');
+  assert.equal(r5.chainBothLabels.join(','), 'CANDIDATE_USERINFO,CANDIDATE_WX_CLOUD_API_TOKEN', '生成链两标签可见');
+  assert.equal(JSON.stringify(chainResult).includes('wxCloudApiToken'), false, '生成链不回显原键名');
+
   // S1：外层守卫计数（探针/业务期意外/总数）与同一实际计数决定的 ok/退出码。
   // 内部审计的预期反例（r1.*）与外层意外分述；不清零、不掩盖外层命中。
   const businessPhaseGuardAttempts = guardHits.length - businessStart;
@@ -200,20 +268,21 @@ async function main() {
   const guardCounters = { sensitivityAttempts, businessPhaseGuardAttempts, total: totalGuardAttempts };
   const failed = businessPhaseGuardAttempts > 0;
   const result = {
-    schema: 'codebuddy-key-diagnostic-rfix-evidence/2',
+    schema: 'codebuddy-key-diagnostic-rfix-evidence/3',
     observedAt: new Date().toISOString(),
-    basisCommit: '23f3ffb',
-    verificationKind: 'offline fix-proof evidence after R1-R4 + S1/S2; synthetic counterexamples, not platform verification',
+    basisCommit: '196f91c',
+    verificationKind: 'offline fix-proof evidence after R1-R4 + S1/S2 + second fixed candidate; synthetic counterexamples, not platform verification',
     ok: !failed,
     guardCounters,
     implementationSummary: {
       R1: '审计 ok/exit 判定纳入业务期意外守卫（含被 catch 者）；探针单独记账',
       R2: '核心诊断构建后与最终附加前各重查窗口；到期/未开始/NaN/抛错撤销诊断，失败语义与零DB保持',
       R3: 'manifest keyDiagnosticSchema/Scope 对 true/false 两候选统一严格校验；缺失/错值拒绝',
-      R4: '客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致，违约整份丢弃；截断契约一致性已执行校验（S2）：当前词表容量1<8，truncated=true矛盾即整份拒绝',
-      sizeBoundWording: '序列化<1KB为源码防御检查；固定字段+单词表+安全整数下合法投影结构上远小于1KB（结构界限）；14类畸形未动态触达该分支（无实际超限用例，不宣称动态覆盖）。实现用字符串长度（UTF-16码元），全ASCII投影下与UTF-8字节数一致'
+      R4: '客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致，违约整份丢弃；截断契约一致性已执行校验（S2）：当前词表容量2仍<8，truncated=true矛盾即整份拒绝',
+      sizeBoundWording: '序列化<1KB为源码防御检查；固定字段+有限词表+安全整数下合法投影结构上远小于1KB（结构界限）；畸形用例未动态触达该分支（无实际超限用例，不宣称动态覆盖）。实现用字符串长度（UTF-16码元），全ASCII投影下与UTF-8字节数一致',
+      R5: '第二固定候选 wxCloudApiToken→CANDIDATE_WX_CLOUD_API_TOKEN（本机 node-sdk 静态锚点假设，非真实键名结论）：双候选两标签/其它0、秘密键名不回显、相似名不误识别、候选getter零访问、实际生成链两标签可见且原键名不外泄'
     },
-    r1, r2Cases, r3, r4,
+    r1, r2Cases, r3, r4, r5,
     runtimeDigests: {
       coreSha256: sha(fs.readFileSync(path.join(root, 'miniapp/scripts/lib/participant-identity-check.cjs'))),
       packerSha256: sha(fs.readFileSync(path.join(root, 'miniapp/scripts/package-participant-identity-check.cjs'))),
@@ -232,7 +301,7 @@ async function main() {
     fs.writeFileSync(outPath, json, { flag: 'wx' });
   }
   console.log(json);
-  console.error('[收尾证据摘要] ok=' + result.ok + ' r1.exit=' + r1.baseline.exitCode + '/' + r1.caughtAttempt.exitCode + '/' + r1.sourceDrift.exitCode + ' r2.撤销反例=3/4 r3.篡改拒绝=6 r4.畸形丢弃=' + Object.keys(r4.malformedDropped).length + ' r4.截断矛盾拒绝=true 探针=' + sensitivityAttempts + ' 业务期意外=' + businessPhaseGuardAttempts + '/总=' + totalGuardAttempts + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
+  console.error('[收尾证据摘要] ok=' + result.ok + ' r1.exit=' + r1.baseline.exitCode + '/' + r1.caughtAttempt.exitCode + '/' + r1.sourceDrift.exitCode + ' r2.撤销反例=3/4 r3.篡改拒绝=6 r4.畸形丢弃=' + Object.keys(r4.malformedDropped).length + ' r4.截断矛盾拒绝=true r5.双标签=' + (r5.bothLabels.length === 2) + '/相似名误识=' + r5.similarMisidentified + '/getter=' + r5.candidateGetterReads + '/生成链=' + (r5.chainBothLabels.length === 2) + ' 探针=' + sensitivityAttempts + ' 业务期意外=' + businessPhaseGuardAttempts + '/总=' + totalGuardAttempts + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
   if (failed) process.exitCode = 1;
 }
 main().catch(e => { console.error(e && e.message ? e.message : e); process.exitCode = 1; }).finally(() => restore.reverse().forEach(f => f()));

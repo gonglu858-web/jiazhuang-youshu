@@ -1976,6 +1976,25 @@ test('D2 全链诊断（生成候选 App/Page→client→server→core）：诊�
     assert.equal(diag.dbCalls.collections.length, 0, '诊断路径零集合访问');
   });
 
+  // (2b) 双候选信封（userInfo + wxCloudApiToken）：页面同时显示两个固定标签，其它键 0
+  const diag2 = mkChain(diagOut, {
+    userInfo: { appId: 'synthetic-envelope-appid', openId: 'synthetic-envelope-openid' },
+    wxCloudApiToken: { synthetic: true }
+  });
+  await withGlobalWx(diag2.stub, async () => {
+    const page = loadCandidatePage(diagOut, diag2.stub);
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
+    const text = page.data.result.keyDiagnosticText;
+    assert.ok(text.includes('CANDIDATE_USERINFO') && text.includes('CANDIDATE_WX_CLOUD_API_TOKEN'),
+      '双固定标签展示');
+    assert.ok(text.includes('其它键 0 个'), '其它键 0');
+    const pageDump = JSON.stringify(page.data);
+    assert.equal(pageDump.includes('wxCloudApiToken'), false, '原键名不出现在页面数据');
+    assert.equal(diag2.dbCalls.reads, 0, '零读取');
+  });
+
   // (3) 诊断轮 + 干净请求（无信封键）：正常核验不受影响，无诊断字段
   {
     const ok = mkChain(diagOut, null, [{ _id: userId, openid, status: 'active' }]);
@@ -2051,6 +2070,77 @@ test('D2 全链诊断（生成候选 App/Page→client→server→core）：诊�
 // ════════════════════════════════════════════════════════════════════════════
 // D3–D6 R1–R4 定点收尾（Codex 复查 880fbf8 §2–§5）
 // ════════════════════════════════════════════════════════════════════════════
+
+test('D1b 第二候选 wxCloudApiToken：双候选同在→两标签其它0；秘密键名→其它1不回显；大小写/相似名不误识别；候选getter零访问；伪造身份字段拒绝且零DB', async () => {
+  const openid = 'openid-diag2-' + RUN_ID;
+  const secretInKey = 'synthetic_secret_' + crypto.randomBytes(8).toString('hex');
+  const req = extra => Object.assign(
+    { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND },
+    extra || {}
+  );
+  // (1) 双候选同在 → 两个固定标签、其它键 0；原键名不回显
+  {
+    const db = makeTrapDb({ rows: [] });
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req({
+      userInfo: { openId: 'synthetic-untrusted' },
+      wxCloudApiToken: { synthetic: true }
+    }));
+    assert.equal(r.code, 'PIC_REQUEST_INVALID');
+    const d = r.keyDiagnostic;
+    assert.ok(d, '诊断存在');
+    assert.equal(JSON.parse(JSON.stringify(d.candidateLabels)).join(','),
+      'CANDIDATE_USERINFO,CANDIDATE_WX_CLOUD_API_TOKEN', '两个固定标签（跨vm用JSON比较）');
+    assert.equal(d.otherKeyCount, 0, '其它键 0');
+    assert.equal(d.truncated, false);
+    assert.equal(JSON.stringify(r).includes('wxCloudApiToken'), false, '原键名不回显（仅固定标签）');
+    assert.equal(db.calls.reads, 0, '零读取');
+  }
+  // (2) 双候选 + 秘密键名 → 标签 2、其它 1 入溢出桶、秘密不回显
+  {
+    const db = makeTrapDb({ rows: [] });
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req({
+      userInfo: {}, wxCloudApiToken: {}, [secretInKey]: { synthetic: true }
+    }));
+    const d = r.keyDiagnostic;
+    assert.equal(JSON.parse(JSON.stringify(d.candidateLabels)).length, 2, '两标签');
+    assert.equal(d.otherKeyCount, 1, '秘密键计入其它键');
+    assert.equal(d.otherKeyNameLengthBuckets.lenOver32, 1, '33码元落入溢出桶');
+    assert.equal(JSON.stringify(r).includes(secretInKey), false, '秘密键名不回显');
+    assert.equal(db.calls.reads, 0);
+  }
+  // (3) 大小写/相似名不误识别 → 全部按其它键计数并分桶
+  {
+    const db = makeTrapDb({ rows: [] });
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req({
+      WXCloudApiToken: {}, wxcloudapitoken: {}, wxCloudApiTokenX: {}, userInfo: {}
+    }));
+    const d = r.keyDiagnostic;
+    assert.equal(JSON.parse(JSON.stringify(d.candidateLabels)).join(','),
+      'CANDIDATE_USERINFO', '仅 userInfo 被识别');
+    assert.equal(d.otherKeyCount, 3, '相似名按其它键计数');
+    assert.equal(d.otherKeyNameLengthBuckets['len9-16'], 3, '15/15/16 码元均落 9–16 桶');
+    assert.equal(db.calls.reads, 0);
+  }
+  // (4) 候选键值设抛错 getter 亦不读取；伪造身份字段（openid/role）仍拒绝、零DB、值不采信不外泄
+  {
+    const db = makeTrapDb({ rows: [] });
+    const event = { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND };
+    let getterHits = 0;
+    Object.defineProperty(event, 'wxCloudApiToken', {
+      enumerable: true,
+      get() { getterHits++; throw new Error('synthetic-token-read'); }
+    });
+    Object.defineProperty(event, 'openid', { enumerable: true, value: 'synthetic-forged-openid' });
+    Object.defineProperty(event, 'role', { enumerable: true, value: 'synthetic-forged-role' });
+    const r = await makeChecker(db, { keyDiagnostic: true }).handle(event);
+    assert.equal(r.code, 'PIC_REQUEST_INVALID');
+    assert.equal(getterHits, 0, '候选与伪造身份键的值/getter 零访问');
+    assert.equal(JSON.parse(JSON.stringify(r.keyDiagnostic.candidateLabels)).join(','),
+      'CANDIDATE_WX_CLOUD_API_TOKEN', '新候选识别');
+    assert.equal(db.calls.reads, 0, '零读取');
+    assert.equal(JSON.stringify(r).includes('synthetic-forged'), false, '伪造身份值不外泄、不采信');
+  }
+});
 
 test('D3 R2 诊断构建后/附加前重查窗口：构造期间到期/NaN/抛错撤销诊断；构造前有效对照可见；零DB与失败语义保持', async () => {
   const passphrase = 'synthetic-r2-passphrase-' + RUN_ID;
@@ -2195,6 +2285,17 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
     const r2 = await call(withLabel);
     assert.equal(JSON.stringify(r2.keyDiagnostic.candidateLabels), JSON.stringify(['CANDIDATE_USERINFO']), '合法标签保留（跨vm用JSON比较）');
     assert.equal(r2.keyDiagnostic.truncated, false);
+    // 新候选合法标签保留；跨标签重复整份丢弃；双标签合法保留
+    const newLabel = base();
+    newLabel.candidateLabels = ['CANDIDATE_WX_CLOUD_API_TOKEN'];
+    const r3 = await call(newLabel);
+    assert.equal(JSON.stringify(r3.keyDiagnostic.candidateLabels), JSON.stringify(['CANDIDATE_WX_CLOUD_API_TOKEN']), '新候选合法标签保留');
+    const dupPair = base();
+    dupPair.candidateLabels = ['CANDIDATE_USERINFO', 'CANDIDATE_WX_CLOUD_API_TOKEN', 'CANDIDATE_USERINFO'];
+    assert.equal((await call(dupPair)).keyDiagnostic, undefined, '跨标签重复整份丢弃');
+    const pairLegal = base();
+    pairLegal.candidateLabels = ['CANDIDATE_USERINFO', 'CANDIDATE_WX_CLOUD_API_TOKEN'];
+    assert.equal((await call(pairLegal)).keyDiagnostic !== undefined, true, '双标签合法保留');
   });
 
   // (2) 生成页面链：畸形诊断不展示；合法诊断展示；原失败事实与口令清除保持
@@ -2233,6 +2334,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   const legalShown = await drive(base());
   assert.ok(typeof legalShown === 'string' && legalShown.includes('其它键 1 个'), '生成页面：合法诊断展示');
   assert.equal(legalShown.includes('已截断'), false, '合法对照不出现截断文本');
+  // S2 扩展：新候选合法标签在生成页面展示
+  const newLabelShown = await drive((() => { const d = base(); d.candidateLabels = ['CANDIDATE_WX_CLOUD_API_TOKEN']; return d; })());
+  assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
 test('D6 R1 审计失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账', () => {

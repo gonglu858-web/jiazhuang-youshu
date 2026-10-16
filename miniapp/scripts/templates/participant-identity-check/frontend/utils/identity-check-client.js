@@ -16,13 +16,13 @@ const cloudConfig = require('../config/cloud');
 // 不一致——整份诊断丢弃（不修补成默认值）；额外未知字段仅投影丢弃。不透传原键名或值。
 // 截断契约（S2 已执行校验）：truncated=true 仅在候选标签数已达上限（8）且存在未列出
 // 候选时才成立；合法标签仅取固定词表且无重复，故 labels.length ≤ 词表容量。当前词表
-// 容量为 1 < 8，当前协议下 truncated=true 必然矛盾，客户端整份拒绝；未来扩词表须同时
-// 满足「labels 数 === 上限」与「词表容量 ≥ 上限」。candidateLabels 数组长度恒 ≤ 8。
-// 投影输出恒为 6 个固定字段、内容有界（源码含序列化 <1KB 防御检查；固定字段与单一
-// 词表下合法投影结构上远小于 1KB）。
+// 容量为 2（CANDIDATE_USERINFO、CANDIDATE_WX_CLOUD_API_TOKEN）仍 < 8，当前协议下
+// truncated=true 必然矛盾，客户端整份拒绝；未来扩词表须同时满足「labels 数 === 上限」
+// 与「词表容量 ≥ 上限」。candidateLabels 数组长度恒 ≤ 8。投影输出恒为 6 个固定字段、
+// 内容有界（源码含序列化 <1KB 防御检查；固定字段与有限词表下合法投影结构上远小于 1KB）。
 const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
 const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
-const KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO'];
+const KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO', 'CANDIDATE_WX_CLOUD_API_TOKEN'];
 const KEY_DIAGNOSTIC_BUCKETS = ['len<=4', 'len5-8', 'len9-16', 'len17-32', 'lenOver32'];
 const KEY_DIAGNOSTIC_MAX_LABELS = 8;
 

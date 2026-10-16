@@ -74,9 +74,15 @@ const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
 const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
 /**
  * 源代码固定的候选键名→固定标签字典：仅用于识别已知候选键是否出现。
- * 字典中的键名不因此成为允许业务字段或可信身份；字典之外一律只计数/分桶。
+ * userInfo 为旧版公开文档行为候选；wxCloudApiToken 为本机 node-sdk 静态锚点
+ * （15 码元，落在 9–16 分桶）提出的**待验证假设**——只枚举键名识别，不证明手机
+ * 入站带的就是它。字典中的键名不因此成为允许业务字段或可信身份；字典之外
+ * （含大小写/相似名变体）一律只计数/分桶。
  */
-const KEY_DIAGNOSTIC_CANDIDATES = Object.freeze({ userInfo: 'CANDIDATE_USERINFO' });
+const KEY_DIAGNOSTIC_CANDIDATES = Object.freeze({
+  userInfo: 'CANDIDATE_USERINFO',
+  wxCloudApiToken: 'CANDIDATE_WX_CLOUD_API_TOKEN'
+});
 /** 候选标签输出上限；超过即截断并置 truncated（当前字典为 1，实际不可达，保留协议字段）。 */
 const KEY_DIAGNOSTIC_MAX_LABELS = 8;
 /** 键名长度分桶边界（源代码固定）；超过最后边界归 lenOver32。 */

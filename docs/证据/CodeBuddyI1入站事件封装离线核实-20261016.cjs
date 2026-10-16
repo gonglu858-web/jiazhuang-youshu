@@ -18,9 +18,9 @@ const outIdx = argv.indexOf('--out');
 const outPath = outIdx !== -1 ? path.resolve(argv[outIdx + 1] || '') : null;
 
 // ── 外置固定基线（提交绑定；不从待测源码自举）────────────────────────────────
-const BASIS_COMMIT = '23f3ffb';
-/** 打包器自身受审摘要（S1/S2 收尾终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
-const PACKAGER_SELF_SHA256 = '141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029';
+const BASIS_COMMIT = '196f91c';
+/** 打包器自身受审摘要（第二候选轮终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
+const PACKAGER_SELF_SHA256 = '262f8a737825f1061a416c3ab000138bcd3cc2bb28f1787d8978512f62e1e534';
 const PACKAGER_REL = 'miniapp/scripts/package-participant-identity-check.cjs';
 const CORE_REL = 'miniapp/scripts/lib/participant-identity-check.cjs';
 /** 本轮实际修改的受审源文件（对照项在 PINNED_SOURCES 中分述）。 */
@@ -115,7 +115,7 @@ function main() {
   check('入口原样透传event', () => assert.ok(entry.includes('return checker.handle(event);')));
   check('入口诊断开关锚点存在', () => assert.ok(entry.includes('const CONFIG_KEY_DIAGNOSTIC = false;')));
   check('客户端负载仅3+1键', () => assert.ok(client.includes('checkRoundId: cloudConfig.checkRoundId') && client.includes('if (request.includeFullUserId === true) payload.includeFullUserId = true;')));
-  check('客户端诊断净化按固定schema', () => assert.ok(client.includes("raw.schema !== KEY_DIAGNOSTIC_SCHEMA") && client.includes("KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO']")));
+  check('客户端诊断净化按固定schema', () => assert.ok(client.includes("raw.schema !== KEY_DIAGNOSTIC_SCHEMA") && client.includes("KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO', 'CANDIDATE_WX_CLOUD_API_TOKEN']")));
   check('页面仅展示净化诊断文本', () => assert.ok(page.includes('describeKeyDiagnostic') && wxml.includes('result.keyDiagnosticText')));
   check('页面无自动调用', () => assert.ok(/\bonLoad\(\)\s*\{[^}]*\}/.test(page) === false || page.includes('明确空实现：加载不发送请求')));
   const sdkPkg = JSON.parse(readU8(path.join(SDK, 'wx-server-sdk/package.json')));
