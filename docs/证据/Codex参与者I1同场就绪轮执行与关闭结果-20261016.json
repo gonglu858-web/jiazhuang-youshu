@@ -1,0 +1,39 @@
+{
+  "schema": "codex-i1-manual-preview-result/1",
+  "roundId": "i1-20261016-010b62cd534e",
+  "recordedAt": "2026-10-16T02:00:39.662051+00:00",
+  "status": "REMOTE_CLOSED_VERIFIED_PARTICIPANT_RESULT_PENDING_REVIEW",
+  "manualPreview": {
+    "source": "user-message",
+    "quote": "二维码已出现"
+  },
+  "participantSubmission": {
+    "source": "user-message",
+    "quote": "已经提交，结果已出现，请关闭",
+    "reportedSubmitted": true,
+    "actualStatus": null,
+    "actualUserId": null,
+    "identityVerifiedByAssistant": false,
+    "actualDatabaseRequestObserved": false
+  },
+  "candidateVerifiedAt": "2026-10-16T01:54:26.269326+00:00",
+  "closedVerifiedAt": "2026-10-16T01:59:09.615204+00:00",
+  "latestClosedCodeSha256": "01167aa9135e52b509cd773184277441b93e6ebd3774755ea1859477572d4d88",
+  "candidateFiles": 3,
+  "closedFiles": 8,
+  "sdkVersion": "3.0.1",
+  "databaseDependencyVersion": "1.4.1",
+  "credentialBatches": 2,
+  "associationStages": 6,
+  "scfReads": 5,
+  "deployments": 2,
+  "zipDownloads": 2,
+  "assistantBusinessInvocations": 0,
+  "assistantDatabaseCalls": 0,
+  "platformInvocationLogsRead": false,
+  "actualFeesChecked": false,
+  "localPassphraseDisplayFileRemoved": true,
+  "notepadDisplayClosureConfirmed": false,
+  "localConfigRestore": "compiler additions backed up, pinned config restored before credentials; private IDE config retained outside package",
+  "independentTimerInstalled": false
+}

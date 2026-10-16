@@ -1,0 +1,19 @@
+{
+  "roundId": "i1-20261016-010b62cd534e",
+  "recordedAt": "2026-10-16T01:55:49.658564+00:00",
+  "state": "CANDIDATE_VERIFIED_WAITING_PARTICIPANT",
+  "manualPreview": "user reported QR appeared",
+  "remoteCandidateFilesMatched": 3,
+  "wxServerSdk": "3.0.1",
+  "databaseVersion": "1.4.1",
+  "credentialBatchesSoFar": 1,
+  "candidateDeployments": 1,
+  "closedDeployments": 0,
+  "assistantFunctionInvocations": 0,
+  "participantResult": "pending",
+  "localPassphraseDisplayCreated": true,
+  "codexOpenStatus": "queued",
+  "userSawPassphraseConfirmed": false,
+  "closeStartNoLaterThan": "2026-10-16T02:08:44.5089381Z",
+  "independentTimerInstalled": false
+}

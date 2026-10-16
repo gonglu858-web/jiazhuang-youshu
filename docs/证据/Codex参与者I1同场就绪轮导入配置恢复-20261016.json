@@ -1,0 +1,34 @@
+{
+  "roundId": "i1-20261016-010b62cd534e",
+  "observedAt": "2026-10-16T01:53:20.403954+00:00",
+  "precheckFailureBeforeCredentials": true,
+  "changedFrozenFiles": [
+    "project.config.json"
+  ],
+  "addedCompilerKeys": [
+    "compileWorklet",
+    "uglifyFileName",
+    "uploadWithSourceMap",
+    "localPlugins",
+    "disableUseStrict",
+    "useCompilerPlugins",
+    "condition"
+  ],
+  "backups": [
+    {
+      "rel": "project.config.json",
+      "sha256": "a1d6a0809afcdc70ca53a6df6fd5e25d89a6c2c252122faa3c7b316ee11c17e4",
+      "bytes": 928,
+      "backupPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\ide-before-restore-project.config.json"
+    },
+    {
+      "rel": "project.private.config.json",
+      "sha256": "639d28bfab192ff86936e25880f3f2d1db0f56ef98b54e72d27f285ac5fcad95",
+      "bytes": 679,
+      "backupPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\ide-before-restore-project.private.config.json"
+    }
+  ],
+  "restoredConfigSha256": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+  "businessSourceUnchanged": true,
+  "extraPrivateConfigPreservedOutsidePackage": true
+}

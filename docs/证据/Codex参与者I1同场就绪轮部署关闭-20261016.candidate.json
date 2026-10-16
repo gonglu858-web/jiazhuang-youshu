@@ -1,0 +1,175 @@
+{
+  "runId": "codex-i1-candidate-aa8a02c0-4159-4fe4-aad3-1cd79c28e708",
+  "reviewedHead": "0c51733",
+  "mode": "candidate",
+  "roundId": "i1-20261016-010b62cd534e",
+  "scriptSha256": "fda5cc4d80e2ce8bc5613085e744b3cf7669752bf6a4f1b791a41ce34e6066cb",
+  "startedAt": "2026-10-16T01:53:21.114Z",
+  "target": {
+    "appId": "wxfb4db1615ac15531",
+    "envId": "cloud1-d8gcq5ag39d847723",
+    "region": "ap-shanghai",
+    "functionName": "scheduleSandbox"
+  },
+  "libraryPins": {
+    "cloudbase-cli-credential-host.cjs": "bccea293069e22ed97ea7a3648772e0b1dd11b26fda9f85295cf4b3002ab509c",
+    "cloudbase-sdk-readonly-observer.cjs": "f43a557d49b3923eb75f686b477b8cb047be560bff6040c0e36857a3cc4d0478",
+    "cloudbase-readonly-observer.cjs": "3b05a3057afc02065cd528965ac2fb6bb162b5d82bc591f87cb718e60dfcf6bb"
+  },
+  "status": "REMOTE_ZIP_OBTAINED_VERIFICATION_PENDING",
+  "credentialFetchRequested": 1,
+  "credentialFetchAttempted": true,
+  "apiProcesses": [
+    {
+      "action": "GetFunctionAddress",
+      "attempted": true,
+      "exitCode": 0,
+      "spawnError": false,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "processExited": true,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "requestId": "1af15344-c2d4-493b-b648-6bdf0f864e23"
+    },
+    {
+      "action": "GetFunction",
+      "attempted": true,
+      "exitCode": 0,
+      "spawnError": false,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "processExited": true,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "requestId": "c6f080b4-198c-4d1a-b4c0-371e2b3d0804"
+    },
+    {
+      "action": "GetFunctionAddress",
+      "attempted": true,
+      "exitCode": 0,
+      "spawnError": false,
+      "timedOut": false,
+      "overflow": false,
+      "closeNotObserved": false,
+      "processExited": true,
+      "terminationRequested": false,
+      "terminationConfirmed": true,
+      "requestId": "b0935fb7-c5cb-4108-a40e-d51a3d020a4a"
+    }
+  ],
+  "downloadAttempted": true,
+  "deployCalls": 1,
+  "functionInvocations": 0,
+  "businessDatabaseCalls": 0,
+  "credentialAcquisitionMayRefreshOfficialCache": true,
+  "fetchDiagnostics": {
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "terminationRequested": false,
+    "terminationConfirmed": true,
+    "spawnFailed": false,
+    "stdoutBytes": 769,
+    "stderrBytes": 0
+  },
+  "association": {
+    "matched": true,
+    "stoppedEarly": false,
+    "accountIdSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "accountIdTail": "7053",
+    "uinSha256": "065d5f01761a7e7af6fab1413a369395661b692393e04f091092e517a99ea7c0",
+    "uinTail": "7053",
+    "stages": [
+      {
+        "stage": "sts",
+        "ok": true,
+        "notExecuted": false,
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "requestId": "529e79a3-168a-4b4d-94ee-25252b66bc3e"
+      },
+      {
+        "stage": "describeEnvs",
+        "ok": true,
+        "notExecuted": false,
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "requestId": "ade9ee71-ce19-4a54-a00b-6f071c33dec9"
+      },
+      {
+        "stage": "describeEnvInfo",
+        "ok": true,
+        "notExecuted": false,
+        "exitCode": 0,
+        "timedOut": false,
+        "overflow": false,
+        "closeNotObserved": false,
+        "spawnError": false,
+        "requestId": "a4548cad-0460-4f01-933b-64aad6d4c1ac"
+      }
+    ]
+  },
+  "closedBaselineMatched": true,
+  "deploymentProcess": {
+    "exitCode": 0,
+    "spawnError": false,
+    "timedOut": false,
+    "overflow": false,
+    "closeNotObserved": false,
+    "processExited": true,
+    "terminationRequested": false,
+    "terminationConfirmed": true
+  },
+  "config": {
+    "FunctionName": {
+      "matched": true,
+      "expected": "scheduleSandbox"
+    },
+    "Namespace": {
+      "matched": true,
+      "expected": "cloud1-d8gcq5ag39d847723"
+    },
+    "Runtime": {
+      "matched": true,
+      "expected": "Nodejs20.19"
+    },
+    "MemorySize": {
+      "matched": true,
+      "expected": 256
+    },
+    "Timeout": {
+      "matched": true,
+      "expected": 3
+    },
+    "Type": {
+      "matched": true,
+      "expected": "Event"
+    },
+    "Handler": {
+      "matched": true,
+      "expected": "index.main"
+    },
+    "Status": {
+      "matched": true,
+      "expected": "Active"
+    }
+  },
+  "archive": {
+    "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1-20261016-010b62cd534e\\codex-i1-candidate-aa8a02c0-4159-4fe4-aad3-1cd79c28e708\\remote.zip",
+    "sha256": "adbb894f60b455c34a028857ddb35615fd408a569fef13e267d2bcd89afd9b5d",
+    "platformCodeSha256": "adbb894f60b455c34a028857ddb35615fd408a569fef13e267d2bcd89afd9b5d",
+    "bytes": 4898751
+  },
+  "finishedAt": "2026-10-16T01:53:53.835Z"
+}
