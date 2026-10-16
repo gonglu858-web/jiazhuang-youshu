@@ -1,0 +1,17 @@
+{
+  "roundId": "i1diag2-20261016-2d90b36818a9",
+  "planSha256": "4aafe591b771da659410821f1a87a4aff1a40d2e40fd1f1941683b44db0b5f60",
+  "manifestSha256": "9a16d1727f6d321ed9d115fc0b4f46cd9dd615fa711f4860e5bc4507f97e9064",
+  "scripts": [
+    {
+      "name": "Codex参与者I1第二候选部署关闭-20261016.cjs",
+      "sha256": "e91aaa33dad6d98477b8ca7904f4e88d9f23cd916fe87959dbfa84516b84fa8f"
+    },
+    {
+      "name": "Codex参与者I1第二候选字节核对-20261016.py",
+      "sha256": "cca8f654be6242b3407114e1b3cba97fab8c015d37825c036909d208d23dd62a"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}

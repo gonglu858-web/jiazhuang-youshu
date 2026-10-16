@@ -1,0 +1,141 @@
+{
+  "schema": "codex-second-key-review/1",
+  "reviewedCommit": "f0b7fa9",
+  "basis": "196f91c",
+  "pins": {
+    "miniapp/scripts/lib/participant-identity-check.cjs": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+    "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js": "4f2860962c478fe7fd80c8a5498dde3ec5cc071d6089369555d9d54bc218eb5e",
+    "miniapp/scripts/package-participant-identity-check.cjs": "262f8a737825f1061a416c3ab000138bcd3cc2bb28f1787d8978512f62e1e534"
+  },
+  "coreCases": [
+    {
+      "name": "dual-getters",
+      "diagnostic": true,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "secret-and-forged-identity",
+      "diagnostic": true,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "similar-names",
+      "diagnostic": true,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "own-enumerable-only",
+      "diagnostic": true,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "disabled",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "password",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "round",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "context",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "clock-2-expired",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "clock-2-nan",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "clock-2-throw",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "clock-3-expired",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "clock-3-nan",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    },
+    {
+      "name": "clock-3-throw",
+      "diagnostic": false,
+      "dbCalls": 0,
+      "code": "PIC_REQUEST_INVALID"
+    }
+  ],
+  "clientCases": [
+    {
+      "name": "valid",
+      "retained": true
+    },
+    {
+      "name": "truncated",
+      "retained": false
+    },
+    {
+      "name": "duplicate",
+      "retained": false
+    },
+    {
+      "name": "unknown",
+      "retained": false
+    }
+  ],
+  "getterReads": 0,
+  "dbCalls": 0,
+  "history": {
+    "docs/进展与待办.md": {
+      "oldBytes": 827943,
+      "addedBytes": 2593,
+      "exactSuffix": true
+    },
+    "docs/CodeBuddy开发交接.md": {
+      "oldBytes": 12851,
+      "addedBytes": 698,
+      "exactSuffix": true
+    }
+  },
+  "previousJsonFilesPreserved": 627,
+  "protectedPathsUnchanged": true,
+  "frozenFiles": 38,
+  "guard": {
+    "sensitivityAttempts": 2,
+    "unexpectedAttempts": 0,
+    "total": 2
+  },
+  "ok": true,
+  "limitations": [
+    "All runtime inputs synthetic; no platform verification or real identity conclusion.",
+    "SDK regression is a separate local run; this script does not obtain credentials."
+  ]
+}
