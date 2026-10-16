@@ -277,7 +277,7 @@ function writeExclusive(abs, buf, io, rel) {
  * 源码变更必须先受审更新本表；否则 build 与 check 一律 SOURCE_DRIFT 拒绝。
  */
 const PINNED_SOURCES = Object.freeze({
-  'miniapp/scripts/lib/participant-identity-check.cjs': '31ba75bb2127c7ed9607965b11b9147ea9af4e00dce80f989999540d6d684c09',
+  'miniapp/scripts/lib/participant-identity-check.cjs': '7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
   'miniapp/scripts/templates/participant-identity-check/server/index.js': '0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': 'e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9',
@@ -285,7 +285,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
   'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '3cb639c8fa494b977873ce7db15136abc2e8304b0e553fb07ed158bf3dda8e49',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': 'a99409c2072135a597514fe0b09df85bcd1e75af5984615bf60cfec33f19109e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305',
@@ -715,7 +715,7 @@ function build(planPath, outOverride) {
       '      完整 userId 是标识不是密码，不等于 OPENID/UNIONID，也不构成 P 登记证据。',
       'R5：本轮核验轮次由计划写入服务端配置与前端配置，客户端必须原样带回。',
       'keyDiagnostic 默认关闭；仅具体诊断轮显式开启；诊断只含固定候选标签/计数/键名长度分桶，绝不含原键名、值或前后缀，且仅在全部准入门槛通过时附加。',
-      'SDK 本地转换未执行；真实平台行为完全未验证。'
+      '本次打包不执行 SDK 本地转换（wx-server-sdk 3.0.1 本地转换已有历史验证）；当前真实平台行为完全未验证。'
     ],
     files: entries,
     closePackage: {
@@ -835,10 +835,10 @@ function checkDir(dir) {
     if (JSON.stringify(manifest[k]) !== JSON.stringify(v)) bad('manifest.' + k + ' 与计划不一致');
   }
   if (manifest.passphraseDigestRecorded !== true) bad('manifest 缺少口令摘要存在标记');
-  if (plan.keyDiagnostic === true) {
-    if (manifest.keyDiagnosticSchema !== KEY_DIAGNOSTIC_SCHEMA) bad('manifest.keyDiagnosticSchema 与受审诊断协议不一致');
-    if (manifest.keyDiagnosticScope !== KEY_DIAGNOSTIC_SCOPE) bad('manifest.keyDiagnosticScope 与受审诊断范围不一致');
-  }
+  // R3：诊断协议/scope 由 build 恒定写入，check 对 true/false 两种候选**统一**严格核对；
+  // 缺失或任何不符值（含无关字符串）均拒绝，普通包不得因开关关闭而豁免清单绑定。
+  if (manifest.keyDiagnosticSchema !== KEY_DIAGNOSTIC_SCHEMA) bad('manifest.keyDiagnosticSchema 与受审诊断协议不一致');
+  if (manifest.keyDiagnosticScope !== KEY_DIAGNOSTIC_SCOPE) bad('manifest.keyDiagnosticScope 与受审诊断范围不一致');
 
   let expected;
   let closeFiles;

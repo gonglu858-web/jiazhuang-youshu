@@ -2047,3 +2047,224 @@ test('D2 全链诊断（生成候选 App/Page→client→server→core）：诊�
   assert.throws(() => packer.build(writePicPlan(closeSource, { keyDiagnostic: 'yes' })),
     e => e.code === packer.ERR.PLAN_INVALID && /keyDiagnostic/.test(e.message), '计划诊断开关必须为布尔或缺省');
 });
+
+// ════════════════════════════════════════════════════════════════════════════
+// D3–D6 R1–R4 定点收尾（Codex 复查 880fbf8 §2–§5）
+// ════════════════════════════════════════════════════════════════════════════
+
+test('D3 R2 诊断构建后/附加前重查窗口：构造期间到期/NaN/抛错撤销诊断；构造前有效对照可见；零DB与失败语义保持', async () => {
+  const passphrase = 'synthetic-r2-passphrase-' + RUN_ID;
+  const digest = crypto.createHash('sha256').update(passphrase).digest('hex');
+  const mk = endState => {
+    let phase = 0, enumerations = 0, clockReads = 0, dbCalls = 0;
+    const checker = core.createIdentityChecker({
+      db: { collection() { dbCalls++; throw new Error('TRAP: 诊断路径禁止DB'); } },
+      trusted: trustedContext('openid-r2-' + RUN_ID),
+      config: { checkRoundId: TEST_ROUND, passphraseDigest: digest, windowStartsAtMs: 1000, windowExpiresAtMs: 2000, keyDiagnostic: true },
+      // 合成时钟：第二次键枚举（诊断构建）后进入失效状态——模拟「构造前有效、构造后失效」
+      now() {
+        clockReads++;
+        if (!phase || endState === 'unchanged') return 1500;
+        if (endState === 'throws') throw new Error('synthetic-clock-unavailable');
+        return endState === 'NaN' ? NaN : 2000;
+      }
+    });
+    // 合成枚举钩子：在第 2 次 ownKeys（buildKeyDiagnostic 内部枚举）推进时钟相位；
+    // 这不声称真实平台 event 含 Proxy，也不声称平台已发生越窗。
+    const event = new Proxy(
+      { action: 'inspectSelf', passphrase, checkRoundId: TEST_ROUND, userInfo: {} },
+      { ownKeys(t) { if (++enumerations === 2) phase = 1; return Reflect.ownKeys(t); } }
+    );
+    return { checker, event, stats: () => ({ clockReads, enumerations, dbCalls }) };
+  };
+  const cases = [
+    ['unchanged', true],  // 构造前后时钟均有效 → 诊断可见
+    ['expires', false],   // 构建期间恰好到期 → 撤销
+    ['NaN', false],       // 构建期间时钟变为 NaN → 撤销
+    ['throws', false]     // 构建期间时钟抛错 → 撤销
+  ];
+  for (const [endState, expectDiag] of cases) {
+    const { checker, event, stats } = mk(endState);
+    const r = await checker.handle(event);
+    assert.equal(r.code, 'PIC_REQUEST_INVALID', endState + '：失败语义保持');
+    assert.equal(r.ok, false, endState);
+    assert.equal(r.registrationState, 'UNKNOWN', endState);
+    assert.equal(r.readAttempted, false, endState + '：读取事实保持');
+    assert.equal(r.keyDiagnostic !== undefined, expectDiag, endState + '：诊断' + (expectDiag ? '应附加' : '必须撤销'));
+    const s = stats();
+    assert.equal(s.dbCalls, 0, endState + '：零DB');
+    assert.equal(s.enumerations, 2, endState + '：两次枚举（请求键检查+诊断构建）');
+    assert.ok(s.clockReads >= (expectDiag ? 3 : 2), endState + '：时钟多重查（构建前/构建后[/附加前]）');
+  }
+});
+
+test('D4 R3 清单诊断协议/scope 两种模式统一绑定：缺失/错值/篡改拒绝；合法对照通过；关闭检查不依赖候选窗口', () => {
+  const closeSource = makeCloseSourceDir();
+  const mkCandidate = keyDiagnostic => {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'mbind-' + (keyDiagnostic ? 't-' : 'f-') + crypto.randomBytes(4).toString('hex'));
+    packer.build(writePicPlan(closeSource, keyDiagnostic ? { keyDiagnostic: true } : {}), outDir);
+    return outDir;
+  };
+  const tamper = (outDir, patch) => {
+    const manifestPath = path.join(outDir, 'manifest.json');
+    const original = fs.readFileSync(manifestPath);
+    const m = JSON.parse(original);
+    Object.assign(m, patch);
+    fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
+    const ok = packer.checkDir(outDir).ok;
+    fs.writeFileSync(manifestPath, original);
+    return ok;
+  };
+  for (const mode of [true, false]) {
+    const outDir = mkCandidate(mode);
+    assert.equal(packer.checkDir(outDir).ok, true, mode + '：合法对照通过');
+    assert.equal(tamper(outDir, { keyDiagnosticSchema: 'synthetic-unrelated-protocol' }), false, mode + '：协议错值拒绝');
+    assert.equal(tamper(outDir, { keyDiagnosticScope: 'synthetic-unrelated-scope' }), false, mode + '：scope 错值拒绝');
+    assert.equal(tamper(outDir, { keyDiagnosticSchema: packer.KEY_DIAGNOSTIC_SCHEMA, keyDiagnosticScope: packer.KEY_DIAGNOSTIC_SCOPE }), true, mode + '：原值回写通过');
+    assert.equal(tamper(outDir, { keyDiagnosticSchema: undefined }), false, mode + '：协议缺失拒绝');
+  }
+  // 独立关闭检查不依赖候选窗口：synthetic 模式允许过去窗口候选装配，checkCloseDir 仍通过
+  const pastOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'pastwin-' + crypto.randomBytes(4).toString('hex'));
+  const past = Date.parse('2020-01-01T00:00:00Z');
+  packer.build(writePicPlan(closeSource, {
+    windowStartsAtIso: new Date(past).toISOString(),
+    windowExpiresAtIso: new Date(past + 600000).toISOString()
+  }), pastOut);
+  process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
+  try { assert.equal(packer.checkCloseDir(pastOut).ok, true, '关闭检查不读候选窗口'); }
+  finally { delete process.env.PIC_CLOSE_SOURCE_DIR; }
+});
+
+test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法对照保留；生成页面无效诊断不展示且原失败事实与口令清除保持', async () => {
+  // (1) 模板级：畸形变体全部丢弃
+  const clientFile = path.join(packer.TEMPLATE_DIR, 'frontend', 'utils', 'identity-check-client.js');
+  const base = () => ({
+    schema: core.KEY_DIAGNOSTIC_SCHEMA, diagnosticScope: core.KEY_DIAGNOSTIC_SCOPE,
+    otherKeyCount: 1,
+    otherKeyNameLengthBuckets: { 'len<=4': 1, 'len5-8': 0, 'len9-16': 0, 'len17-32': 0, lenOver32: 0 },
+    candidateLabels: [], truncated: false
+  });
+  const malformedCases = {
+    '标签非数组': d => { d.candidateLabels = 'synthetic-invalid-type'; },
+    '计数与分桶不一致': d => { d.otherKeyCount = 9; },
+    '非法标签值': d => { d.candidateLabels = ['SYNTHETIC_UNKNOWN_LABEL']; },
+    '重复标签': d => { d.candidateLabels = ['CANDIDATE_USERINFO', 'CANDIDATE_USERINFO']; },
+    '标签超量': d => { d.candidateLabels = new Array(9).fill('CANDIDATE_USERINFO'); },
+    '计数负数': d => { d.otherKeyCount = -1; },
+    '计数非整数': d => { d.otherKeyCount = 1.5; },
+    '分桶缺失': d => { delete d.otherKeyNameLengthBuckets['len<=4']; },
+    '分桶负数': d => { d.otherKeyNameLengthBuckets['len5-8'] = -1; },
+    'truncated非布尔': d => { d.truncated = 'no'; },
+    'schema错误': d => { d.schema = 'synthetic-schema'; },
+    'scope错误': d => { d.diagnosticScope = 'synthetic-scope'; },
+    '缺candidateLabels': d => { delete d.candidateLabels; },
+    '缺otherKeyCount': d => { delete d.otherKeyCount; }
+  };
+  let currentResult = null;
+  const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: currentResult }) } };
+  await withGlobalWx(wxStub, async () => {
+    const ctx = { module: { exports: {} }, require: () => ({ checkRoundId: TEST_ROUND }), wx: wxStub };
+    vm.runInNewContext(fs.readFileSync(clientFile, 'utf8'), ctx, { filename: clientFile });
+    const client = ctx.module.exports;
+    const call = async diag => {
+      currentResult = {
+        schema: core.RESULT_SCHEMA, checkRoundId: TEST_ROUND, ok: false, identityConfirmed: false,
+        registrationState: 'UNKNOWN', recordMatched: null, readAttempted: false, userIdTail: '', code: 'PIC_REQUEST_INVALID', message: '请求含未登记字段。'
+      };
+      if (diag !== undefined) currentResult.keyDiagnostic = diag;
+      return client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'synthetic-r4-passphrase' });
+    };
+    // 畸形：整份丢弃（keyDiagnostic 字段消失），不修补
+    for (const [name, mutate] of Object.entries(malformedCases)) {
+      const d = base();
+      const special = mutate(d);
+      const input = typeof special === 'string' ? special : d;
+      const r = await call(input);
+      assert.equal(r && r.keyDiagnostic, undefined, name + '：畸形诊断整份丢弃');
+      assert.equal(r.code, 'PIC_REQUEST_INVALID', name + '：原失败事实保持');
+    }
+    // 合法对照：保留
+    const good = await call(base());
+    assert.ok(good.keyDiagnostic, '合法诊断保留');
+    assert.equal(good.keyDiagnostic.otherKeyCount, 1);
+    // 合法标签对照：保留
+    const withLabel = base();
+    withLabel.candidateLabels = ['CANDIDATE_USERINFO'];
+    const r2 = await call(withLabel);
+    assert.equal(JSON.stringify(r2.keyDiagnostic.candidateLabels), JSON.stringify(['CANDIDATE_USERINFO']), '合法标签保留（跨vm用JSON比较）');
+  });
+
+  // (2) 生成页面链：畸形诊断不展示；合法诊断展示；原失败事实与口令清除保持
+  const closeSource = makeCloseSourceDir();
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'r4page-' + crypto.randomBytes(4).toString('hex'));
+  packer.build(writePicPlan(closeSource, { keyDiagnostic: true }), outDir);
+  const drive = async diag => {
+    const response = {
+      schema: core.RESULT_SCHEMA, checkRoundId: TEST_ROUND, ok: false, identityConfirmed: false,
+      registrationState: 'UNKNOWN', recordMatched: null, readAttempted: false, userIdTail: '',
+      code: 'PIC_REQUEST_INVALID', message: '请求含未登记字段。'
+    };
+    if (diag !== undefined) response.keyDiagnostic = diag;
+    const pageStub = { cloud: { _identityCheckEnvInited: false, init() {}, callFunction: async () => ({ result: response }) } };
+    let shown;
+    await withGlobalWx(pageStub, async () => {
+      const page = loadCandidatePage(outDir, pageStub);
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
+      assert.equal(page.data.passphrase, '', '口令清除保持');
+      shown = page.data.result.keyDiagnosticText;
+    });
+    return shown;
+  };
+  const malformedShown = await drive((() => { const d = base(); d.otherKeyCount = 9; return d; })());
+  assert.equal(malformedShown, '', '生成页面：畸形诊断不展示（净化为空文本）');
+  const legalShown = await drive(base());
+  assert.ok(typeof legalShown === 'string' && legalShown.includes('其它键 1 个'), '生成页面：合法诊断展示');
+});
+
+test('D6 R1 审计失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账', () => {
+  const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站事件封装离线核实-20261016.cjs');
+  const auditSource = fs.readFileSync(auditFile, 'utf8');
+  const runAudit = kind => {
+    let source = auditSource;
+    if (kind === 'caughtAttempt') {
+      const anchor = 'const businessStart = guardHits.length;';
+      assert.equal(source.split(anchor).length, 2, '注入锚点唯一');
+      source = source.replace(anchor, anchor + "\ntry { require('node:https').request('https://example.invalid'); } catch (_) {}");
+    }
+    const processStub = { argv: ['node', auditFile], exitCode: 0 };
+    const outputs = [], errors = [];
+    const nativeRequire = createRequire(auditFile);
+    const fsProxy = new Proxy(fs, { get(target, key) {
+      if (key !== 'readFileSync' || kind !== 'sourceDrift') return target[key];
+      return (p, ...args) => {
+        const b = target.readFileSync(p, ...args);
+        if (path.resolve(String(p)) !== path.join(PROJECT_ROOT, 'miniapp/scripts/lib/participant-identity-check.cjs')) return b;
+        return Buffer.concat([b, Buffer.from('\n// synthetic drift\n')]);
+      };
+    }});
+    const context = {
+      require: n => (n === 'node:fs' ? fsProxy : nativeRequire(n)),
+      __dirname: path.dirname(auditFile), __filename: auditFile, Buffer, process: processStub,
+      console: { log: s => outputs.push(s), error: (...s) => errors.push(s.join(' ')) }
+    };
+    vm.runInNewContext(source, context, { filename: auditFile, timeout: 30000 });
+    const out = JSON.parse(outputs[0]);
+    return { exitCode: processStub.exitCode, ok: out.ok, counters: out.counters, driftHits: out.sourcePins.driftHits };
+  };
+  const baseline = runAudit('baseline');
+  assert.equal(baseline.exitCode, 0, '正常对照退出0');
+  assert.equal(baseline.ok, true);
+  assert.equal(baseline.counters.businessPhaseGuardAttempts, 0, '正常对照业务期意外0');
+  assert.equal(baseline.counters.sensitivityGuardAttempts, 2, '敏感性探针单独记账');
+  const caught = runAudit('caughtAttempt');
+  assert.equal(caught.counters.businessPhaseGuardAttempts, 1, '被catch的意外同样记账');
+  assert.equal(caught.ok, false, '意外>0 成功标记不得为真');
+  assert.equal(caught.exitCode, 1, '意外>0 必须非零退出');
+  const drift = runAudit('sourceDrift');
+  assert.equal(drift.driftHits, 1, '来源漂移检出');
+  assert.equal(drift.ok, false);
+  assert.equal(drift.exitCode, 1, '漂移必须非零退出');
+});

@@ -37,9 +37,12 @@
 // 12. **受控键诊断（默认关闭）**：仅当 config.keyDiagnostic === true 且请求顶层出现未登记键时，
 //     在动作/轮次/口令/可信目标/当下窗口**全部复核通过**后，向 REQUEST_INVALID 失败结果附加
 //     `keyDiagnostic`：只含源代码固定候选标签、其它键计数与键名长度分桶（固定边界）。
-//     任何原键名、值、前后缀一概不出现；只枚举 Object.keys，不读取值/getter/__proto__；
-//     不读数据库、不改 UNKNOWN/PIC_REQUEST_INVALID、不扩 REQUEST_FIELDS；构造异常一律吞掉
-//     保持净化失败，不影响读取事实。诊断协议版本 KEY_DIAGNOSTIC_SCHEMA 纳入打包器/manifest 绑定。
+//     任何原键名、值、前后缀一概不出现；诊断枚举仅对请求顶层键名做 Object.keys——不读取
+//     **额外未知字段**的值/getter/__proto__（准入校验本身必须读取 action/round/passphrase 等
+//     已允许字段的值，此「不读值」承诺不扩展到任意对象访问）；不读数据库、不改
+//     UNKNOWN/PIC_REQUEST_INVALID、不扩 REQUEST_FIELDS；构造异常一律吞掉保持净化失败，
+//     不影响读取事实。构建后与最终附加前各重查一次当下窗口（到期/未开始/时钟异常即撤销）。
+//     诊断协议版本 KEY_DIAGNOSTIC_SCHEMA 纳入打包器/manifest 绑定。
 
 /** 受审固定目标：与既有 gate/工具常量一致，不新增可变目标。 */
 const FIXED_TARGET = Object.freeze({
@@ -446,7 +449,8 @@ function createIdentityChecker(deps) {
     let readAttempted = false;
     const markGetAttempt = () => { readAttempted = true; };
     // 受控键诊断（默认关闭）：仅在 REQUEST_INVALID 路径上由 collectKeyDiagnostic 填充；
-    // 其内部复核动作/轮次/口令/可信目标/当下窗口，全部通过才构建，任何异常吞掉。
+    // 其内部复核动作/轮次/口令/可信目标/当下窗口，全部通过才构建；**构建后再次重查窗口**
+    //（R2：构造期间到期/未开始/时钟异常一律撤销诊断），任何异常吞掉。
     let keyDiagnostic = null;
     const collectKeyDiagnostic = payload => {
       if (!keyDiagnosticEnabled) return;
@@ -456,7 +460,9 @@ function createIdentityChecker(deps) {
         assertPassphrase(payload);
         assertTrustedTarget();
         assertWindowOpen();
-        keyDiagnostic = buildKeyDiagnostic(payload);
+        const diagnostic = buildKeyDiagnostic(payload);
+        assertWindowOpen(); // R2：构造后重查——诊断只在「当下仍处于窗口内」时成立
+        keyDiagnostic = diagnostic;
       } catch (_) {
         keyDiagnostic = null; // 缺上下文/错轮次/错口令/过期/时钟异常/构建失败：诊断为空
       }
@@ -508,9 +514,13 @@ function createIdentityChecker(deps) {
         message: internal ? ERROR_PUBLIC_TEXT[error.code] || GENERIC_TEXT : GENERIC_TEXT
       });
       // 受控键诊断：仅在 REQUEST_INVALID 且收集器全门槛复核通过后存在；
-      // 不改变 UNKNOWN/PIC_REQUEST_INVALID 语义，不改变读取事实，默认关闭时字段缺席。
+      // **最终附加前再重查当下窗口**（R2：构造/拒绝路径期间到期、未开始、时钟异常均撤销），
+      // 撤销时保持 PIC_REQUEST_INVALID/UNKNOWN/readAttempted 事实与零 DB，不变成成功。
       if (keyDiagnostic !== null && code === ERR_CODES.REQUEST_INVALID) {
-        failure.keyDiagnostic = keyDiagnostic;
+        try {
+          assertWindowOpen();
+          failure.keyDiagnostic = keyDiagnostic;
+        } catch (_) { /* 窗口已失效：诊断撤销，保持原失败结果 */ }
       }
       return failure;
     }

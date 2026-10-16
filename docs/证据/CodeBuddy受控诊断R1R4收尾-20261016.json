@@ -1,0 +1,116 @@
+{
+  "schema": "codebuddy-key-diagnostic-rfix-evidence/1",
+  "observedAt": "2026-10-16T07:41:04.697Z",
+  "basisCommit": "880fbf8",
+  "verificationKind": "offline fix-proof evidence after R1-R4; synthetic counterexamples, not platform verification",
+  "implementationSummary": {
+    "R1": "审计 ok/exit 判定纳入业务期意外守卫（含被 catch 者）；探针单独记账",
+    "R2": "核心诊断构建后与最终附加前各重查窗口；到期/未开始/NaN/抛错撤销诊断，失败语义与零DB保持",
+    "R3": "manifest keyDiagnosticSchema/Scope 对 true/false 两候选统一严格校验；缺失/错值拒绝",
+    "R4": "客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致/序列化上限，违约整份丢弃；截断契约=服务端候选标签上限8且有未列出候选"
+  },
+  "r1": {
+    "baseline": {
+      "exitCode": 0,
+      "ok": true,
+      "businessPhaseGuardAttempts": 0,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 0
+    },
+    "caughtAttempt": {
+      "exitCode": 1,
+      "ok": false,
+      "businessPhaseGuardAttempts": 1,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 0
+    },
+    "sourceDrift": {
+      "exitCode": 1,
+      "ok": false,
+      "businessPhaseGuardAttempts": 0,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 1
+    }
+  },
+  "r2Cases": [
+    {
+      "endState": "unchanged",
+      "clockReads": 3,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "expires",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "NaN",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "throws",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    }
+  ],
+  "r3": {
+    "modes": {
+      "true": {
+        "legalControl": true,
+        "schemaWrongAccepted": false,
+        "scopeWrongAccepted": false,
+        "schemaMissingAccepted": false,
+        "closeCheckIndependentOfCandidateWindow": true
+      },
+      "false": {
+        "legalControl": true,
+        "schemaWrongAccepted": false,
+        "scopeWrongAccepted": false,
+        "schemaMissingAccepted": false,
+        "closeCheckIndependentOfCandidateWindow": true
+      }
+    }
+  },
+  "r4": {
+    "malformedDropped": {
+      "labelsNotArray": true,
+      "countBucketMismatch": true,
+      "illegalLabel": true,
+      "duplicateLabel": true,
+      "labelOverflow": true,
+      "negativeCount": true,
+      "nonSafeIntegerCount": true,
+      "missingBucket": true,
+      "negativeBucket": true,
+      "truncatedNotBoolean": true,
+      "wrongSchema": true,
+      "wrongScope": true,
+      "missingLabels": true,
+      "missingCount": true
+    },
+    "legalKept": true
+  },
+  "runtimeDigests": {
+    "coreSha256": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+    "packerSha256": "fbb0cd160d15e1cf97fcf9985fd2152596ab28c25acf8cbb59ab3ee73c1c6aa9",
+    "clientSha256": "a99409c2072135a597514fe0b09df85bcd1e75af5984615bf60cfec33f19109e"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Clock advancement and malformed payloads are synthetic; no platform evidence claimed.",
+    "Not a claim that real platform events contain Proxy objects or that real leakage occurred."
+  ]
+}

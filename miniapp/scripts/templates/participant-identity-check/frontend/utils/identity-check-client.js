@@ -10,36 +10,53 @@
 
 const cloudConfig = require('../config/cloud');
 
-// ── 受控键诊断净化投影（C3）────────────────────────────────────────────────
-// 服务端默认不返回诊断；仅诊断轮且全部准入门槛通过时才附带。客户端只接受
-// 固定 schema 且逐字段类型校验，任何未知/超界内容一律丢弃，不透传原键名或值。
+// ── 受控键诊断净化投影（C3/R4）────────────────────────────────────────────
+// 服务端默认不返回诊断；仅诊断轮且全部准入门槛通过时才附带。客户端按固定 schema
+// **严格**验证：任何必需字段缺失/类型错误/越界、标签非法或重复或超量、计数与分桶
+// 不一致——整份诊断丢弃（不修补成默认值）；额外未知字段仅投影丢弃。不透传原键名或值。
+// 截断契约：truncated=true 表示服务端候选标签数已达上限（8）且存在未列出候选；
+// candidateLabels 数组长度恒 ≤ 8、元素仅取固定词表且无重复。投影输出恒为 6 个固定
+// 字段、内容有界（序列化 < 1KB）。
 const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
 const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
 const KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO'];
 const KEY_DIAGNOSTIC_BUCKETS = ['len<=4', 'len5-8', 'len9-16', 'len17-32', 'lenOver32'];
+const KEY_DIAGNOSTIC_MAX_LABELS = 8;
+
+function isNonNegativeSafeInt(v) {
+  return typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
+}
 
 function sanitizeKeyDiagnostic(raw) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   if (raw.schema !== KEY_DIAGNOSTIC_SCHEMA || raw.diagnosticScope !== KEY_DIAGNOSTIC_SCOPE) return null;
+  // 计数：非负安全整数；不修补、不缺省
   const count = raw.otherKeyCount;
-  if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) return null;
+  if (!isNonNegativeSafeInt(count)) return null;
+  // 分桶：五桶齐备、非负安全整数，且**总和必须等于 otherKeyCount**（一致性，违约整份丢弃）
   const rawBuckets = raw.otherKeyNameLengthBuckets;
   if (!rawBuckets || typeof rawBuckets !== 'object' || Array.isArray(rawBuckets)) return null;
   const buckets = {};
+  let bucketSum = 0;
   for (const b of KEY_DIAGNOSTIC_BUCKETS) {
     const v = rawBuckets[b];
-    if (typeof v !== 'number' || !Number.isInteger(v) || v < 0) return null;
+    if (!isNonNegativeSafeInt(v)) return null;
     buckets[b] = v;
+    bucketSum += v;
   }
-  const rawLabels = Array.isArray(raw.candidateLabels) ? raw.candidateLabels : [];
+  if (bucketSum !== count) return null;
+  // 候选标签：必须是数组；元素仅取固定词表、不得重复、总数不得超过上限；违约整份丢弃
+  if (!Array.isArray(raw.candidateLabels)) return null;
+  if (raw.candidateLabels.length > KEY_DIAGNOSTIC_MAX_LABELS) return null;
   const labels = [];
-  for (const l of rawLabels) {
-    if (typeof l === 'string' && KEY_DIAGNOSTIC_LABELS.indexOf(l) !== -1 && labels.indexOf(l) === -1) {
-      labels.push(l);
-    }
+  for (const l of raw.candidateLabels) {
+    if (typeof l !== 'string' || KEY_DIAGNOSTIC_LABELS.indexOf(l) === -1) return null;
+    if (labels.indexOf(l) !== -1) return null;
+    labels.push(l);
   }
+  // 截断标志：必须为布尔（截断契约见上）
   if (raw.truncated !== true && raw.truncated !== false) return null;
-  return {
+  const projected = {
     schema: KEY_DIAGNOSTIC_SCHEMA,
     diagnosticScope: KEY_DIAGNOSTIC_SCOPE,
     otherKeyCount: count,
@@ -47,6 +64,13 @@ function sanitizeKeyDiagnostic(raw) {
     candidateLabels: labels,
     truncated: raw.truncated
   };
+  // 输出上限硬约束：投影对象序列化超过 1KB 视为违反有界契约，整份丢弃
+  try {
+    if (JSON.stringify(projected).length > 1024) return null;
+  } catch (_) {
+    return null;
+  }
+  return projected;
 }
 
 function callIdentityCheck(request) {

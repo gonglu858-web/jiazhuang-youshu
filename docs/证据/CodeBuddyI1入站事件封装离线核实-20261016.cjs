@@ -8,6 +8,8 @@
 // - 内置来源漂移反例（内存中改动核心字节）必须被拒绝，反例不落盘。
 // - 计数为实际执行的断言累计（不预写固定数字）；守卫命中区分敏感性探针与业务期意外
 //   （含被 try/catch 捕获者——守卫在调用点即刻记账，与是否被捕获无关）。
+// - R1（Codex 复查 880fbf8 §2）：业务期意外 > 0 必须非零退出且输出 ok:false；
+//   探针命中单独记账，不计入失败判定。
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto'), assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../..'), sha = b => crypto.createHash('sha256').update(b).digest('hex');
@@ -16,18 +18,15 @@ const outIdx = argv.indexOf('--out');
 const outPath = outIdx !== -1 ? path.resolve(argv[outIdx + 1] || '') : null;
 
 // ── 外置固定基线（提交绑定；不从待测源码自举）────────────────────────────────
-const BASIS_COMMIT = 'a187998';
-/** 打包器自身受审摘要（本轮终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
-const PACKAGER_SELF_SHA256 = '693272c1efb80296458d37c2db73ce24fbb8979777edd56b7ad53a0399bb19cd';
+const BASIS_COMMIT = '880fbf8';
+/** 打包器自身受审摘要（本轮 R1–R4 收尾终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
+const PACKAGER_SELF_SHA256 = 'fbb0cd160d15e1cf97fcf9985fd2152596ab28c25acf8cbb59ab3ee73c1c6aa9';
 const PACKAGER_REL = 'miniapp/scripts/package-participant-identity-check.cjs';
 const CORE_REL = 'miniapp/scripts/lib/participant-identity-check.cjs';
-/** 本轮实际修改的 5 个受审源文件（对照项在 PINNED_SOURCES 中分述）。 */
+/** 本轮实际修改的受审源文件（对照项在 PINNED_SOURCES 中分述）。 */
 const CHANGED_THIS_ROUND = Object.freeze([
   CORE_REL,
-  'miniapp/scripts/templates/participant-identity-check/server/index.js',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml'
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js'
 ]);
 const SDK = 'C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules';
 
@@ -156,7 +155,7 @@ function main() {
   // ── 汇总与输出 ────────────────────────────────────────────────────────────
   const businessGuardHits = guardHits.length - businessStart;
   const result = {
-    schema: 'codebuddy-i1-inbound-envelope-audit/2',
+    schema: 'codebuddy-i1-inbound-envelope-audit/3',
     observedAt: new Date().toISOString(),
     basisCommit: BASIS_COMMIT,
     basisNote: 'HEAD at audit time; audit baselines are commit-bound constants inside this script',
@@ -179,6 +178,8 @@ function main() {
       'Static anchors are not platform behavior verification.'
     ]
   };
+  const failed = checkFailures.length > 0 || driftHits > 0 || businessGuardHits > 0;
+  result.ok = !failed;
   const json = JSON.stringify(result, null, 2) + '\n';
   if (outPath) {
     if (fs.existsSync(outPath)) {
@@ -189,8 +190,7 @@ function main() {
     fs.writeFileSync(outPath, json, { flag: 'wx' });
   }
   console.log(json);
-  const failed = checkFailures.length > 0 || driftHits > 0;
-  console.error('[审计摘要] checks=' + checksRun + ' failures=' + checkFailures.length + ' sourcePins=' + sourcePins.length + ' driftHits=' + driftHits + ' sensitivityGuardAttempts=' + sensitivityAttempts + ' businessPhaseGuardAttempts=' + businessGuardHits + ' driftCounterexampleRejected=' + driftCounterexampleRejected + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
+  console.error('[审计摘要] ok=' + result.ok + ' checks=' + checksRun + ' failures=' + checkFailures.length + ' sourcePins=' + sourcePins.length + ' driftHits=' + driftHits + ' sensitivityGuardAttempts=' + sensitivityAttempts + ' businessPhaseGuardAttempts=' + businessGuardHits + ' driftCounterexampleRejected=' + driftCounterexampleRejected + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
   if (failed) process.exitCode = 1;
 }
 try { main(); } catch (error) { console.error('[审计中止]', error.message); process.exitCode = 1; } finally { restore.reverse().forEach(f => f()); }
