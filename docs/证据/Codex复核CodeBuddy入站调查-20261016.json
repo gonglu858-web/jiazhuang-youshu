@@ -1,0 +1,60 @@
+{
+  "reviewedCommit": "0fd3094",
+  "scriptSha256": "614c293e94f35c7336ab96bd3c15ab59fdabfb651cf0200dff809e4c301170bc",
+  "method": "memory wrapper redirects fixed output; native fs source unchanged; second run appends comment in readFileSync only",
+  "baseline": {
+    "assertionCalls": 32,
+    "reportedChecks": 32,
+    "guardUnexpected": 0,
+    "recordedFactsMatch": true
+  },
+  "drift": {
+    "assertionCalls": 32,
+    "reportedChecks": 32,
+    "guardUnexpected": 0,
+    "changedHashRecordedButNotRejected": true
+  },
+  "projectPins": [
+    {
+      "rel": "miniapp/scripts/lib/participant-identity-check.cjs",
+      "actualMatchesRecorded": true,
+      "hashAppearsInPacker": true
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/server/index.js",
+      "actualMatchesRecorded": true,
+      "hashAppearsInPacker": true
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js",
+      "actualMatchesRecorded": true,
+      "hashAppearsInPacker": true
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js",
+      "actualMatchesRecorded": true,
+      "hashAppearsInPacker": true
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js",
+      "actualMatchesRecorded": true,
+      "hashAppearsInPacker": true
+    },
+    {
+      "rel": "miniapp/scripts/package-participant-identity-check.cjs",
+      "actualMatchesRecorded": true,
+      "hashAppearsInPacker": false
+    }
+  ],
+  "diagnosticPlanCounterexample": {
+    "syntheticKey": "synthetic_secret_in_key",
+    "proposedRawKeyTruncationWouldPreserve": true,
+    "realSecretsUsed": false
+  },
+  "platformCalls": 0,
+  "limitations": [
+    "SDK server-side outgoing callFunction does not exercise phone inbound transport.",
+    "Unknown actual extra key remains unresolved.",
+    "32 is a hard-coded reported count; wrapper counts assert method calls, not a claim of 32 behavioral test cases."
+  ]
+}
