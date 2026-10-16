@@ -1,0 +1,17 @@
+{
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "observedAt": "2026-10-16T13:09:32.856Z",
+  "authorization": "同意执行本轮2c8461b684ea受控诊断并关闭，允许必要凭据获取和现有套餐用量。",
+  "openWindow": {
+    "attempts": 1,
+    "success": false,
+    "code": "APPID_ERROR",
+    "message": "aborted"
+  },
+  "manualImportRequested": true,
+  "previewAttemptsByAssistant": 0,
+  "cloudCredentialFetches": 0,
+  "deployments": 0,
+  "participantCalls": 0,
+  "sourceOfWindowOutcome": "wechatide open_project_window returned error; not confirmation of visible window"
+}

@@ -1,0 +1,15 @@
+{
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "observedAt": "2026-10-16T13:11:57.540Z",
+  "project": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-i1diag-20261016-2c8461b684ea-5da411c94dbc",
+  "importSuccess": true,
+  "alreadyImported": false,
+  "openSuccess": true,
+  "windowId": "s2",
+  "automaticPreviewAttempts": 0,
+  "cloudCredentialFetches": 0,
+  "deployments": 0,
+  "changedFrozenFiles": [
+    "project.config.json"
+  ]
+}

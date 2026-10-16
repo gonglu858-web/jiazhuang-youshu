@@ -1,0 +1,42 @@
+{
+  "runId": "codex-i1-candidate-a24889f2-749b-4890-998e-f5cd7d4953da",
+  "observedAt": "2026-10-16T13:13:49.165744+00:00",
+  "archiveSha256": "996ce63bf5deb408711b7df458a48674a85d8c32e17359757d01a6219b075639",
+  "mode": "candidate",
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "databaseVersion": "1.4.1",
+  "files": [
+    {
+      "path": "index.js",
+      "bytes": 3674,
+      "sha256": "c87a1dfe1e82d42a83e2cf39d1c69a324e64d13cd31b3e72878cadd58e6f6489",
+      "matched": true
+    },
+    {
+      "path": "package.json",
+      "bytes": 273,
+      "sha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+      "matched": true
+    },
+    {
+      "path": "participant-identity-check.js",
+      "bytes": 28132,
+      "sha256": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+      "matched": true
+    }
+  ],
+  "matched": 3,
+  "wxServerSdk": "3.0.1",
+  "symlinksInspected": [
+    "node_modules/.bin/semver",
+    "node_modules/.bin/sshpk-conv",
+    "node_modules/.bin/sshpk-sign",
+    "node_modules/.bin/sshpk-verify",
+    "node_modules/.bin/uuid"
+  ],
+  "status": "REMOTE_FILES_MATCH_FROZEN_I1_PACKAGE",
+  "extracted": false,
+  "downloadedCodeExecuted": false,
+  "platformWritePermissionVerified": false,
+  "participantIdentityVerified": false
+}

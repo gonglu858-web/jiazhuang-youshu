@@ -1,0 +1,21 @@
+{
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "observedAt": "2026-10-16T13:12:43.842Z",
+  "backups": [
+    {
+      "rel": "project.config.json",
+      "bytes": 928,
+      "sha256": "a1d6a0809afcdc70ca53a6df6fd5e25d89a6c2c252122faa3c7b316ee11c17e4",
+      "backupPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1diag-20261016-2c8461b684ea\\ide-before-restore-project.config.json"
+    },
+    {
+      "rel": "project.private.config.json",
+      "bytes": 679,
+      "sha256": "639d28bfab192ff86936e25880f3f2d1db0f56ef98b54e72d27f285ac5fcad95",
+      "backupPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1diag-20261016-2c8461b684ea\\ide-before-restore-project.private.config.json"
+    }
+  ],
+  "restoredConfigSha256": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+  "businessSourceUnchanged": true,
+  "candidateAndCloseChecked": true
+}

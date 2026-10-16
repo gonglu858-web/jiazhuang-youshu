@@ -1,0 +1,56 @@
+{
+  "schema": "codex-i1-controlled-diagnostic-result/1",
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "recordedAt": "2026-10-16T13:19:14.856Z",
+  "authorization": "同意执行本轮2c8461b684ea受控诊断并关闭，允许必要凭据获取和现有套餐用量。",
+  "state": "CLOSED_REMOTE_BYTES_VERIFIED_RESULT_SCREENSHOT_PENDING",
+  "manualPreview": {
+    "source": "user-message",
+    "reportedSuccess": true,
+    "automaticAttempts": 0
+  },
+  "credentialFetchBatches": 2,
+  "deployments": {
+    "candidate": 1,
+    "closed": 1
+  },
+  "managementApiProcesses": 5,
+  "associationStages": 6,
+  "zipDownloads": 2,
+  "assistantFunctionInvocations": 0,
+  "assistantBusinessDatabaseCalls": 0,
+  "participantSubmission": {
+    "source": "user-message",
+    "reportedCount": 1,
+    "resultContentReceived": false,
+    "identityConfirmed": null,
+    "registrationState": null,
+    "readAttempted": null,
+    "diagnostic": null
+  },
+  "candidate": {
+    "filesMatched": 3,
+    "codeSha256": "996ce63bf5deb408711b7df458a48674a85d8c32e17359757d01a6219b075639",
+    "wxServerSdk": "3.0.1",
+    "databaseVersion": "1.4.1"
+  },
+  "closed": {
+    "filesMatched": 8,
+    "codeSha256": "2f0a189a4cd1c224b048db500fb04af952148a7952804677abdf904b0a3d3c16",
+    "wxServerSdk": "3.0.1",
+    "databaseVersion": "1.4.1",
+    "verifiedAt": "2026-10-16T13:17:41.533837+00:00",
+    "configVerified": true
+  },
+  "localPlaintextDisplayFileDeleted": true,
+  "notepadTabClosureNotConfirmed": true,
+  "encryptedPassphraseRetainedInIgnoredControlDirectory": true,
+  "platformLogsRead": false,
+  "actualFeesVerified": false,
+  "I2orPStarted": false,
+  "limitations": [
+    "User reported one result; screenshot is pending. Do not infer extra keys, request origin, identity or registration.",
+    "Remote closure verified via management config and ZIP byte comparison, not a fresh phone invocation.",
+    "No new registration, business write, permission/fee change or resource creation was performed by the executor."
+  ]
+}

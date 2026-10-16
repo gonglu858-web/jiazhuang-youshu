@@ -1,0 +1,18 @@
+{
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "recordedAt": "2026-10-16T13:14:21.7040343Z",
+  "state": "CANDIDATE_VERIFIED_WAITING_PARTICIPANT",
+  "candidateFilesMatched": 3,
+  "wxServerSdk": "3.0.1",
+  "databaseVersion": "1.4.1",
+  "credentialBatchesSoFar": 1,
+  "candidateDeployments": 1,
+  "closedDeployments": 0,
+  "assistantFunctionInvocations": 0,
+  "passphraseDisplayPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1diag-20261016-2c8461b684ea\\本轮临时口令-仅同场查看.txt",
+  "viewerRequested": true,
+  "viewerProcessId": 42160,
+  "userSawPassphraseConfirmed": false,
+  "closeStartNoLaterThan": "2026-10-16T13:28:09.717Z",
+  "independentTimerInstalled": false
+}

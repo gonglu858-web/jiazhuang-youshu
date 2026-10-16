@@ -1,0 +1,8 @@
+{
+  "runId": "codex-i1-candidate-a24889f2-749b-4890-998e-f5cd7d4953da",
+  "startedAt": "2026-10-16T13:12:44.536Z",
+  "authorization": "同意执行本轮2c8461b684ea受控诊断并关闭，允许必要凭据获取和现有套餐用量。",
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "mode": "candidate",
+  "scope": "I1受控键诊断具体执行页第3节；本阶段一批凭据、一次覆盖及回读，不重试部署"
+}
