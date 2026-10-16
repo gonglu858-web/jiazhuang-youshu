@@ -1,0 +1,327 @@
+{
+  "reviewedCommit": "cb3dc28",
+  "parent": "23f3ffb",
+  "observedAt": "2026-10-16T13:02:20.453Z",
+  "protectedDiffEmpty": true,
+  "oldEvidenceJsonUnchanged": true,
+  "histories": {
+    "docs/进展与待办.md": {
+      "oldBytes": 822964,
+      "newBytes": 825481,
+      "suffixEqual": true
+    },
+    "docs/CodeBuddy开发交接.md": {
+      "oldBytes": 9636,
+      "newBytes": 10389,
+      "suffixEqual": true
+    }
+  },
+  "tests": {
+    "participant": {
+      "pass": 31,
+      "fail": 0
+    },
+    "businessFirst": {
+      "pass": 17,
+      "fail": 1,
+      "error": "A9 renameSync EPERM in synthetic artifact directory; cause not established"
+    },
+    "businessSingleRerun": {
+      "pass": 18,
+      "fail": 0
+    },
+    "memberAccessSdk": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "audit": {
+    "schema": "codebuddy-i1-inbound-envelope-audit/3",
+    "observedAt": "2026-10-16T13:00:13.366Z",
+    "basisCommit": "23f3ffb",
+    "basisNote": "HEAD at audit time; audit baselines are commit-bound constants inside this script",
+    "verificationKind": "offline read-only source audit; external fixed baselines (packager self digest + PINNED_SOURCES extracted from hash-verified packager bytes); drift counterexample rejected in memory",
+    "outputMode": "stdout-only",
+    "outPath": null,
+    "counters": {
+      "checksRun": 17,
+      "checkFailures": 0,
+      "sensitivityGuardAttempts": 2,
+      "businessPhaseGuardAttempts": 0,
+      "guardAttemptsTotal": 2,
+      "cloudOperations": 0
+    },
+    "packagerSelfDigest": {
+      "rel": "miniapp/scripts/package-participant-identity-check.cjs",
+      "sha256": "141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029",
+      "expectedSha256": "141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029",
+      "match": true,
+      "note": "打包器自身摘要单独核对；不在其自身 PINNED_SOURCES 表内"
+    },
+    "sourcePins": {
+      "total": 13,
+      "driftHits": 0,
+      "changedThisRound": [
+        "miniapp/scripts/lib/participant-identity-check.cjs",
+        "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js"
+      ],
+      "entries": [
+        {
+          "rel": "miniapp/scripts/lib/participant-identity-check.cjs",
+          "changedThisRound": true,
+          "pinnedSha": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+          "actualSha": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/project.config.json",
+          "changedThisRound": false,
+          "pinnedSha": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+          "actualSha": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/server/index.js",
+          "changedThisRound": false,
+          "pinnedSha": "0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303",
+          "actualSha": "0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/server/package.json",
+          "changedThisRound": false,
+          "pinnedSha": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+          "actualSha": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/app.js",
+          "changedThisRound": false,
+          "pinnedSha": "1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36",
+          "actualSha": "1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/app.json",
+          "changedThisRound": false,
+          "pinnedSha": "c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce",
+          "actualSha": "c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/app.wxss",
+          "changedThisRound": false,
+          "pinnedSha": "a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846",
+          "actualSha": "a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js",
+          "changedThisRound": false,
+          "pinnedSha": "a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b",
+          "actualSha": "a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js",
+          "changedThisRound": true,
+          "pinnedSha": "85a941fa7b30a722abcd6a96c4c55f515e2442143fd40a29e8d20fba2ff202f5",
+          "actualSha": "85a941fa7b30a722abcd6a96c4c55f515e2442143fd40a29e8d20fba2ff202f5",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js",
+          "changedThisRound": false,
+          "pinnedSha": "0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605",
+          "actualSha": "0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json",
+          "changedThisRound": false,
+          "pinnedSha": "e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e",
+          "actualSha": "e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml",
+          "changedThisRound": false,
+          "pinnedSha": "1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305",
+          "actualSha": "1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305",
+          "match": true
+        },
+        {
+          "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss",
+          "changedThisRound": false,
+          "pinnedSha": "e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442",
+          "actualSha": "e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442",
+          "match": true
+        }
+      ]
+    },
+    "driftCounterexample": {
+      "method": "append comment to core bytes in memory",
+      "rejected": true,
+      "writtenToDisk": false
+    },
+    "sdkFacts": {
+      "wxServerSdk": {
+        "version": "3.0.1",
+        "indexSha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04",
+        "indexBytes": 320781,
+        "userInfoCountInIndex": 0,
+        "callFunctionPassthrough": "data passed unchanged to tcb instance",
+        "getWXContextSource": "process.env.WX_CONTEXT_KEYS (+WX_* env keys; ENV from TCB_ENV/SCF_NAMESPACE; SOURCE from TCB_SOURCE)"
+      },
+      "cloudbaseNodeSdk": {
+        "version": "2.10.0",
+        "functionsIndexSha256": "13c149cafd0ccfd70f6d05450815990f3182d0f02efbbbd13f69a0984dfc272f",
+        "callFunctionPassthrough": "request_data = JSON.stringify(data)",
+        "libJsFilesScanned": 22,
+        "userInfoCountInLib": 5,
+        "userInfoOnlyInModules": [
+          "auth/index.js",
+          "storage/index.js"
+        ]
+      }
+    },
+    "checkFailures": [],
+    "limitations": [
+      "Platform envelope between phone wx.cloud.callFunction(data) and exports.main(event) is not present in any local artifact; actual extra key name, source and injection point remain unknown; userInfo is a public-documentation hypothesis only.",
+      "Server-side outgoing callFunction passthrough does not represent the phone inbound path; node-sdk serializes via JSON.stringify, so no byte-exact claim is made.",
+      "Entry CONFIG_APP_ID/CONFIG_ENV_ID are packaging constants; reaching the core does not prove cloud.getWXContext-based trusted target verification passed.",
+      "Static anchors are not platform behavior verification."
+    ],
+    "ok": true
+  },
+  "evidence": {
+    "schema": "codebuddy-key-diagnostic-rfix-evidence/2",
+    "observedAt": "2026-10-16T13:00:13.548Z",
+    "basisCommit": "23f3ffb",
+    "verificationKind": "offline fix-proof evidence after R1-R4 + S1/S2; synthetic counterexamples, not platform verification",
+    "ok": true,
+    "guardCounters": {
+      "sensitivityAttempts": 2,
+      "businessPhaseGuardAttempts": 0,
+      "total": 2
+    },
+    "implementationSummary": {
+      "R1": "审计 ok/exit 判定纳入业务期意外守卫（含被 catch 者）；探针单独记账",
+      "R2": "核心诊断构建后与最终附加前各重查窗口；到期/未开始/NaN/抛错撤销诊断，失败语义与零DB保持",
+      "R3": "manifest keyDiagnosticSchema/Scope 对 true/false 两候选统一严格校验；缺失/错值拒绝",
+      "R4": "客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致，违约整份丢弃；截断契约一致性已执行校验（S2）：当前词表容量1<8，truncated=true矛盾即整份拒绝",
+      "sizeBoundWording": "序列化<1KB为源码防御检查；固定字段+单词表+安全整数下合法投影结构上远小于1KB（结构界限）；14类畸形未动态触达该分支（无实际超限用例，不宣称动态覆盖）。实现用字符串长度（UTF-16码元），全ASCII投影下与UTF-8字节数一致"
+    },
+    "r1": {
+      "baseline": {
+        "exitCode": 0,
+        "ok": true,
+        "businessPhaseGuardAttempts": 0,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 0
+      },
+      "caughtAttempt": {
+        "exitCode": 1,
+        "ok": false,
+        "businessPhaseGuardAttempts": 1,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 0
+      },
+      "sourceDrift": {
+        "exitCode": 1,
+        "ok": false,
+        "businessPhaseGuardAttempts": 0,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 1
+      }
+    },
+    "r2Cases": [
+      {
+        "endState": "unchanged",
+        "clockReads": 3,
+        "enumerations": 2,
+        "diagnosticReturned": true,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "expires",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "NaN",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "throws",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      }
+    ],
+    "r3": {
+      "modes": {
+        "true": {
+          "legalControl": true,
+          "schemaWrongAccepted": false,
+          "scopeWrongAccepted": false,
+          "schemaMissingAccepted": false,
+          "closeCheckIndependentOfCandidateWindow": true
+        },
+        "false": {
+          "legalControl": true,
+          "schemaWrongAccepted": false,
+          "scopeWrongAccepted": false,
+          "schemaMissingAccepted": false,
+          "closeCheckIndependentOfCandidateWindow": true
+        }
+      }
+    },
+    "r4": {
+      "malformedDropped": {
+        "labelsNotArray": true,
+        "countBucketMismatch": true,
+        "illegalLabel": true,
+        "duplicateLabel": true,
+        "labelOverflow": true,
+        "negativeCount": true,
+        "nonSafeIntegerCount": true,
+        "missingBucket": true,
+        "negativeBucket": true,
+        "truncatedNotBoolean": true,
+        "wrongSchema": true,
+        "wrongScope": true,
+        "missingLabels": true,
+        "missingCount": true
+      },
+      "legalKept": true,
+      "truncation": {
+        "emptyLabelsPlusTrueRejected": true,
+        "singleLabelPlusTrueRejected": true,
+        "falseControlKept": true
+      }
+    },
+    "runtimeDigests": {
+      "coreSha256": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+      "packerSha256": "141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029",
+      "clientSha256": "85a941fa7b30a722abcd6a96c4c55f515e2442143fd40a29e8d20fba2ff202f5"
+    },
+    "cloudOperations": 0,
+    "limitations": [
+      "Clock advancement and malformed payloads are synthetic; no platform evidence claimed.",
+      "Not a claim that real platform events contain Proxy objects or that real leakage occurred.",
+      "The >1KB output branch is a source-level defense; it is structurally unreachable for legal projections and was not dynamically exercised."
+    ]
+  },
+  "cloudOperations": 0
+}
