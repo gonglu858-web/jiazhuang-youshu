@@ -1,0 +1,129 @@
+{
+  "schema": "codebuddy-key-diagnostic-rfix-evidence/2",
+  "observedAt": "2026-10-16T08:23:39.302Z",
+  "basisCommit": "23f3ffb",
+  "verificationKind": "offline fix-proof evidence after R1-R4 + S1/S2; synthetic counterexamples, not platform verification",
+  "ok": true,
+  "guardCounters": {
+    "sensitivityAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "total": 2
+  },
+  "implementationSummary": {
+    "R1": "审计 ok/exit 判定纳入业务期意外守卫（含被 catch 者）；探针单独记账",
+    "R2": "核心诊断构建后与最终附加前各重查窗口；到期/未开始/NaN/抛错撤销诊断，失败语义与零DB保持",
+    "R3": "manifest keyDiagnosticSchema/Scope 对 true/false 两候选统一严格校验；缺失/错值拒绝",
+    "R4": "客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致，违约整份丢弃；截断契约一致性已执行校验（S2）：当前词表容量1<8，truncated=true矛盾即整份拒绝",
+    "sizeBoundWording": "序列化<1KB为源码防御检查；固定字段+单词表+安全整数下合法投影结构上远小于1KB（结构界限）；14类畸形未动态触达该分支（无实际超限用例，不宣称动态覆盖）。实现用字符串长度（UTF-16码元），全ASCII投影下与UTF-8字节数一致"
+  },
+  "r1": {
+    "baseline": {
+      "exitCode": 0,
+      "ok": true,
+      "businessPhaseGuardAttempts": 0,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 0
+    },
+    "caughtAttempt": {
+      "exitCode": 1,
+      "ok": false,
+      "businessPhaseGuardAttempts": 1,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 0
+    },
+    "sourceDrift": {
+      "exitCode": 1,
+      "ok": false,
+      "businessPhaseGuardAttempts": 0,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 1
+    }
+  },
+  "r2Cases": [
+    {
+      "endState": "unchanged",
+      "clockReads": 3,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "expires",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "NaN",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "throws",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    }
+  ],
+  "r3": {
+    "modes": {
+      "true": {
+        "legalControl": true,
+        "schemaWrongAccepted": false,
+        "scopeWrongAccepted": false,
+        "schemaMissingAccepted": false,
+        "closeCheckIndependentOfCandidateWindow": true
+      },
+      "false": {
+        "legalControl": true,
+        "schemaWrongAccepted": false,
+        "scopeWrongAccepted": false,
+        "schemaMissingAccepted": false,
+        "closeCheckIndependentOfCandidateWindow": true
+      }
+    }
+  },
+  "r4": {
+    "malformedDropped": {
+      "labelsNotArray": true,
+      "countBucketMismatch": true,
+      "illegalLabel": true,
+      "duplicateLabel": true,
+      "labelOverflow": true,
+      "negativeCount": true,
+      "nonSafeIntegerCount": true,
+      "missingBucket": true,
+      "negativeBucket": true,
+      "truncatedNotBoolean": true,
+      "wrongSchema": true,
+      "wrongScope": true,
+      "missingLabels": true,
+      "missingCount": true
+    },
+    "legalKept": true,
+    "truncation": {
+      "emptyLabelsPlusTrueRejected": true,
+      "singleLabelPlusTrueRejected": true,
+      "falseControlKept": true
+    }
+  },
+  "runtimeDigests": {
+    "coreSha256": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+    "packerSha256": "141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029",
+    "clientSha256": "85a941fa7b30a722abcd6a96c4c55f515e2442143fd40a29e8d20fba2ff202f5"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Clock advancement and malformed payloads are synthetic; no platform evidence claimed.",
+    "Not a claim that real platform events contain Proxy objects or that real leakage occurred.",
+    "The >1KB output branch is a source-level defense; it is structurally unreachable for legal projections and was not dynamically exercised."
+  ]
+}

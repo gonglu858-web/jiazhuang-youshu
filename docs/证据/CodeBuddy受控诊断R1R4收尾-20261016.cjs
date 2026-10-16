@@ -173,17 +173,45 @@ async function main() {
   const good = await call(base());
   r4.legalKept = good.keyDiagnostic !== undefined;
   assert.equal(r4.legalKept, true, '合法诊断保留');
+  // S2：截断契约一致性——当前词表容量 1 < 上限 8，truncated=true 与协议矛盾，整份拒绝
+  const r4Truncation = {};
+  const truncVariants = {
+    emptyLabelsPlusTrue: d => { d.candidateLabels = []; d.truncated = true; },
+    singleLabelPlusTrue: d => { d.candidateLabels = ['CANDIDATE_USERINFO']; d.truncated = true; }
+  };
+  for (const [name, mutate] of Object.entries(truncVariants)) {
+    const d = base();
+    mutate(d);
+    const r = await call(d);
+    r4Truncation[name + 'Rejected'] = r.keyDiagnostic === undefined;
+    assert.equal(r.keyDiagnostic, undefined, name + '：截断矛盾整份拒绝');
+    assert.equal(r.code, 'PIC_REQUEST_INVALID', name + '：原失败事实保持');
+  }
+  const falseEmpty = await call(base());
+  const falseSingle = await call((() => { const d = base(); d.candidateLabels = ['CANDIDATE_USERINFO']; return d; })());
+  r4Truncation.falseControlKept = falseEmpty.keyDiagnostic !== undefined && falseSingle.keyDiagnostic !== undefined;
+  assert.equal(r4Truncation.falseControlKept, true, 'truncated=false 空标签/单标签合法对照保留');
+  r4.truncation = r4Truncation;
 
+  // S1：外层守卫计数（探针/业务期意外/总数）与同一实际计数决定的 ok/退出码。
+  // 内部审计的预期反例（r1.*）与外层意外分述；不清零、不掩盖外层命中。
+  const businessPhaseGuardAttempts = guardHits.length - businessStart;
+  const totalGuardAttempts = guardHits.length;
+  const guardCounters = { sensitivityAttempts, businessPhaseGuardAttempts, total: totalGuardAttempts };
+  const failed = businessPhaseGuardAttempts > 0;
   const result = {
-    schema: 'codebuddy-key-diagnostic-rfix-evidence/1',
+    schema: 'codebuddy-key-diagnostic-rfix-evidence/2',
     observedAt: new Date().toISOString(),
-    basisCommit: '880fbf8',
-    verificationKind: 'offline fix-proof evidence after R1-R4; synthetic counterexamples, not platform verification',
+    basisCommit: '23f3ffb',
+    verificationKind: 'offline fix-proof evidence after R1-R4 + S1/S2; synthetic counterexamples, not platform verification',
+    ok: !failed,
+    guardCounters,
     implementationSummary: {
       R1: '审计 ok/exit 判定纳入业务期意外守卫（含被 catch 者）；探针单独记账',
       R2: '核心诊断构建后与最终附加前各重查窗口；到期/未开始/NaN/抛错撤销诊断，失败语义与零DB保持',
       R3: 'manifest keyDiagnosticSchema/Scope 对 true/false 两候选统一严格校验；缺失/错值拒绝',
-      R4: '客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致/序列化上限，违约整份丢弃；截断契约=服务端候选标签上限8且有未列出候选'
+      R4: '客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致，违约整份丢弃；截断契约一致性已执行校验（S2）：当前词表容量1<8，truncated=true矛盾即整份拒绝',
+      sizeBoundWording: '序列化<1KB为源码防御检查；固定字段+单词表+安全整数下合法投影结构上远小于1KB（结构界限）；14类畸形未动态触达该分支（无实际超限用例，不宣称动态覆盖）。实现用字符串长度（UTF-16码元），全ASCII投影下与UTF-8字节数一致'
     },
     r1, r2Cases, r3, r4,
     runtimeDigests: {
@@ -194,7 +222,8 @@ async function main() {
     cloudOperations: 0,
     limitations: [
       'Clock advancement and malformed payloads are synthetic; no platform evidence claimed.',
-      'Not a claim that real platform events contain Proxy objects or that real leakage occurred.'
+      'Not a claim that real platform events contain Proxy objects or that real leakage occurred.',
+      'The >1KB output branch is a source-level defense; it is structurally unreachable for legal projections and was not dynamically exercised.'
     ]
   };
   const json = JSON.stringify(result, null, 2) + '\n';
@@ -203,6 +232,7 @@ async function main() {
     fs.writeFileSync(outPath, json, { flag: 'wx' });
   }
   console.log(json);
-  console.error('[收尾证据摘要] r1.exit=' + r1.baseline.exitCode + '/' + r1.caughtAttempt.exitCode + '/' + r1.sourceDrift.exitCode + ' r2.撤销反例=3/4 r3.篡改拒绝=6 r4.畸形丢弃=' + Object.keys(r4.malformedDropped).length + ' 探针=' + sensitivityAttempts + ' 业务期意外=' + (guardHits.length - businessStart) + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
+  console.error('[收尾证据摘要] ok=' + result.ok + ' r1.exit=' + r1.baseline.exitCode + '/' + r1.caughtAttempt.exitCode + '/' + r1.sourceDrift.exitCode + ' r2.撤销反例=3/4 r3.篡改拒绝=6 r4.畸形丢弃=' + Object.keys(r4.malformedDropped).length + ' r4.截断矛盾拒绝=true 探针=' + sensitivityAttempts + ' 业务期意外=' + businessPhaseGuardAttempts + '/总=' + totalGuardAttempts + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
+  if (failed) process.exitCode = 1;
 }
 main().catch(e => { console.error(e && e.message ? e.message : e); process.exitCode = 1; }).finally(() => restore.reverse().forEach(f => f()));

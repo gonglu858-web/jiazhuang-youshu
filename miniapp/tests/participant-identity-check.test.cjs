@@ -2158,7 +2158,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
     'schema错误': d => { d.schema = 'synthetic-schema'; },
     'scope错误': d => { d.diagnosticScope = 'synthetic-scope'; },
     '缺candidateLabels': d => { delete d.candidateLabels; },
-    '缺otherKeyCount': d => { delete d.otherKeyCount; }
+    '缺otherKeyCount': d => { delete d.otherKeyCount; },
+    '截断矛盾-空标签+true': d => { d.candidateLabels = []; d.truncated = true; },
+    '截断矛盾-单标签+true': d => { d.candidateLabels = ['CANDIDATE_USERINFO']; d.truncated = true; }
   };
   let currentResult = null;
   const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: currentResult }) } };
@@ -2187,11 +2189,12 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
     const good = await call(base());
     assert.ok(good.keyDiagnostic, '合法诊断保留');
     assert.equal(good.keyDiagnostic.otherKeyCount, 1);
-    // 合法标签对照：保留
+    // 合法标签对照（truncated=false）：保留；truncated=true 矛盾已在畸形集中拒绝
     const withLabel = base();
     withLabel.candidateLabels = ['CANDIDATE_USERINFO'];
     const r2 = await call(withLabel);
     assert.equal(JSON.stringify(r2.keyDiagnostic.candidateLabels), JSON.stringify(['CANDIDATE_USERINFO']), '合法标签保留（跨vm用JSON比较）');
+    assert.equal(r2.keyDiagnostic.truncated, false);
   });
 
   // (2) 生成页面链：畸形诊断不展示；合法诊断展示；原失败事实与口令清除保持
@@ -2219,8 +2222,17 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   };
   const malformedShown = await drive((() => { const d = base(); d.otherKeyCount = 9; return d; })());
   assert.equal(malformedShown, '', '生成页面：畸形诊断不展示（净化为空文本）');
+  // S2：截断矛盾诊断（单标签+truncated=true）不展示，不得出现「已截断」文本
+  const contradictoryShown = await drive((() => {
+    const d = base();
+    d.candidateLabels = ['CANDIDATE_USERINFO'];
+    d.truncated = true;
+    return d;
+  })());
+  assert.equal(contradictoryShown, '', '生成页面：截断矛盾诊断不展示');
   const legalShown = await drive(base());
   assert.ok(typeof legalShown === 'string' && legalShown.includes('其它键 1 个'), '生成页面：合法诊断展示');
+  assert.equal(legalShown.includes('已截断'), false, '合法对照不出现截断文本');
 });
 
 test('D6 R1 审计失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账', () => {
@@ -2267,4 +2279,63 @@ test('D6 R1 审计失败判定：业务期意外守卫（含被catch）必须非
   assert.equal(drift.driftHits, 1, '来源漂移检出');
   assert.equal(drift.ok, false);
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
+});
+
+test('D7 S1 收尾证据外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述', async () => {
+  const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾-20261016.cjs');
+  const source = fs.readFileSync(evidenceFile, 'utf8');
+  const run = kind => {
+    let src = source;
+    if (kind === 'caughtAttempt') {
+      // 唯一锚点：main 体内 businessStart 行 + 其后 R1 注释行（该文件为 CRLF 行尾；
+      // runAudit 内字符串字面量不含此上下文）
+      const anchor2 = 'const businessStart = guardHits.length;\r\n\r\n  // ── R1：审计退出码';
+      assert.equal(src.split(anchor2).length, 2, '外层业务期起点锚点唯一');
+      // 在外层 businessStart 之后注入一次被 catch 的意外尝试：真实守卫拦截，无网络发出
+      src = src.replace(anchor2, 'const businessStart = guardHits.length;\r\ntry { require(\'node:https\').request(\'https://example.invalid\'); } catch (_) {}\r\n\r\n  // ── R1：审计退出码');
+    }
+    // 包装 main() 的 Promise 以便异步等待完成
+    const tail = 'main().catch(e => { console.error(e && e.message ? e.message : e); process.exitCode = 1; }).finally(() => restore.reverse().forEach(f => f()));';
+    assert.equal(src.split(tail).length, 2, 'main 调用尾部锚点唯一');
+    src = src.replace(tail, 'globalThis.__mainPromise = ' + tail);
+    // 沙箱 env 仅共享合成变量 PIC_CLOSE_SOURCE_DIR（与 Codex 复查包装同一做法）：
+    // 收尾脚本对该键的写入/删除落到真实 env，checkCloseDir 才能读到；其余键留在沙箱内。
+    const sharedEnv = new Proxy({}, {
+      get(t, k) { return k === 'PIC_CLOSE_SOURCE_DIR' ? process.env.PIC_CLOSE_SOURCE_DIR : t[k]; },
+      set(t, k, v) { if (k === 'PIC_CLOSE_SOURCE_DIR') process.env.PIC_CLOSE_SOURCE_DIR = v; else t[k] = v; return true; },
+      deleteProperty(t, k) { if (k === 'PIC_CLOSE_SOURCE_DIR') delete process.env.PIC_CLOSE_SOURCE_DIR; else delete t[k]; return true; },
+      has(t, k) { return k === 'PIC_CLOSE_SOURCE_DIR' ? Object.prototype.hasOwnProperty.call(process.env, 'PIC_CLOSE_SOURCE_DIR') : k in t; }
+    });
+    const processStub = { argv: ['node', evidenceFile], exitCode: 0, env: sharedEnv };
+    const outputs = [], errors = [];
+    const nativeRequire = createRequire(evidenceFile);
+    const context = {
+      require: nativeRequire, __dirname: path.dirname(evidenceFile), __filename: evidenceFile,
+      Buffer, process: processStub, console: { log: s => outputs.push(s), error: (...s) => errors.push(s.join(' ')) }
+    };
+    vm.runInNewContext(src, context, { filename: evidenceFile, timeout: 180000 });
+    return context.__mainPromise.then(() => {
+      if (!outputs[0]) throw new Error('收尾证据脚本未输出JSON；vm错误: ' + errors.join(' | ') + '；exitCode=' + processStub.exitCode);
+      const out = JSON.parse(outputs[0]);
+      return { exitCode: processStub.exitCode, ok: out.ok, guardCounters: out.guardCounters, r1: { baseline: out.r1.baseline.exitCode, caughtAttempt: out.r1.caughtAttempt.exitCode, sourceDrift: out.r1.sourceDrift.exitCode } };
+    });
+  };
+  const baseline = await run('baseline');
+  assert.equal(baseline.exitCode, 0, '正常对照退出0');
+  assert.equal(baseline.ok, true, '正常对照 ok=true');
+  assert.equal(baseline.guardCounters.businessPhaseGuardAttempts, 0, '正常对照外层业务期意外0');
+  assert.equal(baseline.guardCounters.sensitivityAttempts, 2, '外层探针单独记账');
+  assert.equal(baseline.guardCounters.total, 2, '总次数=探针+意外');
+  // 内部审计预期反例保持原出口（与外层意外分述）
+  assert.deepEqual(baseline.r1, { baseline: 0, caughtAttempt: 1, sourceDrift: 1 });
+  const caught = await run('caughtAttempt');
+  assert.equal(caught.guardCounters.businessPhaseGuardAttempts, 1, '外层被catch意外记账');
+  assert.equal(caught.guardCounters.total, 3);
+  assert.equal(caught.ok, false, '意外>0 成功标记不得为真');
+  assert.equal(caught.exitCode, 1, '意外>0 必须非零退出');
+  // 内部审计的预期反例不因外层注入被清零掩盖
+  assert.deepEqual(caught.r1, { baseline: 0, caughtAttempt: 1, sourceDrift: 1 });
+  // 安全清理：不向真实环境遗留合成变量
+  delete process.env.PIC_CLOSE_SOURCE_DIR;
 });

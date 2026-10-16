@@ -14,9 +14,12 @@ const cloudConfig = require('../config/cloud');
 // 服务端默认不返回诊断；仅诊断轮且全部准入门槛通过时才附带。客户端按固定 schema
 // **严格**验证：任何必需字段缺失/类型错误/越界、标签非法或重复或超量、计数与分桶
 // 不一致——整份诊断丢弃（不修补成默认值）；额外未知字段仅投影丢弃。不透传原键名或值。
-// 截断契约：truncated=true 表示服务端候选标签数已达上限（8）且存在未列出候选；
-// candidateLabels 数组长度恒 ≤ 8、元素仅取固定词表且无重复。投影输出恒为 6 个固定
-// 字段、内容有界（序列化 < 1KB）。
+// 截断契约（S2 已执行校验）：truncated=true 仅在候选标签数已达上限（8）且存在未列出
+// 候选时才成立；合法标签仅取固定词表且无重复，故 labels.length ≤ 词表容量。当前词表
+// 容量为 1 < 8，当前协议下 truncated=true 必然矛盾，客户端整份拒绝；未来扩词表须同时
+// 满足「labels 数 === 上限」与「词表容量 ≥ 上限」。candidateLabels 数组长度恒 ≤ 8。
+// 投影输出恒为 6 个固定字段、内容有界（源码含序列化 <1KB 防御检查；固定字段与单一
+// 词表下合法投影结构上远小于 1KB）。
 const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
 const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
 const KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO'];
@@ -54,8 +57,16 @@ function sanitizeKeyDiagnostic(raw) {
     if (labels.indexOf(l) !== -1) return null;
     labels.push(l);
   }
-  // 截断标志：必须为布尔（截断契约见上）
+  // 截断契约一致性（S2）：truncated=true 仅在候选标签数已达上限（8）且存在未列出
+  // 候选时才可能成立；合法标签只能来自固定词表且不得重复，故 labels.length ≤ 词表容量。
+  // 当前词表容量为 1 < 8，labels.length 不可能达到上限，因此 truncated=true 与当前协议
+  // 矛盾——整份丢弃（不修补）。若未来扩词表，须同步校验「labels 数 === 上限」且
+  // 「词表容量 ≥ 上限」，两项缺一即拒绝。
   if (raw.truncated !== true && raw.truncated !== false) return null;
+  if (raw.truncated === true) {
+    if (labels.length !== KEY_DIAGNOSTIC_MAX_LABELS) return null;
+    if (KEY_DIAGNOSTIC_LABELS.length < KEY_DIAGNOSTIC_MAX_LABELS) return null;
+  }
   const projected = {
     schema: KEY_DIAGNOSTIC_SCHEMA,
     diagnosticScope: KEY_DIAGNOSTIC_SCOPE,

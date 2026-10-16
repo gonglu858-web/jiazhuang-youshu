@@ -285,7 +285,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
   'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': 'a99409c2072135a597514fe0b09df85bcd1e75af5984615bf60cfec33f19109e',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '85a941fa7b30a722abcd6a96c4c55f515e2442143fd40a29e8d20fba2ff202f5',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305',

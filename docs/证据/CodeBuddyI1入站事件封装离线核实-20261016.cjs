@@ -18,9 +18,9 @@ const outIdx = argv.indexOf('--out');
 const outPath = outIdx !== -1 ? path.resolve(argv[outIdx + 1] || '') : null;
 
 // ── 外置固定基线（提交绑定；不从待测源码自举）────────────────────────────────
-const BASIS_COMMIT = '880fbf8';
-/** 打包器自身受审摘要（本轮 R1–R4 收尾终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
-const PACKAGER_SELF_SHA256 = 'fbb0cd160d15e1cf97fcf9985fd2152596ab28c25acf8cbb59ab3ee73c1c6aa9';
+const BASIS_COMMIT = '23f3ffb';
+/** 打包器自身受审摘要（S1/S2 收尾终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
+const PACKAGER_SELF_SHA256 = '141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029';
 const PACKAGER_REL = 'miniapp/scripts/package-participant-identity-check.cjs';
 const CORE_REL = 'miniapp/scripts/lib/participant-identity-check.cjs';
 /** 本轮实际修改的受审源文件（对照项在 PINNED_SOURCES 中分述）。 */
