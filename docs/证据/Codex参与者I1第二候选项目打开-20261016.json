@@ -1,0 +1,31 @@
+{
+  "roundId": "i1diag2-20261016-2d90b36818a9",
+  "at": "2026-10-16T14:08:37.325Z",
+  "projectImport": {
+    "success": true,
+    "alreadyImported": false
+  },
+  "openWindow": {
+    "success": true,
+    "winId": "s3"
+  },
+  "previewExecutedByAssistant": false,
+  "ideMutations": [
+    {
+      "file": "project.config.json",
+      "beforeSha256": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+      "afterImportSha256": "a1d6a0809afcdc70ca53a6df6fd5e25d89a6c2c252122faa3c7b316ee11c17e4",
+      "restoredFrozenBytes": true,
+      "changedKeys": [
+        "setting"
+      ]
+    },
+    {
+      "file": "project.private.config.json",
+      "sha256": "639d28bfab192ff86936e25880f3f2d1db0f56ef98b54e72d27f285ac5fcad95",
+      "backedUpOutsidePackage": true,
+      "removedGeneratedExtra": true
+    }
+  ],
+  "packageCheck": true
+}

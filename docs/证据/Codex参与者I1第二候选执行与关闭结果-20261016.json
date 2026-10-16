@@ -1,0 +1,172 @@
+{
+  "schema": "codex-i1-second-candidate-execution/1",
+  "roundId": "i1diag2-20261016-2d90b36818a9",
+  "sourceReview": "f0b7fa9",
+  "executionPackageCommit": "9144d4c",
+  "approval": {
+    "roundId": "i1diag2-20261016-2d90b36818a9",
+    "approved": true,
+    "userQuote": "同意执行本轮2d90b36818a9受控诊断并关闭，允许必要凭据获取和现有套餐用量",
+    "source": "direct-user-message",
+    "recordedAt": "2026-10-16T14:06:28.966Z",
+    "planSha256": "4aafe591b771da659410821f1a87a4aff1a40d2e40fd1f1941683b44db0b5f60",
+    "manifestSha256": "9a16d1727f6d321ed9d115fc0b4f46cd9dd615fa711f4860e5bc4507f97e9064",
+    "executionPage": "docs/Codex执行页-I1第二固定候选诊断-20261016.md",
+    "scope": "手动预览一次、必要凭据、候选覆盖回读、1号一次操作、立即配对关闭回读；不登记、不写业务记录、不查云日志、不开展I2/P"
+  },
+  "manualPreview": {
+    "roundId": "i1diag2-20261016-2d90b36818a9",
+    "source": "direct-user-reply",
+    "quote": "二维码已出现，无报错",
+    "manualPreviewReportedSuccess": true,
+    "at": "2026-10-16T14:10:17.591Z",
+    "assistantPerformedPreview": false
+  },
+  "participantFeedback": {
+    "roundId": "i1diag2-20261016-2d90b36818a9",
+    "at": "2026-10-16T14:14:30.175Z",
+    "source": "direct-user-reply",
+    "quote": "已经提交，结果已出现，请关闭",
+    "participantSubmissionReported": true,
+    "exactPlatformCallCountNotIndependentlyVerified": true,
+    "resultDetailsPending": true,
+    "closeRequested": true
+  },
+  "candidateReadback": {
+    "runId": "codex-i1-candidate-4a64f0da-db64-4eaa-bc16-6a3770474de2",
+    "observedAt": "2026-10-16T14:11:40.456315+00:00",
+    "archiveSha256": "764b85bfec0c4aeafe8a8071b5dfbd9bcb7f9c77a6088e80b97c1aa3fb300987",
+    "mode": "candidate",
+    "roundId": "i1diag2-20261016-2d90b36818a9",
+    "databaseVersion": "1.4.1",
+    "files": [
+      {
+        "path": "index.js",
+        "bytes": 3675,
+        "sha256": "3c9608e944c0ba2c3c242c8ca9bfd97fa968052775325f8033aaf5fec877cdfa",
+        "matched": true
+      },
+      {
+        "path": "package.json",
+        "bytes": 273,
+        "sha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+        "matched": true
+      },
+      {
+        "path": "participant-identity-check.js",
+        "bytes": 28458,
+        "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+        "matched": true
+      }
+    ],
+    "matched": 3,
+    "wxServerSdk": "3.0.1",
+    "symlinksInspected": [
+      "node_modules/.bin/semver",
+      "node_modules/.bin/sshpk-conv",
+      "node_modules/.bin/sshpk-sign",
+      "node_modules/.bin/sshpk-verify",
+      "node_modules/.bin/uuid"
+    ],
+    "status": "REMOTE_FILES_MATCH_FROZEN_I1_PACKAGE",
+    "extracted": false,
+    "downloadedCodeExecuted": false,
+    "platformWritePermissionVerified": false,
+    "participantIdentityVerified": false
+  },
+  "closedReadback": {
+    "runId": "codex-i1-closed-7525535c-2873-4a47-a90d-d0456236bb3f",
+    "observedAt": "2026-10-16T14:15:17.557183+00:00",
+    "archiveSha256": "496a4397144a5f3a7d75d2a3d622edb38f0e667599b7d1b77ddb5cbbd0eb5830",
+    "mode": "closed",
+    "roundId": "i1diag2-20261016-2d90b36818a9",
+    "databaseVersion": "1.4.1",
+    "files": [
+      {
+        "path": "collection-map.js",
+        "bytes": 12303,
+        "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+        "matched": true
+      },
+      {
+        "path": "gate.js",
+        "bytes": 11484,
+        "sha256": "712b6e92b606c321de114f5eed36a66db7ee431dcfc6d4fe7181fb5fd8d0e4cc",
+        "matched": true
+      },
+      {
+        "path": "index.js",
+        "bytes": 7752,
+        "sha256": "1bec56a38fcec9da89460a32ec34bb55c5607ed740e48692fd6360e5203da048",
+        "matched": true
+      },
+      {
+        "path": "package.json",
+        "bytes": 303,
+        "sha256": "8ffc87ea85fd9767980e9bde06f1693d431acd6b23b64c3b027acc8c133e7e84",
+        "matched": true
+      },
+      {
+        "path": "project-guard.js",
+        "bytes": 14668,
+        "sha256": "c8a2d6f28747bbd343fcbdbb4826ebb880ed0bf89819be4d186204c085c53687",
+        "matched": true
+      },
+      {
+        "path": "vendor/MANIFEST.json",
+        "bytes": 728,
+        "sha256": "cd711e548e99abf7d086c134f015874f40c34a4c787f637dac4fce50db355830",
+        "matched": true
+      },
+      {
+        "path": "vendor/schedule-service.js",
+        "bytes": 73002,
+        "sha256": "da302a7412bb08ce03d18c8486081fcc1e786b2f07f2b3817250fbf88f69cbec",
+        "matched": true
+      },
+      {
+        "path": "vendor/service.js",
+        "bytes": 26713,
+        "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+        "matched": true
+      }
+    ],
+    "matched": 8,
+    "wxServerSdk": "3.0.1",
+    "symlinksInspected": [
+      "node_modules/.bin/semver",
+      "node_modules/.bin/sshpk-conv",
+      "node_modules/.bin/sshpk-sign",
+      "node_modules/.bin/sshpk-verify",
+      "node_modules/.bin/uuid"
+    ],
+    "status": "REMOTE_FILES_MATCH_FROZEN_I1_PACKAGE",
+    "extracted": false,
+    "downloadedCodeExecuted": false,
+    "platformWritePermissionVerified": false,
+    "participantIdentityVerified": false
+  },
+  "status": "CLOSED_AND_REMOTE_BYTES_VERIFIED",
+  "displayFileRemoved": true,
+  "notepadTabClosedByUserNotVerified": true,
+  "participantResultScreenshotReceived": false,
+  "participantIdentityConfirmed": false,
+  "exactParticipantPlatformCallCountNotVerified": true,
+  "feesActualAmountNotQueried": true,
+  "cloudLogsRead": false,
+  "counts": {
+    "credentialBatchesRequested": 2,
+    "credentialFetchAttempts": 2,
+    "associationStages": 6,
+    "deployAttempts": 2,
+    "scfApiAttempts": 5,
+    "zipDownloads": 2,
+    "assistantFunctionInvocations": 0,
+    "assistantBusinessDatabaseCalls": 0
+  },
+  "limitations": [
+    "Deployment and remote source/config/SDK readback verified; participant diagnosis screenshot not yet received.",
+    "User reports submission and result; exact platform invocation count not independently established.",
+    "No claim of zero platform logs or zero fees; no I2/P authorization."
+  ]
+}

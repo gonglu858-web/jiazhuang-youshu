@@ -1,0 +1,11 @@
+{
+  "roundId": "i1diag2-20261016-2d90b36818a9",
+  "approved": true,
+  "userQuote": "同意执行本轮2d90b36818a9受控诊断并关闭，允许必要凭据获取和现有套餐用量",
+  "source": "direct-user-message",
+  "recordedAt": "2026-10-16T14:06:28.966Z",
+  "planSha256": "4aafe591b771da659410821f1a87a4aff1a40d2e40fd1f1941683b44db0b5f60",
+  "manifestSha256": "9a16d1727f6d321ed9d115fc0b4f46cd9dd615fa711f4860e5bc4507f97e9064",
+  "executionPage": "docs/Codex执行页-I1第二固定候选诊断-20261016.md",
+  "scope": "手动预览一次、必要凭据、候选覆盖回读、1号一次操作、立即配对关闭回读；不登记、不写业务记录、不查云日志、不开展I2/P"
+}
