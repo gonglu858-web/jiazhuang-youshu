@@ -1,0 +1,113 @@
+{
+  "schema": "codex-i1-request-field-reproduction/1",
+  "observedAt": "2026-10-16T02:10:37.604Z",
+  "basisCommit": "af9a2c0",
+  "roundId": "i1-20261016-010b62cd534e",
+  "sourceHashes": {
+    "server/scheduleSandbox/index.js": "ec1cee6eefa838cb4ee8af1269f01f3f7828ccb13a29b3222ce033066d96bcf0",
+    "server/scheduleSandbox/participant-identity-check.js": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a",
+    "frontend/utils/identity-check-client.js": "4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5",
+    "frontend/config/cloud.js": "2e0920850376df9594abba4d38f09d93f72cdb8773b41b561574ddf151bd047e"
+  },
+  "verificationKind": "generated client and generated server entry + actual core; synthetic wx/db/context/clock/passphrase/transport; not platform envelope capture",
+  "cases": [
+    {
+      "case": "plain_no_full_id",
+      "clientSentKeys": [
+        "action",
+        "passphrase",
+        "checkRoundId"
+      ],
+      "syntheticAddedKeys": [],
+      "code": "",
+      "state": "ABSENT",
+      "identityConfirmed": true,
+      "readAttempted": true,
+      "reads": 1,
+      "collections": 1,
+      "fullIdReturned": false
+    },
+    {
+      "case": "plain_full_id",
+      "clientSentKeys": [
+        "action",
+        "passphrase",
+        "checkRoundId",
+        "includeFullUserId"
+      ],
+      "syntheticAddedKeys": [],
+      "code": "",
+      "state": "ABSENT",
+      "identityConfirmed": true,
+      "readAttempted": true,
+      "reads": 1,
+      "collections": 1,
+      "fullIdReturned": true
+    },
+    {
+      "case": "injected_userInfo",
+      "clientSentKeys": [
+        "action",
+        "passphrase",
+        "checkRoundId",
+        "includeFullUserId"
+      ],
+      "syntheticAddedKeys": [
+        "userInfo"
+      ],
+      "code": "PIC_REQUEST_INVALID",
+      "state": "UNKNOWN",
+      "identityConfirmed": false,
+      "readAttempted": false,
+      "reads": 0,
+      "collections": 0,
+      "fullIdReturned": false
+    },
+    {
+      "case": "injected_arbitrary_key",
+      "clientSentKeys": [
+        "action",
+        "passphrase",
+        "checkRoundId"
+      ],
+      "syntheticAddedKeys": [
+        "syntheticExtra"
+      ],
+      "code": "PIC_REQUEST_INVALID",
+      "state": "UNKNOWN",
+      "identityConfirmed": false,
+      "readAttempted": false,
+      "reads": 0,
+      "collections": 0,
+      "fullIdReturned": false
+    },
+    {
+      "case": "bad_pass_plus_extra",
+      "clientSentKeys": [
+        "action",
+        "passphrase",
+        "checkRoundId"
+      ],
+      "syntheticAddedKeys": [
+        "userInfo"
+      ],
+      "code": "PIC_REQUEST_INVALID",
+      "state": "UNKNOWN",
+      "identityConfirmed": false,
+      "readAttempted": false,
+      "reads": 0,
+      "collections": 0,
+      "fullIdReturned": false
+    }
+  ],
+  "checksPassed": 5,
+  "sensitivityAttempts": 2,
+  "unexpectedAttempts": 0,
+  "cloudOperations": 0,
+  "limitations": [
+    "Actual extra field name not known. userInfo is a synthetic hypothesis only.",
+    "Screenshot code maps to unknown top-level request key; no platform logs read.",
+    "includeFullUserId true succeeds in local normal control; do not blame opt-in checkbox.",
+    "Request-key validation precedes passphrase, context and clock checks; those gates are not proven by screenshot."
+  ]
+}

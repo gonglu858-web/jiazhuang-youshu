@@ -1,0 +1,22 @@
+{
+  "source": "user-attached screenshot; visually read by Codex",
+  "filename": "56dc21aba70a5a3a892704c9b178d743.png",
+  "sha256": "5ca7be2e457700871e77511a8459ba541099a21ed6a56d099f59bf6e07fb72fb",
+  "recordedAt": "2026-10-16T02:11:57.202386+00:00",
+  "screenClock": "10:01 (device display; not server time)",
+  "displayed": {
+    "identityConfirmed": false,
+    "registrationState": "UNKNOWN",
+    "recordMatched": "未核实",
+    "readAttempted": false,
+    "userIdTail": "—",
+    "checkRoundId": "i1-20261016-010b62cd534e",
+    "serverTime": "—",
+    "code": "PIC_REQUEST_INVALID",
+    "fullIdCheckboxChecked": true,
+    "passphraseInputEmpty": true
+  },
+  "actualExtraKey": "unknown",
+  "platformLogsRead": false,
+  "rawScreenshotCopiedIntoGit": false
+}
