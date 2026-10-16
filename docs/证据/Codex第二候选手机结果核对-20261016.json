@@ -1,0 +1,73 @@
+{
+  "schema": "codex-second-candidate-phone-result/1",
+  "recordedAt": "2026-10-16T14:22:02.839Z",
+  "reviewedImplementation": "f0b7fa9",
+  "executionCommit": "a87ff06",
+  "screenshot": {
+    "source": "C:/Users/30591/Documents/Tencent Files/305914593/nt_qq/nt_data/Pic/2026-10/Ori/66923808351a0492069a22c1981da42e.png",
+    "archived": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1diag2-20261016-2d90b36818a9\\participant-result-66923808.png",
+    "sha256": "126e1450e2a08ea6d230924e54dc9baf7bd5f994e6a5ea820040dde123b397a9",
+    "bytes": 439872
+  },
+  "observed": {
+    "source": "user-attached-image; manually transcribed by Codex",
+    "phoneClock": "22:13",
+    "checkRoundId": "i1diag2-20261016-2d90b36818a9",
+    "identityConfirmed": false,
+    "registrationState": "UNKNOWN",
+    "recordMatched": "未核实",
+    "readAttempted": false,
+    "userIdTail": "—",
+    "serverTime": "—",
+    "code": "PIC_REQUEST_INVALID",
+    "includeFullUserIdChecked": false,
+    "candidateLabels": [
+      "CANDIDATE_USERINFO"
+    ],
+    "otherKeyCount": 1,
+    "otherKeyNameLengthBuckets": {
+      "len<=4": 0,
+      "len5-8": 0,
+      "len9-16": 1,
+      "len17-32": 0,
+      "lenOver32": 0
+    }
+  },
+  "evidenceBinding": {
+    "frozenCoreMatchesRemoteReadback": true,
+    "secondCandidateInVerifiedCore": true,
+    "frozenClientAndPageMatchPreparation": true,
+    "pageRendersAllLabels": true,
+    "dualCandidateSyntheticControl": {
+      "labels": [
+        "CANDIDATE_USERINFO",
+        "CANDIDATE_WX_CLOUD_API_TOKEN"
+      ],
+      "otherKeyCount": 0
+    },
+    "twoDifferentSyntheticUnknownNamesHaveIdenticalProjection": true
+  },
+  "conclusions": {
+    "secondExactCandidateMatched": false,
+    "recognizedUserInfo": true,
+    "remainingOwnEnumerableUnknownKeyCount": 1,
+    "remainingKeyLengthCodeUnits": "9–16",
+    "identityNotConfirmed": true,
+    "readNotAttemptedAsReported": true,
+    "unknownKeyNameStillUnknown": true,
+    "injectionSourceStillUnknown": true
+  },
+  "closed": {
+    "verifiedAt": "2026-10-16T14:15:17.557183+00:00",
+    "codeSha256": "496a4397144a5f3a7d75d2a3d622edb38f0e667599b7d1b77ddb5cbbd0eb5830",
+    "filesMatched": 8,
+    "requeriedThisTurn": false
+  },
+  "limits": [
+    "Image is user-supplied and manually transcribed, not an independent platform log.",
+    "Non-match only concerns this call and exact own enumerable top-level spelling wxCloudApiToken; no claim about nested/non-enumerable/other-case fields or every platform call.",
+    "Frozen local frontend checked; no claim of downloading phone-compiled frontend. Server source remote readback was verified in the prior execution.",
+    "No new cloud operation, credential fetch, log query, registration or business write in this analysis."
+  ],
+  "ok": true
+}
