@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-10-16T01:45:56.8134581Z",
+  "roundId": "i1-20261016-010b62cd534e",
+  "project": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-i1-20261016-010b62cd534e-ba8b556ea6d5",
+  "operation": "open_project_window",
+  "exitCode": 0,
+  "safeFields": [
+    "\"message\": \"aborted\"",
+    "\"success\": false",
+    "\"error\": \"aborted\"",
+    "\"reason\": \"APPID_ERROR\""
+  ],
+  "previewAttempts": 0,
+  "cloudCredentialFetches": 0,
+  "deployments": 0,
+  "participantCalls": 0,
+  "approval": "同意执行新轮 010b62cd534e，沿用上述操作和费用范围。"
+}
