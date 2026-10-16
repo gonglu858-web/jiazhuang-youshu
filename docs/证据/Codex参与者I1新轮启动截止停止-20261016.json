@@ -1,0 +1,19 @@
+{
+  "schema": "codex-i1-start-cutoff-stop/1",
+  "roundId": "i1-20261016-c799fcd7997c",
+  "basisCommit": "6fdae2e",
+  "observedAt": "2026-10-16T01:33:36.152161+00:00",
+  "latestCandidateStart": "2026-10-16T01:29:43.009635+00:00",
+  "windowExpires": "2026-10-16T01:44:43.009635+00:00",
+  "userApprovalReceived": true,
+  "approvalText": "同意本轮 I1 手动预览、核验并关闭，允许必要凭据获取和现有套餐用量",
+  "status": "NOT_STARTED_START_CUTOFF_PASSED",
+  "credentialFetches": 0,
+  "previewAttempts": 0,
+  "deployments": 0,
+  "participantCallsByAssistant": 0,
+  "remoteRequeried": false,
+  "lastRemoteBaselineSource": "Codex参与者I1部署关闭字节核对-20261015.closed.json",
+  "packageModified": false,
+  "passphraseDelivered": false
+}
