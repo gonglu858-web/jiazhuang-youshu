@@ -1,0 +1,93 @@
+{
+  "schema": "codebuddy-i1-inbound-envelope-audit/1",
+  "observedAt": "2026-10-16T03:21:11.262Z",
+  "basisCommit": "2f99a48",
+  "basisNote": "HEAD at audit time (handover commit); workspace clean at start",
+  "verificationKind": "offline read-only source audit + string anchors + local SDK scans; no cloud operation, no field values, no raw event",
+  "localSdkRoot": "C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules",
+  "projectFiles": {
+    "miniapp/scripts/lib/participant-identity-check.cjs": {
+      "bytes": 21368,
+      "sha256": "c516c2610ed751d858f5f963d652237edc9106e04d01796d484ae23f48d5843a"
+    },
+    "miniapp/scripts/templates/participant-identity-check/server/index.js": {
+      "bytes": 3210,
+      "sha256": "0ddb5f6a759edc71998a325c1f02518119021f4aaa002512e369e16f592cd452"
+    },
+    "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js": {
+      "bytes": 1874,
+      "sha256": "4d7cdf9ab9d97360890d7a53ebfc73c1cd499e6f06b1c73607e5faaebf66e1c5"
+    },
+    "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js": {
+      "bytes": 4727,
+      "sha256": "137d19d4931d5ec19184c9663fd206f987ed60fbcb1034ffd8a4c8b6e8b750a1"
+    },
+    "miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js": {
+      "bytes": 434,
+      "sha256": "a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b"
+    },
+    "miniapp/scripts/package-participant-identity-check.cjs": {
+      "bytes": 52748,
+      "sha256": "3ae3ae91de3fcaa7d28d67fa8a11cdf2fe67759955044f40733225fc616be352"
+    }
+  },
+  "sdkFacts": {
+    "wxServerSdk": {
+      "version": "3.0.1",
+      "indexSha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04",
+      "indexBytes": 320781,
+      "userInfoCounts": {
+        "index.js": 0,
+        "index.d.ts": 0,
+        "README.md": 0,
+        "CHANGELOG.md": 0,
+        "package.json": 0
+      },
+      "callFunctionPassthrough": true,
+      "getWXContextSource": "process.env.WX_CONTEXT_KEYS (+WX_* env keys; ENV from TCB_ENV/SCF_NAMESPACE; SOURCE from TCB_SOURCE)"
+    },
+    "cloudbaseNodeSdk": {
+      "version": "2.10.0",
+      "functionsIndexSha256": "13c149cafd0ccfd70f6d05450815990f3182d0f02efbbbd13f69a0984dfc272f",
+      "functionsIndexBytes": 1911,
+      "callFunctionPassthrough": true,
+      "libJsFilesScanned": 22,
+      "userInfoCountInLib": 5,
+      "userInfoOnlyInModules": [
+        "auth/index.js",
+        "storage/index.js"
+      ],
+      "userInfoNote": "all occurrences are auth.getUserInfo() return shape / storage internal read; none on callFunction or event envelope path"
+    }
+  },
+  "anchors": {
+    "coreRequestFields": [
+      "action",
+      "passphrase",
+      "checkRoundId",
+      "includeFullUserId"
+    ],
+    "assertRequestKeyLoop": true,
+    "assertRequestFirstInHandle": true,
+    "rejectMessageCarriesKeyNameInternallyOnly": true,
+    "publicResultUsesFixedText": true,
+    "entryPassesEventUntouched": true,
+    "clientPayloadKeysFixed": true,
+    "pageRequestLiteralFixed": true,
+    "packerPinnedSourcesUntouched": true
+  },
+  "checksPassed": 32,
+  "guardAttemptsTotal": 2,
+  "unexpectedGuardAttempts": 0,
+  "cloudOperations": 0,
+  "auditProcessFacts": [
+    "First run failed honestly: lib-wide zero-userInfo assertion disproved (5 occurrences found by direct scan); no JSON was written on that run.",
+    "A tool-based grep with default ignore rules had under-reported node-sdk hits; direct recursive scan is authoritative."
+  ],
+  "limitations": [
+    "Platform envelope between wx.cloud.callFunction(data) and exports.main(event) is not present in any local artifact; exact extra key name cannot be determined offline.",
+    "userInfo appears nowhere in wx-server-sdk 3.0.1 package; in @cloudbase/node-sdk 2.10.0 it appears only inside auth/storage getUserInfo shapes (5), unrelated to callFunction or event envelope; no local material records a platform-injected event userInfo.",
+    "DevTools base library (app.asar) not inspected; simulator path would not prove phone behavior anyway.",
+    "This audit does not run the request pipeline; behavioral equivalence was covered by the prior 5/5 reproduction (Codex参与者I1请求字段拒绝定位-20261016.json)."
+  ]
+}
