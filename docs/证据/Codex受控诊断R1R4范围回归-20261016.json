@@ -1,0 +1,25 @@
+{
+  "reviewedCommit": "97bc3ff",
+  "history": [
+    {
+      "path": "docs/进展与待办.md",
+      "oldBytes": 819256,
+      "suffixExact": true
+    },
+    {
+      "path": "docs/CodeBuddy开发交接.md",
+      "oldBytes": 7904,
+      "suffixExact": true
+    }
+  ],
+  "protectedDiff": "",
+  "modifiedHistoricalJson": "",
+  "reruns": {
+    "participant": "30/30",
+    "business": "18/18",
+    "memberAccessSdk": "1/1",
+    "audit": "ok=true checks17 pins13 unexpected0 probes2",
+    "newEvidence": "exit0"
+  },
+  "cloudOperations": 0
+}

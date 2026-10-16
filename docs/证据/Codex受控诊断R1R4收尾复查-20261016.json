@@ -1,0 +1,270 @@
+{
+  "reviewedCommit": "97bc3ff",
+  "verificationKind": "local synthetic independent review, no cloud",
+  "normal": {
+    "exitCode": 0,
+    "unexpectedFromSummary": 0,
+    "jsonHasGuardCounters": false,
+    "jsonHasOk": false,
+    "innerAudit": {
+      "baseline": {
+        "exitCode": 0,
+        "ok": true,
+        "businessPhaseGuardAttempts": 0,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 0
+      },
+      "caughtAttempt": {
+        "exitCode": 1,
+        "ok": false,
+        "businessPhaseGuardAttempts": 1,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 0
+      },
+      "sourceDrift": {
+        "exitCode": 1,
+        "ok": false,
+        "businessPhaseGuardAttempts": 0,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 1
+      }
+    },
+    "r2": [
+      {
+        "endState": "unchanged",
+        "clockReads": 3,
+        "enumerations": 2,
+        "diagnosticReturned": true,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "expires",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "NaN",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "throws",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      }
+    ],
+    "r3": {
+      "modes": {
+        "true": {
+          "legalControl": true,
+          "schemaWrongAccepted": false,
+          "scopeWrongAccepted": false,
+          "schemaMissingAccepted": false,
+          "closeCheckIndependentOfCandidateWindow": true
+        },
+        "false": {
+          "legalControl": true,
+          "schemaWrongAccepted": false,
+          "scopeWrongAccepted": false,
+          "schemaMissingAccepted": false,
+          "closeCheckIndependentOfCandidateWindow": true
+        }
+      }
+    },
+    "r4": {
+      "malformedDropped": {
+        "labelsNotArray": true,
+        "countBucketMismatch": true,
+        "illegalLabel": true,
+        "duplicateLabel": true,
+        "labelOverflow": true,
+        "negativeCount": true,
+        "nonSafeIntegerCount": true,
+        "missingBucket": true,
+        "negativeBucket": true,
+        "truncatedNotBoolean": true,
+        "wrongSchema": true,
+        "wrongScope": true,
+        "missingLabels": true,
+        "missingCount": true
+      },
+      "legalKept": true
+    }
+  },
+  "caught": {
+    "exitCode": 0,
+    "unexpectedFromSummary": 1,
+    "jsonHasGuardCounters": false,
+    "jsonHasOk": false,
+    "innerAudit": {
+      "baseline": {
+        "exitCode": 0,
+        "ok": true,
+        "businessPhaseGuardAttempts": 0,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 0
+      },
+      "caughtAttempt": {
+        "exitCode": 1,
+        "ok": false,
+        "businessPhaseGuardAttempts": 1,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 0
+      },
+      "sourceDrift": {
+        "exitCode": 1,
+        "ok": false,
+        "businessPhaseGuardAttempts": 0,
+        "sensitivityGuardAttempts": 2,
+        "driftHits": 1
+      }
+    },
+    "r2": [
+      {
+        "endState": "unchanged",
+        "clockReads": 3,
+        "enumerations": 2,
+        "diagnosticReturned": true,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "expires",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "NaN",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      },
+      {
+        "endState": "throws",
+        "clockReads": 2,
+        "enumerations": 2,
+        "diagnosticReturned": false,
+        "dbCalls": 0,
+        "readAttempted": false
+      }
+    ],
+    "r3": {
+      "modes": {
+        "true": {
+          "legalControl": true,
+          "schemaWrongAccepted": false,
+          "scopeWrongAccepted": false,
+          "schemaMissingAccepted": false,
+          "closeCheckIndependentOfCandidateWindow": true
+        },
+        "false": {
+          "legalControl": true,
+          "schemaWrongAccepted": false,
+          "scopeWrongAccepted": false,
+          "schemaMissingAccepted": false,
+          "closeCheckIndependentOfCandidateWindow": true
+        }
+      }
+    },
+    "r4": {
+      "malformedDropped": {
+        "labelsNotArray": true,
+        "countBucketMismatch": true,
+        "illegalLabel": true,
+        "duplicateLabel": true,
+        "labelOverflow": true,
+        "negativeCount": true,
+        "nonSafeIntegerCount": true,
+        "missingBucket": true,
+        "negativeBucket": true,
+        "truncatedNotBoolean": true,
+        "wrongSchema": true,
+        "wrongScope": true,
+        "missingLabels": true,
+        "missingCount": true
+      },
+      "legalKept": true
+    }
+  },
+  "finalClock": [
+    {
+      "mode": "valid",
+      "reads": 3,
+      "diagnostic": true,
+      "dbCalls": 0
+    },
+    {
+      "mode": "expired",
+      "reads": 3,
+      "diagnostic": false,
+      "dbCalls": 0
+    },
+    {
+      "mode": "notOpen",
+      "reads": 3,
+      "diagnostic": false,
+      "dbCalls": 0
+    },
+    {
+      "mode": "NaN",
+      "reads": 3,
+      "diagnostic": false,
+      "dbCalls": 0
+    },
+    {
+      "mode": "throw",
+      "reads": 3,
+      "diagnostic": false,
+      "dbCalls": 0
+    }
+  ],
+  "truncation": [
+    {
+      "labels": [],
+      "truncated": false,
+      "accepted": true
+    },
+    {
+      "labels": [],
+      "truncated": true,
+      "accepted": true
+    },
+    {
+      "labels": [
+        "CANDIDATE_USERINFO"
+      ],
+      "truncated": false,
+      "accepted": true
+    },
+    {
+      "labels": [
+        "CANDIDATE_USERINFO"
+      ],
+      "truncated": true,
+      "accepted": true
+    }
+  ],
+  "digests": {
+    "core": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+    "client": "a99409c2072135a597514fe0b09df85bcd1e75af5984615bf60cfec33f19109e",
+    "packer": "fbb0cd160d15e1cf97fcf9985fd2152596ab28c25acf8cbb59ab3ee73c1c6aa9"
+  },
+  "cloudOperations": 0,
+  "sourceChanged": false,
+  "note": "Observed counterexamples are recorded, not passing product assertions. Injected https call was blocked before transport."
+}
