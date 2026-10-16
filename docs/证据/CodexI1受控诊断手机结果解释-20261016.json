@@ -1,0 +1,173 @@
+{
+  "schema": "codex-i1-phone-diagnostic-interpretation/1",
+  "basisCommit": "f7d45fe",
+  "roundId": "i1diag-20261016-2c8461b684ea",
+  "recordedAt": "2026-10-16T13:23:38.968Z",
+  "screenshot": {
+    "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1diag-20261016-2c8461b684ea\\participant-result-82583d63.png",
+    "bytes": 439170,
+    "sha256": "c5868b19f70f8091fa39c35b23d510827cec8427f7855d561d3c439a669e716d",
+    "source": "user-provided attachment; manual visual transcription, not raw API response"
+  },
+  "displayed": {
+    "deviceTime": "21:17",
+    "identityConfirmed": false,
+    "registrationState": "UNKNOWN",
+    "recordMatched": "unverified",
+    "readAttempted": false,
+    "userIdTail": null,
+    "serverTimeIso": null,
+    "code": "PIC_REQUEST_INVALID",
+    "fullIdCheckboxChecked": false,
+    "candidateLabels": [
+      "CANDIDATE_USERINFO"
+    ],
+    "otherKeyCount": 1,
+    "otherKeyNameLengthBuckets": {
+      "len<=4": 0,
+      "len5-8": 0,
+      "len9-16": 1,
+      "len17-32": 0,
+      "lenOver32": 0
+    }
+  },
+  "interpretation": {
+    "recognizedExtraKey": "userInfo",
+    "additionalUnknownKeys": 1,
+    "additionalKeyLengthRange": [
+      9,
+      16
+    ],
+    "totalExtraKeys": 2,
+    "actualUnknownKeyName": null,
+    "injectionSource": null,
+    "registrationEstablished": false
+  },
+  "candidateForFutureLocalDiagnostic": {
+    "name": "wxCloudApiToken",
+    "length": 15,
+    "status": "hypothesis only; SDK outgoing-request anchor does not prove phone inbound field",
+    "sdkAnchors": [
+      {
+        "rel": "lib/utils/wxCloudToken.js",
+        "sha256": "574160a86db488d99cbd3593553d6a17bee9677297f8c2e105eb1f9cf4684251",
+        "containsCandidateName": true
+      },
+      {
+        "rel": "lib/utils/httpRequest.js",
+        "sha256": "dbae6da877fa84340ace876d6570b927a5fe09a8594efb4420f7f7b28a09df5d",
+        "containsCandidateName": true
+      },
+      {
+        "rel": "types/index.d.ts",
+        "sha256": "7ea4f017dda4f1c548db1e37e84fcb65eea4f907387926eec27ffd3599ce4f8b",
+        "containsCandidateName": true
+      }
+    ]
+  },
+  "probes": [
+    {
+      "syntheticInputKeys": [
+        "userInfo"
+      ],
+      "keyDiagnostic": {
+        "schema": "participant-identity-key-diagnostic/1",
+        "diagnosticScope": "request-keys-only",
+        "otherKeyCount": 0,
+        "otherKeyNameLengthBuckets": {
+          "len<=4": 0,
+          "len5-8": 0,
+          "len9-16": 0,
+          "len17-32": 0,
+          "lenOver32": 0
+        },
+        "candidateLabels": [
+          "CANDIDATE_USERINFO"
+        ],
+        "truncated": false
+      },
+      "dbCalls": 0,
+      "valueReads": 0
+    },
+    {
+      "syntheticInputKeys": [
+        "syntheticOther"
+      ],
+      "keyDiagnostic": {
+        "schema": "participant-identity-key-diagnostic/1",
+        "diagnosticScope": "request-keys-only",
+        "otherKeyCount": 1,
+        "otherKeyNameLengthBuckets": {
+          "len<=4": 0,
+          "len5-8": 0,
+          "len9-16": 1,
+          "len17-32": 0,
+          "lenOver32": 0
+        },
+        "candidateLabels": [],
+        "truncated": false
+      },
+      "dbCalls": 0,
+      "valueReads": 0
+    },
+    {
+      "syntheticInputKeys": [
+        "userInfo",
+        "syntheticOther"
+      ],
+      "keyDiagnostic": {
+        "schema": "participant-identity-key-diagnostic/1",
+        "diagnosticScope": "request-keys-only",
+        "otherKeyCount": 1,
+        "otherKeyNameLengthBuckets": {
+          "len<=4": 0,
+          "len5-8": 0,
+          "len9-16": 1,
+          "len17-32": 0,
+          "lenOver32": 0
+        },
+        "candidateLabels": [
+          "CANDIDATE_USERINFO"
+        ],
+        "truncated": false
+      },
+      "dbCalls": 0,
+      "valueReads": 0
+    },
+    {
+      "syntheticInputKeys": [
+        "userInfo",
+        "wxCloudApiToken"
+      ],
+      "keyDiagnostic": {
+        "schema": "participant-identity-key-diagnostic/1",
+        "diagnosticScope": "request-keys-only",
+        "otherKeyCount": 1,
+        "otherKeyNameLengthBuckets": {
+          "len<=4": 0,
+          "len5-8": 0,
+          "len9-16": 1,
+          "len17-32": 0,
+          "lenOver32": 0
+        },
+        "candidateLabels": [
+          "CANDIDATE_USERINFO"
+        ],
+        "truncated": false
+      },
+      "dbCalls": 0,
+      "valueReads": 0
+    }
+  ],
+  "sourcePins": {
+    "miniapp/scripts/lib/participant-identity-check.cjs": "7eadbd64ad17dedc57fd648c56ba2672a25e9af11a31ce555bac3536e59c5a09",
+    "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js": "85a941fa7b30a722abcd6a96c4c55f515e2442143fd40a29e8d20fba2ff202f5",
+    "miniapp/scripts/package-participant-identity-check.cjs": "141c252cec8af3051d8baf4ef23dc507a30f95de0b96b4b57ef56c092ea41029"
+  },
+  "networkOperations": 0,
+  "credentialFetches": 0,
+  "cloudOperations": 0,
+  "productSourceChanged": false,
+  "remoteState": "retain verified closed state from previous execution; not queried again",
+  "limitation": "Identical count/bucket output can arise from syntheticOther or wxCloudApiToken. This ambiguity is directly demonstrated and cannot be resolved by length alone."
+}
