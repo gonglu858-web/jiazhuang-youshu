@@ -1,0 +1,207 @@
+{
+  "schema": "codex-i1-layer-review/1",
+  "reviewedCommits": [
+    "b2f9ab5",
+    "938dde1"
+  ],
+  "basis": "347261a",
+  "observedAt": "2026-10-17T05:32:29.262Z",
+  "evidenceAssertionsPassed": true,
+  "implementationAccepted": false,
+  "coreSha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+  "adapterSha256": "52b8be29844909430acc222ceb3db74ae74fdfdd4e72a557a8024c5f5a6aa26e",
+  "packerSha256": "789b9cfef0283cd862ca0f2f193fe72af2c181102cc7d9835ef52ad42f6aea2e",
+  "files": {
+    "candidate": 15,
+    "close": 23
+  },
+  "controls": {
+    "plain": {
+      "acceptedByAdapter": true,
+      "code": "",
+      "state": "ACTIVE",
+      "readAttempted": true,
+      "counts": {
+        "factory": 1,
+        "collection": 1,
+        "get": 1
+      },
+      "fields": [
+        [
+          "_id",
+          "openid",
+          "status"
+        ]
+      ]
+    },
+    "nullPrototype": {
+      "acceptedByAdapter": true,
+      "code": "",
+      "state": "ACTIVE",
+      "readAttempted": true,
+      "counts": {
+        "factory": 1,
+        "collection": 1,
+        "get": 1
+      },
+      "fields": [
+        [
+          "_id",
+          "openid",
+          "status"
+        ]
+      ]
+    },
+    "crossRealm": {
+      "acceptedByAdapter": true,
+      "code": "",
+      "state": "ACTIVE",
+      "readAttempted": true,
+      "counts": {
+        "factory": 1,
+        "collection": 1,
+        "get": 1
+      },
+      "fields": [
+        [
+          "_id",
+          "openid",
+          "status"
+        ]
+      ]
+    },
+    "ownNonEnumerableConflict": {
+      "acceptedByAdapter": false,
+      "code": "PIC_REQUEST_INVALID",
+      "state": "UNKNOWN",
+      "readAttempted": false,
+      "counts": {
+        "factory": 0,
+        "collection": 0,
+        "get": 0
+      },
+      "fields": []
+    }
+  },
+  "prototypeCounterexamples": {
+    "outerCustomNullRoot": {
+      "acceptedByAdapter": true,
+      "code": "",
+      "state": "ACTIVE",
+      "readAttempted": true,
+      "counts": {
+        "factory": 1,
+        "collection": 1,
+        "get": 1
+      },
+      "fields": [
+        [
+          "_id",
+          "openid",
+          "status"
+        ]
+      ]
+    },
+    "innerCustomNullRoot": {
+      "acceptedByAdapter": true,
+      "code": "",
+      "state": "ACTIVE",
+      "readAttempted": true,
+      "counts": {
+        "factory": 1,
+        "collection": 1,
+        "get": 1
+      },
+      "fields": [
+        [
+          "_id",
+          "openid",
+          "status"
+        ]
+      ]
+    }
+  },
+  "inheritedGetterReads": 0,
+  "extractionExpiry": {
+    "acceptedByAdapter": true,
+    "code": "PIC_WINDOW_EXPIRED",
+    "state": "UNKNOWN",
+    "readAttempted": false,
+    "counts": {
+      "factory": 1,
+      "collection": 0,
+      "get": 0
+    },
+    "fields": []
+  },
+  "sdk": {
+    "version": "3.0.1",
+    "databaseVersion": "1.4.1",
+    "routes": [
+      {
+        "mode": "hit",
+        "code": "",
+        "state": "ACTIVE",
+        "readAttempted": true
+      },
+      {
+        "mode": "miss",
+        "code": "",
+        "state": "ABSENT",
+        "readAttempted": true
+      },
+      {
+        "mode": "denied",
+        "code": "PIC_READ_FAILED",
+        "state": "UNKNOWN",
+        "readAttempted": true
+      }
+    ],
+    "mutatedGeneratedEntry": {
+      "code": "PIC_READ_FAILED",
+      "state": "UNKNOWN",
+      "readAttempted": true
+    },
+    "calls": [
+      {
+        "action": "database.getDocument",
+        "projection": {
+          "_id": 1,
+          "openid": 1,
+          "status": 1
+        }
+      },
+      {
+        "action": "database.getDocument",
+        "projection": {
+          "_id": 1,
+          "openid": 1,
+          "status": 1
+        }
+      },
+      {
+        "action": "database.getDocument",
+        "projection": {
+          "_id": 1,
+          "openid": 1,
+          "status": 1
+        }
+      },
+      {
+        "action": "database.getDocument",
+        "projection": {
+          "_id": 1,
+          "openid": 1,
+          "status": 1
+        }
+      }
+    ],
+    "substitution": "SDK facade delegates init/database unchanged; synthetic getWXContext and Db.reqClass transport. Generated source mutated only in memory for sensitivity; no platform verification."
+  },
+  "guardCounters": {
+    "sensitivity": 2,
+    "unexpected": 0,
+    "total": 2
+  },
+  "limits": "Custom prototypes violate agreed input contract; observed reads remain derived from trusted synthetic identity. No demonstrated impersonation. No real credentials or cloud actions."
+}

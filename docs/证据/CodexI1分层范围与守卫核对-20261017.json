@@ -1,0 +1,93 @@
+{
+  "schema": "codex-i1-layer-scope-guard/1",
+  "basis": "347261a",
+  "reviewed": "938dde1",
+  "observedAt": "2026-10-17T05:29:53.613Z",
+  "histories": [
+    {
+      "rel": "docs/进展与待办.md",
+      "suffixEqual": true,
+      "addedBytes": 3326
+    },
+    {
+      "rel": "docs/CodeBuddy开发交接.md",
+      "suffixEqual": true,
+      "addedBytes": 1013
+    }
+  ],
+  "oldJson": {
+    "compared": 650,
+    "changed": []
+  },
+  "oldScripts": [
+    {
+      "rel": "docs/证据/CodeBuddyI1入站事件封装离线核实-20261016.cjs",
+      "beforeSha256": "cb23c6cb47ed1d07f3bfcfd6a0846f4cdf08df4d98bfc10133ae3941f1332f6e",
+      "afterSha256": "90c45a9ef70a84a67ccb4794cf30d2f7f920b52db760cbd9ff25364ca5484fb6",
+      "unchanged": false
+    },
+    {
+      "rel": "docs/证据/CodeBuddy受控诊断R1R4收尾-20261016.cjs",
+      "beforeSha256": "850837cba7b243c293c325dfc27c69190c2ba60fef7ff25ceca664b9154dc052",
+      "afterSha256": "0cf74b3c938cfaeed730c65ac16f81bada47495822ad4757b95577d61a368c33",
+      "unchanged": false
+    }
+  ],
+  "protectedPaths": [
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram",
+    "miniapp/pages",
+    "miniapp/project.config.json",
+    "miniapp/scripts/lib",
+    "miniapp/scripts/package-business-test.cjs",
+    "miniapp/scripts/package-sandbox.cjs",
+    "miniapp/scripts/package-sandbox-registration.cjs"
+  ],
+  "protectedDiff": "",
+  "newEvidenceGuard": {
+    "sourceSha256": "6652f9e86801dd043686970814c3767daeed07f597203934661d5528470a4f61",
+    "normal": {
+      "ok": true,
+      "exitCode": 0,
+      "counts": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "total": 2
+      }
+    },
+    "caught": {
+      "ok": false,
+      "exitCode": 1,
+      "counts": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 1,
+        "total": 3
+      }
+    }
+  },
+  "regressionObservedInReview": {
+    "identity": {
+      "pass": 34,
+      "fail": 0,
+      "skip": 0
+    },
+    "business": {
+      "pass": 18,
+      "fail": 0,
+      "skip": 0
+    },
+    "sdk": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    "note": "本轮已单独运行三个 node --test 命令，此处记录终端实测结果，本脚本不再重复执行测试。"
+  },
+  "reviewHarnessCorrections": [
+    "首次独立链脚本误给 checkCloseDir 传 close 子目录且未设来源；按接口改为候选根+PIC_CLOSE_SOURCE_DIR 后通过。",
+    "首轮交付证据已写出成功，但 PowerShell ConvertFrom-Json 默认大小写不敏感，无法解析 openid/OPENID 同名键；仅汇总管道失败，原 JSON 未受影响。"
+  ],
+  "evidenceAssertionsPassed": true,
+  "implementationAccepted": false,
+  "cloudActions": "未执行；守卫探针由本地替身拦截"
+}
