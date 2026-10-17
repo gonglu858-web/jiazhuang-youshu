@@ -1,0 +1,10 @@
+{
+  "roundId": "i2layer-20261017-288743749469",
+  "approved": true,
+  "approvedAt": "2026-10-17T12:19:45.710103+00:00",
+  "userQuote": "同意执行本轮288743749469的2号只读核验，手动预览、本人核验一次并立即关闭，允许必要凭据获取和现有套餐用量；完整编号由2号自主勾选后当面交付。",
+  "planSha256": "76251ca978c1421bbfc6a8784c522d6f0e76015c9c8cc8f54a43bdcd7e0c5784",
+  "manifestSha256": "dbf55b455d4e0352808a20289e6069aa5c3c41f72ee0df01009a136999052253",
+  "source": "human user message",
+  "attendance": "user confirms 0 and 2 present, devices ready"
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "codex-i2-predeployment-stop/1",
+  "roundId": "i2layer-20261017-288743749469",
+  "at": "2026-10-17T12:20:33.942874+00:00",
+  "approvalReceived": true,
+  "status": "STOPPED_BEFORE_CLOUD",
+  "reason": "Only about 43 seconds remained to candidate start cutoff after opening IDE; manual preview and credential checks not yet complete. No attempt to rush deployment.",
+  "projectOpen": {
+    "success": true,
+    "type": "newopen",
+    "winId": "s0",
+    "officialCliAutoAuth": true
+  },
+  "manualPreviewRequested": false,
+  "cloudCredentialFetches": 0,
+  "cloudDeployments": 0,
+  "cloudApiCalls": 0,
+  "functionInvocations": 0,
+  "oldApprovalNotTransferred": true
+}
