@@ -1997,6 +1997,23 @@ test('D2 生成链（请求分层协议）：外层附带键容忍进入本人�
   });
 
   // (3) 拒绝矩阵：每例 PIC_REQUEST_INVALID、工厂0/集合0/读取0、无诊断字段
+  // 三类原型伪造（复查 R1）：自造方法 / 复制 Object.prototype 描述符 / 伪造构造器手工自关联
+  const chainForgery = (() => {
+    const mkRoot = selfBind => {
+      const root = Object.create(null);
+      for (const key of ['hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toLocaleString', 'toString', 'valueOf', 'constructor']) {
+        Object.defineProperty(root, key, { enumerable: false, writable: true, configurable: true, value: function syntheticFake() {} });
+      }
+      root.role = 'synthetic-inherited-role';
+      if (selfBind) Object.getOwnPropertyDescriptor(root, 'constructor').value.prototype = root;
+      return root;
+    };
+    return {
+      fakeMethods: mkRoot(false),
+      selfBound: mkRoot(true),
+      copiedDescriptors: Object.create(null, Object.getOwnPropertyDescriptors(Object.prototype))
+    };
+  })();
   const rejections = {
     仅旧顶层格式: () => ({ action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND }),
     两格式混用: e => { e.action = 'inspectSelf'; e.passphrase = SYNTHETIC_PASSPHRASE; e.checkRoundId = TEST_ROUND; },
@@ -2011,7 +2028,13 @@ test('D2 生成链（请求分层协议）：外层附带键容忍进入本人�
     元操作抛错: e => { Object.defineProperty(e, Symbol.for('synthetic-meta'), { enumerable: false, get() { throw new Error('synthetic-meta'); } }); e[Symbol.for('synthetic-own')] = 1; },
     自定义原型: () => { function Cls() {} Cls.prototype.picRequest = { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }; return new Cls(); },
     '外层自定义null-root原型': () => { const custom = Object.create(null); custom.role = 'synthetic-forged'; return Object.assign(Object.create(custom), { picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }); },
-    '内层自定义null-root原型': e => { const custom = Object.create(null); custom.role = 'synthetic-forged'; e.picRequest = Object.assign(Object.create(custom), { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }); }
+    '内层自定义null-root原型': e => { const custom = Object.create(null); custom.role = 'synthetic-forged'; e.picRequest = Object.assign(Object.create(custom), { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }); },
+    '外层自造方法原型': () => Object.assign(Object.create(chainForgery.fakeMethods), { picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }),
+    '内层自造方法原型': e => { e.picRequest = Object.assign(Object.create(chainForgery.fakeMethods), { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }); },
+    '外层复制描述符原型': () => Object.assign(Object.create(chainForgery.copiedDescriptors), { picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }),
+    '内层复制描述符原型': e => { e.picRequest = Object.assign(Object.create(chainForgery.copiedDescriptors), { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }); },
+    '外层伪造自关联原型': () => Object.assign(Object.create(chainForgery.selfBound), { picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }),
+    '内层伪造自关联原型': e => { e.picRequest = Object.assign(Object.create(chainForgery.selfBound), { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }); }
   };
   for (const [name, mutate] of Object.entries(rejections)) {
     const neg = mkChain(diagOut, mutate, [{ _id: userId, openid, status: 'active' }]);
@@ -2262,9 +2285,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
-test('D6 审计v7失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，不再对本轮树运行）', () => {
+test('D6 审计v8失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7保持上一轮已交付字节）', () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v7-20261017.cjs');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v8-20261017.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;
@@ -2374,9 +2397,28 @@ test('D7 收尾证据v2外层判定：外层被catch意外>0 时 ok=false/exit1�
 const requestAdapter = require('../scripts/templates/participant-identity-check/server/request-adapter.js');
 const IDENTITY_REQUEST_SDK_PATH = 'C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules/wx-server-sdk';
 
-test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受；冲突/Symbol/非枚举同名/访问器/继承/类型/元操作拒绝；仅构造原四字段且schema不入核心', () => {
+test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受；冲突/Symbol/非枚举同名/访问器/继承/类型/元操作/三类原型伪造拒绝；仅构造原四字段且schema不入核心', () => {
   const valid = { schema: 'participant-identity-request/1', action: 'inspectSelf', checkRoundId: 'synthetic-r', passphrase: 'synthetic-p' };
   const okReq = { action: 'inspectSelf', checkRoundId: 'synthetic-r', passphrase: 'synthetic-p' };
+  // 三类原型伪造（复查 R1）：自造方法 / 复制 Object.prototype 描述符 / 伪造构造器手工自关联
+  const fakeMethodCalls = { n: 0 };
+  const mkFakeRoot = selfBind => {
+    const root = Object.create(null);
+    for (const key of ['hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toLocaleString', 'toString', 'valueOf', 'constructor']) {
+      Object.defineProperty(root, key, {
+        enumerable: false, writable: true, configurable: true,
+        value: function syntheticFake() { fakeMethodCalls.n++; }
+      });
+    }
+    root.role = 'synthetic-inherited-role';
+    if (selfBind) Object.getOwnPropertyDescriptor(root, 'constructor').value.prototype = root;
+    return root;
+  };
+  const forgery = {
+    fakeMethods: mkFakeRoot(false),
+    selfBound: mkFakeRoot(true),
+    copiedDescriptors: Object.create(null, Object.getOwnPropertyDescriptors(Object.prototype))
+  };
   // (1) 接受：普通对象
   assert.deepEqual(requestAdapter.extractBusinessRequest({ picRequest: valid }), { ok: true, request: okReq });
   // (2) 接受：null 原型外层与内层
@@ -2425,7 +2467,13 @@ test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受�
     两层继承: () => { const mid = Object.create({ picRequest: valid }); return Object.create(mid); },
     '外层自定义null-root原型': () => { const custom = Object.create(null); custom.role = 'synthetic-forged'; return Object.assign(Object.create(custom), { picRequest: valid }); },
     '内层自定义null-root原型': () => { const custom = Object.create(null); custom.role = 'synthetic-forged'; return { picRequest: Object.assign(Object.create(custom), valid) }; },
-    '外层自定义null-root带访问器': () => { const custom = Object.create(null); Object.defineProperty(custom, 'meta', { enumerable: false, get() { throw new Error('synthetic-custom-getter'); } }); return Object.assign(Object.create(custom), { picRequest: valid }); }
+    '外层自定义null-root带访问器': () => { const custom = Object.create(null); Object.defineProperty(custom, 'meta', { enumerable: false, get() { throw new Error('synthetic-custom-getter'); } }); return Object.assign(Object.create(custom), { picRequest: valid }); },
+    '外层自造方法原型': () => Object.assign(Object.create(forgery.fakeMethods), { picRequest: valid }),
+    '内层自造方法原型': () => ({ picRequest: Object.assign(Object.create(forgery.fakeMethods), valid) }),
+    '外层复制描述符原型': () => Object.assign(Object.create(forgery.copiedDescriptors), { picRequest: valid }),
+    '内层复制描述符原型': () => ({ picRequest: Object.assign(Object.create(forgery.copiedDescriptors), valid) }),
+    '外层伪造自关联原型': () => Object.assign(Object.create(forgery.selfBound), { picRequest: valid }),
+    '内层伪造自关联原型': () => ({ picRequest: Object.assign(Object.create(forgery.selfBound), valid) })
   };
   for (const [name, mk] of Object.entries(rejects)) {
     const r = requestAdapter.extractBusinessRequest(mk());
@@ -2435,7 +2483,7 @@ test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受�
   // (6) 拒绝结果仅含 ok，不携带异常信息/键名/值
   const r = requestAdapter.extractBusinessRequest(new Proxy({ picRequest: valid }, { ownKeys() { throw new Error('synthetic-secret-message'); } }));
   assert.deepEqual(Object.keys(r), ['ok'], '拒绝结果仅含 ok');
-  // (7) 自定义 null-root 原型上的继承 getter 零读取（实测计数，非硬编码）
+  // (7) 自定义 null-root 原型上的继承 getter 与伪造方法均零调用（实测计数，非硬编码）
   {
     let customGetterReads = 0;
     const custom = Object.create(null);
@@ -2447,6 +2495,7 @@ test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受�
     const rr = requestAdapter.extractBusinessRequest(e);
     assert.equal(rr.ok, false, '自定义 null-root 原型必须拒绝');
     assert.equal(customGetterReads, 0, '自定义原型上的继承 getter 零读取（实测）');
+    assert.equal(fakeMethodCalls.n, 0, '伪造原型上的方法零调用（实测）');
   }
 });
 
@@ -2674,6 +2723,7 @@ test('A5 完整入口 no-flag 敏感性（§4固化）：生成入口内存变�
     }), outDir);
     assert.equal(packer.checkDir(outDir).ok, true);
     const realCloud = require(IDENTITY_REQUEST_SDK_PATH);
+    const ejsonUtils = require(path.join(IDENTITY_REQUEST_SDK_PATH, '../@cloudbase/database/dist/commonjs/utils/utils.js'));
     const serverFile = path.join(outDir, 'server', 'scheduleSandbox', 'index.js');
     const roundId = JSON.parse(fs.readFileSync(path.join(outDir, 'manifest.json'), 'utf8')).checkRoundId;
     const transportCalls = [];
@@ -2693,7 +2743,13 @@ test('A5 完整入口 no-flag 敏感性（§4固化）：生成入口内存变�
           const db = realCloud.database(opts);
           class T {
             async send(action, params) {
-              transportCalls.push({ variant, action, raw: JSON.stringify(params) });
+              transportCalls.push({
+                variant,
+                action,
+                collectionName: params.collectionName,
+                queryId: ejsonUtils.parseByEJSON(params.query)._id,
+                projection: ejsonUtils.parseByEJSON(params.projection)
+              });
               const s = transportScript.shift();
               if (!s) throw new Error('传输脚本耗尽');
               if (s === 'absent') return { data: { list: [], offset: 0, limit: 1 } };
@@ -2733,8 +2789,9 @@ test('A5 完整入口 no-flag 敏感性（§4固化）：生成入口内存变�
     assert.equal(transportCalls.length, 2, '两次不存在路各一次传输');
     for (const c of transportCalls) {
       assert.equal(c.action, 'database.getDocument', '只读 getDocument');
-      assert.ok(c.raw.includes(userId), '传输请求包含实际本人主键');
-      assert.ok(c.raw.includes('_id') && c.raw.includes('openid') && c.raw.includes('status'), '传输请求包含三字段投影');
+      assert.equal(c.collectionName, core.FIXED_TARGET.collection, '固定集合');
+      assert.equal(c.queryId, userId, '本人主键精确匹配（EJSON 解析后）');
+      assert.deepEqual(c.projection, { _id: 1, openid: 1, status: 1 }, '恰三字段投影（EJSON 解析后精确比较）');
     }
     assert.equal(networkAttempts, 0, '全程零网络尝试');
   } finally {

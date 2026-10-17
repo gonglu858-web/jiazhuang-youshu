@@ -12,10 +12,12 @@
 //   自定义原型一律拒绝；schema 精确匹配，不做字符串化/大小写变换/自动纠正。
 // - 只对固定允许的数据属性读取 descriptor.value；禁止 spread/Object.assign/整 event 克隆。
 // - 不做旧格式回退；元操作抛错一律以 ok:false 净化返回，不外露原始异常。
-// - 原型判定（严格，R1）：外层/内层对象原型必须是 null、本仓库 Object.prototype，
-//   或经验证的跨仓库真实 Object.prototype 根（根的根为 null 且自带与规范
-//   Object.prototype 逐项对应的非枚举自有数据属性）。任何自定义原型（含 null-root
-//   自定义对象）一律拒绝；不使用 constructor 名称兜底，不做任意原型深度检查。
+// - 原型判定（R1 终局，严格）：外层/内层对象原型必须是 null、本仓库 Object.prototype，
+//   或经验证的跨仓库真实 Object.prototype 根——联合验证该根自有 constructor 数据属性
+//   （非枚举函数）与其所属真实 Object 构造器的原生表示一致（Function.prototype.toString，
+//   不只看 constructor.name），且该构造器自有不可改（writable=false/configurable=false）的
+//   prototype 数据属性精确回指此根。自造方法、复制 Object.prototype 描述符、伪造构造器
+//   手工自关联三类仿造一律拒绝；不做任意原型深度检查，不读取属性值。
 
 const REQUEST_SCHEMA = 'participant-identity-request/1';
 
@@ -35,35 +37,35 @@ const OUTER_CONFLICT_NAMES = Object.freeze([
 const OUTER_CONFLICT = Object.freeze(OUTER_CONFLICT_NAMES.reduce((m, k) => { m[k] = true; return m; }, Object.create(null)));
 
 /**
- * 跨仓库普通对象的根验证（R1 严格判定）：候选根必须满足
- *   1) 自身原型为 null（真实领域根，而非挂在自定义对象上的 null-root 伪装）；且
- *   2) 自带与规范 Object.prototype 逐项对应的自有数据属性——非枚举、可写可配置的
- *      方法（hasOwnProperty/isPrototypeOf/propertyIsEnumerable/toLocaleString/
- *      toString/valueOf）与非枚举的 constructor 函数。
- * 不读取/调用任何属性值，不做 constructor 名称比较；自定义 null-root 对象默认
- * 不具备该规范自有属性集，即被拒绝。
+ * 跨仓库普通对象的根验证（R1 终局，联合真实性校验；与复查参考谓词 referencePlainRecord 一致）：
+ *   1) 候选根自身原型必须为 null（真实领域根，而非挂在自定义对象上的伪装）；
+ *   2) 通过 getOwnPropertyDescriptor 取根自有 constructor 数据属性——拒绝访问器；
+ *   3) 用受信 Function.prototype.toString 验证它与受信 Object 构造器的原生表示一致
+ *      （不是只看 constructor.name；自造方法/复制描述符/伪造构造器均无法同时满足）；
+ *   4) 再读取该构造器自有 prototype 数据属性：值必须精确等于候选根，且
+ *      writable=false/configurable=false（真实 Object 构造器的不可改原型对应关系）。
+ * 不调用该构造器或任何方法，不读取输入 getter；元操作抛错由外层净化拒绝。
  */
-function hasCanonicalObjectPrototypeShape(proto) {
-  if (Object.getPrototypeOf(proto) !== null) return false;
-  const canonical = ['hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toLocaleString', 'toString', 'valueOf'];
-  for (const key of canonical) {
-    const d = Object.getOwnPropertyDescriptor(proto, key);
-    if (!d || d.enumerable !== false || d.writable !== true || d.configurable !== true || typeof d.value !== 'function') {
-      return false;
-    }
+function isCrossRealmCanonicalRoot(p) {
+  if (Object.getPrototypeOf(p) !== null) return false;
+  const c = Object.getOwnPropertyDescriptor(p, 'constructor');
+  if (!c || !Object.prototype.hasOwnProperty.call(c, 'value') || typeof c.value !== 'function' || c.enumerable !== false) {
+    return false;
   }
-  const c = Object.getOwnPropertyDescriptor(proto, 'constructor');
-  if (!c || typeof c.value !== 'function' || c.enumerable !== false) return false;
-  return true;
+  if (Function.prototype.toString.call(c.value) !== Function.prototype.toString.call(Object)) {
+    return false;
+  }
+  const q = Object.getOwnPropertyDescriptor(c.value, 'prototype');
+  return !!q && Object.prototype.hasOwnProperty.call(q, 'value') && q.value === p && q.writable === false && q.configurable === false;
 }
 
-/** 普通对象判定（严格，R1）：null 原型 / 本仓库 Object.prototype / 已验证的跨仓库真实根。 */
+/** 普通对象判定（R1 终局）：null 原型 / 本仓库 Object.prototype / 已验证的跨仓库真实根。 */
 function isPlainRecord(v) {
   if (v === null || typeof v !== 'object' || Array.isArray(v)) return false;
   const proto = Object.getPrototypeOf(v);
   if (proto === null) return true;
   if (proto === Object.prototype) return true;
-  return hasCanonicalObjectPrototypeShape(proto);
+  return isCrossRealmCanonicalRoot(proto);
 }
 
 /**

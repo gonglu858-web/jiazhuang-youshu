@@ -282,7 +282,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/lib/participant-identity-check.cjs': 'cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
   'miniapp/scripts/templates/participant-identity-check/server/index.js': '76e5b938612bd9dbb10df37f408923eff990e2198e21ee125bbd557decb07bd9',
-  'miniapp/scripts/templates/participant-identity-check/server/request-adapter.js': 'f5c001e5be67c8c74f689daa98db0db988432c0d200fd91e34f960ee521aca1f',
+  'miniapp/scripts/templates/participant-identity-check/server/request-adapter.js': '06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': 'e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',

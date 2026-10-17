@@ -33,8 +33,14 @@
 - 真实平台对 picRequest 内层的保留行为、外层附带键的实际形状——待 Codex 复查后另建受控取证窗口并经用户确认。
 - 一次性口令/全局限流/平台零日志零费用不因本实现成立。
 
-## 5. R1/R2 复查返修记录（2026-10-17，依据 [复查](Codex复查-I1请求分层兼容实现-20261017.md) §3–§4）
+## 5. R1/R2 复查返修记录（2026-10-17，依据 [复查](Codex复查-I1请求分层兼容实现-20261017.md) §3–§4；另见 [R1/R2 返修复查](Codex复查-I1分层R1R2返修-20261017.md)）
 
 - **R1 原型判定严格化**：初版「原型链深度 ≤1」被否决（任意 null-root 自定义原型可被误判为普通对象）。返修后 `isPlainRecord` 仅接受：null 原型、本仓库 Object.prototype、或 `hasCanonicalObjectPrototypeShape` 验证通过的跨仓库真实根——根的根为 null，且自带与规范 Object.prototype 逐项对应的**非枚举自有数据属性**（hasOwnProperty/isPrototypeOf/propertyIsEnumerable/toLocaleString/toString/valueOf + constructor，均非枚举、方法可写可配置）。不比较 constructor 名称，不做任意深度检查，不读取任何属性值。新增外/内层自定义 null-root（含 role 值与访问器）单元与生成链反例：PIC_REQUEST_INVALID/UNKNOWN/readAttempted=false，工厂/集合/get 实际计数均为 0，继承 getter 实测 0 读取；普通/null 原型/跨 vm plain 正向保留。核心字节未改；PINNED（适配器/入口）与审计外置打包器摘要同步。
 - **R2 历史脚本恢复**：`CodeBuddyI1入站事件封装离线核实-20261016.cjs` 与 `CodeBuddy受控诊断R1R4收尾-20261016.cjs` 已按 347261a blob **精确字节恢复**（逐字节比对通过；不 reset、不改写提交历史）。本轮的审计/守卫迁移逻辑改用新命名脚本：[审计 v7](CodeBuddyI1入站审计v7-20261017.cjs) 与 [收尾 v2](CodeBuddy受控诊断R1R4收尾v2-20261017.cjs)；测试 D6/D7 引用已更新并注明旧脚本保留口径。历史 JSON 与 Codex 反例均未改。
 - **§4 归并**：完整入口 no-flag 敏感性固化为 A5 测试与返修证据（实际主键/三字段投影/传输次数断言）；证据 getter 改为实测计数（容忍链 0、自定义原型继承 0）；manifest notes 与入口注释的诊断口径更正为「本协议版本固定 false、历史语义仅存于核心与审计记录」（模板字节变动已同步 PINNED）；测试头部「SDK 本地转换未执行」更正为「历史转换验证不重跑；A3/A5 直接使用本地真实 SDK 代码（仅传输与 getWXContext 合成）」；A4 短窗口测试改为**可控合成时钟**（宿主 Date.now 在调用期间替换、finally 还原）：expires==now → PIC_WINDOW_EXPIRED（工厂 1/读取 0），时钟回窗口内 → ACTIVE 对照。
+
+## 6. R1 原型真实性终局返修（2026-10-17，依据 [R1/R2 返修复查](Codex复查-I1分层R1R2返修-20261017.md) §3–§4）
+
+初版返修的「规范属性形状」校验被复查否决：可复制的属性形状不证明真实 Object.prototype（自造方法/复制描述符/伪造自关联三类六例均被旧判定接受）。终局判定与复查参考谓词 `referencePlainRecord` 一致：跨领域候选根除「根的根为 null」外，还须**联合验证**——根自有 `constructor` 数据属性（非枚举函数，拒绝访问器）→ 受信 `Function.prototype.toString` 与受信 Object 构造器原生表示一致（不只看 constructor.name）→ 该构造器自有 `prototype` 数据属性的值精确等于候选根且 writable=false/configurable=false（真实构造器与根的不可改对应关系）。不调用构造器/方法、不读取输入 getter、元操作抛错净化。
+
+验证（[R1 终局证据](证据/CodeBuddyI1分层R1原型终局证据-20261017.cjs/.json) + 测试 A1/D2）：三类伪造 × 外/内层共六例单元+生成链交叉断言——均 PIC_REQUEST_INVALID/UNKNOWN/readAttempted=false 且工厂/集合/get 实际计数 0；伪造方法与继承 getter 实测零调用/零读取；普通/null 原型/跨 VM plain 三正向保留且与参考谓词一致。核心字节未改；PINNED（adapter `06e641fe…a5dc`）与新命名审计 v8 摘要同步。实测：核验包 **35/35**、业务包 18/18、member-access-sdk 1/1；审计 v8 ok=true、PINNED 14/14、漂移 0、意外 0。
