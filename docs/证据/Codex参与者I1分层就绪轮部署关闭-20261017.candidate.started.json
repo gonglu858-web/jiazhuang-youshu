@@ -1,0 +1,8 @@
+{
+  "runId": "codex-i1-candidate-a3421878-de33-4d1c-a298-5b58ffe52924",
+  "startedAt": "2026-10-17T08:30:11.504Z",
+  "authorization": "同意执行新轮15ab022372bf，沿用上述只读核验、手动预览、立即关闭及必要凭据和现有套餐用量范围。",
+  "roundId": "i1layer-20261017-15ab022372bf",
+  "mode": "candidate",
+  "scope": "I1分层只读核验具体执行页第3节；本阶段一批凭据、一次覆盖及回读，不重试部署"
+}

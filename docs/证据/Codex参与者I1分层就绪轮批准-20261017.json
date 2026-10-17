@@ -1,0 +1,10 @@
+{
+  "roundId": "i1layer-20261017-15ab022372bf",
+  "approved": true,
+  "approvedAt": "2026-10-17T08:26:19.483Z",
+  "userQuote": "同意执行新轮15ab022372bf，沿用上述只读核验、手动预览、立即关闭及必要凭据和现有套餐用量范围。",
+  "planSha256": "f6a387d274d0288c065cacd0c83253e815ea4f4bfe85783daaa83912f7b99971",
+  "manifestSha256": "d2ff68205859844febc27aafc542f25d4c660766b1ca1629d7591b84dff29878",
+  "source": "human user message in this conversation",
+  "scope": "具体执行页-I1分层立即就绪新轮-20261017；手动预览一次、候选与关闭各一次、本人一次只读核验、必要凭据最多2批及现有套餐用量；不登记不写库"
+}

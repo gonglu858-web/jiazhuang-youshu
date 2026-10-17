@@ -1,0 +1,23 @@
+{
+  "roundId": "i1layer-20261017-15ab022372bf",
+  "at": "2026-10-17T08:27:16.930Z",
+  "devtools": {
+    "loginExpired": false,
+    "versionRelation": "equal",
+    "skillVersion": "0.3.11"
+  },
+  "projectImport": {
+    "success": false,
+    "code": "APPID_ERROR",
+    "notRetried": true
+  },
+  "openWindow": {
+    "success": true,
+    "type": "newopen",
+    "winId": "s0"
+  },
+  "ideMutations": [],
+  "packageCheck": true,
+  "previewExecutedByAssistant": false,
+  "cloudOperations": 0
+}

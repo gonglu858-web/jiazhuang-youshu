@@ -1,0 +1,29 @@
+{
+  "runId": "codex-i1-candidate-a3421878-de33-4d1c-a298-5b58ffe52924",
+  "mode": "candidate",
+  "roundId": "i1layer-20261017-15ab022372bf",
+  "at": "2026-10-17T08:30:20.327Z",
+  "configSha256": "1296b89c9d9a2bc9989448ddea0a65fdd16b616efe720d75d983e18c0c6fc6f5",
+  "files": [
+    {
+      "rel": "server/scheduleSandbox/index.js",
+      "bytes": 4895,
+      "sha256": "6a48f2bd4efda5e375817ff997355fb9d53c103697c4d3d7075b33e6abd2d1c7"
+    },
+    {
+      "rel": "server/scheduleSandbox/package.json",
+      "bytes": 273,
+      "sha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9"
+    },
+    {
+      "rel": "server/scheduleSandbox/participant-identity-check.js",
+      "bytes": 28458,
+      "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+    },
+    {
+      "rel": "server/scheduleSandbox/request-adapter.js",
+      "bytes": 7445,
+      "sha256": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc"
+    }
+  ]
+}
