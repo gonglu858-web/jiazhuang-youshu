@@ -1,0 +1,44 @@
+{
+  "schema": "codex-local-implementation-authorization/1",
+  "recordedAt": "2026-10-17T03:13:18.613Z",
+  "source": "direct-user-message",
+  "userQuote": "按此方案交给 CodeBuddy，仅本地实现和自测",
+  "basisCommit": "2aa1780",
+  "implementationBasis": "f0b7fa9",
+  "design": {
+    "path": "docs/Codex方案-I1请求分层兼容设计-20261016.md",
+    "sha256": "bb92d75905aedc6f20275a3e72f9ffca2bd278713c4a59fb566715bc0c08e778"
+  },
+  "task": {
+    "path": "docs/CodeBuddy任务-I1请求分层兼容本地实现-20261017.md",
+    "sha256": "28b3ce47692ada073a4397f8b6084915588ef24ff68e9cc8a72db181e638d74b"
+  },
+  "scope": "CodeBuddy local implementation and tests only; Codex independent review afterwards",
+  "cloudAuthorized": false,
+  "realExecutionPackageAuthorized": false,
+  "codeBuddyMessageSent": false,
+  "codeBuddyReceiptVerified": false,
+  "sourceFilesUnchanged": [
+    {
+      "path": "miniapp/scripts/lib/participant-identity-check.cjs",
+      "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+    },
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/server/index.js",
+      "sha256": "0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303"
+    },
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js",
+      "sha256": "4f2860962c478fe7fd80c8a5498dde3ec5cc071d6089369555d9d54bc218eb5e"
+    },
+    {
+      "path": "miniapp/scripts/package-participant-identity-check.cjs",
+      "sha256": "262f8a737825f1061a416c3ab000138bcd3cc2bb28f1787d8978512f62e1e534"
+    },
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js",
+      "sha256": "0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605"
+    }
+  ],
+  "priorDesignEvidenceUnmodified": true
+}
