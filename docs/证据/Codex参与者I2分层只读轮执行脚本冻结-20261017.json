@@ -1,0 +1,17 @@
+{
+  "roundId": "i2layer-20261017-288743749469",
+  "planSha256": "76251ca978c1421bbfc6a8784c522d6f0e76015c9c8cc8f54a43bdcd7e0c5784",
+  "manifestSha256": "dbf55b455d4e0352808a20289e6069aa5c3c41f72ee0df01009a136999052253",
+  "scripts": [
+    {
+      "name": "Codex参与者I2分层只读轮部署关闭-20261017.cjs",
+      "sha256": "98609e00ee209f86d5f912cba9c453e2edf4c7ce2bfe015fb286dda2718bc286"
+    },
+    {
+      "name": "Codex参与者I2分层只读轮字节核对-20261017.py",
+      "sha256": "2ec6608bdf4991c35b62857cde1ca95d04886bf24362bda69d4a7f84e2ebf9ea"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}

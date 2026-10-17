@@ -1,0 +1,31 @@
+{
+  "schema": "codex-i2-layer-specific-preflight/1",
+  "basis": "2d80019",
+  "roundId": "i2layer-20261017-288743749469",
+  "planSha256": "76251ca978c1421bbfc6a8784c522d6f0e76015c9c8cc8f54a43bdcd7e0c5784",
+  "manifestSha256": "dbf55b455d4e0352808a20289e6069aa5c3c41f72ee0df01009a136999052253",
+  "files": 39,
+  "candidateFiles": 15,
+  "closeFiles": 23,
+  "checked": true,
+  "missingApproval": [
+    {
+      "mode": "candidate",
+      "rejectedBeforeMain": true,
+      "reason": "missing new round approval"
+    },
+    {
+      "mode": "closed",
+      "rejectedBeforeMain": true,
+      "reason": "missing new round approval"
+    }
+  ],
+  "guardCounters": {
+    "sensitivity": 2,
+    "unexpected": 0
+  },
+  "remoteExecuted": false,
+  "credentialsFetched": false,
+  "approvalCreated": false,
+  "windowExpiredAt": "2026-10-17T12:35:46.759Z"
+}
