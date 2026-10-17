@@ -1,0 +1,51 @@
+{
+  "schema": "codex-i1-layer-phone-result-review/1",
+  "reviewedAt": "2026-10-17T08:39:39.270Z",
+  "roundId": "i1layer-20261017-15ab022372bf",
+  "source": {
+    "kind": "human-supplied-phone-screenshot-manually-transcribed",
+    "fileName": "18e2dba0573ff43ea5bfbcc322ccaf26.jpg",
+    "sha256": "43f2922352a50d46da612c6955d27c6da2e606cc7e5eadb72c8c46b605967347",
+    "imageNotCopiedIntoRepository": true,
+    "transcriptionIsNotAutomatedOcr": true
+  },
+  "observed": {
+    "checkRoundId": "i1layer-20261017-15ab022372bf",
+    "identityConfirmed": true,
+    "registrationState": "ABSENT",
+    "recordMatched": null,
+    "readAttempted": true,
+    "userIdTail": "dc619c",
+    "serverTimeIso": "2026-10-17T08:32:47.432Z",
+    "fullUserIdVisible": false,
+    "includeFullUserIdCheckboxChecked": false,
+    "errorCodeVisible": false
+  },
+  "checks": 6,
+  "ok": true,
+  "interpretation": {
+    "identity": "Trusted application identity confirmed by displayed result, with same-person attendance reported by user; not civil identity certification.",
+    "registration": "No record returned for this caller in schtest_v1_users at the displayed time; not evidence of absence from other collections.",
+    "recordOwnership": "No existing record to compare; null does not mean mismatch.",
+    "compatibility": "This one real phone run reached the read-result path; no claim all platform variants work.",
+    "fullUserId": "Not obtained; tail alone cannot authorize registration or role binding."
+  },
+  "closed": {
+    "deployedAt": "2026-10-17T08:34:17.931Z",
+    "verifiedAt": "2026-10-17T08:34:32.194922+00:00",
+    "codeSha256": "d3801edd362b22f695fac61ff539202b9454ba0dee6890e526507940df06d60b",
+    "matchedFiles": 8,
+    "wxServerSdk": "3.0.1",
+    "databaseVersion": "1.4.1"
+  },
+  "boundaries": {
+    "newCloudOperations": 0,
+    "registrationPerformed": false,
+    "roleGranted": false,
+    "I2Started": false,
+    "PStarted": false,
+    "platformLogsQueried": false,
+    "actualPhoneCallCountIndependentlyMeasured": false
+  },
+  "previousEvidencePreserved": true
+}
