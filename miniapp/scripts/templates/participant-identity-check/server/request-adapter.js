@@ -12,8 +12,10 @@
 //   自定义原型一律拒绝；schema 精确匹配，不做字符串化/大小写变换/自动纠正。
 // - 只对固定允许的数据属性读取 descriptor.value；禁止 spread/Object.assign/整 event 克隆。
 // - 不做旧格式回退；元操作抛错一律以 ok:false 净化返回，不外露原始异常。
-// - 原型判定：普通对象或 null 原型；原型链深度 ≤1（兼容跨 vm 仓库的 plain 对象，
-//   拒绝自定义原型/数组/标量）。跨 vm 测试须使对象创建上下文明确。
+// - 原型判定（严格，R1）：外层/内层对象原型必须是 null、本仓库 Object.prototype，
+//   或经验证的跨仓库真实 Object.prototype 根（根的根为 null 且自带与规范
+//   Object.prototype 逐项对应的非枚举自有数据属性）。任何自定义原型（含 null-root
+//   自定义对象）一律拒绝；不使用 constructor 名称兜底，不做任意原型深度检查。
 
 const REQUEST_SCHEMA = 'participant-identity-request/1';
 
@@ -32,12 +34,36 @@ const OUTER_CONFLICT_NAMES = Object.freeze([
 ]);
 const OUTER_CONFLICT = Object.freeze(OUTER_CONFLICT_NAMES.reduce((m, k) => { m[k] = true; return m; }, Object.create(null)));
 
-/** 普通对象或 null 原型判定：原型链深度 ≤1，拒绝数组/标量/自定义原型实例。 */
+/**
+ * 跨仓库普通对象的根验证（R1 严格判定）：候选根必须满足
+ *   1) 自身原型为 null（真实领域根，而非挂在自定义对象上的 null-root 伪装）；且
+ *   2) 自带与规范 Object.prototype 逐项对应的自有数据属性——非枚举、可写可配置的
+ *      方法（hasOwnProperty/isPrototypeOf/propertyIsEnumerable/toLocaleString/
+ *      toString/valueOf）与非枚举的 constructor 函数。
+ * 不读取/调用任何属性值，不做 constructor 名称比较；自定义 null-root 对象默认
+ * 不具备该规范自有属性集，即被拒绝。
+ */
+function hasCanonicalObjectPrototypeShape(proto) {
+  if (Object.getPrototypeOf(proto) !== null) return false;
+  const canonical = ['hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'toLocaleString', 'toString', 'valueOf'];
+  for (const key of canonical) {
+    const d = Object.getOwnPropertyDescriptor(proto, key);
+    if (!d || d.enumerable !== false || d.writable !== true || d.configurable !== true || typeof d.value !== 'function') {
+      return false;
+    }
+  }
+  const c = Object.getOwnPropertyDescriptor(proto, 'constructor');
+  if (!c || typeof c.value !== 'function' || c.enumerable !== false) return false;
+  return true;
+}
+
+/** 普通对象判定（严格，R1）：null 原型 / 本仓库 Object.prototype / 已验证的跨仓库真实根。 */
 function isPlainRecord(v) {
   if (v === null || typeof v !== 'object' || Array.isArray(v)) return false;
   const proto = Object.getPrototypeOf(v);
   if (proto === null) return true;
-  return Object.getPrototypeOf(proto) === null;
+  if (proto === Object.prototype) return true;
+  return hasCanonicalObjectPrototypeShape(proto);
 }
 
 /**

@@ -1,0 +1,95 @@
+{
+  "schema": "codebuddy-i1-layering-rfix-evidence/1",
+  "observedAt": "2026-10-17T06:02:11.081Z",
+  "basisCommit": "b89be83",
+  "verificationKind": "offline fix-proof evidence for R1 (strict plain-object prototype) + R2 (historical script byte restore); synthetic counterexamples, not platform verification",
+  "ok": true,
+  "guardCounters": {
+    "sensitivityAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "total": 2
+  },
+  "sections": {
+    "r2Restored": {
+      "docs/证据/CodeBuddyI1入站事件封装离线核实-20261016.cjs": {
+        "byteEqual": true,
+        "size": 14878
+      },
+      "docs/证据/CodeBuddy受控诊断R1R4收尾-20261016.cjs": {
+        "byteEqual": true,
+        "size": 24076
+      }
+    },
+    "r1Unit": {
+      "plainAccepted": true,
+      "nullProtoAccepted": true,
+      "crossRealmPlainAccepted": true,
+      "outerCustomNullRootRejected": true,
+      "innerCustomNullRootRejected": true,
+      "inheritedGetterReads": 0
+    },
+    "r1Chain": {
+      "outerCustomNullRoot": {
+        "code": "PIC_REQUEST_INVALID",
+        "state": "UNKNOWN",
+        "readAttempted": false,
+        "factory": 0,
+        "collections": 0,
+        "gets": 0
+      },
+      "innerCustomNullRoot": {
+        "code": "PIC_REQUEST_INVALID",
+        "state": "UNKNOWN",
+        "readAttempted": false,
+        "factory": 0,
+        "collections": 0,
+        "gets": 0
+      }
+    },
+    "positiveControl": {
+      "state": "ACTIVE",
+      "factory": 1,
+      "reads": 1,
+      "toleratedGetterReads": 0
+    },
+    "noFlag": {
+      "available": true,
+      "originalAbsent": true,
+      "noFlagUnknown": true,
+      "noFlagCode": "PIC_READ_FAILED",
+      "noFlagReadAttempted": true,
+      "originalDatabaseArg": "{\"throwOnNotFound\":false}",
+      "noFlagDatabaseArg": "{}",
+      "transports": [
+        {
+          "variant": "original",
+          "action": "database.getDocument",
+          "hasUserId": true,
+          "hasProjection": true
+        },
+        {
+          "variant": "noflag",
+          "action": "database.getDocument",
+          "hasUserId": true,
+          "hasProjection": true
+        }
+      ],
+      "networkAttempts": 0
+    },
+    "binding": {
+      "keyDiagnosticTrueRejected": true,
+      "requestProtocolMissingRejected": true,
+      "v1PlanSchemaRejected": true
+    }
+  },
+  "runtimeDigests": {
+    "requestAdapterSha256": "f5c001e5be67c8c74f689daa98db0db988432c0d200fd91e34f960ee521aca1f",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+    "packerSha256": "c4a587e9f41a83542b0460477227b9437e771e4faae6ac64db514c0d96627196"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Synthetic prototypes/events and local transport stubs; not platform verification.",
+    "Strict prototype rule accepts cross-realm plain objects only when the root structurally matches a canonical Object.prototype root (own non-enumerable canonical methods + null root-of-root)."
+  ]
+}

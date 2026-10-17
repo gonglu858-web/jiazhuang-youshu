@@ -31,8 +31,8 @@ const CONFIG_CHECK_ROUND_ID = '';
 const CONFIG_PASSPHRASE_DIGEST = '';
 const CONFIG_WINDOW_STARTS_AT_MS = 0;
 const CONFIG_WINDOW_EXPIRES_AT_MS = 0;
-// 受控键诊断开关：默认关闭；仅具体诊断轮由打包器按计划锚点替换开启。
-// 开启后也只在动作/轮次/口令/可信目标/当下窗口全部通过时附加净化诊断（见核心 §12）。
+// 受控键诊断开关：本协议版本固定 false（请求分层协议停用键诊断；锚点保留以维持来源绑定）。
+// 历史诊断语义仅存在于受审核心与审计记录；本入口不携带、不启用诊断。
 const CONFIG_KEY_DIAGNOSTIC = false;
 
 function readTrustedRuntime() {

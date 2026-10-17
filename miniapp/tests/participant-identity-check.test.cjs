@@ -6,7 +6,8 @@
 // 边界（必须与证据文案一致，不得夸大）：
 // - 跑的是**真实应用代码**（核验核心模块、候选服务端入口、生成的前端页面/客户端）
 //   ＋**合成 wx / 合成 db / 合成时钟**；
-// - **SDK 本地转换未执行**；真实平台、真实三账号、真实部署完全未验证；
+// - wx-server-sdk 3.0.1 的历史本地转换验证不重跑；A3/A5 直接使用本地真实 SDK 3.0.1
+//   代码（仅传输层与 getWXContext 为合成替换）；真实平台、真实三账号、真实部署完全未验证；
 // - 合成口令仅用于本地验证准入路径，**不是**一次性/全局限流的证明，也不代表
 //   现实中的1号/2号身份。
 
@@ -2008,7 +2009,9 @@ test('D2 生成链（请求分层协议）：外层附带键容忍进入本人�
     picRequest为访问器: e => { delete e.picRequest; Object.defineProperty(e, 'picRequest', { enumerable: true, get() { return { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }; } }); },
     picRequest为继承字段: () => { const child = Object.create({ picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }); return child; },
     元操作抛错: e => { Object.defineProperty(e, Symbol.for('synthetic-meta'), { enumerable: false, get() { throw new Error('synthetic-meta'); } }); e[Symbol.for('synthetic-own')] = 1; },
-    自定义原型: () => { function Cls() {} Cls.prototype.picRequest = { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }; return new Cls(); }
+    自定义原型: () => { function Cls() {} Cls.prototype.picRequest = { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }; return new Cls(); },
+    '外层自定义null-root原型': () => { const custom = Object.create(null); custom.role = 'synthetic-forged'; return Object.assign(Object.create(custom), { picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }); },
+    '内层自定义null-root原型': e => { const custom = Object.create(null); custom.role = 'synthetic-forged'; e.picRequest = Object.assign(Object.create(custom), { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }); }
   };
   for (const [name, mutate] of Object.entries(rejections)) {
     const neg = mkChain(diagOut, mutate, [{ _id: userId, openid, status: 'active' }]);
@@ -2259,9 +2262,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
-test('D6 R1 审计失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账', () => {
+test('D6 审计v7失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，不再对本轮树运行）', () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站事件封装离线核实-20261016.cjs');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v7-20261017.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;
@@ -2305,9 +2308,9 @@ test('D6 R1 审计失败判定：业务期意外守卫（含被catch）必须非
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
 });
 
-test('D7 S1 收尾证据外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述', async () => {
+test('D7 收尾证据v2外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（历史20261016脚本保留为347261a字节）', async () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾-20261016.cjs');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v2-20261017.cjs');
   const source = fs.readFileSync(evidenceFile, 'utf8');
   const run = kind => {
     let src = source;
@@ -2419,7 +2422,10 @@ test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受�
     内层缺action: () => { const p = Object.assign({}, valid); delete p.action; return { picRequest: p }; },
     元操作ownKeys抛错: () => new Proxy({ picRequest: valid }, { ownKeys() { throw new Error('synthetic-meta'); } }),
     自定义原型实例: () => { function Cls() {} Cls.prototype.picRequest = valid; return new Cls(); },
-    两层继承: () => { const mid = Object.create({ picRequest: valid }); return Object.create(mid); }
+    两层继承: () => { const mid = Object.create({ picRequest: valid }); return Object.create(mid); },
+    '外层自定义null-root原型': () => { const custom = Object.create(null); custom.role = 'synthetic-forged'; return Object.assign(Object.create(custom), { picRequest: valid }); },
+    '内层自定义null-root原型': () => { const custom = Object.create(null); custom.role = 'synthetic-forged'; return { picRequest: Object.assign(Object.create(custom), valid) }; },
+    '外层自定义null-root带访问器': () => { const custom = Object.create(null); Object.defineProperty(custom, 'meta', { enumerable: false, get() { throw new Error('synthetic-custom-getter'); } }); return Object.assign(Object.create(custom), { picRequest: valid }); }
   };
   for (const [name, mk] of Object.entries(rejects)) {
     const r = requestAdapter.extractBusinessRequest(mk());
@@ -2429,6 +2435,19 @@ test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受�
   // (6) 拒绝结果仅含 ok，不携带异常信息/键名/值
   const r = requestAdapter.extractBusinessRequest(new Proxy({ picRequest: valid }, { ownKeys() { throw new Error('synthetic-secret-message'); } }));
   assert.deepEqual(Object.keys(r), ['ok'], '拒绝结果仅含 ok');
+  // (7) 自定义 null-root 原型上的继承 getter 零读取（实测计数，非硬编码）
+  {
+    let customGetterReads = 0;
+    const custom = Object.create(null);
+    Object.defineProperty(custom, 'inheritedGetter', {
+      enumerable: true,
+      get() { customGetterReads++; return 'synthetic-inherited-value'; }
+    });
+    const e = Object.assign(Object.create(custom), { picRequest: valid });
+    const rr = requestAdapter.extractBusinessRequest(e);
+    assert.equal(rr.ok, false, '自定义 null-root 原型必须拒绝');
+    assert.equal(customGetterReads, 0, '自定义原型上的继承 getter 零读取（实测）');
+  }
 });
 
 test('A3 真实SDK接线：生成入口+请求适配器+真实wx-server-sdk3.0.1/database1.4.1 三路；throwOnNotFound 敏感性反例；合成范围披露', { skip: !fs.existsSync(IDENTITY_REQUEST_SDK_PATH) && '未指定已取得的 wx-server-sdk 路径' }, async () => {
@@ -2536,13 +2555,14 @@ test('A3 真实SDK接线：生成入口+请求适配器+真实wx-server-sdk3.0.1
   }
 });
 
-test('A4 入口级原准入（经适配器）：错口令/轮次/可信身份拒绝且适配后零读取；短窗口到期拒绝', async () => {
+test('A4 入口级原准入（经适配器）：错口令/轮次/可信身份拒绝且适配后零读取；可控合成时钟覆盖 expires==now 与窗口内对照', async () => {
   const closeSource = makeCloseSourceDir();
   const openid = 'openid-a4-' + RUN_ID;
   const userId = core.deriveUserId(APPID, openid);
   const mk = (planOverrides, rows) => {
     const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'a4-' + crypto.randomBytes(4).toString('hex'));
     packer.build(writePicPlan(closeSource, Object.assign({ synthetic: false }, planOverrides)), outDir);
+    const planExpiresMs = Date.parse(JSON.parse(fs.readFileSync(path.join(outDir, 'plan.json'), 'utf8')).windowExpiresAtIso);
     const mkChainInner = mutate => {
       const factory = { databaseCalls: 0 };
       const db = makeTrapDb({ rows: rows || [{ _id: userId, openid, status: 'active' }] });
@@ -2554,7 +2574,7 @@ test('A4 入口级原准入（经适配器）：错口令/轮次/可信身份拒
       } } };
       return { stub, factory, dbCalls: db.calls };
     };
-    return { outDir, mkChainInner };
+    return { outDir, mkChainInner, planExpiresMs };
   };
   // 错口令：适配通过后建立工厂（1 次）但零读取
   {
@@ -2597,20 +2617,127 @@ test('A4 入口级原准入（经适配器）：错口令/轮次/可信身份拒
       assert.equal(page.data.result.registrationState, 'UNKNOWN');
     });
   }
-  // 短窗口到期：构建时仍有效（余量 60ms），等待 150ms 后调用（真实时钟）→ PIC_WINDOW_EXPIRED
+  // 可控合成时钟：实际生成链不变，宿主 Date.now 在调用期间被替换（finally 还原）。
+  // (a) expires==now → PIC_WINDOW_EXPIRED（核心窗口门槛；工厂已建立但零读取）
   {
-    const { outDir, mkChainInner } = mk({
-      windowStartsAtIso: new Date(Date.now() - 1000).toISOString(),
-      windowExpiresAtIso: new Date(Date.now() + 60).toISOString()
-    });
-    await new Promise(r => setTimeout(r, 150));
+    const { outDir, mkChainInner, planExpiresMs } = mk({});
     const neg = mkChainInner();
     await withGlobalWx(neg.stub, async () => {
       const page = loadCandidatePage(outDir, neg.stub);
       page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
-      await page.onCheckTap();
-      assert.equal(page.data.result.code, 'PIC_WINDOW_EXPIRED', '到期拒绝');
+      const origNow = Date.now;
+      Date.now = () => planExpiresMs; // expires == now
+      try { await page.onCheckTap(); } finally { Date.now = origNow; }
+      assert.equal(page.data.result.code, 'PIC_WINDOW_EXPIRED', 'expires==now 拒绝（可控合成时钟）');
+      assert.equal(page.data.result.registrationState, 'UNKNOWN');
+      assert.equal(page.data.result.readAttempted, false, '到期零读取事实');
+      assert.equal(neg.factory.databaseCalls, 1, '适配通过后建立工厂（到期发生在核心窗口门槛）');
       assert.equal(neg.dbCalls.reads, 0, '到期零读取');
     });
+  }
+  // (b) 时钟回到窗口内 → 同一候选正常进入本人只读链（对照）
+  {
+    const { outDir, mkChainInner, planExpiresMs } = mk({});
+    const ok = mkChainInner();
+    await withGlobalWx(ok.stub, async () => {
+      const page = loadCandidatePage(outDir, ok.stub);
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      const origNow = Date.now;
+      Date.now = () => planExpiresMs - 1000; // 窗口内
+      try { await page.onCheckTap(); } finally { Date.now = origNow; }
+      assert.equal(page.data.result.registrationState, 'ACTIVE', '时钟在窗口内→正常链（对照）');
+      assert.equal(page.data.result.readAttempted, true);
+    });
+  }
+});
+
+test('A5 完整入口 no-flag 敏感性（§4固化）：生成入口内存变体去掉 throwOnNotFound:false，不存在路由由 ABSENT 变 UNKNOWN/PIC_READ_FAILED；实际主键/投影/次数断言', { skip: !fs.existsSync(IDENTITY_REQUEST_SDK_PATH) && '未指定已取得的 wx-server-sdk 路径' }, async () => {
+  let networkAttempts = 0;
+  const originals = [];
+  const block = () => { networkAttempts++; throw new Error('LOCAL_NETWORK_DISABLED'); };
+  for (const [moduleName, keys] of [['node:http', ['request', 'get']], ['node:https', ['request', 'get']], ['node:net', ['connect', 'createConnection']]]) {
+    const mod = require(moduleName);
+    for (const key of keys) { originals.push([mod, key, mod[key]]); mod[key] = block; }
+  }
+  const socket = require('node:net').Socket.prototype;
+  originals.push([socket, 'connect', socket.connect]); socket.connect = block;
+  try {
+    const closeSource = makeCloseSourceDir();
+    const openid = 'openid-a5-' + RUN_ID;
+    const userId = core.deriveUserId(APPID, openid);
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'a5-' + RUN_ID);
+    const starts = Date.now() - 60000;
+    packer.build(writePicPlan(closeSource, {
+      synthetic: false,
+      windowStartsAtIso: new Date(starts).toISOString(),
+      windowExpiresAtIso: new Date(starts + 10 * 60 * 1000).toISOString()
+    }), outDir);
+    assert.equal(packer.checkDir(outDir).ok, true);
+    const realCloud = require(IDENTITY_REQUEST_SDK_PATH);
+    const serverFile = path.join(outDir, 'server', 'scheduleSandbox', 'index.js');
+    const roundId = JSON.parse(fs.readFileSync(path.join(outDir, 'manifest.json'), 'utf8')).checkRoundId;
+    const transportCalls = [];
+    const loadEntry = variant => {
+      const src0 = fs.readFileSync(serverFile, 'utf8');
+      assert.ok(src0.includes('cloud.database({ throwOnNotFound: false })'), '生成入口含受审 flag');
+      let src = src0;
+      if (variant === 'noflag') src = src0.replace('cloud.database({ throwOnNotFound: false })', 'cloud.database({})');
+      const initArgs = [], databaseArgs = [];
+      let transportScript = [];
+      const shim = {
+        DYNAMIC_CURRENT_ENV: realCloud.DYNAMIC_CURRENT_ENV,
+        init(opts) { initArgs.push(opts); realCloud.init(opts); },
+        getWXContext: () => ({ APPID: APPID, OPENID: openid }),
+        database(opts) {
+          databaseArgs.push(opts);
+          const db = realCloud.database(opts);
+          class T {
+            async send(action, params) {
+              transportCalls.push({ variant, action, raw: JSON.stringify(params) });
+              const s = transportScript.shift();
+              if (!s) throw new Error('传输脚本耗尽');
+              if (s === 'absent') return { data: { list: [], offset: 0, limit: 1 } };
+              throw new Error('unused step');
+            }
+          }
+          db._db.constructor.reqClass = function () { return new T(); };
+          return db;
+        }
+      };
+      const srv = { exports: {} };
+      vm.runInNewContext(src, {
+        require: name => (name === 'wx-server-sdk' ? shim : name === './participant-identity-check' ? core : name === './request-adapter' ? requestAdapter : (() => { throw new Error('unexpected ' + name); })()),
+        module: srv, exports: srv.exports, process: { env: { TCB_ENV: ENV_ID } }, console
+      });
+      return { main: srv.exports.main, initArgs, databaseArgs, setScript: s => { transportScript = s; } };
+    };
+    const call = entry => entry.main({
+      picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: roundId, passphrase: SYNTHETIC_PASSPHRASE }
+    });
+    // (1) 原始入口：不存在 → ABSENT（throwOnNotFound:false 使 data:null 归一）
+    const a = loadEntry('original');
+    a.setScript(['absent']);
+    const miss = await call(a);
+    assert.equal(miss.registrationState, 'ABSENT', '原始入口不存在→ABSENT');
+    assert.equal(miss.readAttempted, true);
+    // (2) no-flag 变体：同一不存在路 → UNKNOWN/PIC_READ_FAILED（真实 SDK 抛错被核心净化）
+    const b = loadEntry('noflag');
+    b.setScript(['absent']);
+    const miss2 = await call(b);
+    assert.equal(miss2.registrationState, 'UNKNOWN', 'no-flag 变体不存在→UNKNOWN');
+    assert.equal(miss2.code, 'PIC_READ_FAILED', 'no-flag 变体错误码');
+    assert.equal(miss2.readAttempted, true, 'no-flag 变体读取事实为 true');
+    // (3) 实际参数/主键/投影/次数断言
+    assert.equal(JSON.stringify(a.databaseArgs[0]), JSON.stringify({ throwOnNotFound: false }), '原始入口 database 参数');
+    assert.equal(JSON.stringify(b.databaseArgs[0]), JSON.stringify({}), 'no-flag 变体 database 参数');
+    assert.equal(transportCalls.length, 2, '两次不存在路各一次传输');
+    for (const c of transportCalls) {
+      assert.equal(c.action, 'database.getDocument', '只读 getDocument');
+      assert.ok(c.raw.includes(userId), '传输请求包含实际本人主键');
+      assert.ok(c.raw.includes('_id') && c.raw.includes('openid') && c.raw.includes('status'), '传输请求包含三字段投影');
+    }
+    assert.equal(networkAttempts, 0, '全程零网络尝试');
+  } finally {
+    for (const [mod, key, original] of originals) mod[key] = original;
   }
 });

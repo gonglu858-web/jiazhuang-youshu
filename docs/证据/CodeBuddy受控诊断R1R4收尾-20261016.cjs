@@ -96,11 +96,10 @@ async function main() {
     projectReadyMarker: 'ready-' + round, windowStartsAt: '2030-01-01T00:00:00Z', windowExpiresAt: '2030-01-01T01:00:00Z' });
   const source = business.build('P', sourcePlan, path.join(scratch, 'close-source'));
   const r3 = { modes: {} };
-  for (const mode of [false]) {
+  for (const mode of [true, false]) {
     const planPath = write('pic-plan-' + (mode ? 'true' : 'false') + '.json', { schema: packer.PLAN_SCHEMA, synthetic: true, checkRoundId: TEST_ROUND,
       participantCode: '1', ...core.FIXED_TARGET, passphraseDigest: DIGEST,
       windowStartsAtIso: '2020-01-01T00:00:00Z', windowExpiresAtIso: '2020-01-01T00:10:00Z', closeSourceDir: source.outDir,
-      requestProtocol: packer.REQUEST_PROTOCOL,
       ...(mode ? { keyDiagnostic: true } : {}) });
     const candidate = path.join(path.dirname(scratch), 'participant-identity-rfix-' + (mode ? 't-' : 'f-') + crypto.randomBytes(4).toString('hex'));
     packer.build(planPath, candidate);
@@ -233,12 +232,11 @@ async function main() {
   // 实际生成链：独立构建真实模式（synthetic:false、当前窗口）的诊断候选——入口 CONFIG_ENABLED=true
   const r5PlanPath = write('pic-plan-r5.json', { schema: packer.PLAN_SCHEMA, synthetic: false, checkRoundId: TEST_ROUND,
     participantCode: '1', ...core.FIXED_TARGET, passphraseDigest: DIGEST,
-    windowStartsAtIso: new Date(Date.now() - 60000).toISOString(), windowExpiresAtIso: new Date(Date.now() + 600000).toISOString(), closeSourceDir: source.outDir,
-    requestProtocol: packer.REQUEST_PROTOCOL, keyDiagnostic: false });
+    windowStartsAtIso: new Date(Date.now() - 60000).toISOString(), windowExpiresAtIso: new Date(Date.now() + 600000).toISOString(), closeSourceDir: source.outDir, keyDiagnostic: true });
   const r5Candidate = path.join(path.dirname(scratch), 'participant-identity-r5diag-' + crypto.randomBytes(4).toString('hex'));
   packer.build(r5PlanPath, r5Candidate);
   assert.equal(packer.checkDir(r5Candidate).ok, true, 'R5 诊断候选重建一致');
-  assert.ok(fs.readFileSync(path.join(r5Candidate, 'server', 'scheduleSandbox', 'index.js'), 'utf8').includes('const CONFIG_KEY_DIAGNOSTIC = false;'), 'R5 候选诊断开关为 false（新协议不启用）');
+  assert.ok(fs.readFileSync(path.join(r5Candidate, 'server', 'scheduleSandbox', 'index.js'), 'utf8').includes('const CONFIG_KEY_DIAGNOSTIC = true;'), 'R5 候选诊断开关开启');
   const serverFile = path.join(r5Candidate, 'server', 'scheduleSandbox', 'index.js');
   const nativeRequireSrv = createRequire(serverFile);
   const dbForbidden = { collection() { throw Error('DB forbidden'); } };
@@ -256,12 +254,11 @@ async function main() {
     wx: { cloud: { _identityCheckEnvInited: false, init() {}, callFunction: async opts => ({ result: await srvModule.exports.main(Object.assign({}, opts.data, { userInfo: {}, wxCloudApiToken: {} })) }) } } };
   vm.runInNewContext(fs.readFileSync(path.join(r5Candidate, 'frontend', 'utils', 'identity-check-client.js'), 'utf8'), clientGenCtx, { filename: 'client.js' });
   const chainResult = await clientGenCtx.module.exports.callIdentityCheck({ action: 'inspectSelf', passphrase: PASSPHRASE });
-  // 请求分层协议下：双候选外层键被适配器容忍，请求进入核心（DB 句柄被禁 → 核心只读失败点）
   r5.chainCode = chainResult.code;
-  r5.chainReachedCore = r5.chainCode === 'PIC_DB_UNAVAILABLE';
+  r5.chainBothLabels = JSON.parse(JSON.stringify(chainResult.keyDiagnostic.candidateLabels));
   r5.chainDbForbidden = true;
-  assert.equal(r5.chainCode, 'PIC_DB_UNAVAILABLE', '生成链：外层双候选被容忍、请求进入未改核心');
-  assert.equal(chainResult.readAttempted, false, 'DB 句柄不可用不计读取尝试');
+  assert.equal(r5.chainCode, 'PIC_REQUEST_INVALID', '生成链失败语义保持');
+  assert.equal(r5.chainBothLabels.join(','), 'CANDIDATE_USERINFO,CANDIDATE_WX_CLOUD_API_TOKEN', '生成链两标签可见');
   assert.equal(JSON.stringify(chainResult).includes('wxCloudApiToken'), false, '生成链不回显原键名');
 
   // S1：外层守卫计数（探针/业务期意外/总数）与同一实际计数决定的 ok/退出码。
@@ -304,7 +301,7 @@ async function main() {
     fs.writeFileSync(outPath, json, { flag: 'wx' });
   }
   console.log(json);
-  console.error('[收尾证据摘要] ok=' + result.ok + ' r1.exit=' + r1.baseline.exitCode + '/' + r1.caughtAttempt.exitCode + '/' + r1.sourceDrift.exitCode + ' r2.撤销反例=3/4 r3.篡改拒绝=6 r4.畸形丢弃=' + Object.keys(r4.malformedDropped).length + ' r4.截断矛盾拒绝=true r5.双标签=' + (r5.bothLabels.length === 2) + '/相似名误识=' + r5.similarMisidentified + '/getter=' + r5.candidateGetterReads + '/生成链进核心=' + r5.chainReachedCore + ' 探针=' + sensitivityAttempts + ' 业务期意外=' + businessPhaseGuardAttempts + '/总=' + totalGuardAttempts + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
+  console.error('[收尾证据摘要] ok=' + result.ok + ' r1.exit=' + r1.baseline.exitCode + '/' + r1.caughtAttempt.exitCode + '/' + r1.sourceDrift.exitCode + ' r2.撤销反例=3/4 r3.篡改拒绝=6 r4.畸形丢弃=' + Object.keys(r4.malformedDropped).length + ' r4.截断矛盾拒绝=true r5.双标签=' + (r5.bothLabels.length === 2) + '/相似名误识=' + r5.similarMisidentified + '/getter=' + r5.candidateGetterReads + '/生成链=' + (r5.chainBothLabels.length === 2) + ' 探针=' + sensitivityAttempts + ' 业务期意外=' + businessPhaseGuardAttempts + '/总=' + totalGuardAttempts + ' out=' + (outPath ? path.basename(outPath) : 'stdout-only'));
   if (failed) process.exitCode = 1;
 }
 main().catch(e => { console.error(e && e.message ? e.message : e); process.exitCode = 1; }).finally(() => restore.reverse().forEach(f => f()));

@@ -281,8 +281,8 @@ function writeExclusive(abs, buf, io, rel) {
 const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/lib/participant-identity-check.cjs': 'cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
-  'miniapp/scripts/templates/participant-identity-check/server/index.js': 'd19dbb3ecd7c8d792d52a85ab33b63e9acfcf3fbda2704271e47ea7393521f1c',
-  'miniapp/scripts/templates/participant-identity-check/server/request-adapter.js': '52b8be29844909430acc222ceb3db74ae74fdfdd4e72a557a8024c5f5a6aa26e',
+  'miniapp/scripts/templates/participant-identity-check/server/index.js': '76e5b938612bd9dbb10df37f408923eff990e2198e21ee125bbd557decb07bd9',
+  'miniapp/scripts/templates/participant-identity-check/server/request-adapter.js': 'f5c001e5be67c8c74f689daa98db0db988432c0d200fd91e34f960ee521aca1f',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': 'e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
@@ -747,7 +747,7 @@ function build(planPath, outOverride) {
       '      完整 userId 是标识不是密码，不等于 OPENID/UNIONID，也不构成 P 登记证据。',
       'R5：本轮核验轮次由计划写入服务端配置与前端配置，客户端必须原样带回。',
       '请求分层协议 participant-identity-request/1：业务四字段固定放 picRequest 内层并经适配器严格校验；外层附带字段只查自有键名不读值不传播；旧格式混用/冲突名单/内层额外字段/伪造身份一律拒绝；不自动回退旧格式。',
-      'keyDiagnostic 默认关闭；仅具体诊断轮显式开启；诊断只含固定候选标签/计数/键名长度分桶，绝不含原键名、值或前后缀，且仅在全部准入门槛通过时附加。',
+      'keyDiagnostic 在本协议版本固定为 false（请求分层协议停用键诊断）；历史诊断语义仅存在于受审核心与审计记录，本包不携带、不启用。',
       '本次打包不执行 SDK 本地转换（wx-server-sdk 3.0.1 本地转换已有历史验证）；当前真实平台行为完全未验证。'
     ],
     files: entries,
