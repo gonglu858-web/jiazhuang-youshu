@@ -1,0 +1,77 @@
+{
+  "schema": "codex-i1-evidence-version-review/1",
+  "reviewed": "446fe95",
+  "parent": "acd0641",
+  "observedAt": "2026-10-17T07:19:04.842Z",
+  "ok": true,
+  "restored": {
+    "rel": "docs/证据/CodeBuddy受控诊断R1R4收尾v2-20261017.cjs",
+    "baseline": "f7cb27f",
+    "bytes": 24548,
+    "sha256": "122d55ad0034dfae2528174d104afb4b186764fe17f85ad2d796145e7522f4e8",
+    "treeAndDiskEqual": true
+  },
+  "newVersion": {
+    "rel": "docs/证据/CodeBuddy受控诊断R1R4收尾v3-20261017.cjs",
+    "onlyFirstCommentDiffersFromParentActiveVersion": true,
+    "sha256": "51402fa4048e711f2653a0e7a6b09f2e005f4ee4e088754e5f9d578dca9546be"
+  },
+  "protectedEvidenceCount": 924,
+  "changedHistory": [],
+  "protectedPaths": [
+    "miniapp/scripts",
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram",
+    "miniapp/pages",
+    "miniapp/project.config.json",
+    "docs/Codex*"
+  ],
+  "productDiffEmpty": true,
+  "testAssertionsUnchanged": true,
+  "histories": [
+    {
+      "rel": "docs/进展与待办.md",
+      "addedBytes": 1374,
+      "oldBlobSuffixEqual": true
+    },
+    {
+      "rel": "docs/CodeBuddy开发交接.md",
+      "addedBytes": 606,
+      "oldBlobSuffixEqual": true
+    }
+  ],
+  "changedFiles": [
+    "docs/CodeBuddy开发交接.md",
+    "docs/当前状态.md",
+    "docs/证据/CodeBuddy受控诊断R1R4收尾v2-20261017.cjs",
+    "docs/证据/CodeBuddy受控诊断R1R4收尾v3-20261017.cjs",
+    "docs/证据/CodeBuddy受控诊断R1R4收尾v3-20261017.json",
+    "docs/进展与待办.md",
+    "miniapp/tests/participant-identity-check.test.cjs"
+  ],
+  "rerun": {
+    "file": "Codex复跑I1收尾v3-20261017.json",
+    "sha256": "5acbc96120a09ca026e5cec8d791e3b53d3a32d12e1945eb11cc31c8910de9f9",
+    "ok": true,
+    "guardCounters": {
+      "sensitivityAttempts": 2,
+      "businessPhaseGuardAttempts": 0,
+      "total": 2
+    },
+    "auditExitCodes": [
+      0,
+      1,
+      1
+    ]
+  },
+  "testsObserved": {
+    "command": "node --test --test-name-pattern='^D[67] ' miniapp/tests/participant-identity-check.test.cjs",
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "exitCode": 0,
+    "note": "本轮已单独运行；D6覆盖审计正常/被catch意外/漂移，D7覆盖v3外层正常/被catch意外。本脚本不重复执行。"
+  },
+  "cloudOperations": 0,
+  "limits": "仅本地C1版本整理通过；沿用上轮产品复查，不代表真实平台验证或真实执行批准。"
+}
