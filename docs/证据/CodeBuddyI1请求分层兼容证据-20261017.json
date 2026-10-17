@@ -1,0 +1,156 @@
+{
+  "schema": "codebuddy-i1-request-layering-evidence/1",
+  "observedAt": "2026-10-17T04:54:56.668Z",
+  "basisCommit": "347261a",
+  "implementationBasis": "f0b7fa9（核心字节不变）+ 本轮适配器/入口/客户端/配置/打包器 v2",
+  "verificationKind": "offline fix-proof evidence for request layering; synthetic events/counterexamples, not platform verification",
+  "ok": true,
+  "guardCounters": {
+    "sensitivityAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "total": 2
+  },
+  "adapterSourceSha256": "52b8be29844909430acc222ceb3db74ae74fdfdd4e72a557a8024c5f5a6aa26e",
+  "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+  "protocol": "participant-identity-request/1",
+  "candidateFiles": 15,
+  "closeFiles": 23,
+  "sections": {
+    "adapter": {
+      "accepted": {
+        "plain": true,
+        "nullProto": true,
+        "crossRealmPlain": true,
+        "fullIdBooleanPassthrough": true,
+        "requestHasExactlyFourFields": true,
+        "schemaNotPassedToCore": true
+      },
+      "rejectTotal": 24,
+      "rejections": {
+        "event数组": true,
+        "event标量": true,
+        "缺picRequest": true,
+        "picRequest继承": true,
+        "picRequest标量": true,
+        "picRequest访问器": true,
+        "外层冲突action": true,
+        "外层自报openid": true,
+        "外层自报OPENID": true,
+        "外层Symbol键": true,
+        "内层额外字段": true,
+        "内层伪造openid": true,
+        "内层伪造role": true,
+        "内层Symbol键": true,
+        "内层非枚举action": true,
+        "内层action访问器": true,
+        "内层action数字": true,
+        "includeFullUserId字符串": true,
+        "schema错版本": true,
+        "schema大小写": true,
+        "缺schema": true,
+        "元操作抛错": true,
+        "自定义原型": true,
+        "两层继承": true
+      },
+      "allRejected": true
+    },
+    "chain": {
+      "tolerance": {
+        "state": "ACTIVE",
+        "readAttempted": true,
+        "fullIdReturned": true,
+        "factoryCalls": 1,
+        "collectionCalls": 1,
+        "reads": 1,
+        "projection": "{\"_id\":true,\"openid\":true,\"status\":true}",
+        "outerKeysSent": "picRequest",
+        "secretLeaked": false,
+        "getterTriggered": false,
+        "diagFieldAbsent": true
+      },
+      "rejections": {
+        "仅旧顶层格式": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "两格式混用": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "外层自报身份": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "内层额外字段": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "内层伪造身份": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "内层错schema": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "picRequest访问器": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        },
+        "元操作抛错": {
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "reads": 0,
+          "diagAbsent": true
+        }
+      },
+      "rejectTotal": 8
+    },
+    "sdk": {
+      "available": true,
+      "version": "3.0.1",
+      "paths": {
+        "exists": "ACTIVE",
+        "absent": "ABSENT",
+        "denied": "PIC_READ_FAILED",
+        "deniedReadAttempted": true
+      },
+      "initArgsPassthrough": true,
+      "databaseArgsPassthrough": true,
+      "sensitivityNoFlagAbsentThrows": true,
+      "networkAttempts": 0
+    },
+    "binding": {
+      "keyDiagnosticTrueRejected": true,
+      "requestProtocolMissingRejected": true,
+      "requestProtocolWrongRejected": true,
+      "v1PlanSchemaRejected": true
+    }
+  },
+  "implementationSummary": {
+    "adapter": "固定 picRequest 内层 + participant-identity-request/1；外层只查自有键名（含 Symbol/非枚举），冲突名单仅比较键名；内层仅 schema+原四字段（非枚举/访问器/Symbol/类型错误拒绝）；只读 descriptor.value；不 spread/不克隆/不回退旧格式；元操作抛错净化为 ok:false",
+    "entry": "适配在 cloud.database() 之前；失败返回既有 schema/PIC_REQUEST_INVALID/UNKNOWN/readAttempted=false、轮次来自受审配置、不附诊断/serverTime；成功仅构造原四字段交未改核心",
+    "client": "picRequest 内层 + schema 取自生成配置 requestProtocol 绑定；includeFullUserId 语义保持",
+    "packer": "计划/manifest 升 v2 并必填 requestProtocol；keyDiagnostic 仅 false/缺省；适配器逐字节复制入 server/scheduleSandbox；PINNED 同步；候选 15 文件、关闭 23 文件不变"
+  },
+  "disclosure": "存在/不存在/权限失败三路使用真实 wx-server-sdk 3.0.1 + @cloudbase/database 1.4.1 代码；仅传输层（Db.reqClass）与 getWXContext 为合成替换；不称平台验证",
+  "cloudOperations": 0,
+  "limitations": [
+    "真实平台是否保留 picRequest 内层对象仍未知；本证据全部为合成事件与本地传输替身。",
+    "不宣称平台零日志、零费用、一次性口令或全局限流。"
+  ]
+}

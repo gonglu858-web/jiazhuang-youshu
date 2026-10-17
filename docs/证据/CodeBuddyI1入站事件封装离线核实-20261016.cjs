@@ -18,15 +18,17 @@ const outIdx = argv.indexOf('--out');
 const outPath = outIdx !== -1 ? path.resolve(argv[outIdx + 1] || '') : null;
 
 // ── 外置固定基线（提交绑定；不从待测源码自举）────────────────────────────────
-const BASIS_COMMIT = '196f91c';
-/** 打包器自身受审摘要（第二候选轮终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
-const PACKAGER_SELF_SHA256 = '262f8a737825f1061a416c3ab000138bcd3cc2bb28f1787d8978512f62e1e534';
+const BASIS_COMMIT = '347261a';
+/** 打包器自身受审摘要（请求分层轮终态）；其 PINNED_SOURCES 表内不含打包器自身。 */
+const PACKAGER_SELF_SHA256 = '789b9cfef0283cd862ca0f2f193fe72af2c181102cc7d9835ef52ad42f6aea2e';
 const PACKAGER_REL = 'miniapp/scripts/package-participant-identity-check.cjs';
 const CORE_REL = 'miniapp/scripts/lib/participant-identity-check.cjs';
 /** 本轮实际修改的受审源文件（对照项在 PINNED_SOURCES 中分述）。 */
 const CHANGED_THIS_ROUND = Object.freeze([
-  CORE_REL,
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js'
+  'miniapp/scripts/templates/participant-identity-check/server/index.js',
+  'miniapp/scripts/templates/participant-identity-check/server/request-adapter.js',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js',
+  'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js'
 ]);
 const SDK = 'C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules';
 
@@ -112,9 +114,9 @@ function main() {
     const body = h >= 0 ? core.slice(h) : '';
     assert.ok(body.indexOf('assertRequest(event, collectKeyDiagnostic);') > -1, 'handle 首个门槛为请求键检查');
   });
-  check('入口原样透传event', () => assert.ok(entry.includes('return checker.handle(event);')));
+  check('入口经适配器仅传原四字段给核心', () => assert.ok(entry.includes('return checker.handle(extracted.request);') && entry.includes('requestAdapter.extractBusinessRequest(event)') && entry.includes("require('./request-adapter')")));
   check('入口诊断开关锚点存在', () => assert.ok(entry.includes('const CONFIG_KEY_DIAGNOSTIC = false;')));
-  check('客户端负载仅3+1键', () => assert.ok(client.includes('checkRoundId: cloudConfig.checkRoundId') && client.includes('if (request.includeFullUserId === true) payload.includeFullUserId = true;')));
+  check('客户端picRequest内层3+1键', () => assert.ok(client.includes('checkRoundId: cloudConfig.checkRoundId') && client.includes('if (request.includeFullUserId === true) payload.picRequest.includeFullUserId = true;') && client.includes('picRequest: {')));
   check('客户端诊断净化按固定schema', () => assert.ok(client.includes("raw.schema !== KEY_DIAGNOSTIC_SCHEMA") && client.includes("KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO', 'CANDIDATE_WX_CLOUD_API_TOKEN']")));
   check('页面仅展示净化诊断文本', () => assert.ok(page.includes('describeKeyDiagnostic') && wxml.includes('result.keyDiagnosticText')));
   check('页面无自动调用', () => assert.ok(/\bonLoad\(\)\s*\{[^}]*\}/.test(page) === false || page.includes('明确空实现：加载不发送请求')));

@@ -4,5 +4,7 @@
 module.exports = {
   envId: 'cloud1-d8gcq5ag39d847723',
   identityCheckFunction: 'scheduleSandbox',
+  // 请求分层协议版本：与计划/manifest/服务端适配器绑定（participant-identity-request/1）
+  requestProtocol: 'participant-identity-request/1',
   checkRoundId: ''
 };

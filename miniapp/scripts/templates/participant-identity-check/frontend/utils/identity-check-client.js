@@ -100,13 +100,18 @@ function callIdentityCheck(request) {
     wx.cloud.init({ env: cloudConfig.envId, traceUser: false });
     wx.cloud._identityCheckEnvInited = true;
   }
+  // 请求分层协议（participant-identity-request/1）：业务四字段固定放入 picRequest
+  // 内层对象；外层由平台/传输附带的信息不读取、不采信。schema 取自本页配置绑定。
   const payload = {
-    action: request.action,
-    passphrase: request.passphrase,
-    // 轮次固定取自本页配置：调用方无法伪造或省略
-    checkRoundId: cloudConfig.checkRoundId
+    picRequest: {
+      schema: cloudConfig.requestProtocol,
+      action: request.action,
+      passphrase: request.passphrase,
+      // 轮次固定取自本页配置：调用方无法伪造或省略
+      checkRoundId: cloudConfig.checkRoundId
+    }
   };
-  if (request.includeFullUserId === true) payload.includeFullUserId = true;
+  if (request.includeFullUserId === true) payload.picRequest.includeFullUserId = true;
   return wx.cloud.callFunction({
     name: cloudConfig.identityCheckFunction,
     data: payload

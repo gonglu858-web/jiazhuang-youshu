@@ -17,6 +17,8 @@
 
 const cloud = require('wx-server-sdk');
 const identityCheck = require('./participant-identity-check');
+// 本包专用请求适配器（participant-identity-request/1）：同目录闭包，由打包器复制。
+const requestAdapter = require('./request-adapter');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
@@ -48,6 +50,25 @@ function readTrustedRuntime() {
   };
 }
 
+// 适配失败的净化结果：既有结果 schema 与固定文案；UNKNOWN、identityConfirmed=false、
+// recordMatched=null、readAttempted=false、userId=null、尾号空；轮次仅来自受审配置；
+// 不附 serverTime 或 keyDiagnostic，不回显原异常。
+function adapterFailureResult() {
+  return {
+    schema: identityCheck.RESULT_SCHEMA,
+    checkRoundId: CONFIG_CHECK_ROUND_ID,
+    ok: false,
+    identityConfirmed: false,
+    registrationState: 'UNKNOWN',
+    recordMatched: null,
+    readAttempted: false,
+    userIdTail: '',
+    userId: null,
+    code: identityCheck.ERR_CODES.REQUEST_INVALID,
+    message: identityCheck.ERROR_PUBLIC_TEXT.PIC_REQUEST_INVALID
+  };
+}
+
 exports.main = async event => {
   const trusted = readTrustedRuntime();
   // 开关默认关闭；未开启时零数据库访问、不接受任何口令。
@@ -65,7 +86,11 @@ exports.main = async event => {
       message: '本人身份核验入口未开启。'
     };
   }
-  // 数据库句柄只在开关与目标校验通过后建立（默认关闭分支完全不触碰数据库）。
+  // 受控外壳解析与内层校验（participant-identity-request/1）：在 cloud.database()
+  // 构造之前；适配失败零数据库工厂/collection/get，返回净化失败、不附诊断。
+  const extracted = requestAdapter.extractBusinessRequest(event);
+  if (!extracted.ok) return adapterFailureResult();
+  // 数据库句柄只在开关、目标与请求适配通过后建立（默认关闭/适配失败分支完全不触碰数据库）。
   const db = cloud.database({ throwOnNotFound: false });
   const checker = identityCheck.createIdentityChecker({
     db,
@@ -78,5 +103,5 @@ exports.main = async event => {
       keyDiagnostic: CONFIG_KEY_DIAGNOSTIC
     }
   });
-  return checker.handle(event);
+  return checker.handle(extracted.request);
 };

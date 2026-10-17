@@ -41,8 +41,10 @@ const FIXED_TARGET = Object.freeze({
   collection: 'schtest_v1_users'
 });
 
-const MANIFEST_SCHEMA = 'participant-identity-check-candidate/1';
-const PLAN_SCHEMA = 'participant-identity-plan/1';
+const MANIFEST_SCHEMA = 'participant-identity-check-candidate/2';
+const PLAN_SCHEMA = 'participant-identity-plan/2';
+/** 请求分层协议版本：计划/manifest/生成前端配置/服务端适配器四方绑定。 */
+const REQUEST_PROTOCOL = 'participant-identity-request/1';
 const OUT_PREFIX = 'participant-identity-';
 const MAX_WINDOW_MS = 30 * 60 * 1000;
 const RECOMMENDED_WINDOW_MS = 15 * 60 * 1000;
@@ -55,7 +57,7 @@ const PLAN_FIELDS = Object.freeze([
   'schema', 'synthetic', 'checkRoundId', 'participantCode',
   'appId', 'envId', 'functionName', 'collection',
   'passphraseDigest', 'windowStartsAtIso', 'windowExpiresAtIso',
-  'closeSourceDir', 'note', 'keyDiagnostic'
+  'closeSourceDir', 'note', 'keyDiagnostic', 'requestProtocol'
 ]);
 /**
  * 受控键诊断协议版本（与核心模块 KEY_DIAGNOSTIC_SCHEMA 逐字一致）；
@@ -64,8 +66,8 @@ const PLAN_FIELDS = Object.freeze([
 const KEY_DIAGNOSTIC_SCHEMA = 'participant-identity-key-diagnostic/1';
 const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
 
-/** 服务端模板文件（受审来源）。participant-identity-check.js 由核心模块复制而来。 */
-const SERVER_TEMPLATE_FILES = Object.freeze(['index.js', 'package.json']);
+/** 服务端模板文件（受审来源）。participant-identity-check.js 由核心模块复制而来；request-adapter.js 逐字节复制。 */
+const SERVER_TEMPLATE_FILES = Object.freeze(['index.js', 'package.json', 'request-adapter.js']);
 /**
  * I1/I2 前置核验（部署映射）：cloudfunctionRoot 下的【直接子目录名 = 云函数名】
  * 是微信云开发/CloudBase 的固定约定（既有业务布局 miniapp/cloudfunctions/scheduleSandbox/
@@ -279,13 +281,14 @@ function writeExclusive(abs, buf, io, rel) {
 const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/lib/participant-identity-check.cjs': 'cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7',
   'miniapp/scripts/templates/participant-identity-check/project.config.json': 'ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67',
-  'miniapp/scripts/templates/participant-identity-check/server/index.js': '0fee6afa0f11fec02509f6b8ff5ac9b6502e48a2aebb69f8b574444d28ce0303',
+  'miniapp/scripts/templates/participant-identity-check/server/index.js': 'd19dbb3ecd7c8d792d52a85ab33b63e9acfcf3fbda2704271e47ea7393521f1c',
+  'miniapp/scripts/templates/participant-identity-check/server/request-adapter.js': '52b8be29844909430acc222ceb3db74ae74fdfdd4e72a557a8024c5f5a6aa26e',
   'miniapp/scripts/templates/participant-identity-check/server/package.json': 'e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
-  'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'a6e8e920548deda58623dcdccf9beb516ef388321bc99a4963958d405a49860b',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '4f2860962c478fe7fd80c8a5498dde3ec5cc071d6089369555d9d54bc218eb5e',
+  'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': '2cc499bd553a90f077131de5586f3550396bbeeb6e92a7855e59d1d42291814c',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '79e3ad4ebe2cd80e9c5da96fb12c9e14c605d9b948194fd9be4e3ba2433d48e1',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305',
@@ -369,7 +372,8 @@ function planDigest(plan) {
     windowExpiresAtIso: plan.windowExpiresAtIso,
     closeSourceDir: plan.closeSourceDir,
     note: plan.note || '',
-    keyDiagnostic: plan.keyDiagnostic === true
+    keyDiagnostic: plan.keyDiagnostic === true,
+    requestProtocol: plan.requestProtocol
   });
   return sha256Buffer(Buffer.from(canonical));
 }
@@ -427,6 +431,14 @@ function readPlan(planPath, options) {
   if (raw.keyDiagnostic !== undefined && typeof raw.keyDiagnostic !== 'boolean') {
     fail(ERR.PLAN_INVALID, 'keyDiagnostic 必须是布尔或缺省。');
   }
+  // v2：requestProtocol 必填且精确匹配固定协议版本；缺失/旧版本/未知值一律拒绝，禁止自动升级。
+  if (raw.requestProtocol !== REQUEST_PROTOCOL) {
+    fail(ERR.PLAN_INVALID, 'requestProtocol 必须精确为 ' + REQUEST_PROTOCOL + '（v2 计划必填）。');
+  }
+  // 新协议不启用键诊断：keyDiagnostic 只允许 false 或缺省 false，true 拒绝。
+  if (raw.keyDiagnostic === true) {
+    fail(ERR.PLAN_INVALID, '新协议不启用键诊断：keyDiagnostic 只允许 false 或缺省 false。');
+  }
   return Object.freeze({
     schema: raw.schema,
     synthetic: raw.synthetic,
@@ -440,7 +452,8 @@ function readPlan(planPath, options) {
     windowExpiresAtIso: raw.windowExpiresAtIso,
     closeSourceDir: path.resolve(raw.closeSourceDir),
     note: raw.note || '',
-    keyDiagnostic: raw.keyDiagnostic === true
+    keyDiagnostic: raw.keyDiagnostic === true,
+    requestProtocol: raw.requestProtocol
   });
 }
 
@@ -609,6 +622,23 @@ function verifyProjectLayout(expected /* Map<rel, Buffer> */) {
   if (!entrySrc.includes('const CONFIG_KEY_DIAGNOSTIC = ')) {
     fail(ERR.PLAN_TARGET_INVALID, '服务端入口缺少受控键诊断开关锚点。');
   }
+  // 请求分层协议（v2）：入口引用同目录适配器并在 database 工厂前调用；适配器制品在位；
+  // 生成前端配置绑定协议版本；客户端使用 picRequest 内层与配置协议。
+  if (!entrySrc.includes("require('./request-adapter')")) {
+    fail(ERR.SOURCE_DRIFT, '服务端入口未引用请求适配器。');
+  }
+  if (!entrySrc.includes('requestAdapter.extractBusinessRequest(event)')) {
+    fail(ERR.SOURCE_DRIFT, '服务端入口未调用请求适配器。');
+  }
+  if (!expected.has(SERVER_FN_ROOT + 'request-adapter.js')) {
+    fail(ERR.SOURCE_DRIFT, '装配缺少请求适配器制品：' + SERVER_FN_ROOT + 'request-adapter.js');
+  }
+  if (readCloudConstant('requestProtocol') !== REQUEST_PROTOCOL) {
+    fail(ERR.PLAN_TARGET_INVALID, '生成前端配置协议版本与受审固定协议不一致。');
+  }
+  if (!clientSrc.includes('picRequest') || !clientSrc.includes('cloudConfig.requestProtocol')) {
+    fail(ERR.SOURCE_DRIFT, '核验客户端未使用 picRequest 内层协议。');
+  }
   return true;
 }
 
@@ -697,6 +727,8 @@ function build(planPath, outOverride) {
     passphraseDigestRecorded: true,
     // 只记摘要，永不记明文口令
     userIdentitySource: 'trusted-wx-context：APPID/OPENID 只来自 cloud.getWXContext，本地产物不含任何 OPENID 或凭据',
+    // 请求分层协议绑定：计划/manifest/生成前端配置/服务端适配器四方一致（participant-identity-request/1）
+    requestProtocol: REQUEST_PROTOCOL,
     // 受控键诊断绑定：开关来自计划；协议版本与核心字节逐字绑定（见 assertCoreDiagnosticBinding）
     keyDiagnostic: plan.keyDiagnostic === true,
     keyDiagnosticSchema: KEY_DIAGNOSTIC_SCHEMA,
@@ -714,6 +746,7 @@ function build(planPath, outOverride) {
       'R2：本次有效核验结果可受控取得完整内部 userId（页面默认只展示尾号，需显式勾选）；',
       '      完整 userId 是标识不是密码，不等于 OPENID/UNIONID，也不构成 P 登记证据。',
       'R5：本轮核验轮次由计划写入服务端配置与前端配置，客户端必须原样带回。',
+      '请求分层协议 participant-identity-request/1：业务四字段固定放 picRequest 内层并经适配器严格校验；外层附带字段只查自有键名不读值不传播；旧格式混用/冲突名单/内层额外字段/伪造身份一律拒绝；不自动回退旧格式。',
       'keyDiagnostic 默认关闭；仅具体诊断轮显式开启；诊断只含固定候选标签/计数/键名长度分桶，绝不含原键名、值或前后缀，且仅在全部准入门槛通过时附加。',
       '本次打包不执行 SDK 本地转换（wx-server-sdk 3.0.1 本地转换已有历史验证）；当前真实平台行为完全未验证。'
     ],
@@ -829,7 +862,8 @@ function checkDir(dir) {
     functionName: plan.functionName, collection: plan.collection,
     windowStartsAtIso: plan.windowStartsAtIso, windowExpiresAtIso: plan.windowExpiresAtIso,
     closeSourceDir: relOf(path.relative(ROOT, plan.closeSourceDir)),
-    keyDiagnostic: plan.keyDiagnostic === true
+    keyDiagnostic: plan.keyDiagnostic === true,
+    requestProtocol: plan.requestProtocol
   };
   for (const [k, v] of Object.entries(expectFields)) {
     if (JSON.stringify(manifest[k]) !== JSON.stringify(v)) bad('manifest.' + k + ' 与计划不一致');
@@ -1082,6 +1116,7 @@ module.exports = Object.freeze({
   PINNED_WX_SERVER_SDK_VERSION,
   KEY_DIAGNOSTIC_SCHEMA,
   KEY_DIAGNOSTIC_SCOPE,
+  REQUEST_PROTOCOL,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,
