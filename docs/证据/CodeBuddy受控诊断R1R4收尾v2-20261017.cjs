@@ -31,8 +31,8 @@ async function main() {
   const businessStart = guardHits.length;
 
   // ── R1：审计退出码（正常对照 / 被 catch 的业务期意外注入 / 来源漂移）────────
-  // 指向本轮新命名审计脚本 v8；历史 20261016 审计脚本保留为 347261a 字节，v7 保持上一轮已交付字节。
-  const auditFile = path.join(root, 'docs', '证据', 'CodeBuddyI1入站审计v8-20261017.cjs');
+  // 指向本轮新命名审计脚本 v7；历史 20261016 审计脚本保留为 347261a 字节，不对当前树运行。
+  const auditFile = path.join(root, 'docs', '证据', 'CodeBuddyI1入站审计v7-20261017.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;

@@ -2331,9 +2331,9 @@ test('D6 审计v8失败判定：业务期意外守卫（含被catch）必须非�
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
 });
 
-test('D7 收尾证据v2外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（历史20261016脚本保留为347261a字节）', async () => {
+test('D7 收尾证据v3外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v2 已按 f7cb27f 字节恢复为历史版本；历史20261016脚本保留为347261a字节）', async () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v2-20261017.cjs');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v3-20261017.cjs');
   const source = fs.readFileSync(evidenceFile, 'utf8');
   const run = kind => {
     let src = source;

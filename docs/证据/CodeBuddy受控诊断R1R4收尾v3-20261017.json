@@ -1,0 +1,139 @@
+{
+  "schema": "codebuddy-key-diagnostic-rfix-evidence/3",
+  "observedAt": "2026-10-17T07:12:25.488Z",
+  "basisCommit": "b89be83",
+  "verificationKind": "offline fix-proof evidence after R1-R4 + S1/S2 + second fixed candidate; synthetic counterexamples, not platform verification",
+  "ok": true,
+  "guardCounters": {
+    "sensitivityAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "total": 2
+  },
+  "implementationSummary": {
+    "R1": "审计 ok/exit 判定纳入业务期意外守卫（含被 catch 者）；探针单独记账",
+    "R2": "核心诊断构建后与最终附加前各重查窗口；到期/未开始/NaN/抛错撤销诊断，失败语义与零DB保持",
+    "R3": "manifest keyDiagnosticSchema/Scope 对 true/false 两候选统一严格校验；缺失/错值拒绝",
+    "R4": "客户端严格验证必需字段/标签词表与重复与数量上限/非负安全整数/计数与分桶一致，违约整份丢弃；截断契约一致性已执行校验（S2）：当前词表容量2仍<8，truncated=true矛盾即整份拒绝",
+    "sizeBoundWording": "序列化<1KB为源码防御检查；固定字段+有限词表+安全整数下合法投影结构上远小于1KB（结构界限）；畸形用例未动态触达该分支（无实际超限用例，不宣称动态覆盖）。实现用字符串长度（UTF-16码元），全ASCII投影下与UTF-8字节数一致",
+    "R5": "第二固定候选 wxCloudApiToken→CANDIDATE_WX_CLOUD_API_TOKEN（本机 node-sdk 静态锚点假设，非真实键名结论）：双候选两标签/其它0、秘密键名不回显、相似名不误识别、候选getter零访问、实际生成链两标签可见且原键名不外泄"
+  },
+  "r1": {
+    "baseline": {
+      "exitCode": 0,
+      "ok": true,
+      "businessPhaseGuardAttempts": 0,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 0
+    },
+    "caughtAttempt": {
+      "exitCode": 1,
+      "ok": false,
+      "businessPhaseGuardAttempts": 1,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 0
+    },
+    "sourceDrift": {
+      "exitCode": 1,
+      "ok": false,
+      "businessPhaseGuardAttempts": 0,
+      "sensitivityGuardAttempts": 2,
+      "driftHits": 1
+    }
+  },
+  "r2Cases": [
+    {
+      "endState": "unchanged",
+      "clockReads": 3,
+      "enumerations": 2,
+      "diagnosticReturned": true,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "expires",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "NaN",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    },
+    {
+      "endState": "throws",
+      "clockReads": 2,
+      "enumerations": 2,
+      "diagnosticReturned": false,
+      "dbCalls": 0,
+      "readAttempted": false
+    }
+  ],
+  "r3": {
+    "modes": {
+      "false": {
+        "legalControl": true,
+        "schemaWrongAccepted": false,
+        "scopeWrongAccepted": false,
+        "schemaMissingAccepted": false,
+        "closeCheckIndependentOfCandidateWindow": true
+      }
+    }
+  },
+  "r4": {
+    "malformedDropped": {
+      "labelsNotArray": true,
+      "countBucketMismatch": true,
+      "illegalLabel": true,
+      "duplicateLabel": true,
+      "labelOverflow": true,
+      "negativeCount": true,
+      "nonSafeIntegerCount": true,
+      "missingBucket": true,
+      "negativeBucket": true,
+      "truncatedNotBoolean": true,
+      "wrongSchema": true,
+      "wrongScope": true,
+      "missingLabels": true,
+      "missingCount": true
+    },
+    "legalKept": true,
+    "truncation": {
+      "emptyLabelsPlusTrueRejected": true,
+      "singleLabelPlusTrueRejected": true,
+      "falseControlKept": true
+    }
+  },
+  "r5": {
+    "bothLabels": [
+      "CANDIDATE_USERINFO",
+      "CANDIDATE_WX_CLOUD_API_TOKEN"
+    ],
+    "otherKeyCountBoth": 0,
+    "secretLeaked": false,
+    "secretOtherCount": 1,
+    "similarMisidentified": false,
+    "similarOtherCount": 3,
+    "candidateGetterReads": 0,
+    "candidateLabelOnGetter": "CANDIDATE_WX_CLOUD_API_TOKEN",
+    "chainCode": "PIC_DB_UNAVAILABLE",
+    "chainReachedCore": true,
+    "chainDbForbidden": true
+  },
+  "runtimeDigests": {
+    "coreSha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+    "packerSha256": "ba2d0102e483b909432a1f1e3f7b02c093b6d0c1912c828c6dcfc7658c4dd757",
+    "clientSha256": "79e3ad4ebe2cd80e9c5da96fb12c9e14c605d9b948194fd9be4e3ba2433d48e1"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Clock advancement and malformed payloads are synthetic; no platform evidence claimed.",
+    "Not a claim that real platform events contain Proxy objects or that real leakage occurred.",
+    "The >1KB output branch is a source-level defense; it is structurally unreachable for legal projections and was not dynamically exercised."
+  ]
+}
