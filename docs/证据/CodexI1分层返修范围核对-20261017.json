@@ -1,0 +1,88 @@
+{
+  "schema": "codex-i1-layer-repair-scope/1",
+  "reviewed": "86b92d7",
+  "parent": "b89be83",
+  "observedAt": "2026-10-17T06:10:32.291Z",
+  "restored": [
+    {
+      "rel": "docs/证据/CodeBuddyI1入站事件封装离线核实-20261016.cjs",
+      "bytes": 14878,
+      "originalSha256": "cb23c6cb47ed1d07f3bfcfd6a0846f4cdf08df4d98bfc10133ae3941f1332f6e",
+      "reviewedTreeEqual": true,
+      "diskEqual": true
+    },
+    {
+      "rel": "docs/证据/CodeBuddy受控诊断R1R4收尾-20261016.cjs",
+      "bytes": 24076,
+      "originalSha256": "850837cba7b243c293c325dfc27c69190c2ba60fef7ff25ceca664b9154dc052",
+      "reviewedTreeEqual": true,
+      "diskEqual": true
+    }
+  ],
+  "histories": [
+    {
+      "rel": "docs/进展与待办.md",
+      "addedBytes": 3210,
+      "oldBlobSuffixEqual": true
+    },
+    {
+      "rel": "docs/CodeBuddy开发交接.md",
+      "addedBytes": 919,
+      "oldBlobSuffixEqual": true
+    }
+  ],
+  "protectedPaths": [
+    "miniapp/scripts/lib",
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram",
+    "miniapp/pages",
+    "miniapp/project.config.json",
+    "miniapp/scripts/package-business-test.cjs",
+    "miniapp/scripts/package-sandbox.cjs",
+    "miniapp/scripts/package-sandbox-registration.cjs",
+    "docs/证据/Codex*",
+    "docs/Codex复查-I1请求分层兼容实现-20261017.md"
+  ],
+  "protectedChanged": "",
+  "changedExistingJson": "",
+  "coreSha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+  "rerun": [
+    {
+      "name": "Codex复跑I1分层返修证据-20261017.json",
+      "sha256": "66125ca303300118ec420492be0f8ac141ae7bcd53e1f3ef5697d92982117d98",
+      "ok": true
+    },
+    {
+      "name": "Codex复跑I1审计v7-20261017.json",
+      "sha256": "4f38556255f99987d66c82614917fd49c58ed6e6a94f5d1a6d47eed61614b58a",
+      "ok": true
+    },
+    {
+      "name": "Codex复跑I1收尾v2-20261017.json",
+      "sha256": "57417463f46af1fda3c43144a143a2e68dc0f4fe71a7997c98acd1fe0117ad83",
+      "ok": true
+    }
+  ],
+  "gitReadCommands": 10,
+  "regressionsObserved": {
+    "identity": {
+      "pass": 35,
+      "fail": 0,
+      "skip": 0
+    },
+    "business": {
+      "pass": 18,
+      "fail": 0,
+      "skip": 0
+    },
+    "sdk": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    "note": "复查本轮已单独运行三个node --test命令；此脚本只记录其终端汇总，不重复测试。"
+  },
+  "scopeChecksPassed": true,
+  "remaining": "原型真实性仍未闭合，见新形状伪造反例；R2历史脚本恢复已闭合。",
+  "cloudOperationsPerformed": false
+}
