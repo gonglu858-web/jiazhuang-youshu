@@ -355,6 +355,7 @@ function writePicPlan(closeSourceDir, overrides) {
     windowStartsAtIso: new Date(starts).toISOString(),
     windowExpiresAtIso: new Date(starts + 10 * 60 * 1000).toISOString(),
     closeSourceDir,
+    requestProtocol: packer.REQUEST_PROTOCOL,
     note: '合成夹具计划（非真实口令/非真实核验）'
   }, overrides || {});
   fs.writeFileSync(file, JSON.stringify(plan, null, 2));
@@ -367,10 +368,11 @@ test('P5 打包器：合成计划生成完整候选与配对关闭包；check �
   const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'test-' + RUN_ID);
   const built = packer.build(planPath, outDir);
   assert.equal(built.manifest.schema, packer.MANIFEST_SCHEMA);
-  // 服务端 3（入口+核心模块+package.json）+ 前端 9 + project.config.json + plan.json
-  assert.equal(built.manifest.files.length, 14);
+  assert.equal(built.manifest.requestProtocol, packer.REQUEST_PROTOCOL, 'manifest 绑定请求协议');
+  // 服务端 4（入口+核心模块+请求适配器+package.json）+ 前端 9 + project.config.json + plan.json
+  assert.equal(built.manifest.files.length, 15);
   assert.equal(built.manifest.closePackage.files.length, 23);
-  assert.equal(built.io.filter(x => x.action === 'written').length, 38);
+  assert.equal(built.io.filter(x => x.action === 'written').length, 39);
   // 服务端不含 vendor/service、memberAccess、connectionCheck、project-guard、gate
   const serverFiles = fs.readdirSync(path.join(outDir, 'server'));
   for (const forbidden of ['vendor', 'memberAccess', 'connectionCheck', 'project-guard', 'gate']) {
@@ -378,6 +380,9 @@ test('P5 打包器：合成计划生成完整候选与配对关闭包；check �
   }
   const entry = fs.readFileSync(path.join(outDir, 'server', 'scheduleSandbox', 'index.js'), 'utf8');
   assert.equal(entry.includes("require('./participant-identity-check')"), true);
+  assert.equal(entry.includes("require('./request-adapter')"), true, '入口引用请求适配器');
+  assert.equal(entry.includes('requestAdapter.extractBusinessRequest(event)'), true, '入口调用适配器');
+  assert.equal(fs.existsSync(path.join(outDir, 'server', 'scheduleSandbox', 'request-adapter.js')), true, '适配器制品在位');
   assert.equal(/require\(['"]\.\/vendor/.test(entry), false, '候选入口不得引入 vendor 业务实现');
   assert.equal(entry.includes(SYNTHETIC_PASSPHRASE), false, '明文口令绝不进入制品');
   assert.equal(entry.includes(SYNTHETIC_DIGEST), true, '只含摘要');
@@ -395,7 +400,7 @@ test('P5 打包器：合成计划生成完整候选与配对关闭包；check �
   // 完整复用（零新写）
   const reused = packer.build(planPath, outDir);
   assert.equal(reused.io.filter(x => x.action === 'written').length, 0);
-  assert.equal(reused.io.filter(x => x.action === 'reused').length, 38);
+  assert.equal(reused.io.filter(x => x.action === 'reused').length, 39);
   // 关闭包独立核验：与时钟/开启候选无关
   process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
   const closeResult = packer.checkCloseDir(outDir);
@@ -455,14 +460,14 @@ test('P6 打包器：非法计划/漂移/目录冲突零写；续建与部分写
   assert.throws(() => packer.build(extraPlan, extraDir), e => e.code === packer.ERR.OUT_CONFLICT);
   assert.equal(fs.existsSync(path.join(extraDir, 'unrelated-dir')), true, '不清理用户目录');
 
-  // 续建：删一个文件后只补 1、复用 37（独立目录，避免与"多余目录"用例互相污染）
+  // 续建：删一个文件后只补 1、复用 38（独立目录，避免与"多余目录"用例互相污染）
   const resumeDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'resume-' + RUN_ID);
   const resumePlan = writePicPlan(closeSource);
   const rb = packer.build(resumePlan, resumeDir);
   fs.unlinkSync(path.join(resumeDir, rb.manifest.files[0].rel));
   const resumed = packer.build(resumePlan, resumeDir);
   assert.equal(resumed.io.filter(x => x.action === 'written').length, 1);
-  assert.equal(resumed.io.filter(x => x.action === 'reused').length, 37);
+  assert.equal(resumed.io.filter(x => x.action === 'reused').length, 38);
   assert.equal(packer.checkDir(resumeDir).ok, true);
 
   // 部分写：公开异常保留 rel + bytesOnDisk
@@ -607,6 +612,7 @@ function loadCandidateMain(candidateDir, ctx, fnDir) {
     getWXContext: () => ({ APPID: ctx.appId, OPENID: ctx.openid }),
     database: opts => {
       cloudStub.databaseOptions = opts;
+      if (typeof ctx.onDatabase === 'function') ctx.onDatabase(opts);
       return ctx.db;
     }
   };
@@ -654,7 +660,7 @@ test('P8 完整链：生成候选 App/Page→wx 替身→候选 main→核心→
       _identityCheckEnvInited: false,
       init(opts) { sent.push({ type: 'init', env: opts.env }); },
       callFunction(opts) {
-        sent.push({ type: 'callFunction', name: opts.name, data: { action: opts.data.action } });
+        sent.push({ type: 'callFunction', name: opts.name, data: opts.data });
         return runMainAndReturn(opts);
         // 走真实候选 main：入口 → 核心 → 合成 db
         const main = loadCandidateMain(outDir, {
@@ -683,7 +689,9 @@ test('P8 完整链：生成候选 App/Page→wx 替身→候选 main→核心→
     const calls = sent.filter(x => x.type === 'callFunction');
     assert.equal(calls.length, 1, '只点一次只发一次');
     assert.equal(calls[0].name, 'scheduleSandbox', '固定函数目标');
-    assert.equal(calls[0].data.action, 'inspectSelf');
+    assert.equal(calls[0].data.picRequest.action, 'inspectSelf', 'picRequest 内层动作');
+    assert.equal(calls[0].data.picRequest.schema, 'participant-identity-request/1', '内层协议版本');
+    assert.equal(Object.keys(calls[0].data).join(','), 'picRequest', '外层仅 picRequest 一个键');
     assert.equal(page.data.result.registrationState, 'ACTIVE');
     assert.equal(page.data.result.identityConfirmed, true);
     assert.equal(page.data.passphrase, '', '调用结束清除口令输入');
@@ -995,7 +1003,7 @@ test('R3 受审内容基线钉定：漂移写前零产物拒绝；check 同样�
   fs.unlinkSync(path.join(resumeDir, rb.manifest.files[0].rel));
   const resumed = packer.build(rp, resumeDir);
   assert.equal(resumed.io.filter(x => x.action === 'written').length, 1);
-  assert.equal(resumed.io.filter(x => x.action === 'reused').length, 37);
+  assert.equal(resumed.io.filter(x => x.action === 'reused').length, 38);
   assert.equal(packer.checkDir(resumeDir).ok, true);
 });
 
@@ -1258,21 +1266,21 @@ test('S1 页面取消勾选后不请求也不显示完整 ID；事件顺序：�
     page.onLoad(); page.onShow();
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
-    assert.equal(requests[0].data.includeFullUserId, undefined, '默认请求不得携带完整 ID');
+    assert.equal(requests[0].data.picRequest.includeFullUserId, undefined, '默认请求不得携带完整 ID');
     assert.equal(page.data.result.userId, '', '默认不显示完整 ID');
     // (1) 勾选 → 请求并显示
     page.onWantFullIdChange({ detail: { value: ['full'] } });
     assert.equal(page.data.wantFullUserId, true, '勾选后应为 true');
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
-    assert.equal(requests[1].data.includeFullUserId, true, '勾选后请求携带完整 ID');
+    assert.equal(requests[1].data.picRequest.includeFullUserId, true, '勾选后请求携带完整 ID');
     assert.equal(page.data.result.userId, userId, '勾选后显示完整 ID');
     // (2) 取消勾选（detail.value=[]，即 D7 缺陷的直接反例）→ 不请求、不显示
     page.onWantFullIdChange({ detail: { value: [] } });
     assert.equal(page.data.wantFullUserId, false, '取消勾选必须为 false（旧实现 Boolean([])===true）');
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
-    assert.equal(requests[2].data.includeFullUserId, undefined, '取消后请求不得携带完整 ID');
+    assert.equal(requests[2].data.picRequest.includeFullUserId, undefined, '取消后请求不得携带完整 ID');
     assert.equal(page.data.result.userId, '', '取消后不得显示完整 ID');
     assert.equal(page.data.result.userIdTail, userId.slice(-6), '仍显示尾号');
     // (3) 重新勾选 → 才展示
@@ -1280,7 +1288,7 @@ test('S1 页面取消勾选后不请求也不显示完整 ID；事件顺序：�
     assert.equal(page.data.wantFullUserId, true);
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
-    assert.equal(requests[3].data.includeFullUserId, true, '重新勾选才请求');
+    assert.equal(requests[3].data.picRequest.includeFullUserId, true, '重新勾选才请求');
     assert.equal(page.data.result.userId, userId, '重新勾选才显示');
     // (4) 取消后再勾选其他值（不含 full）→ 不请求
     page.onWantFullIdChange({ detail: { value: ['full'] } });
@@ -1405,7 +1413,7 @@ test('S1b 取消勾选当下立即隐藏旧完整编号：取消后/重勾未提
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
     assert.equal(requests.length, 1);
-    assert.equal(requests[0].includeFullUserId, true);
+    assert.equal(requests[0].picRequest.includeFullUserId, true);
     assert.equal(page.data.result.userId, userId, '勾选核验后显示完整编号');
     assert.equal(page.data.result.fullUserIdAvailable, true);
     assert.equal(page.data.result.userIdTail, userId.slice(-6), '尾号保留');
@@ -1429,7 +1437,7 @@ test('S1b 取消勾选当下立即隐藏旧完整编号：取消后/重勾未提
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
     assert.equal(requests.length, 2);
-    assert.equal(requests[1].includeFullUserId, undefined, '取消后再次核验不请求完整编号');
+    assert.equal(requests[1].picRequest.includeFullUserId, undefined, '取消后再次核验不请求完整编号');
     assert.equal(page.data.result.userId, '', '取消后再核验不显示完整编号');
     assert.equal(page.data.result.userIdTail, userId.slice(-6));
     // 步骤 5：重新勾选 + 再次核验 → 新一次有效核验返回后才显示完整编号
@@ -1437,7 +1445,7 @@ test('S1b 取消勾选当下立即隐藏旧完整编号：取消后/重勾未提
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
     assert.equal(requests.length, 3);
-    assert.equal(requests[2].includeFullUserId, true, '重新勾选后才请求完整编号');
+    assert.equal(requests[2].picRequest.includeFullUserId, true, '重新勾选后才请求完整编号');
     assert.equal(page.data.result.userId, userId, '新一次有效核验返回后显示');
     assert.equal(page.data.result.fullUserIdAvailable, true);
     // 非回归：口令清除 + 在途锁
@@ -1513,13 +1521,14 @@ test('M 同名函数部署映射：候选制品全部位于 server/scheduleSandb
   const children = fs.readdirSync(serverRoot);
   assert.deepEqual(children, ['scheduleSandbox'], 'server/ 下必须只有同名函数子目录');
   assert.equal('scheduleSandbox', core.FIXED_TARGET.functionName, '子目录名=受审固定函数名');
-  // (2) 函数子目录含完整入口三件套
-  for (const f of ['index.js', 'package.json', 'participant-identity-check.js']) {
+  // (2) 函数子目录含完整入口四件套（入口/核心/请求适配器/package.json）
+  for (const f of ['index.js', 'package.json', 'participant-identity-check.js', 'request-adapter.js']) {
     assert.equal(fs.existsSync(path.join(serverRoot, 'scheduleSandbox', f)), true, '函数目录含 ' + f);
   }
-  // (3) 依赖闭包：入口 require('./participant-identity-check') 同目录可解析
+  // (3) 依赖闭包：入口 require('./participant-identity-check') 与 require('./request-adapter') 同目录可解析
   const entrySrc = fs.readFileSync(path.join(serverRoot, 'scheduleSandbox', 'index.js'), 'utf8');
   assert.ok(entrySrc.includes("require('./participant-identity-check')"), '入口引用同目录核心模块');
+  assert.ok(entrySrc.includes("require('./request-adapter')"), '入口引用同目录请求适配器');
   // (4) 与既有业务布局同构（静态核对对照）
   const bizFnDir = path.join(REPO_ROOT, 'miniapp', 'cloudfunctions', 'scheduleSandbox');
   assert.equal(fs.existsSync(path.join(bizFnDir, 'index.js')), true, '既有业务函数目录含 index.js');
@@ -1537,10 +1546,10 @@ test('M 同名函数部署映射：候选制品全部位于 server/scheduleSandb
   fake2.delete('server/scheduleSandbox/package.json');
   assert.throws(() => packer.verifyProjectLayout(fake2),
     e => e.code === packer.ERR.SOURCE_DRIFT && /同名函数子目录缺少制品/.test(e.message));
-  // (7) 精确文件集：候选 14 文件不变（仅 rel 调整）
+  // (7) 精确文件集：候选 15 文件（含请求适配器；仅 rel 调整，数量不变）
   const r = packer.checkDir(outDir);
   assert.equal(r.ok, true);
-  assert.equal(r.files, 14, '候选清单 14 文件（仅 rel 调整，数量不变）');
+  assert.equal(r.files, 15, '候选清单 15 文件（含请求适配器）');
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -1919,16 +1928,14 @@ test('D1 受控键诊断：默认关闭；全门槛准入；门控反例无诊�
   assert.equal(unit.truncated, false);
 });
 
-test('D2 全链诊断（生成候选 App/Page→client→server→core）：诊断可见且不泄漏；非诊断轮/错口令无诊断；关闭包无诊断能力；手改被拒', async () => {
+test('D2 生成链（请求分层协议）：外层附带键容忍进入本人只读链；旧格式/混用/内层非法/冲突拒绝且零工厂；口令清除保持', async () => {
   const closeSource = makeCloseSourceDir();
   const openid = 'openid-diag-chain-' + RUN_ID;
   const userId = core.deriveUserId(APPID, openid);
-  /**
-   * 平台信封合成：额外键只由 wx 替身在**服务端入口边界**注入（模拟平台入站行为），
-   * 客户端发送的数据保持 3 键——与既有事实（客户端只发 action/passphrase/round[+fullId]）一致。
-   */
-  const mkChain = (outDir, envelope, rows) => {
+  // wx 替身：客户端数据原样进入候选 main；mutate 在服务端边界模拟平台入站附带（可返回替换对象）
+  const mkChain = (outDir, mutate, rows) => {
     const sent = [];
+    const factory = { databaseCalls: 0 };
     const db = makeTrapDb({ rows: rows || [] });
     const stub = {
       cloud: {
@@ -1936,210 +1943,110 @@ test('D2 全链诊断（生成候选 App/Page→client→server→core）：诊�
         init() {},
         callFunction(opts) {
           sent.push({ keys: Object.keys(opts.data).slice().sort() });
-          const main = loadCandidateMain(outDir, { appId: APPID, envId: ENV_ID, openid, db });
-          return main.main(Object.assign({}, opts.data, envelope || {})).then(result => ({ result }));
+          const main = loadCandidateMain(outDir, { appId: APPID, envId: ENV_ID, openid, db, onDatabase: () => factory.databaseCalls++ });
+          const event = Object.assign({}, opts.data);
+          const replaced = mutate ? mutate(event) : undefined;
+          return main.main(replaced === undefined ? event : replaced).then(result => ({ result }));
         }
       }
     };
-    return { stub, sent, dbCalls: db.calls };
+    return { stub, sent, dbCalls: db.calls, factory };
   };
-  const envelope = { userInfo: { appId: 'synthetic-envelope-appid', openId: 'synthetic-envelope-openid' } };
+  const attachSecretGetter = (e, name) => Object.defineProperty(e, name, { enumerable: true, get() { throw new Error('synthetic-envelope-getter'); } });
 
-  // (1) 诊断轮候选：开关 true、manifest 绑定、check 重建一致
-  const diagPlanPath = writePicPlan(closeSource, { synthetic: false, keyDiagnostic: true });
+  // (1) v2 真实模式候选：requestProtocol 绑定、keyDiagnostic=false、check 重建一致
+  const diagPlanPath = writePicPlan(closeSource, { synthetic: false });
   const diagOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'diag-' + RUN_ID);
   const builtDiag = packer.build(diagPlanPath, diagOut);
-  assert.equal(builtDiag.manifest.keyDiagnostic, true, 'manifest 记录诊断开启');
-  assert.equal(builtDiag.manifest.keyDiagnosticSchema, packer.KEY_DIAGNOSTIC_SCHEMA, 'manifest 绑定协议版本');
-  assert.equal(builtDiag.manifest.keyDiagnosticScope, packer.KEY_DIAGNOSTIC_SCOPE);
+  assert.equal(builtDiag.manifest.requestProtocol, packer.REQUEST_PROTOCOL, 'manifest 绑定请求协议');
+  assert.equal(builtDiag.manifest.keyDiagnostic, false, '新协议诊断关闭');
   assert.ok(fs.readFileSync(path.join(diagOut, 'server', 'scheduleSandbox', 'index.js'), 'utf8')
-    .includes('const CONFIG_KEY_DIAGNOSTIC = true;'), '诊断轮入口开关为 true');
-  assert.equal(packer.checkDir(diagOut).ok, true, '诊断轮候选 check 重建一致');
+    .includes('const CONFIG_KEY_DIAGNOSTIC = false;'), '入口诊断开关为 false');
+  const planRound = builtDiag.manifest.checkRoundId;
 
-  // (2) 诊断轮全链：信封键注入 → 净化诊断在手机页面可见；原键名/值不外泄；客户端仍只发3键
-  const diag = mkChain(diagOut, envelope);
-  await withGlobalWx(diag.stub, async () => {
-    const page = loadCandidatePage(diagOut, diag.stub);
+  // (2) 正向链：外层 userInfo + 9–16 码元未知键 + 秘密键名 + 抛错 getter 全部容忍 → ACTIVE
+  const secretKey = 'synthetic_secret_' + crypto.randomBytes(8).toString('hex');
+  const pos = mkChain(diagOut, e => {
+    e.userInfo = { appId: 'synthetic-envelope-appid', openId: 'synthetic-envelope-openid' };
+    e.syntheticUnknownKey12 = { synthetic: true };
+    e[secretKey] = { synthetic: true };
+    attachSecretGetter(e, 'syntheticGetterKey');
+  }, [{ _id: userId, openid, status: 'active' }]);
+  await withGlobalWx(pos.stub, async () => {
+    const page = loadCandidatePage(diagOut, pos.stub);
+    page.onLoad(); page.onShow();
+    assert.equal(pos.sent.length, 0, '加载与切前台零发送');
+    page.onWantFullIdChange({ detail: { value: ['full'] } });
     page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
     await page.onCheckTap();
-    assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
-    assert.equal(page.data.result.readAttempted, false);
-    assert.equal(page.data.passphrase, '', '口令照常清除');
-    assert.ok(page.data.result.keyDiagnosticText.includes('其它键 0 个'), '诊断文本可见（userInfo 走固定标签、其它键 0 个）');
-    assert.ok(page.data.result.keyDiagnosticText.includes('CANDIDATE_USERINFO'), '固定候选标签可见');
+    assert.equal(pos.sent.length, 1, '只点一次只发一次');
+    assert.deepEqual(pos.sent[0].keys, ['picRequest'], '外层仅 picRequest 一个键');
+    assert.equal(page.data.result.registrationState, 'ACTIVE', '外层附带容忍进入本人只读链');
+    assert.equal(page.data.result.identityConfirmed, true);
+    assert.equal(page.data.result.userId, userId, '勾选后完整编号返回');
+    assert.equal(page.data.passphrase, '', '调用结束清除口令输入');
+    assert.equal(pos.factory.databaseCalls, 1, '数据库工厂恰一次');
+    assert.equal(pos.dbCalls.collections.length, 1, '固定集合恰一次');
+    assert.equal(pos.dbCalls.reads, 1, '本人主键至多一次 get');
+    assert.deepEqual(pos.dbCalls.fields, [{ _id: true, openid: true, status: true }], '三字段投影');
     const pageDump = JSON.stringify(page.data);
-    assert.equal(pageDump.includes('userInfo'), false, '原键名不出现在页面数据');
-    assert.equal(pageDump.includes('synthetic-envelope'), false, '注入值不出现在页面数据');
-    assert.equal(diag.sent.length, 1, '只发送一次');
-    assert.deepEqual(diag.sent[0].keys, ['action', 'checkRoundId', 'passphrase'], '客户端仍只发3键');
-    assert.equal(diag.dbCalls.reads, 0, '诊断路径零读取');
-    assert.equal(diag.dbCalls.collections.length, 0, '诊断路径零集合访问');
+    assert.equal(pageDump.includes(secretKey), false, '秘密键名不入页面数据');
+    assert.equal(pageDump.includes('synthetic-envelope-appid'), false, '附带值不入页面数据');
+    assert.equal(pageDump.includes('"keyDiagnostic"'), false, '新协议无诊断对象字段');
   });
 
-  // (2b) 双候选信封（userInfo + wxCloudApiToken）：页面同时显示两个固定标签，其它键 0
-  const diag2 = mkChain(diagOut, {
-    userInfo: { appId: 'synthetic-envelope-appid', openId: 'synthetic-envelope-openid' },
-    wxCloudApiToken: { synthetic: true }
-  });
-  await withGlobalWx(diag2.stub, async () => {
-    const page = loadCandidatePage(diagOut, diag2.stub);
-    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
-    await page.onCheckTap();
-    assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
-    const text = page.data.result.keyDiagnosticText;
-    assert.ok(text.includes('CANDIDATE_USERINFO') && text.includes('CANDIDATE_WX_CLOUD_API_TOKEN'),
-      '双固定标签展示');
-    assert.ok(text.includes('其它键 0 个'), '其它键 0');
-    const pageDump = JSON.stringify(page.data);
-    assert.equal(pageDump.includes('wxCloudApiToken'), false, '原键名不出现在页面数据');
-    assert.equal(diag2.dbCalls.reads, 0, '零读取');
-  });
-
-  // (3) 诊断轮 + 干净请求（无信封键）：正常核验不受影响，无诊断字段
-  {
-    const ok = mkChain(diagOut, null, [{ _id: userId, openid, status: 'active' }]);
-    await withGlobalWx(ok.stub, async () => {
-      const page = loadCandidatePage(diagOut, ok.stub);
+  // (3) 拒绝矩阵：每例 PIC_REQUEST_INVALID、工厂0/集合0/读取0、无诊断字段
+  const rejections = {
+    仅旧顶层格式: () => ({ action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND }),
+    两格式混用: e => { e.action = 'inspectSelf'; e.passphrase = SYNTHETIC_PASSPHRASE; e.checkRoundId = TEST_ROUND; },
+    外层冲突动作: e => { e.action = 'inspectSelf'; },
+    外层自报身份: e => { e.openid = 'synthetic-forged'; e.APPID = 'synthetic-forged-appid'; e.role = 'synthetic-forged-role'; },
+    内层额外字段: e => { e.picRequest.syntheticExtra = 1; },
+    内层伪造身份: e => { e.picRequest.openid = 'synthetic-forged'; },
+    内层错schema: e => { e.picRequest.schema = 'participant-identity-request/2'; },
+    内层缺schema: e => { delete e.picRequest.schema; },
+    picRequest为访问器: e => { delete e.picRequest; Object.defineProperty(e, 'picRequest', { enumerable: true, get() { return { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }; } }); },
+    picRequest为继承字段: () => { const child = Object.create({ picRequest: { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE } }); return child; },
+    元操作抛错: e => { Object.defineProperty(e, Symbol.for('synthetic-meta'), { enumerable: false, get() { throw new Error('synthetic-meta'); } }); e[Symbol.for('synthetic-own')] = 1; },
+    自定义原型: () => { function Cls() {} Cls.prototype.picRequest = { schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE }; return new Cls(); }
+  };
+  for (const [name, mutate] of Object.entries(rejections)) {
+    const neg = mkChain(diagOut, mutate, [{ _id: userId, openid, status: 'active' }]);
+    await withGlobalWx(neg.stub, async () => {
+      const page = loadCandidatePage(diagOut, neg.stub);
       page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
       await page.onCheckTap();
-      assert.equal(page.data.result.registrationState, 'ACTIVE');
-      assert.equal(page.data.result.code, '');
-      assert.equal(page.data.result.keyDiagnosticText, '', '干净请求无诊断展示');
-      assert.equal(JSON.stringify(page.data).includes('"keyDiagnostic"'), false, '干净结果无诊断对象字段');
+      assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID', name + '：净化失败码');
+      assert.equal(page.data.result.registrationState, 'UNKNOWN', name + '：UNKNOWN');
+      assert.equal(page.data.result.readAttempted, false, name + '：读取事实 false');
+      assert.equal(page.data.result.checkRoundId, planRound, name + '：轮次来自受审配置');
+      assert.equal(page.data.result.serverTime, '', name + '：不附服务端时间');
+      assert.equal(page.data.passphrase, '', name + '：口令清除保持');
+      assert.equal(neg.factory.databaseCalls, 0, name + '：零数据库工厂');
+      assert.equal(neg.dbCalls.collections.length, 0, name + '：零集合访问');
+      assert.equal(neg.dbCalls.reads, 0, name + '：零读取');
+      assert.equal(JSON.stringify(page.data).includes('"keyDiagnostic"'), false, name + '：不附诊断');
     });
   }
 
-  // (4) 错口令 + 信封键（诊断轮）：行为不变且无诊断
-  {
-    const bad = mkChain(diagOut, envelope);
-    await withGlobalWx(bad.stub, async () => {
-      const page = loadCandidatePage(diagOut, bad.stub);
-      page.onPassphraseInput({ detail: { value: 'synthetic-wrong-passphrase' } });
-      await page.onCheckTap();
-      assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID', '错口令+额外键仍为请求键拒绝');
-      assert.equal(page.data.result.keyDiagnosticText, '', '错口令无诊断');
-      assert.equal(bad.dbCalls.reads, 0);
-    });
-  }
-
-  // (5) 非诊断轮（同真实模式、开关缺省）：信封键注入也不附诊断
-  const plainOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'plaindiag-' + RUN_ID);
-  packer.build(writePicPlan(closeSource, { synthetic: false }), plainOut);
-  assert.ok(fs.readFileSync(path.join(plainOut, 'server', 'scheduleSandbox', 'index.js'), 'utf8')
-    .includes('const CONFIG_KEY_DIAGNOSTIC = false;'), '普通核验包诊断开关保持 false');
-  const plain = mkChain(plainOut, envelope);
-  await withGlobalWx(plain.stub, async () => {
-    const page = loadCandidatePage(plainOut, plain.stub);
-    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
-    await page.onCheckTap();
-    assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID');
-    assert.equal(page.data.result.keyDiagnosticText, '', '非诊断轮无诊断展示');
-    assert.equal(JSON.stringify(page.data).includes('"keyDiagnostic"'), false, '非诊断轮结果无诊断对象字段');
-  });
-
-  // (6) 关闭包无诊断能力：close/ 全部文件无任何诊断字符串
+  // (4) 关闭包：零适配器/诊断/新协议字符串
   let closeHits = 0;
   (function scanClose(dir) {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) scanClose(p);
-      else if (fs.readFileSync(p, 'utf8').includes('keyDiagnostic')) closeHits++;
+      else if (/keyDiagnostic|request-adapter|picRequest/.test(fs.readFileSync(p, 'utf8'))) closeHits++;
     }
   })(path.join(diagOut, 'close'));
-  assert.equal(closeHits, 0, '关闭包不含任何诊断代码或字符串');
+  assert.equal(closeHits, 0, '关闭包不含适配器/诊断/新协议字符串');
 
-  // (7) 手改绕过被拒：manifest 开关翻转、入口开关翻转均被 checkDir 拒绝
-  const manifestPath = path.join(diagOut, 'manifest.json');
-  const tampered = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  tampered.keyDiagnostic = false;
-  fs.writeFileSync(manifestPath, JSON.stringify(tampered, null, 2) + '\n');
-  assert.equal(packer.checkDir(diagOut).ok, false, '手改 manifest 诊断开关被拒');
-  fs.writeFileSync(manifestPath, JSON.stringify(builtDiag.manifest, null, 2) + '\n');
+  // (5) 手改拒绝：入口适配器调用被篡改 → checkDir 重建比对拒绝
   const entryPath = path.join(diagOut, 'server', 'scheduleSandbox', 'index.js');
   const origEntry = fs.readFileSync(entryPath, 'utf8');
-  fs.writeFileSync(entryPath, origEntry.replace('const CONFIG_KEY_DIAGNOSTIC = true;', 'const CONFIG_KEY_DIAGNOSTIC = false;'));
-  assert.equal(packer.checkDir(diagOut).ok, false, '手改入口诊断开关被重建比对拒绝');
+  fs.writeFileSync(entryPath, origEntry.replace('requestAdapter.extractBusinessRequest(event)', 'requestAdapter.extractBusinessRequest({})'));
+  assert.equal(packer.checkDir(diagOut).ok, false, '手改入口适配器调用被拒');
   fs.writeFileSync(entryPath, origEntry);
   assert.equal(packer.checkDir(diagOut).ok, true, '还原后重建一致');
-
-  // (8) 非布尔诊断开关计划写前拒绝
-  assert.throws(() => packer.build(writePicPlan(closeSource, { keyDiagnostic: 'yes' })),
-    e => e.code === packer.ERR.PLAN_INVALID && /keyDiagnostic/.test(e.message), '计划诊断开关必须为布尔或缺省');
-});
-
-// ════════════════════════════════════════════════════════════════════════════
-// D3–D6 R1–R4 定点收尾（Codex 复查 880fbf8 §2–§5）
-// ════════════════════════════════════════════════════════════════════════════
-
-test('D1b 第二候选 wxCloudApiToken：双候选同在→两标签其它0；秘密键名→其它1不回显；大小写/相似名不误识别；候选getter零访问；伪造身份字段拒绝且零DB', async () => {
-  const openid = 'openid-diag2-' + RUN_ID;
-  const secretInKey = 'synthetic_secret_' + crypto.randomBytes(8).toString('hex');
-  const req = extra => Object.assign(
-    { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND },
-    extra || {}
-  );
-  // (1) 双候选同在 → 两个固定标签、其它键 0；原键名不回显
-  {
-    const db = makeTrapDb({ rows: [] });
-    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req({
-      userInfo: { openId: 'synthetic-untrusted' },
-      wxCloudApiToken: { synthetic: true }
-    }));
-    assert.equal(r.code, 'PIC_REQUEST_INVALID');
-    const d = r.keyDiagnostic;
-    assert.ok(d, '诊断存在');
-    assert.equal(JSON.parse(JSON.stringify(d.candidateLabels)).join(','),
-      'CANDIDATE_USERINFO,CANDIDATE_WX_CLOUD_API_TOKEN', '两个固定标签（跨vm用JSON比较）');
-    assert.equal(d.otherKeyCount, 0, '其它键 0');
-    assert.equal(d.truncated, false);
-    assert.equal(JSON.stringify(r).includes('wxCloudApiToken'), false, '原键名不回显（仅固定标签）');
-    assert.equal(db.calls.reads, 0, '零读取');
-  }
-  // (2) 双候选 + 秘密键名 → 标签 2、其它 1 入溢出桶、秘密不回显
-  {
-    const db = makeTrapDb({ rows: [] });
-    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req({
-      userInfo: {}, wxCloudApiToken: {}, [secretInKey]: { synthetic: true }
-    }));
-    const d = r.keyDiagnostic;
-    assert.equal(JSON.parse(JSON.stringify(d.candidateLabels)).length, 2, '两标签');
-    assert.equal(d.otherKeyCount, 1, '秘密键计入其它键');
-    assert.equal(d.otherKeyNameLengthBuckets.lenOver32, 1, '33码元落入溢出桶');
-    assert.equal(JSON.stringify(r).includes(secretInKey), false, '秘密键名不回显');
-    assert.equal(db.calls.reads, 0);
-  }
-  // (3) 大小写/相似名不误识别 → 全部按其它键计数并分桶
-  {
-    const db = makeTrapDb({ rows: [] });
-    const r = await makeChecker(db, { keyDiagnostic: true }).handle(req({
-      WXCloudApiToken: {}, wxcloudapitoken: {}, wxCloudApiTokenX: {}, userInfo: {}
-    }));
-    const d = r.keyDiagnostic;
-    assert.equal(JSON.parse(JSON.stringify(d.candidateLabels)).join(','),
-      'CANDIDATE_USERINFO', '仅 userInfo 被识别');
-    assert.equal(d.otherKeyCount, 3, '相似名按其它键计数');
-    assert.equal(d.otherKeyNameLengthBuckets['len9-16'], 3, '15/15/16 码元均落 9–16 桶');
-    assert.equal(db.calls.reads, 0);
-  }
-  // (4) 候选键值设抛错 getter 亦不读取；伪造身份字段（openid/role）仍拒绝、零DB、值不采信不外泄
-  {
-    const db = makeTrapDb({ rows: [] });
-    const event = { action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE, checkRoundId: TEST_ROUND };
-    let getterHits = 0;
-    Object.defineProperty(event, 'wxCloudApiToken', {
-      enumerable: true,
-      get() { getterHits++; throw new Error('synthetic-token-read'); }
-    });
-    Object.defineProperty(event, 'openid', { enumerable: true, value: 'synthetic-forged-openid' });
-    Object.defineProperty(event, 'role', { enumerable: true, value: 'synthetic-forged-role' });
-    const r = await makeChecker(db, { keyDiagnostic: true }).handle(event);
-    assert.equal(r.code, 'PIC_REQUEST_INVALID');
-    assert.equal(getterHits, 0, '候选与伪造身份键的值/getter 零访问');
-    assert.equal(JSON.parse(JSON.stringify(r.keyDiagnostic.candidateLabels)).join(','),
-      'CANDIDATE_WX_CLOUD_API_TOKEN', '新候选识别');
-    assert.equal(db.calls.reads, 0, '零读取');
-    assert.equal(JSON.stringify(r).includes('synthetic-forged'), false, '伪造身份值不外泄、不采信');
-  }
 });
 
 test('D3 R2 诊断构建后/附加前重查窗口：构造期间到期/NaN/抛错撤销诊断；构造前有效对照可见；零DB与失败语义保持', async () => {
@@ -2188,32 +2095,45 @@ test('D3 R2 诊断构建后/附加前重查窗口：构造期间到期/NaN/抛�
   }
 });
 
-test('D4 R3 清单诊断协议/scope 两种模式统一绑定：缺失/错值/篡改拒绝；合法对照通过；关闭检查不依赖候选窗口', () => {
+test('D4 v2 清单绑定：requestProtocol/诊断协议/scope 统一严格校验（缺失/错值/篡改拒绝）；keyDiagnostic=true 计划拒绝；关闭检查不依赖候选窗口', () => {
   const closeSource = makeCloseSourceDir();
-  const mkCandidate = keyDiagnostic => {
-    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'mbind-' + (keyDiagnostic ? 't-' : 'f-') + crypto.randomBytes(4).toString('hex'));
-    packer.build(writePicPlan(closeSource, keyDiagnostic ? { keyDiagnostic: true } : {}), outDir);
+  const mkCandidate = planOverrides => {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'mbind-' + crypto.randomBytes(4).toString('hex'));
+    packer.build(writePicPlan(closeSource, planOverrides), outDir);
     return outDir;
   };
   const tamper = (outDir, patch) => {
     const manifestPath = path.join(outDir, 'manifest.json');
     const original = fs.readFileSync(manifestPath);
     const m = JSON.parse(original);
-    Object.assign(m, patch);
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === undefined) delete m[k]; else m[k] = v;
+    }
     fs.writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
     const ok = packer.checkDir(outDir).ok;
     fs.writeFileSync(manifestPath, original);
     return ok;
   };
-  for (const mode of [true, false]) {
-    const outDir = mkCandidate(mode);
-    assert.equal(packer.checkDir(outDir).ok, true, mode + '：合法对照通过');
-    assert.equal(tamper(outDir, { keyDiagnosticSchema: 'synthetic-unrelated-protocol' }), false, mode + '：协议错值拒绝');
-    assert.equal(tamper(outDir, { keyDiagnosticScope: 'synthetic-unrelated-scope' }), false, mode + '：scope 错值拒绝');
-    assert.equal(tamper(outDir, { keyDiagnosticSchema: packer.KEY_DIAGNOSTIC_SCHEMA, keyDiagnosticScope: packer.KEY_DIAGNOSTIC_SCOPE }), true, mode + '：原值回写通过');
-    assert.equal(tamper(outDir, { keyDiagnosticSchema: undefined }), false, mode + '：协议缺失拒绝');
-  }
-  // 独立关闭检查不依赖候选窗口：synthetic 模式允许过去窗口候选装配，checkCloseDir 仍通过
+  // (1) 唯一合法模式：keyDiagnostic 缺省（false）；合法对照与逐字段篡改/缺失拒绝
+  const outDir = mkCandidate({});
+  assert.equal(packer.checkDir(outDir).ok, true, '合法对照通过');
+  assert.equal(tamper(outDir, { requestProtocol: 'participant-identity-request/2' }), false, '协议错值拒绝');
+  assert.equal(tamper(outDir, { requestProtocol: undefined }), false, '协议缺失拒绝');
+  assert.equal(tamper(outDir, { keyDiagnostic: true }), false, '清单诊断开关翻转为 true 拒绝');
+  assert.equal(tamper(outDir, { keyDiagnosticSchema: 'synthetic-unrelated-protocol' }), false, '诊断协议错值拒绝');
+  assert.equal(tamper(outDir, { keyDiagnosticScope: 'synthetic-unrelated-scope' }), false, 'scope 错值拒绝');
+  assert.equal(tamper(outDir, { keyDiagnosticSchema: undefined }), false, '诊断协议缺失拒绝');
+  assert.equal(tamper(outDir, { requestProtocol: packer.REQUEST_PROTOCOL }), true, '协议原值回写通过');
+  // (2) 计划层反例：keyDiagnostic=true 写前拒绝；旧 v1 计划 schema 拒绝；缺 requestProtocol 拒绝
+  assert.throws(() => packer.build(writePicPlan(closeSource, { keyDiagnostic: true })),
+    e => e.code === packer.ERR.PLAN_INVALID && /keyDiagnostic/.test(e.message), 'keyDiagnostic=true 计划拒绝');
+  const v1PlanPath = writePicPlan(closeSource, { schema: 'participant-identity-plan/1' });
+  assert.throws(() => packer.build(v1PlanPath),
+    e => e.code === packer.ERR.PLAN_INVALID, '旧 v1 计划 schema 拒绝');
+  const noProto = writePicPlan(closeSource, { requestProtocol: undefined });
+  assert.throws(() => packer.build(noProto),
+    e => e.code === packer.ERR.PLAN_INVALID && /requestProtocol/.test(e.message), '缺 requestProtocol 拒绝');
+  // (3) 独立关闭检查不依赖候选窗口：synthetic 模式允许过去窗口候选装配，checkCloseDir 仍通过
   const pastOut = path.join(OUT_ROOT, packer.OUT_PREFIX + 'pastwin-' + crypto.randomBytes(4).toString('hex'));
   const past = Date.parse('2020-01-01T00:00:00Z');
   packer.build(writePicPlan(closeSource, {
@@ -2301,7 +2221,7 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   // (2) 生成页面链：畸形诊断不展示；合法诊断展示；原失败事实与口令清除保持
   const closeSource = makeCloseSourceDir();
   const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'r4page-' + crypto.randomBytes(4).toString('hex'));
-  packer.build(writePicPlan(closeSource, { keyDiagnostic: true }), outDir);
+  packer.build(writePicPlan(closeSource), outDir);
   const drive = async diag => {
     const response = {
       schema: core.RESULT_SCHEMA, checkRoundId: TEST_ROUND, ok: false, identityConfirmed: false,
@@ -2442,4 +2362,255 @@ test('D7 S1 收尾证据外层判定：外层被catch意外>0 时 ok=false/exit1
   assert.deepEqual(caught.r1, { baseline: 0, caughtAttempt: 1, sourceDrift: 1 });
   // 安全清理：不向真实环境遗留合成变量
   delete process.env.PIC_CLOSE_SOURCE_DIR;
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// A1–A4 请求分层兼容（Codex方案 §3–§6；CodeBuddy任务-I1请求分层兼容本地实现-20261017）
+// ════════════════════════════════════════════════════════════════════════════
+
+const requestAdapter = require('../scripts/templates/participant-identity-check/server/request-adapter.js');
+const IDENTITY_REQUEST_SDK_PATH = 'C:/Users/30591/.codex/tmp/memberAccess-readonly-sdk-20260925/node_modules/wx-server-sdk';
+
+test('A1 适配器单元矩阵（§3）：普通/null原型/跨vm plain 接受；冲突/Symbol/非枚举同名/访问器/继承/类型/元操作拒绝；仅构造原四字段且schema不入核心', () => {
+  const valid = { schema: 'participant-identity-request/1', action: 'inspectSelf', checkRoundId: 'synthetic-r', passphrase: 'synthetic-p' };
+  const okReq = { action: 'inspectSelf', checkRoundId: 'synthetic-r', passphrase: 'synthetic-p' };
+  // (1) 接受：普通对象
+  assert.deepEqual(requestAdapter.extractBusinessRequest({ picRequest: valid }), { ok: true, request: okReq });
+  // (2) 接受：null 原型外层与内层
+  const nullProtoEvent = Object.assign(Object.create(null), { picRequest: Object.assign(Object.create(null), valid) });
+  assert.equal(requestAdapter.extractBusinessRequest(nullProtoEvent).ok, true, 'null 原型接受');
+  // (3) 接受：跨 vm 仓库创建的 plain 对象（原型链深度 ≤1）
+  const crossRealm = vm.runInNewContext('({ picRequest: { schema: "participant-identity-request/1", action: "inspectSelf", checkRoundId: "synthetic-r", passphrase: "synthetic-p" } })');
+  assert.equal(requestAdapter.extractBusinessRequest(crossRealm).ok, true, '跨vm plain 对象接受');
+  // (4) includeFullUserId：缺省/false/true 均按布尔语义处理
+  assert.equal(requestAdapter.extractBusinessRequest({ picRequest: valid }).request.includeFullUserId, undefined, '缺省不携带');
+  assert.equal(requestAdapter.extractBusinessRequest({ picRequest: Object.assign({}, valid, { includeFullUserId: false }) }).request.includeFullUserId, false, 'false 按布尔透传');
+  assert.equal(requestAdapter.extractBusinessRequest({ picRequest: Object.assign({}, valid, { includeFullUserId: true }) }).request.includeFullUserId, true, 'true 按布尔透传');
+  // (5) 拒绝集（全部 ok:false，且不外露任何键名/值/异常信息）
+  const rejects = {
+    event为数组: () => [{ picRequest: valid }],
+    event为标量: () => 'x',
+    event为null: () => null,
+    缺picRequest: () => ({}),
+    picRequest继承取得: () => Object.create({ picRequest: valid }),
+    picRequest为标量: () => ({ picRequest: 'x' }),
+    picRequest为数组: () => ({ picRequest: [] }),
+    picRequest为访问器: () => { const e = {}; Object.defineProperty(e, 'picRequest', { enumerable: true, get() { return valid; } }); return e; },
+    picRequest非枚举: () => { const e = {}; Object.defineProperty(e, 'picRequest', { enumerable: false, value: valid }); return e; },
+    外层冲突action: () => ({ action: 'inspectSelf', picRequest: valid }),
+    外层冲突旧schema: () => ({ schema: 'x', picRequest: valid }),
+    外层自报openid: () => ({ openid: 'x', picRequest: valid }),
+    外层自报大写OPENID: () => ({ OPENID: 'x', picRequest: valid }),
+    外层自报role: () => ({ role: 'x', picRequest: valid }),
+    外层自报envId: () => ({ envId: 'x', picRequest: valid }),
+    外层非枚举constructor: () => { const e = {}; Object.defineProperty(e, 'constructor', { enumerable: false, value: 'x' }); e.picRequest = valid; return e; },
+    外层Symbol键: () => { const e = { picRequest: valid }; e[Symbol.for('synthetic-outer')] = 1; return e; },
+    内层额外字段: () => ({ picRequest: Object.assign({}, valid, { syntheticExtra: 1 }) }),
+    内层伪造openid: () => ({ picRequest: Object.assign({}, valid, { openid: 'synthetic-forged' }) }),
+    内层伪造role: () => ({ picRequest: Object.assign({}, valid, { role: 'synthetic-forged' }) }),
+    内层Symbol键: () => { const pic = Object.assign({}, valid); pic[Symbol.for('synthetic-inner')] = 1; return { picRequest: pic }; },
+    内层非枚举action: () => { const pic = {}; Object.defineProperty(pic, 'action', { enumerable: false, value: 'inspectSelf' }); pic.schema = valid.schema; pic.checkRoundId = 'synthetic-r'; pic.passphrase = 'synthetic-p'; return { picRequest: pic }; },
+    内层action访问器: () => { const pic = {}; Object.defineProperty(pic, 'action', { enumerable: true, get() { return 'inspectSelf'; } }); pic.schema = valid.schema; pic.checkRoundId = 'synthetic-r'; pic.passphrase = 'synthetic-p'; return { picRequest: pic }; },
+    内层action为数字: () => ({ picRequest: Object.assign({}, valid, { action: 1 }) }),
+    内层includeFullUserId字符串: () => ({ picRequest: Object.assign({}, valid, { includeFullUserId: 'true' }) }),
+    内层schema错误版本: () => ({ picRequest: Object.assign({}, valid, { schema: 'participant-identity-request/2' }) }),
+    内层schema大小写变体: () => ({ picRequest: Object.assign({}, valid, { schema: 'PARTICIPANT-IDENTITY-REQUEST/1' }) }),
+    内层缺schema: () => { const p = Object.assign({}, valid); delete p.schema; return { picRequest: p }; },
+    内层缺action: () => { const p = Object.assign({}, valid); delete p.action; return { picRequest: p }; },
+    元操作ownKeys抛错: () => new Proxy({ picRequest: valid }, { ownKeys() { throw new Error('synthetic-meta'); } }),
+    自定义原型实例: () => { function Cls() {} Cls.prototype.picRequest = valid; return new Cls(); },
+    两层继承: () => { const mid = Object.create({ picRequest: valid }); return Object.create(mid); }
+  };
+  for (const [name, mk] of Object.entries(rejects)) {
+    const r = requestAdapter.extractBusinessRequest(mk());
+    assert.equal(r.ok, false, name + '：必须拒绝');
+    assert.equal(r.request, undefined, name + '：不得构造请求对象');
+  }
+  // (6) 拒绝结果仅含 ok，不携带异常信息/键名/值
+  const r = requestAdapter.extractBusinessRequest(new Proxy({ picRequest: valid }, { ownKeys() { throw new Error('synthetic-secret-message'); } }));
+  assert.deepEqual(Object.keys(r), ['ok'], '拒绝结果仅含 ok');
+});
+
+test('A3 真实SDK接线：生成入口+请求适配器+真实wx-server-sdk3.0.1/database1.4.1 三路；throwOnNotFound 敏感性反例；合成范围披露', { skip: !fs.existsSync(IDENTITY_REQUEST_SDK_PATH) && '未指定已取得的 wx-server-sdk 路径' }, async () => {
+  // 网络全程拦截：传输层由实例级 reqClass 本地替身提供（仅替换传输；序列化/投影/包装为真实SDK代码）
+  let networkAttempts = 0;
+  const originals = [];
+  const block = () => { networkAttempts++; throw new Error('LOCAL_NETWORK_DISABLED'); };
+  for (const [moduleName, keys] of [['node:http', ['request', 'get']], ['node:https', ['request', 'get']], ['node:net', ['connect', 'createConnection']]]) {
+    const mod = require(moduleName);
+    for (const key of keys) { originals.push([mod, key, mod[key]]); mod[key] = block; }
+  }
+  const socket = require('node:net').Socket.prototype;
+  originals.push([socket, 'connect', socket.connect]); socket.connect = block;
+  try {
+    const closeSource = makeCloseSourceDir();
+    const openid = 'openid-sdk3-' + RUN_ID;
+    const userId = core.deriveUserId(APPID, openid);
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'sdk3-' + RUN_ID);
+    const starts = Date.now() - 60000;
+    packer.build(writePicPlan(closeSource, {
+      synthetic: false,
+      windowStartsAtIso: new Date(starts).toISOString(),
+      windowExpiresAtIso: new Date(starts + 10 * 60 * 1000).toISOString()
+    }), outDir);
+    assert.equal(packer.checkDir(outDir).ok, true);
+    const realCloud = require(IDENTITY_REQUEST_SDK_PATH);
+    assert.equal(require(path.join(IDENTITY_REQUEST_SDK_PATH, 'package.json')).version, '3.0.1');
+    const serverFile = path.join(outDir, 'server', 'scheduleSandbox', 'index.js');
+    const adapterFile = path.join(outDir, 'server', 'scheduleSandbox', 'request-adapter.js');
+    const nativeRequire = createRequire(serverFile);
+    const roundId = JSON.parse(fs.readFileSync(path.join(outDir, 'manifest.json'), 'utf8')).checkRoundId;
+    const mkEntry = () => {
+      const initArgs = [], databaseArgs = [];
+      let transportScript = [];
+      const shim = {
+        DYNAMIC_CURRENT_ENV: realCloud.DYNAMIC_CURRENT_ENV,
+        init(opts) { initArgs.push(opts); realCloud.init(opts); },
+        getWXContext: () => ({ APPID: APPID, OPENID: openid }),
+        database(opts) {
+          databaseArgs.push(opts);
+          const db = realCloud.database(opts);
+          class LocalTransport {
+            constructor() { this.calls = 0; }
+            async send(action, params) {
+              this.calls++;
+              if (action !== 'database.getDocument') throw new Error('只允许只读 getDocument');
+              const step = transportScript.shift();
+              if (!step) throw new Error('传输脚本耗尽');
+              if (step.kind === 'exists') {
+                const utils = require(path.join(IDENTITY_REQUEST_SDK_PATH, '../@cloudbase/database', 'dist', 'commonjs', 'utils', 'utils.js'));
+                return { data: { list: [utils.stringifyByEJSON({ _id: userId, openid, status: step.status || 'active' })], offset: 0, limit: 1 } };
+              }
+              if (step.kind === 'absent') return { data: { list: [], offset: 0, limit: 1 } };
+              return { code: 'DATABASE_PERMISSION_DENIED' };
+            }
+          }
+          const transport = new LocalTransport();
+          db._db.constructor.reqClass = function () { return transport; };
+          return db;
+        }
+      };
+      const srvModule = { exports: {} };
+      vm.runInNewContext(fs.readFileSync(serverFile, 'utf8'), {
+        require: name => (name === 'wx-server-sdk' ? shim : name === './participant-identity-check' ? core : name === './request-adapter' ? require(adapterFile) : nativeRequire(name)),
+        module: srvModule, exports: srvModule.exports, process: { env: { TCB_ENV: ENV_ID } }, console
+      });
+      return { srvModule, initArgs, databaseArgs, setScript: s => { transportScript = s; } };
+    };
+    const call = (srvModule, withFullId) => srvModule.exports.main({
+      picRequest: Object.assign({
+        schema: packer.REQUEST_PROTOCOL, action: 'inspectSelf',
+        checkRoundId: roundId, passphrase: SYNTHETIC_PASSPHRASE
+      }, withFullId ? { includeFullUserId: true } : {})
+    });
+    // (1) 存在 → ACTIVE（真实包装层形状：data 为单对象）
+    const e1 = mkEntry();
+    e1.setScript([{ kind: 'exists' }]);
+    const hit = await call(e1.srvModule, true);
+    assert.equal(hit.registrationState, 'ACTIVE', '存在→ACTIVE');
+    assert.equal(hit.readAttempted, true);
+    assert.equal(hit.userId, userId, '勾选后完整编号返回');
+    assert.equal(JSON.stringify(e1.databaseArgs[0]), JSON.stringify({ throwOnNotFound: false }), '入口 database 参数原样进入 SDK（跨vm用JSON比较）');
+    assert.equal(e1.initArgs.length >= 1 && e1.initArgs[0].env === realCloud.DYNAMIC_CURRENT_ENV, true, '入口 init 参数原样进入 SDK（DYNAMIC_CURRENT_ENV）');
+    // (2) 不存在 → ABSENT（throwOnNotFound:false 时 data:null 归一）
+    e1.setScript([{ kind: 'absent' }]);
+    const miss = await call(e1.srvModule, false);
+    assert.equal(miss.registrationState, 'ABSENT', '不存在→ABSENT（真实SDK data:null）');
+    assert.equal(miss.readAttempted, true);
+    // (3) 权限失败 → UNKNOWN 且 readAttempted=true（不当作不存在）
+    e1.setScript([{ kind: 'denied' }]);
+    const denied = await call(e1.srvModule, false);
+    assert.equal(denied.registrationState, 'UNKNOWN', '权限失败→UNKNOWN');
+    assert.equal(denied.code, 'PIC_READ_FAILED');
+    assert.equal(denied.readAttempted, true);
+    // (4) 敏感性反例：无 throwOnNotFound:false 的实例，不存在路（空列表）必须抛错
+    const dbNoFlag = realCloud.database({});
+    class EmptyTransport { async send() { return { data: { list: [], offset: 0, limit: 1 } }; } }
+    dbNoFlag._db.constructor.reqClass = function () { return new EmptyTransport(); };
+    let threw = null;
+    try { await dbNoFlag.collection('schtest_v1_users').doc('u_' + 'b'.repeat(40)).field({ _id: true }).get(); } catch (err) { threw = err; }
+    assert.ok(threw, '无 throwOnNotFound:false 时不存在路必须抛错（敏感性反例）');
+    assert.equal(networkAttempts, 0, '全程零网络尝试');
+  } finally {
+    for (const [mod, key, original] of originals) mod[key] = original;
+  }
+});
+
+test('A4 入口级原准入（经适配器）：错口令/轮次/可信身份拒绝且适配后零读取；短窗口到期拒绝', async () => {
+  const closeSource = makeCloseSourceDir();
+  const openid = 'openid-a4-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  const mk = (planOverrides, rows) => {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'a4-' + crypto.randomBytes(4).toString('hex'));
+    packer.build(writePicPlan(closeSource, Object.assign({ synthetic: false }, planOverrides)), outDir);
+    const mkChainInner = mutate => {
+      const factory = { databaseCalls: 0 };
+      const db = makeTrapDb({ rows: rows || [{ _id: userId, openid, status: 'active' }] });
+      const stub = { cloud: { _identityCheckEnvInited: false, init() {}, callFunction(opts) {
+        const main = loadCandidateMain(outDir, { appId: APPID, envId: ENV_ID, openid, db, onDatabase: () => factory.databaseCalls++ });
+        const event = Object.assign({}, opts.data);
+        const replaced = mutate ? mutate(event) : undefined;
+        return main.main(replaced === undefined ? event : replaced).then(r => ({ result: r }));
+      } } };
+      return { stub, factory, dbCalls: db.calls };
+    };
+    return { outDir, mkChainInner };
+  };
+  // 错口令：适配通过后建立工厂（1 次）但零读取
+  {
+    const { outDir, mkChainInner } = mk({});
+    const neg = mkChainInner();
+    await withGlobalWx(neg.stub, async () => {
+      const page = loadCandidatePage(outDir, neg.stub);
+      page.onPassphraseInput({ detail: { value: 'synthetic-wrong-passphrase' } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.code, 'PIC_PASSPHRASE_INVALID');
+      assert.equal(neg.factory.databaseCalls, 1, '适配通过后建立工厂');
+      assert.equal(neg.dbCalls.reads, 0, '口令拒绝零读取');
+    });
+  }
+  // 错轮次（内层轮次改写）
+  {
+    const { outDir, mkChainInner } = mk({});
+    const neg = mkChainInner(e => { e.picRequest.checkRoundId = 'synthetic-other-round'; });
+    await withGlobalWx(neg.stub, async () => {
+      const page = loadCandidatePage(outDir, neg.stub);
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.code, 'PIC_ROUND_MISMATCH');
+      assert.equal(neg.dbCalls.reads, 0);
+    });
+  }
+  // 可信身份不符（getWXContext 返回错误 APPID；外层伪造身份无法改变本人主键）
+  {
+    const { outDir } = mk({});
+    const db = makeTrapDb({ rows: [{ _id: userId, openid, status: 'active' }] });
+    const stub = { cloud: { _identityCheckEnvInited: false, init() {}, callFunction(opts) {
+      const main = loadCandidateMain(outDir, { appId: 'wx-synthetic-wrong', envId: ENV_ID, openid, db });
+      return main.main(opts.data).then(r => ({ result: r }));
+    } } };
+    await withGlobalWx(stub, async () => {
+      const page = loadCandidatePage(outDir, stub);
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.code, 'PIC_TARGET_MISMATCH', '可信目标不符拒绝');
+      assert.equal(page.data.result.registrationState, 'UNKNOWN');
+    });
+  }
+  // 短窗口到期：构建时仍有效（余量 60ms），等待 150ms 后调用（真实时钟）→ PIC_WINDOW_EXPIRED
+  {
+    const { outDir, mkChainInner } = mk({
+      windowStartsAtIso: new Date(Date.now() - 1000).toISOString(),
+      windowExpiresAtIso: new Date(Date.now() + 60).toISOString()
+    });
+    await new Promise(r => setTimeout(r, 150));
+    const neg = mkChainInner();
+    await withGlobalWx(neg.stub, async () => {
+      const page = loadCandidatePage(outDir, neg.stub);
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.code, 'PIC_WINDOW_EXPIRED', '到期拒绝');
+      assert.equal(neg.dbCalls.reads, 0, '到期零读取');
+    });
+  }
 });
