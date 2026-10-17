@@ -1,0 +1,10 @@
+{
+  "roundId": "i2layer-20261017-d96dd233de26",
+  "approved": true,
+  "approvedAt": "2026-10-17T12:32:50.394658+00:00",
+  "userQuote": "同意执行新轮d96dd233de26，沿用上述2号只读核验、手动预览、立即关闭、必要凭据和现有套餐用量范围。",
+  "planSha256": "9c2798c0be045145627e06eb7939e65cf227348e8c4dd9d91759e6be8df93cfb",
+  "manifestSha256": "63097106c0f7a025925ce535776522205bfb1dee8668af7e8fdfd1e5b9222403",
+  "source": "human user message",
+  "attendance": "user confirms 0 and 2 present, devices ready"
+}

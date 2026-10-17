@@ -1,0 +1,31 @@
+{
+  "schema": "codex-i2-predeployment-stop/1",
+  "roundId": "i2layer-20261017-d96dd233de26",
+  "at": "2026-10-17T12:38:04.258221+00:00",
+  "status": "STOPPED_BEFORE_CLOUD",
+  "approvalReceived": true,
+  "candidateStartCutoff": "2026-10-17T12:35:34.328Z",
+  "reason": "User could not find preview, then reported simulator startup failure; candidate cutoff passed before manual preview success confirmation.",
+  "localConsoleRead": {
+    "tool": "get_simulator_console",
+    "filter": "grep -i error",
+    "ok": true,
+    "resultEmpty": true,
+    "doesNotProveNoErrors": true
+  },
+  "manualPreview": {
+    "source": "human user response",
+    "reportedQrVisible": true,
+    "reportedNoError": true,
+    "reportedAfterCutoff": true,
+    "simulatorRootCause": "not determined"
+  },
+  "cloudCredentialFetches": 0,
+  "deployments": 0,
+  "cloudApiCalls": 0,
+  "functionInvocations": 0,
+  "participantSubmissionRequested": false,
+  "approvalNotReusable": true,
+  "remoteState": "No new query; last verified closed at 2026-10-17 16:34:32 Asia/Shanghai",
+  "closedCodeSha256": "d3801edd362b22f695fac61ff539202b9454ba0dee6890e526507940df06d60b"
+}
