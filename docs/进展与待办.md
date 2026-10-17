@@ -1,3 +1,9 @@
+## 2026-10-17 Codex：未来窗口准备受现有打包器阻断，形成仅本地改动任务
+
+- 实查windowClockCheck/build/checkDir：真实模式now<starts时均拒绝；新离线证据用合成材料证明readPlan通过、build WINDOW_NOT_OPEN、产物目录未创建、源文件零改，探针2/意外0。不能用改系统时间或synthetic=true制造可部署真实包。
+- [CodeBuddy任务](CodeBuddy任务-核验包提前准备与执行时效分离-20261017.md)：仅新增prepare/checkPreparedDir本地准备入口，允许未来窗口但仍检查截止/时钟/所有制品约束；旧build/checkDir和核心门槛不变，准备返回executionReady=false，不能当执行批准。完成后Codex独立复查，再约未来核验窗口；不改冻结包或历史脚本。
+- [阻断证据](证据/Codex核验包未来窗口准备阻断-20261017.json)。本节点只有方案与证据/记录，无产品实现，无新真实轮次/批准，无任何云操作。2号不提交，1号不重试，P未开展。需用户将完整交接提示转给CodeBuddy，未自动发送。
+
 ## 2026-10-17 Codex：I2就绪轮预览恢复时已过启动截止，零云操作停止
 
 - 用户批准d96dd233de26；批准时20:32:26，随后打开正确新项目s1并逐文件核对39文件不变、无额外文件。用户先反馈找不到预览，再报告模拟器启动失败。本机get_simulator_console过滤error返回空，不能据此断言无错误或确定根因。

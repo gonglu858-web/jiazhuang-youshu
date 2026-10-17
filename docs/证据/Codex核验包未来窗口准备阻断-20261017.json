@@ -1,0 +1,22 @@
+{
+  "schema": "codex-future-window-preparation-block/1",
+  "basisCommit": "d4c3205",
+  "observedAt": "2026-10-17T12:46:22.205Z",
+  "implementationSha256": "ba2d0102e483b909432a1f1e3f7b02c093b6d0c1912c828c6dcfc7658c4dd757",
+  "syntheticMaterials": true,
+  "realExecutionPackage": false,
+  "systemClockModified": false,
+  "findings": {
+    "planAccepted": true,
+    "buildError": "PIC_WINDOW_NOT_OPEN",
+    "outputDirectoryCreated": false,
+    "sourceUnchanged": true
+  },
+  "guardCounters": {
+    "sensitivity": 2,
+    "unexpected": 0,
+    "total": 2
+  },
+  "newCloudOperations": 0,
+  "ok": true
+}
