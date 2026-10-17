@@ -1,0 +1,31 @@
+{
+  "schema": "codex-i1-layer-specific-preflight/1",
+  "basis": "f20009a",
+  "roundId": "i1layer-20261017-130192d06e93",
+  "planSha256": "7ca5ac88dbaab49f1f8e19a2c8907bffac7b4b762fdc131e1741f4b0d56da135",
+  "manifestSha256": "a69b4a0797e3b8f323e40785033012ac11ee5bd0007cbb98d6fbace7f4b17c28",
+  "files": 39,
+  "candidateFiles": 15,
+  "closeFiles": 23,
+  "checked": true,
+  "missingApproval": [
+    {
+      "mode": "candidate",
+      "rejectedBeforeMain": true,
+      "reason": "missing new round approval"
+    },
+    {
+      "mode": "closed",
+      "rejectedBeforeMain": true,
+      "reason": "missing new round approval"
+    }
+  ],
+  "guardCounters": {
+    "sensitivity": 2,
+    "unexpected": 0
+  },
+  "remoteExecuted": false,
+  "credentialsFetched": false,
+  "approvalCreated": false,
+  "windowExpiredAt": "2026-10-17T07:52:28.173Z"
+}
