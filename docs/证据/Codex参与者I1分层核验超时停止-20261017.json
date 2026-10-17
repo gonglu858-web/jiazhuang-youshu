@@ -1,0 +1,21 @@
+{
+  "schema": "codex-i1-expired-approval-stop/1",
+  "roundId": "i1layer-20261017-130192d06e93",
+  "checkedAt": "2026-10-17T08:19:16.837Z",
+  "userQuote": "同意执行本轮130192d06e93分层只读核验，手动预览、1号本人核验一次并立即关闭，允许必要凭据获取和现有套餐用量。",
+  "planSha256": "7ca5ac88dbaab49f1f8e19a2c8907bffac7b4b762fdc131e1741f4b0d56da135",
+  "manifestSha256": "a69b4a0797e3b8f323e40785033012ac11ee5bd0007cbb98d6fbace7f4b17c28",
+  "windowExpiresAt": "2026-10-17T07:52:28.1733438Z",
+  "candidateStartDeadline": "2026-10-17T07:37:28.173Z",
+  "status": "STOPPED_WINDOW_EXPIRED",
+  "executionApprovalFileCreated": false,
+  "credentialFetches": 0,
+  "projectOpened": false,
+  "previewPerformed": false,
+  "deployments": 0,
+  "functionInvocations": 0,
+  "remoteReadbacks": 0,
+  "remoteState": "not queried; historical closed result retained, not a fresh verification",
+  "oldPlanModified": false,
+  "oldPassphraseReused": false
+}
