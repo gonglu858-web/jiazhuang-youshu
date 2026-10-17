@@ -1,0 +1,26 @@
+{
+  "schema": "codex-i1-final-evidence-guard/1",
+  "reviewed": "e62e256",
+  "normal": {
+    "injected": false,
+    "guardCounters": {
+      "sensitivityAttempts": 2,
+      "businessPhaseGuardAttempts": 0,
+      "total": 2
+    },
+    "ok": true,
+    "exitCode": 0
+  },
+  "caughtUnexpected": {
+    "injected": true,
+    "guardCounters": {
+      "sensitivityAttempts": 2,
+      "businessPhaseGuardAttempts": 1,
+      "total": 3
+    },
+    "ok": false,
+    "exitCode": 1
+  },
+  "assertionsPassed": true,
+  "cloudOperations": 0
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "codex-i1-prototype-final-scope/1",
+  "reviewed": "e62e256",
+  "parent": "f7cb27f",
+  "observedAt": "2026-10-17T07:05:31.143Z",
+  "restored": [
+    {
+      "rel": "docs/证据/CodeBuddyI1入站事件封装离线核实-20261016.cjs",
+      "bytes": 14878,
+      "originalSha256": "cb23c6cb47ed1d07f3bfcfd6a0846f4cdf08df4d98bfc10133ae3941f1332f6e",
+      "reviewedTreeEqual": true,
+      "diskEqual": true
+    },
+    {
+      "rel": "docs/证据/CodeBuddy受控诊断R1R4收尾-20261016.cjs",
+      "bytes": 24076,
+      "originalSha256": "850837cba7b243c293c325dfc27c69190c2ba60fef7ff25ceca664b9154dc052",
+      "reviewedTreeEqual": true,
+      "diskEqual": true
+    }
+  ],
+  "histories": [
+    {
+      "rel": "docs/进展与待办.md",
+      "addedBytes": 2151,
+      "oldBlobSuffixEqual": true
+    },
+    {
+      "rel": "docs/CodeBuddy开发交接.md",
+      "addedBytes": 697,
+      "oldBlobSuffixEqual": true
+    }
+  ],
+  "historicalWrapper": {
+    "rel": "docs/证据/CodeBuddy受控诊断R1R4收尾v2-20261017.cjs",
+    "unchanged": false,
+    "beforeBytes": 24548,
+    "afterBytes": 24560,
+    "beforeSha256": "122d55ad0034dfae2528174d104afb4b186764fe17f85ad2d796145e7522f4e8",
+    "afterSha256": "a463427f7ac9c2f0c0110d711e651f98b9ba829ec6a777c6ef2b1ddef43d0d0d",
+    "difference": "two lines: audit v7 to v8 and adjacent comment; no other changes"
+  },
+  "priorAuditUnchanged": true,
+  "protectedPaths": [
+    "miniapp/scripts/lib",
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram",
+    "miniapp/pages",
+    "miniapp/project.config.json",
+    "miniapp/scripts/package-business-test.cjs",
+    "miniapp/scripts/package-sandbox.cjs",
+    "miniapp/scripts/package-sandbox-registration.cjs",
+    "docs/证据/Codex*",
+    "docs/Codex复查-I1请求分层兼容实现-20261017.md"
+  ],
+  "protectedChanged": "",
+  "changedExistingJson": "",
+  "coreSha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+  "rerun": [
+    {
+      "name": "Codex复跑I1原型终局-20261017.json",
+      "sha256": "5a02215846e9d246e82635b0fc77dde65895a0eb59e2bebfa8312c960a78c45a",
+      "ok": true
+    },
+    {
+      "name": "Codex复跑I1审计v8-20261017.json",
+      "sha256": "28bc235b93bb351d5f0d9cc6e7408f7d4d53271d87648cf5bba9a304c61c81f6",
+      "ok": true
+    }
+  ],
+  "gitReadCommands": 14,
+  "regressionsObserved": {
+    "identity": {
+      "pass": 35,
+      "fail": 0,
+      "skip": 0
+    },
+    "business": {
+      "pass": 18,
+      "fail": 0,
+      "skip": 0
+    },
+    "sdk": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    "note": "复查本轮已单独运行三个node --test命令；此脚本只记录其终端汇总，不重复测试。"
+  },
+  "scopeAssertionsPassed": true,
+  "allHistoricalScriptsUnchanged": false,
+  "remaining": "产品R1闭合；既有收尾v2脚本仍被改两行，需要恢复并以新命名版本承接。",
+  "cloudOperationsPerformed": false
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "codebuddy-i1-layering-r1final-evidence/1",
+  "observedAt": "2026-10-17T07:02:13.003Z",
+  "basisCommit": "f7cb27f",
+  "verificationKind": "offline fix-proof evidence for R1 final (prototype authenticity via trusted Object constructor / immutable prototype correspondence); synthetic counterexamples, not platform verification",
+  "ok": true,
+  "guardCounters": {
+    "sensitivityAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "total": 2
+  },
+  "sections": {
+    "unit": {
+      "forgeries": {
+        "outerFakeMethods": {
+          "rejected": true,
+          "referenceAgrees": true
+        },
+        "innerFakeMethods": {
+          "rejected": true,
+          "referenceAgrees": true
+        },
+        "outerCopiedDescriptors": {
+          "rejected": true,
+          "referenceAgrees": true
+        },
+        "innerCopiedDescriptors": {
+          "rejected": true,
+          "referenceAgrees": true
+        },
+        "outerSelfBound": {
+          "rejected": true,
+          "referenceAgrees": true
+        },
+        "innerSelfBound": {
+          "rejected": true,
+          "referenceAgrees": true
+        }
+      },
+      "positives": {
+        "plain": {
+          "accepted": true,
+          "referenceAgrees": true
+        },
+        "nullPrototype": {
+          "accepted": true,
+          "referenceAgrees": true
+        },
+        "crossRealmPlain": {
+          "accepted": true,
+          "referenceAgrees": true
+        }
+      },
+      "referenceAgreement": {},
+      "fakeMethodCalls": 0,
+      "inheritedGetterReads": 0
+    },
+    "chain": {
+      "forgeries": {
+        "outerFakeMethods": {
+          "code": "PIC_REQUEST_INVALID",
+          "state": "UNKNOWN",
+          "readAttempted": false,
+          "factory": 0,
+          "collections": 0,
+          "gets": 0
+        },
+        "innerFakeMethods": {
+          "code": "PIC_REQUEST_INVALID",
+          "state": "UNKNOWN",
+          "readAttempted": false,
+          "factory": 0,
+          "collections": 0,
+          "gets": 0
+        },
+        "outerCopiedDescriptors": {
+          "code": "PIC_REQUEST_INVALID",
+          "state": "UNKNOWN",
+          "readAttempted": false,
+          "factory": 0,
+          "collections": 0,
+          "gets": 0
+        },
+        "innerCopiedDescriptors": {
+          "code": "PIC_REQUEST_INVALID",
+          "state": "UNKNOWN",
+          "readAttempted": false,
+          "factory": 0,
+          "collections": 0,
+          "gets": 0
+        },
+        "outerSelfBound": {
+          "code": "PIC_REQUEST_INVALID",
+          "state": "UNKNOWN",
+          "readAttempted": false,
+          "factory": 0,
+          "collections": 0,
+          "gets": 0
+        },
+        "innerSelfBound": {
+          "code": "PIC_REQUEST_INVALID",
+          "state": "UNKNOWN",
+          "readAttempted": false,
+          "factory": 0,
+          "collections": 0,
+          "gets": 0
+        }
+      },
+      "positives": {
+        "state": "ACTIVE",
+        "factory": 1,
+        "gets": 1,
+        "toleratedGetterReads": 0
+      }
+    },
+    "binding": {
+      "keyDiagnosticTrueRejected": true,
+      "requestProtocolMissingRejected": true
+    }
+  },
+  "runtimeDigests": {
+    "requestAdapterSha256": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+    "packerSha256": "ba2d0102e483b909432a1f1e3f7b02c093b6d0c1912c828c6dcfc7658c4dd757"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Synthetic prototypes/events and local transport stubs; not platform verification.",
+    "Does not claim to identify arbitrary lying Proxies or resist tampered runtime builtins (per review §3)."
+  ]
+}
