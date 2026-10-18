@@ -1,0 +1,1053 @@
+{
+  "schema": "codex-preparation-c1c4-review/1",
+  "reviewedCommit": "0b5d459",
+  "sourceSha256": "c58c9746d81b0b848c92222682f04337c63d8062f2f46cd7fa58abe69e739a11",
+  "sourceUnchanged": true,
+  "evidenceRuns": [
+    {
+      "name": "normal",
+      "exitCode": 0,
+      "ok": true,
+      "counters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "total": 2
+      },
+      "actualParentHits": [
+        {
+          "phase": "probe",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "net.connect"
+        }
+      ],
+      "observedReceipts": [
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 45220,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 7736,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 62044,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--plan",
+          "code": 1,
+          "receipt": {
+            "pid": 45492,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 11476,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 37532,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 40300,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 20220,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 29848,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 29692,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 15104,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 61372,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 42212,
+            "unexpected": [
+              "https.request"
+            ],
+            "exitCode": null
+          },
+          "receiptError": null
+        }
+      ],
+      "outerBlocked": [],
+      "snapshot": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      }
+    },
+    {
+      "name": "caught_during_real_initialization",
+      "exitCode": 0,
+      "ok": true,
+      "counters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "total": 2
+      },
+      "actualParentHits": [
+        {
+          "phase": "setup",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "net.connect"
+        }
+      ],
+      "observedReceipts": [
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 2480,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 25504,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 18580,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--plan",
+          "code": 1,
+          "receipt": {
+            "pid": 8640,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 29496,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 20092,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 45388,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 23000,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 49716,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 67036,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 14944,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 57568,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 65824,
+            "unexpected": [
+              "https.request"
+            ],
+            "exitCode": null
+          },
+          "receiptError": null
+        }
+      ],
+      "outerBlocked": [],
+      "snapshot": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      }
+    },
+    {
+      "name": "caught_child_request_in_strict_plan_run",
+      "exitCode": 0,
+      "ok": true,
+      "counters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "total": 2
+      },
+      "actualParentHits": [
+        {
+          "phase": "probe",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "net.connect"
+        }
+      ],
+      "observedReceipts": [
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 39620,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 35688,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 21772,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--plan",
+          "code": 1,
+          "receipt": {
+            "pid": 44928,
+            "unexpected": [
+              "https.request"
+            ],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 53148,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 65312,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 52064,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 3468,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 47276,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 480,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 39272,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 50544,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 59700,
+            "unexpected": [
+              "https.request"
+            ],
+            "exitCode": null
+          },
+          "receiptError": null
+        }
+      ],
+      "outerBlocked": [],
+      "snapshot": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      }
+    },
+    {
+      "name": "missing_strict_plan_receipt",
+      "exitCode": 0,
+      "ok": true,
+      "counters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "total": 2
+      },
+      "actualParentHits": [
+        {
+          "phase": "probe",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "net.connect"
+        }
+      ],
+      "observedReceipts": [
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 61348,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 25668,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 31640,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--plan",
+          "code": 1,
+          "receipt": null,
+          "receiptError": "missing-or-invalid"
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 56628,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 14424,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 53164,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 49000,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 15520,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 7496,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 64160,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 20192,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 20124,
+            "unexpected": [
+              "https.request"
+            ],
+            "exitCode": null
+          },
+          "receiptError": null
+        }
+      ],
+      "outerBlocked": [],
+      "snapshot": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      }
+    },
+    {
+      "name": "malformed_receipt_missing_pid_exitCode",
+      "exitCode": 0,
+      "ok": true,
+      "counters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "total": 2
+      },
+      "actualParentHits": [
+        {
+          "phase": "probe",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "net.connect"
+        }
+      ],
+      "observedReceipts": [
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--plan",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "unexpected": []
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "unexpected": [
+              "https.request"
+            ]
+          },
+          "receiptError": null
+        }
+      ],
+      "outerBlocked": [],
+      "snapshot": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      }
+    },
+    {
+      "name": "whitelisted_script_spawn_without_preload",
+      "exitCode": 0,
+      "ok": true,
+      "counters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "total": 2
+      },
+      "actualParentHits": [
+        {
+          "phase": "probe",
+          "api": "node:https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "net.connect"
+        }
+      ],
+      "observedReceipts": [
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 44944,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 44984,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 62436,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--plan",
+          "code": 1,
+          "receipt": {
+            "pid": 38092,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 25252,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 8980,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 17236,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 16284,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 22504,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 1,
+          "receipt": {
+            "pid": 32564,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check",
+          "code": 1,
+          "receipt": {
+            "pid": 67316,
+            "unexpected": [],
+            "exitCode": 1
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--prepare",
+          "code": 0,
+          "receipt": {
+            "pid": 32864,
+            "unexpected": [],
+            "exitCode": null
+          },
+          "receiptError": null
+        },
+        {
+          "mode": "--check-prepared",
+          "code": 0,
+          "receipt": {
+            "pid": 32532,
+            "unexpected": [
+              "https.request"
+            ],
+            "exitCode": null
+          },
+          "receiptError": null
+        }
+      ],
+      "outerBlocked": [
+        "spawn-without-guard"
+      ],
+      "snapshot": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      }
+    }
+  ],
+  "cli": {
+    "emptyOut": {
+      "exitCode": 0,
+      "written": 39,
+      "outDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-synthetic-codex-empty-out-f196f5ae2f-439dbbcb3a03"
+    },
+    "missingCloseSourceParserAccepted": true
+  },
+  "networkCallsActuallyIssued": 0,
+  "unexpectedProcessesActuallyExecuted": 0,
+  "scope": "offline synthetic materials; VM evidence mutations only; no platform verification"
+}

@@ -1,0 +1,36 @@
+{
+  "reviewedCommit": "0b5d459",
+  "parent": "ed8a563",
+  "tests": {
+    "participantIdentity": {
+      "pass": 42,
+      "fail": 0
+    },
+    "businessPackage": {
+      "pass": 18,
+      "fail": 0
+    },
+    "memberAccessSdk": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "historicalEvidence": {
+    "paths": 997,
+    "changed": []
+  },
+  "suffix": [
+    {
+      "path": "docs/进展与待办.md",
+      "oldBytes": 860568,
+      "exactSuffix": true
+    },
+    {
+      "path": "docs/CodeBuddy开发交接.md",
+      "oldBytes": 34862,
+      "exactSuffix": true
+    }
+  ],
+  "productProtectedDiffEmpty": true,
+  "remoteOperations": 0
+}
