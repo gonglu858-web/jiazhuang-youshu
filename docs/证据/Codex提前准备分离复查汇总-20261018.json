@@ -1,0 +1,44 @@
+{
+  "schema": "codex-prepare-separation-review/1",
+  "reviewedCommit": "50dd1ef",
+  "parent": "a7ad58b",
+  "observedAt": "2026-10-18T13:05:05.386464+00:00",
+  "decision": "NEEDS_TARGETED_REPAIR_NO_REAL_EXECUTION_PACKAGE",
+  "tests": {
+    "participantIdentity": {
+      "pass": 41,
+      "fail": 0
+    },
+    "businessPackage": {
+      "pass": 18,
+      "fail": 0
+    },
+    "memberAccessSdk": {
+      "pass": 1,
+      "fail": 0,
+      "localSdk": "3.0.1"
+    }
+  },
+  "baselineEvidence": {
+    "exitCode": 0,
+    "reportedOk": true,
+    "independentCounterexamplesInvalidateGuardAndSnapshotCompleteness": true
+  },
+  "protection": {
+    "historicalEvidencePathsUnchanged": 986,
+    "productProtectedPathsUnchanged": true,
+    "historySuffixesByteIdentical": true
+  },
+  "findings": [
+    "C1 CLI duplicate/missing/unknown arguments accepted",
+    "C2 evidence guard misses pre-probe and child caught attempts; process APIs not guarded",
+    "C3 snapshot collisions reduce 39 files to 33; close index modification missed",
+    "C4 state contradicts I1 result and misdates verified closure"
+  ],
+  "newCloudOperations": 0,
+  "productionSourceModifiedByCodex": false,
+  "counterexamples": [
+    "Codex提前准备CLI参数反例-20261018.json",
+    "Codex提前准备分离独立反例-20261018.json"
+  ]
+}

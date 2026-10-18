@@ -1,0 +1,11 @@
+"use strict";
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..'),dir=path.join(root,'artifacts/schedule-sandbox/business-test'),id=crypto.randomBytes(5).toString('hex');
+const source=JSON.parse(fs.readFileSync(path.join(__dirname,'Codex参与者I2分层就绪轮包准备-20261017.json'))).plan;
+const plan={...source,checkRoundId:'codex-cli-synthetic-'+id,passphraseDigest:crypto.createHash('sha256').update('synthetic-cli-review').digest('hex'),windowStartsAtIso:new Date(Date.now()+3600000).toISOString(),windowExpiresAtIso:new Date(Date.now()+5400000).toISOString()};
+const p=path.join(dir,'codex-cli-'+id+'.json');fs.writeFileSync(p,JSON.stringify(plan),{flag:'wx'});
+const preload=path.join(dir,'codex-cli-guard-'+id+'.cjs');fs.writeFileSync(preload,`const block=()=>{process.exitCode=89;throw Error('OFFLINE_ONLY')};for(const m of ['http','https'])for(const k of ['get','request'])require(m)[k]=block;require('net').Socket.prototype.connect=block;require('tls').connect=block;globalThis.fetch=block;for(const k of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork'])require('child_process')[k]=block;`,{flag:'wx'});
+const cli=path.join(root,'miniapp/scripts/package-participant-identity-check.cjs');const rows=[];
+const cases=[['duplicate_plan',['--prepare',p,'--prepare',path.join(dir,'nonexistent-'+id+'.json')]],['missing_out_value',['--prepare',p,'--out']],['unknown_option',['--prepare',p,'--unknown-option','must-be-rejected']]];
+for(const [name,args]of cases){const r=cp.spawnSync(process.execPath,['--require',preload,cli,...args],{cwd:root,encoding:'utf8',windowsHide:true,timeout:20000,maxBuffer:200000});assert.equal(r.status,0);const report=JSON.parse(r.stdout);assert(report.ok);rows.push({name,args:args.map(x=>x===p?'synthetic-plan.json':x),exitCode:r.status,ok:report.ok,written:report.written,reused:report.reused,outputDir:report.outDir});}
+const report={schema:'codex-preparation-cli-invalid-input/1',reviewedCommit:'50dd1ef',sourceSha256:crypto.createHash('sha256').update(fs.readFileSync(cli)).digest('hex'),cases:rows,remoteOperations:0,syntheticMaterialsOnly:true};fs.writeFileSync(process.argv[2],JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(report,null,2));

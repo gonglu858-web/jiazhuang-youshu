@@ -1,0 +1,50 @@
+{
+  "schema": "codex-preparation-cli-invalid-input/1",
+  "reviewedCommit": "50dd1ef",
+  "sourceSha256": "802773cb4ce8d23e1f2a17663fc3ca753b9a0b60e4d0acb0848a1eab05c88b06",
+  "cases": [
+    {
+      "name": "duplicate_plan",
+      "args": [
+        "--prepare",
+        "synthetic-plan.json",
+        "--prepare",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\nonexistent-209d8e3a3e.json"
+      ],
+      "exitCode": 0,
+      "ok": true,
+      "written": 39,
+      "reused": 0,
+      "outputDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-codex-cli-synthetic-209d8e3a3e-05e2b050d443"
+    },
+    {
+      "name": "missing_out_value",
+      "args": [
+        "--prepare",
+        "synthetic-plan.json",
+        "--out"
+      ],
+      "exitCode": 0,
+      "ok": true,
+      "written": 0,
+      "reused": 39,
+      "outputDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-codex-cli-synthetic-209d8e3a3e-05e2b050d443"
+    },
+    {
+      "name": "unknown_option",
+      "args": [
+        "--prepare",
+        "synthetic-plan.json",
+        "--unknown-option",
+        "must-be-rejected"
+      ],
+      "exitCode": 0,
+      "ok": true,
+      "written": 0,
+      "reused": 39,
+      "outputDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-codex-cli-synthetic-209d8e3a3e-05e2b050d443"
+    }
+  ],
+  "remoteOperations": 0,
+  "syntheticMaterialsOnly": true
+}

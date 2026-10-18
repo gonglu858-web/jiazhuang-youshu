@@ -1,0 +1,100 @@
+{
+  "schema": "codex-prepare-review-counterexamples/1",
+  "reviewedCommit": "50dd1ef",
+  "sourceSha256": "af18c2c7b3d31092ae4895e084edf9705248dd7d6814da5b6718e38c4877457f",
+  "sourceUnchanged": true,
+  "results": [
+    {
+      "name": "normal",
+      "exitCode": 0,
+      "evidenceOk": true,
+      "evidenceGuard": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "total": 2
+      },
+      "outerBlocked": [],
+      "allowedLocalCli": 7,
+      "sectionB": {
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "name": "caught_before_probeStart",
+      "exitCode": 0,
+      "evidenceOk": true,
+      "evidenceGuard": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "total": 3
+      },
+      "outerBlocked": [],
+      "allowedLocalCli": 7,
+      "sectionB": {
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "name": "caught_child_preload_https",
+      "exitCode": 0,
+      "evidenceOk": true,
+      "evidenceGuard": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "total": 2
+      },
+      "outerBlocked": [],
+      "allowedLocalCli": 7,
+      "sectionB": {
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "name": "unexpected_process_api_caught",
+      "exitCode": 0,
+      "evidenceOk": true,
+      "evidenceGuard": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "total": 2
+      },
+      "outerBlocked": [
+        "execSync"
+      ],
+      "allowedLocalCli": 7,
+      "sectionB": {
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "name": "close_index_changed_between_snapshots",
+      "exitCode": 0,
+      "evidenceOk": true,
+      "evidenceGuard": {
+        "sensitivityAttempts": 2,
+        "businessPhaseGuardAttempts": 0,
+        "total": 2
+      },
+      "outerBlocked": [],
+      "allowedLocalCli": 7,
+      "sectionB": {
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true,
+        "snapshotSize": 33,
+        "expectedFiles": 39
+      }
+    }
+  ],
+  "networkCallsActuallyIssued": 0,
+  "unexpectedProcessActuallyExecuted": 0,
+  "scope": "VM evidence copies and local CLI synthetic materials only; baseline evidence not edited"
+}
