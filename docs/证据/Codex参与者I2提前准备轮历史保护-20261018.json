@@ -1,0 +1,17 @@
+{
+  "basis": "b74edeb",
+  "files": [
+    {
+      "path": "docs/进展与待办.md",
+      "previousBytes": 867609,
+      "previousSha256": "38e5ec46e330766f7de2ff4aff66a4b64b2c13b1aa824445bea9778003009c9b",
+      "suffixEqual": true
+    },
+    {
+      "path": "docs/CodeBuddy开发交接.md",
+      "previousBytes": 38270,
+      "previousSha256": "e4dc57fed1a1b99952ae635b88a9a5c366cbd013684b98682703b25d984acd36",
+      "suffixEqual": true
+    }
+  ]
+}

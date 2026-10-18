@@ -1,0 +1,402 @@
+{
+  "schema": "codex-local-r1r4-followup-review/1",
+  "reviewedCommit": "b74edeb",
+  "reviewKind": "same assistant follow-up source review and fresh rerun; not another agent independent review",
+  "observedAt": "2026-10-18T15:50:34.605Z",
+  "tests": {
+    "identity": {
+      "passed": 44,
+      "failed": 0,
+      "logSha256": "1e508a1cfd9a8139dec70365a7cc74960b3217f626449b264666fdca5d50bf85"
+    },
+    "business": {
+      "passed": 18,
+      "source": "prior b74edeb self-test; unaffected, not rerun this turn"
+    }
+  },
+  "evidence": {
+    "schema": "codebuddy-i1-prepare-separation-evidence/4",
+    "observedAt": "2026-10-18T15:43:11.497Z",
+    "basisCommit": "cb3a764",
+    "reviewBasis": "docs/Codex复查-提前准备C1C4收尾-20261018.md §2–§3（R1–R4 返修）",
+    "verificationKind": "offline evidence; synthetic plans/clocks/transport stubs; NOT platform verification, NOT an execution approval",
+    "ok": true,
+    "guardCounters": {
+      "probes": 2,
+      "parentUnexpected": 0,
+      "childUnexpectedTotal": 0,
+      "receiptFailures": 0,
+      "total": 2
+    },
+    "verdict": {
+      "ok": true,
+      "exitCode": 0
+    },
+    "sections": {
+      "a": {
+        "phase": "preparation",
+        "preparationValidated": true,
+        "executionReady": false,
+        "files": 15,
+        "closeFiles": 23,
+        "checkPreparedOk": true,
+        "checkPreparedExecutionReady": false,
+        "strictBuildCode": "PIC_WINDOW_NOT_OPEN",
+        "strictBuildDirCreated": false,
+        "strictCheckRejected": true,
+        "coreFutureCode": "PIC_WINDOW_NOT_OPEN",
+        "coreFutureReadAttempted": false
+      },
+      "b": {
+        "snapshotSize": 39,
+        "inWindowCheckOk": true,
+        "rebuildWritten": 0,
+        "bytesUnchanged": true
+      },
+      "sensitivity": {
+        "closeEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "candidateEntry": {
+          "detected": true,
+          "restoredEquals": true
+        },
+        "sameNameFrontend": {
+          "detected": true,
+          "restoredEquals": true
+        }
+      },
+      "d": {
+        "expiresNow": {
+          "code": "PIC_WINDOW_EXPIRED",
+          "dirCreated": false
+        },
+        "expired": {
+          "code": "PIC_WINDOW_EXPIRED",
+          "dirCreated": false
+        },
+        "nanClock": {
+          "code": "PIC_CLOCK_INVALID",
+          "dirCreated": false
+        },
+        "clockThrows": {
+          "code": "PIC_CLOCK_ERROR",
+          "dirCreated": false
+        },
+        "midFlight": {
+          "code": "PIC_WINDOW_EXPIRED",
+          "wroteFiles": 8
+        },
+        "crossIn": {
+          "phase": "preparation",
+          "executionReady": false
+        }
+      },
+      "e": {
+        "prepare": {
+          "code": 0,
+          "executionReady": false,
+          "files": 15
+        },
+        "checkPrepared": {
+          "code": 0,
+          "executionReady": false
+        },
+        "strictCheckFuture": {
+          "code": 1,
+          "windowNotOpen": true
+        },
+        "defaultBuildFuture": {
+          "code": 1,
+          "dirCreated": false
+        },
+        "expiredPrepare": {
+          "code": 1,
+          "windowExpired": true
+        },
+        "r4": [
+          {
+            "why": "空字符串 --out",
+            "code": 1,
+            "usageError": true,
+            "childUnexpected": 0
+          },
+          {
+            "why": "空字符串计划路径",
+            "code": 1,
+            "usageError": true,
+            "childUnexpected": 0
+          },
+          {
+            "why": "缺 --close-source",
+            "code": 1,
+            "usageError": true,
+            "childUnexpected": 0
+          }
+        ],
+        "c1": [
+          {
+            "why": "重复模式",
+            "code": 1,
+            "usageError": true,
+            "dirCreated": false
+          },
+          {
+            "why": "未知选项",
+            "code": 1,
+            "usageError": true,
+            "dirCreated": false
+          },
+          {
+            "why": "额外位置参数",
+            "code": 1,
+            "usageError": true,
+            "dirCreated": false
+          },
+          {
+            "why": "重复选项 --out",
+            "code": 1,
+            "usageError": true,
+            "dirCreated": false
+          }
+        ],
+        "c1Legal": {
+          "code": 0,
+          "files": 15,
+          "executionReady": false
+        }
+      },
+      "f": {
+        "normal": {
+          "processExitCode": 0,
+          "verdict": {
+            "ok": true,
+            "exitCode": 0
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 0,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 0
+          },
+          "outerReceiptChecked": true
+        },
+        "earlyRequire": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 1,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 0
+          },
+          "outerReceiptChecked": true
+        },
+        "duringCloseSource": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 1,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 0
+          },
+          "outerReceiptChecked": true
+        },
+        "businessHit": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 1,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 0
+          },
+          "outerReceiptChecked": true
+        },
+        "nonWhitelistSpawn": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 1,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 0
+          },
+          "outerReceiptChecked": true
+        },
+        "publicSpawnBypass": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 1,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 0
+          },
+          "outerReceiptChecked": true
+        },
+        "childRequest": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 0,
+            "childUnexpectedTotal": 1,
+            "receiptFailures": 1
+          },
+          "outerReceiptChecked": true
+        },
+        "missingReceipt": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 0,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 1
+          },
+          "outerReceiptChecked": true
+        },
+        "malformedReceipt": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 0,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 3
+          },
+          "outerReceiptChecked": true
+        },
+        "pidMismatch": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 0,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 1
+          },
+          "outerReceiptChecked": true
+        },
+        "exitMismatch": {
+          "processExitCode": 1,
+          "verdict": {
+            "ok": false,
+            "exitCode": 1
+          },
+          "guardCounters": {
+            "probes": 2,
+            "parentUnexpected": 0,
+            "childUnexpectedTotal": 0,
+            "receiptFailures": 1
+          },
+          "outerReceiptChecked": true
+        }
+      },
+      "g": {
+        "selfTransport": {
+          "runs": 11,
+          "childUnexpectedTotal": 0,
+          "receiptFailures": 0
+        },
+        "scope": "F内故障为独立敏感性进程的实际计数；不混入正常业务期，也不清零"
+      },
+      "h": {
+        "parentExpectedProbes": [
+          "cp.spawn",
+          "dns.promises.lookup",
+          "socket.connect"
+        ],
+        "clean": 0,
+        "output": {
+          "retainedOutBytes": 64,
+          "retainedErrBytes": 64,
+          "bothBounded": true
+        },
+        "timeout": {
+          "timedOut": true,
+          "rejected": true
+        },
+        "childExpectedProbes": [
+          "dns.lookup",
+          "socket.connect"
+        ],
+        "malformedReceiptsRejected": 10,
+        "allRunsAccounted": 4,
+        "syncThrow": {
+          "spawnErrorObserved": true,
+          "rejected": true
+        },
+        "asyncErrorSynthetic": {
+          "spawnErrorObserved": true,
+          "rejected": true
+        }
+      },
+      "byteIdentity": {
+        "sameSize": true,
+        "allEqual": true
+      }
+    },
+    "runtimeDigests": {
+      "packerSha256": "5769dd7239e990cd223aa47d0540a042931a3792435c21a0cc877f54efdcbe53",
+      "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+      "guardHelperSha256": "d0da2a0abcf731c0a10fd3cfca5056e26d3b590e804db6a933915a4ce8289ff7",
+      "boundaryProofSha256": "7bc5e7a8fef73fb1a04eeef086deb7f7e95789038787a0b13833d88ccdf340fa",
+      "evidenceSourceSha256": "cbc2d1624d6aae1370d5e14022d0f57fe4fdc55fc08cb23af6ca242d8bfb0c51"
+    },
+    "evidenceKinds": {
+      "sourceObservation": "CLI strict parser (parseCliArgs incl. R4 empty/pairing) and phase accounting read from product source",
+      "syntheticChain": "sections A–D use synthetic plans, controlled test clock (finally restored) and synthetic db/context",
+      "localCli": "section E/F spawn only whitelisted scripts via the shared helper runner under a child guard preload (network+process surface incl. dns.promises/Socket.connect, structured receipts)",
+      "selfFaults": "F starts separately guarded evidence processes; initialization/business/process-bypass/child-request/missing/malformed/pid/exit faults cause their actual exit1; G accounts for their transport separately",
+      "runnerBoundaries": "H uses real local child output/timeout and intercepted DNS/Socket calls; startup-error events are synthetic VM dependency injection, not OS/platform verification",
+      "platform": "none — real platform/preview/deploy/call remains unverified"
+    },
+    "cloudOperations": 0,
+    "limitations": [
+      "Preparation success means local artifacts only (executionReady=false); it is not an execution approval.",
+      "Guard receipts cover the child lifetime via process exit hook; a SIGKILL child yields a missing receipt which the parent treats as failure.",
+      "Not claimed: resistance to tampered runtime builtins or arbitrary lying Proxies."
+    ]
+  },
+  "protectedPaths": [
+    "miniapp/scripts/lib/participant-identity-check.cjs",
+    "miniapp/scripts/templates/participant-identity-check",
+    "miniapp/scripts/package-business-test.cjs",
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram"
+  ],
+  "previousEvidenceFilesUnchanged": 1012,
+  "decision": "local R1-R4 closed; may prepare new I2 package; no real execution approval",
+  "networkOrCloudExecuted": false
+}
