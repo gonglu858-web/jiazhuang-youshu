@@ -1,0 +1,228 @@
+{
+  "schema": "codex-local-r1r4-repair-summary/1",
+  "requestedBase": "ac2b85d",
+  "actualStart": "cb3a764",
+  "reason": "开始时发现CodeBuddy已提交cb3a764且工作区干净，承接成果补齐未完成出口，不覆盖该提交",
+  "tests": {
+    "identity": 44,
+    "business": 18,
+    "fail": 0
+  },
+  "evidenceOk": true,
+  "counters": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "receiptFailures": 0,
+    "total": 2
+  },
+  "sensitiveChildren": {
+    "normal": {
+      "processExitCode": 0,
+      "verdict": {
+        "ok": true,
+        "exitCode": 0
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 0
+      },
+      "outerReceiptChecked": true
+    },
+    "earlyRequire": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 1,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 0
+      },
+      "outerReceiptChecked": true
+    },
+    "duringCloseSource": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 1,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 0
+      },
+      "outerReceiptChecked": true
+    },
+    "businessHit": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 1,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 0
+      },
+      "outerReceiptChecked": true
+    },
+    "nonWhitelistSpawn": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 1,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 0
+      },
+      "outerReceiptChecked": true
+    },
+    "publicSpawnBypass": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 1,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 0
+      },
+      "outerReceiptChecked": true
+    },
+    "childRequest": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 1,
+        "receiptFailures": 1
+      },
+      "outerReceiptChecked": true
+    },
+    "missingReceipt": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 1
+      },
+      "outerReceiptChecked": true
+    },
+    "malformedReceipt": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 3
+      },
+      "outerReceiptChecked": true
+    },
+    "pidMismatch": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 1
+      },
+      "outerReceiptChecked": true
+    },
+    "exitMismatch": {
+      "processExitCode": 1,
+      "verdict": {
+        "ok": false,
+        "exitCode": 1
+      },
+      "guardCounters": {
+        "probes": 2,
+        "parentUnexpected": 0,
+        "childUnexpectedTotal": 0,
+        "receiptFailures": 1
+      },
+      "outerReceiptChecked": true
+    }
+  },
+  "helperBoundaries": {
+    "parentExpectedProbes": [
+      "cp.spawn",
+      "dns.promises.lookup",
+      "socket.connect"
+    ],
+    "clean": 0,
+    "output": {
+      "retainedOutBytes": 64,
+      "retainedErrBytes": 64,
+      "bothBounded": true
+    },
+    "timeout": {
+      "timedOut": true,
+      "rejected": true
+    },
+    "childExpectedProbes": [
+      "dns.lookup",
+      "socket.connect"
+    ],
+    "malformedReceiptsRejected": 10,
+    "allRunsAccounted": 4,
+    "syncThrow": {
+      "spawnErrorObserved": true,
+      "rejected": true
+    },
+    "asyncErrorSynthetic": {
+      "spawnErrorObserved": true,
+      "rejected": true
+    }
+  },
+  "historicalEvidence": {
+    "count": 1012,
+    "changed": []
+  },
+  "protectedPathsUnchanged": [
+    "miniapp/scripts/package-participant-identity-check.cjs",
+    "miniapp/scripts/lib/participant-identity-check.cjs",
+    "miniapp/scripts/templates",
+    "miniapp/scripts/package-business-test.cjs",
+    "miniapp/cloudfunctions",
+    "miniapp/miniprogram",
+    "miniapp/project.config.json"
+  ],
+  "runtimeDigests": {
+    "packerSha256": "5769dd7239e990cd223aa47d0540a042931a3792435c21a0cc877f54efdcbe53",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+    "guardHelperSha256": "d0da2a0abcf731c0a10fd3cfca5056e26d3b590e804db6a933915a4ce8289ff7",
+    "boundaryProofSha256": "7bc5e7a8fef73fb1a04eeef086deb7f7e95789038787a0b13833d88ccdf340fa",
+    "evidenceSourceSha256": "cbc2d1624d6aae1370d5e14022d0f57fe4fdc55fc08cb23af6ca242d8bfb0c51"
+  },
+  "cloudOperations": 0,
+  "status": "本地自测通过待Codex复查，真实执行未放行"
+}

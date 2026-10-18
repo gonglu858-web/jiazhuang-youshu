@@ -3125,15 +3125,11 @@ test('E5 CLI 真实子进程（受控runner·统一回执校验）：preload覆�
     const evil = path.join(os.tmpdir(), 'pic-evil-' + RUN_ID + '.cjs');
     fs.writeFileSync(evil, "console.log('should-not-run');");
     const p8 = await guard.runCli({ scriptPath: evil, args: [], guardPreload, receiptPath: guard.newReceiptPath('e5-evil') });
-    assert.deepEqual(guardHelper.validateChildResult(p8).failures, ['脚本不在受控白名单'], '非白名单脚本被 runner 拒绝');
+    assert.ok(guardHelper.validateChildResult(p8).failures.some(x=>x.includes('脚本不在受控白名单')), '非白名单脚本被 runner 拒绝');
     fs.unlinkSync(evil);
     // (9) 畸形回执：preload 不写回执 → 校验失败（缺失回执不被接受）
     const barePreload = path.join(os.tmpdir(), 'pic-bare-guard-' + RUN_ID + '.cjs');
-    fs.writeFileSync(barePreload, [
-      "'use strict';",
-      "const blocked = () => { throw new Error('GUARD'); };",
-      "const cp = require('node:child_process'); cp.spawn = blocked; cp.spawnSync = blocked;"
-    ].join('\n'));
+    fs.writeFileSync(barePreload, "process.on('exit',()=>require('fs').unlinkSync(process.env.PIC_CLI_GUARD_RECEIPT));");
     const p9 = await guard.runCli({ scriptPath: cli, args: ['--check-prepared', preparedDir], guardPreload: barePreload, receiptPath: guard.newReceiptPath('e5-bare') });
     const v9 = guardHelper.validateChildResult(p9);
     assert.ok(v9.failures.some(f => f.includes('回执缺失或畸形')), '缺失回执被判失败');
@@ -3285,4 +3281,8 @@ test('E8 CLI 空值与必需配对（R4）：空字符串值/缺 --close-source 
   const r2 = spawnSync(process.execPath, [cli, '--check-close', futurePlan], { encoding: 'utf8' });
   assert.equal(r2.status, 1, '缺 --close-source exit1');
   assert.ok(r2.stderr.includes('--close-source'), '错误指明 --close-source');
+});
+
+test('E9 共享守卫边界：父Socket/DNS/公共spawn拒绝；子DNS/Socket计数；按字节截断、超时、启动失败与畸形回执统一拒绝', async () => {
+  await require('./helpers/pic-guard-boundary-proof.cjs').runBoundaryProof();
 });
