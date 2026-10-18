@@ -1127,6 +1127,8 @@ function parseCliArgs(argv) {
     if (i + 1 >= argv.length) return { error: '[用法错误] 选项缺少值：' + tok };
     const value = argv[i + 1];
     if (value.startsWith('--')) return { error: '[用法错误] 选项缺少值（下一个令牌是选项）：' + tok };
+    // R4：空字符串值在解析阶段拒绝，不得默认为未提供（缺值语义），也不得触发默认输出目录
+    if (value === '') return { error: '[用法错误] 选项值为空字符串：' + tok + '。如未确定路径请省略该选项。' };
     values.set(tok, value);
     i++;
   }
@@ -1135,6 +1137,8 @@ function parseCliArgs(argv) {
   if (modeFlags.length > 1) return { error: '[用法错误] 同时给定多种模式参数（' + modeFlags.join(', ') + '）；一次只能执行一种模式。' };
   const mode = modeFlags[0];
   if (values.has('--close-source') && mode !== '--check-close') return { error: '[用法错误] --close-source 仅可与 --check-close 搭配。' };
+  // R4：--check-close 必须显式配对非空 --close-source（空值已被上方拒绝；此处拒绝缺失）
+  if (mode === '--check-close' && !values.has('--close-source')) return { error: '[用法错误] --check-close 必须显式搭配非空 --close-source <已受审关闭包目录>。' };
   if (values.has('--out') && mode !== '--plan' && mode !== '--prepare') return { error: '[用法错误] --out 仅可与 --plan 或 --prepare 搭配。' };
   return { mode, values };
 }

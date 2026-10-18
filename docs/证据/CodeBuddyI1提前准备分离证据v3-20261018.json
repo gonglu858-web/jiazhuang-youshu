@@ -1,0 +1,253 @@
+{
+  "schema": "codebuddy-i1-prepare-separation-evidence/3",
+  "observedAt": "2026-10-18T15:05:25.550Z",
+  "basisCommit": "ac2b85d",
+  "reviewBasis": "docs/Codex复查-提前准备C1C4收尾-20261018.md §2–§3（R1–R4 返修）",
+  "verificationKind": "offline evidence; synthetic plans/clocks/transport stubs; NOT platform verification, NOT an execution approval",
+  "ok": true,
+  "guardCounters": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "receiptFailures": 0,
+    "total": 2
+  },
+  "verdict": {
+    "ok": true,
+    "exitCode": 0
+  },
+  "sections": {
+    "a": {
+      "phase": "preparation",
+      "preparationValidated": true,
+      "executionReady": false,
+      "files": 15,
+      "closeFiles": 23,
+      "checkPreparedOk": true,
+      "checkPreparedExecutionReady": false,
+      "strictBuildCode": "PIC_WINDOW_NOT_OPEN",
+      "strictBuildDirCreated": false,
+      "strictCheckRejected": true,
+      "coreFutureCode": "PIC_WINDOW_NOT_OPEN",
+      "coreFutureReadAttempted": false
+    },
+    "b": {
+      "snapshotSize": 39,
+      "inWindowCheckOk": true,
+      "rebuildWritten": 0,
+      "bytesUnchanged": true
+    },
+    "sensitivity": {
+      "closeEntry": {
+        "detected": true,
+        "restoredEquals": true
+      },
+      "candidateEntry": {
+        "detected": true,
+        "restoredEquals": true
+      },
+      "sameNameFrontend": {
+        "detected": true,
+        "restoredEquals": true
+      }
+    },
+    "d": {
+      "expiresNow": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "dirCreated": false
+      },
+      "expired": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "dirCreated": false
+      },
+      "nanClock": {
+        "code": "PIC_CLOCK_INVALID",
+        "dirCreated": false
+      },
+      "clockThrows": {
+        "code": "PIC_CLOCK_ERROR",
+        "dirCreated": false
+      },
+      "midFlight": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "wroteFiles": 8
+      },
+      "crossIn": {
+        "phase": "preparation",
+        "executionReady": false
+      }
+    },
+    "e": {
+      "prepare": {
+        "code": 0,
+        "executionReady": false,
+        "files": 15
+      },
+      "checkPrepared": {
+        "code": 0,
+        "executionReady": false
+      },
+      "strictCheckFuture": {
+        "code": 1,
+        "windowNotOpen": true
+      },
+      "defaultBuildFuture": {
+        "code": 1,
+        "dirCreated": false
+      },
+      "expiredPrepare": {
+        "code": 1,
+        "windowExpired": true
+      },
+      "r4": [
+        {
+          "why": "空字符串 --out",
+          "code": 1,
+          "usageError": true,
+          "childUnexpected": 0
+        },
+        {
+          "why": "空字符串计划路径",
+          "code": 1,
+          "usageError": true,
+          "childUnexpected": 0
+        },
+        {
+          "why": "缺 --close-source",
+          "code": 1,
+          "usageError": true,
+          "childUnexpected": 0
+        }
+      ],
+      "c1": [
+        {
+          "why": "重复模式",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false
+        },
+        {
+          "why": "未知选项",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false
+        },
+        {
+          "why": "额外位置参数",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false
+        },
+        {
+          "why": "重复选项 --out",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false
+        }
+      ],
+      "c1Legal": {
+        "code": 0,
+        "files": 15,
+        "executionReady": false
+      }
+    },
+    "f": {
+      "normal": {
+        "code": 0,
+        "verdict": {
+          "ok": true,
+          "exitCode": 0
+        },
+        "probes": 2,
+        "parentUnexpected": 0,
+        "bounded": false,
+        "timedOut": false
+      },
+      "earlyRequire": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1,
+        "bounded": false,
+        "timedOut": false
+      },
+      "duringCloseSource": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1,
+        "bounded": false,
+        "timedOut": false
+      },
+      "businessHit": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1,
+        "bounded": false,
+        "timedOut": false
+      },
+      "nonWhitelistSpawn": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1,
+        "bounded": false,
+        "timedOut": false
+      },
+      "publicSpawnBypass": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1,
+        "bounded": false,
+        "timedOut": false
+      }
+    },
+    "g": {
+      "childRequest": {
+        "cliCode": 0,
+        "childUnexpected": 1,
+        "verdict": {
+          "ok": false,
+          "exitCode": 1
+        }
+      },
+      "missingReceipt": {
+        "failures": [
+          "回执缺失或畸形：ENOENT: no such file or directory, open 'C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-prep3-bare-aa3ddaca14.json'"
+        ],
+        "verdict": {
+          "ok": false,
+          "exitCode": 1
+        }
+      },
+      "malformedReceipt": {
+        "failures": [
+          "回执缺少数值 pid",
+          "回执缺少 exitCode 字段"
+        ],
+        "verdict": {
+          "ok": false,
+          "exitCode": 1
+        }
+      }
+    },
+    "byteIdentity": {
+      "sameSize": true,
+      "allEqual": true
+    }
+  },
+  "runtimeDigests": {
+    "packerSha256": "5769dd7239e990cd223aa47d0540a042931a3792435c21a0cc877f54efdcbe53",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+  },
+  "evidenceKinds": {
+    "sourceObservation": "CLI strict parser (parseCliArgs incl. R4 empty/pairing) and phase accounting read from product source",
+    "syntheticChain": "sections A–D use synthetic plans, controlled test clock (finally restored) and synthetic db/context",
+    "localCli": "section E/F spawn only whitelisted scripts via the shared helper runner under a child guard preload (network+process surface incl. dns.promises/Socket.connect, structured receipts)",
+    "selfFaults": "section F spawns this evidence with fault env (earlyRequire/duringCloseSource/businessHit/nonWhitelistSpawn/publicSpawnBypass); section G covers child-request/missing/malformed receipts via the real verdict exit",
+    "platform": "none — real platform/preview/deploy/call remains unverified"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Preparation success means local artifacts only (executionReady=false); it is not an execution approval.",
+    "Guard receipts cover the child lifetime via process exit hook; a SIGKILL child yields a missing receipt which the parent treats as failure.",
+    "Not claimed: resistance to tampered runtime builtins or arbitrary lying Proxies."
+  ]
+}
