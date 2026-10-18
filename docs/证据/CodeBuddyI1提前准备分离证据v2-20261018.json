@@ -1,0 +1,200 @@
+{
+  "schema": "codebuddy-i1-prepare-separation-evidence/2",
+  "observedAt": "2026-10-18T13:55:46.145Z",
+  "basisCommit": "ed8a563",
+  "reviewBasis": "docs/Codex复查-核验包提前准备分离-20261018.md §2–§3（C1–C4 收尾）",
+  "verificationKind": "offline evidence; synthetic plans/clocks/transport stubs; NOT platform verification, NOT an execution approval",
+  "ok": true,
+  "guardCounters": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "total": 2
+  },
+  "sections": {
+    "a": {
+      "phase": "preparation",
+      "preparationValidated": true,
+      "executionReady": false,
+      "files": 15,
+      "closeFiles": 23,
+      "checkPreparedOk": true,
+      "checkPreparedExecutionReady": false,
+      "strictBuildRejected": true,
+      "strictBuildDirCreated": false,
+      "strictCheckRejected": true,
+      "coreFutureCode": "PIC_WINDOW_NOT_OPEN"
+    },
+    "b": {
+      "snapshotSize": 39,
+      "inWindowCheckOk": true,
+      "rebuildWritten": 0,
+      "bytesUnchanged": true
+    },
+    "sensitivity": {
+      "closeEntry": {
+        "detected": true,
+        "restoredEquals": true
+      },
+      "candidateEntry": {
+        "detected": true,
+        "restoredEquals": true
+      },
+      "sameNameFrontend": {
+        "detected": true,
+        "restoredEquals": true
+      }
+    },
+    "d": {
+      "expiresNow": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "dirCreated": false
+      },
+      "expired": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "dirCreated": false
+      },
+      "nanClock": {
+        "code": "PIC_CLOCK_INVALID",
+        "dirCreated": false
+      },
+      "clockThrows": {
+        "code": "PIC_CLOCK_ERROR",
+        "dirCreated": false
+      },
+      "midFlight": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "wroteFiles": 8
+      },
+      "crossIn": {
+        "phase": "preparation",
+        "executionReady": false
+      }
+    },
+    "e": {
+      "prepare": {
+        "code": 0,
+        "executionReady": true,
+        "childUnexpected": []
+      },
+      "checkPrepared": {
+        "code": 0,
+        "ok": true,
+        "executionReady": false,
+        "childUnexpected": []
+      },
+      "strictCheckFuture": {
+        "code": 1,
+        "windowNotOpen": true,
+        "childUnexpected": []
+      },
+      "defaultBuildFuture": {
+        "code": 1,
+        "dirCreated": false
+      },
+      "expiredPrepare": {
+        "code": 1,
+        "windowExpired": true
+      },
+      "c1": [
+        {
+          "why": "重复模式",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false,
+          "childUnexpected": []
+        },
+        {
+          "why": "缺值（末尾）",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": null,
+          "childUnexpected": []
+        },
+        {
+          "why": "未知选项",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false,
+          "childUnexpected": []
+        },
+        {
+          "why": "额外位置参数",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false,
+          "childUnexpected": []
+        },
+        {
+          "why": "重复选项 --out",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": false,
+          "childUnexpected": []
+        },
+        {
+          "why": "不适用组合 --close-source",
+          "code": 1,
+          "usageError": true,
+          "dirCreated": null,
+          "childUnexpected": []
+        }
+      ],
+      "c1Legal": {
+        "code": 0,
+        "files": 15,
+        "childUnexpected": []
+      }
+    },
+    "f": {
+      "normal": {
+        "code": 0,
+        "ok": true,
+        "counters": {
+          "probes": 0,
+          "parentUnexpected": 0
+        }
+      },
+      "earlyRequest": {
+        "code": 1,
+        "ok": false,
+        "parentUnexpected": 1
+      },
+      "midRequest": {
+        "code": 1,
+        "ok": false,
+        "parentUnexpected": 1
+      },
+      "nonWhitelistSpawn": {
+        "code": 1,
+        "ok": false,
+        "parentUnexpected": 1
+      },
+      "childRequest": {
+        "cliCode": 0,
+        "childUnexpected": 1,
+        "parentWouldFail": true
+      }
+    },
+    "byteIdentity": {
+      "allEqual": true
+    }
+  },
+  "runtimeDigests": {
+    "packerSha256": "12fcae3b0524bbdc89301ecaa1c8791fe719be8dbe715c5368040dc3638110c6",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+  },
+  "evidenceKinds": {
+    "sourceObservation": "CLI strict parser (parseCliArgs) and phase accounting read from product source",
+    "syntheticChain": "sections A–D use synthetic plans, controlled test clock (finally restored) and synthetic db/context",
+    "localCli": "section E spawns only process.execPath with this package CLI under a child guard preload (network+process surface, structured receipts)",
+    "selfFaults": "section F spawns this evidence with fault env (earlyRequest/midRequest/nonWhitelistSpawn) plus a child-fault CLI run",
+    "platform": "none — real platform/preview/deploy/call remains unverified"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Preparation success means local artifacts only (executionReady=false); it is not an execution approval.",
+    "Guard receipts cover the child lifetime via process exit hook; a SIGKILL child yields a missing receipt which the parent treats as failure.",
+    "Not claimed: resistance to tampered runtime builtins or arbitrary lying Proxies."
+  ]
+}

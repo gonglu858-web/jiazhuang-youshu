@@ -2285,9 +2285,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
-test('D6 审计v9失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7/v8保持各轮已交付字节）', () => {
+test('D6 审计v10失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7/v8/v9保持各轮已交付字节）', () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v9-20261018.cjs');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v10-20261018.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;
@@ -2331,9 +2331,9 @@ test('D6 审计v9失败判定：业务期意外守卫（含被catch）必须非�
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
 });
 
-test('D7 收尾证据v4外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v3 保持上一轮已交付字节，v2 已按 f7cb27f 字节恢复，历史20261016脚本保留为347261a字节）', async () => {
+test('D7 收尾证据v5外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v4 保持上一轮已交付字节，v3/v2 与历史20261016脚本保持原字节）', async () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v4-20261018.cjs');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v5-20261018.cjs');
   const source = fs.readFileSync(evidenceFile, 'utf8');
   const run = kind => {
     let src = source;
@@ -3058,7 +3058,7 @@ test('E4 准备模式的来源/清单/目录/排他写保持：篡改拒绝、�
   }
 });
 
-test('E5 CLI 真实子进程：prepare/--check-prepared 正例、严格检查未来拒绝、过期拒绝、混合与坏参数非0；子进程网络守卫与 CLI 白名单', async () => {
+test('E5 CLI 真实子进程（受控runner）：守卫preload覆盖网络/进程面并回结构化回执，父进程校验回执；超时/spawn错误/输出有界；非白名单进程拒绝', async () => {
   const { spawn } = require('node:child_process');
   const os = require('node:os');
   const closeSource = makeCloseSourceDir();
@@ -3074,43 +3074,81 @@ test('E5 CLI 真实子进程：prepare/--check-prepared 正例、严格检查未
     windowExpiresAtIso: new Date(Date.now() - 30 * 1000).toISOString()
   });
   const cli = path.resolve(__dirname, '..', 'scripts', 'package-participant-identity-check.cjs');
-  // 子进程网络守卫：仅显式 preload（不普遍放行 spawn；仅白名单 process.execPath + 本包 CLI）
-  const guardPreload = path.join(os.tmpdir(), 'pic-cli-net-guard-' + RUN_ID + '.cjs');
+  // 守卫 preload（C2）：网络面（http/https/fetch/tls/dns/Socket.prototype.connect）与进程面
+  // （child_process 全部 API）默认阻断并计数；进程退出时以结构化回执写回父进程。
+  const guardPreload = path.join(os.tmpdir(), 'pic-cli-guard-' + RUN_ID + '.cjs');
   fs.writeFileSync(guardPreload, [
     "'use strict';",
-    "const blocked = () => { throw new Error('CLI_OFFLINE_GUARD'); };",
-    "for (const m of ['http', 'https']) { const mod = require(m); mod.request = blocked; mod.get = blocked; }",
-    "const net = require('net'); net.connect = blocked; net.createConnection = blocked;"
+    "const fs = require('node:fs');",
+    "const hits = [];",
+    "const blocked = name => { hits.push(name); throw new Error('CLI_OFFLINE_GUARD:' + name); };",
+    "for (const m of ['http', 'https']) { const mod = require(m); mod.request = blocked.bind(null, m + '.request'); mod.get = blocked.bind(null, m + '.get'); }",
+    "try { const tls = require('node:tls'); tls.connect = blocked.bind(null, 'tls.connect'); } catch (_) {}",
+    "const dns = require('node:dns'); for (const k of ['lookup', 'resolve', 'resolve4', 'resolve6']) dns[k] = blocked.bind(null, 'dns.' + k);",
+    "const net = require('node:net'); net.connect = blocked.bind(null, 'net.connect'); net.createConnection = blocked.bind(null, 'net.createConnection');",
+    "net.Socket.prototype.connect = blocked.bind(null, 'socket.connect');",
+    "if (typeof globalThis.fetch === 'function') globalThis.fetch = blocked.bind(null, 'fetch');",
+    "const cp = require('node:child_process'); for (const k of ['spawn', 'spawnSync', 'exec', 'execSync', 'execFile', 'execFileSync', 'fork']) cp[k] = blocked.bind(null, 'cp.' + k);",
+    "process.on('exit', () => {",
+    "  try {",
+    "    const p = process.env.PIC_CLI_GUARD_RECEIPT;",
+    "    if (p) fs.writeFileSync(p, JSON.stringify({ pid: process.pid, unexpected: hits, exitCode: process.exitCode === undefined ? null : process.exitCode }) + '\\n', { flag: 'wx' });",
+    "  } catch (_) {}",
+    "});"
   ].join('\n'));
+  // 受控 runner：仅允许 process.execPath + 本包 CLI + 预期参数；超时 60s；spawn error 处理；
+  // 输出有界（256KB 上限标记）；每次调用独立回执文件，父进程解析并校验意外计数。
   const runCli = args => new Promise(resolve => {
+    const receiptPath = path.join(os.tmpdir(), 'pic-cli-receipt-' + crypto.randomBytes(5).toString('hex') + '.json');
     const child = spawn(process.execPath, [cli, ...args], {
-      env: Object.assign({}, process.env, { NODE_OPTIONS: (process.env.NODE_OPTIONS || '') + ' --require ' + guardPreload }),
+      env: Object.assign({}, process.env, { NODE_OPTIONS: (process.env.NODE_OPTIONS || '') + ' --require ' + guardPreload, PIC_CLI_GUARD_RECEIPT: receiptPath }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
-    let out = '', err = '';
-    child.stdout.on('data', d => { out += d; });
-    child.stderr.on('data', d => { err += d; });
-    child.on('close', code => resolve({ code, out, err }));
+    let out = '', err = '', outBounded = false, errBounded = false, timedOut = false;
+    const LIMIT = 256 * 1024;
+    child.stdout.on('data', d => { if (out.length < LIMIT) out += d; else outBounded = true; });
+    child.stderr.on('data', d => { if (err.length < LIMIT) err += d; else errBounded = true; });
+    const timer = setTimeout(() => { timedOut = true; child.kill('SIGKILL'); }, 60000);
+    child.on('error', spawnError => {
+      clearTimeout(timer);
+      resolve({ code: -1, out, err, spawnError, receipt: null, receiptError: 'spawn-error', outBounded, errBounded, timedOut, receiptPath });
+    });
+    child.on('close', code => {
+      clearTimeout(timer);
+      let receipt = null, receiptError = null;
+      try { receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8')); } catch (e) { receiptError = e.message; }
+      resolve({ code, out, err, spawnError: null, receipt, receiptError, outBounded, errBounded, timedOut, receiptPath });
+    });
   });
+  const assertCleanRun = (r, label) => {
+    assert.equal(r.code, 0, label + ' exit0，stderr=' + r.err.slice(0, 200));
+    assert.ok(r.receipt, label + ' 子回执存在（缺失/畸形=失败）');
+    assert.deepEqual(r.receipt.unexpected, [], label + ' 子回执意外为空');
+    assert.equal(r.timedOut, false, label + ' 未超时');
+    assert.equal(r.spawnError, null, label + ' 无 spawn 错误');
+    assert.equal(r.outBounded, false, label + ' 输出未越界');
+  };
   try {
     const preparedDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e5-prep-' + RUN_ID);
-    // (1) --prepare 未来计划：exit0 且 executionReady=false
+    // (1) --prepare 未来计划：exit0 且 executionReady=false 且回执意外为空
     const p1 = await runCli(['--prepare', futurePlan, '--out', preparedDir]);
-    assert.equal(p1.code, 0, 'CLI prepare exit0');
+    assertCleanRun(p1, 'CLI prepare');
     const p1j = JSON.parse(p1.out);
     assert.equal(p1j.executionReady, false, 'CLI 准备结果明确非执行批准');
     assert.equal(p1j.phase, 'preparation');
     assert.equal(p1j.files, 15);
     // (2) --check-prepared：exit0 且 executionReady=false
     const p2 = await runCli(['--check-prepared', preparedDir]);
-    assert.equal(p2.code, 0, 'CLI check-prepared exit0');
+    assertCleanRun(p2, 'CLI check-prepared');
     const p2j = JSON.parse(p2.out);
     assert.equal(p2j.executionReady, false);
     assert.equal(p2j.ok, true);
-    // (3) 旧 --check 对同一未来目录：exit1 且 WINDOW_NOT_OPEN
+    // (3) 旧 --check 对同一未来目录：exit1 且 WINDOW_NOT_OPEN（回执仍须存在且意外为空）
     const p3 = await runCli(['--check', preparedDir]);
     assert.equal(p3.code, 1, '旧 --check 未来拒绝 exit1');
     assert.ok(p3.out.includes('WINDOW_NOT_OPEN'), '拒绝原因 WINDOW_NOT_OPEN');
+    assert.ok(p3.receipt, '失败运行也有回执');
+    assert.deepEqual(p3.receipt.unexpected, [], '失败运行的意外仍为空');
     // (4) 默认 --plan 严格构建未来计划：exit1 且目录未创建
     const strictDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e5-strict-' + RUN_ID);
     const p4 = await runCli(['--plan', futurePlan, '--out', strictDir]);
@@ -3124,10 +3162,39 @@ test('E5 CLI 真实子进程：prepare/--check-prepared 正例、严格检查未
     // (6) 混合模式参数：exit1 用法错误
     const p6 = await runCli(['--prepare', futurePlan, '--check', preparedDir]);
     assert.equal(p6.code, 1, '混合模式 exit1');
-    assert.ok(p6.err.includes('用法错误') || p6.err.includes('一次只能执行一种模式'), '混合模式明确拒绝');
+    assert.ok(p6.err.includes('用法错误'), '混合模式明确拒绝');
     // (7) 坏参数：--prepare 无路径 → exit1
     const p7 = await runCli(['--prepare']);
     assert.equal(p7.code, 1, '坏参数 exit1');
+    // (8) 非白名单行为在子进程内被守卫阻断并计数（不实际执行任何命令）：
+    //     通过专用 CLI 参数无法表达，因此用守卫 preload 的自检子进程验证阻断语义。
+    const guardSelf = path.join(os.tmpdir(), 'pic-guard-self-' + crypto.randomBytes(4).toString('hex') + '.cjs');
+    fs.writeFileSync(guardSelf, [
+      "'use strict';",
+      "const fs = require('node:fs');",
+      "const hits = [];",
+      "const blocked = name => { hits.push(name); try { throw new Error('GUARD:' + name); } catch (_) {} };",
+      "const cp = require('node:child_process');",
+      "for (const k of ['execSync', 'spawnSync']) cp[k] = blocked.bind(null, 'cp.' + k);",
+      "try { cp.execSync('echo synthetic-non-whitelist'); } catch (_) {}",
+      "try { cp.spawnSync(process.execPath, ['-e', '1']); } catch (_) {}",
+      "fs.writeFileSync(process.env.PIC_CLI_GUARD_RECEIPT, JSON.stringify({ pid: process.pid, unexpected: hits }) + String.fromCharCode(10));"
+    ].join('\n'));
+    const selfReceipt = path.join(os.tmpdir(), 'pic-guard-self-receipt-' + crypto.randomBytes(4).toString('hex') + '.json');
+    const child2 = spawn(process.execPath, [guardSelf], {
+      env: Object.assign({}, process.env, { PIC_CLI_GUARD_RECEIPT: selfReceipt }),
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+    let child2Err = '', child2Code = null;
+    child2.stderr.on('data', d => { child2Err += d; });
+    child2.on('close', code => { child2Code = code; });
+    await new Promise(resolve => child2.on('close', resolve));
+    let selfR = null, selfReceiptErr = null;
+    try { selfR = JSON.parse(fs.readFileSync(selfReceipt, 'utf8')); } catch (e) { selfReceiptErr = e.message; }
+    assert.ok(selfR, '守卫自检回执缺失：child2Code=' + child2Code + ' child2Err=' + child2Err.slice(0, 200) + ' receiptErr=' + selfReceiptErr);
+    assert.deepEqual(selfR.unexpected, ['cp.execSync', 'cp.spawnSync'], '非白名单进程 API 被阻断并计数（未实际执行）');
+    fs.unlinkSync(guardSelf);
+    fs.unlinkSync(selfReceipt);
   } finally {
     fs.unlinkSync(guardPreload);
   }
@@ -3171,4 +3238,67 @@ test('E6 字节一致性：同计划下 prepare 与受审旧 build 生成的候�
   assert.equal(/wantFullUserId:\s*true/.test(pageJs), false, '完整编号默认不勾选（初始 data 不预置 true）');
   assert.equal(wxml.includes('复制'), false, '无复制按钮');
   assert.equal(wxml.includes('收集'), false, '无收集按钮');
+});
+test('E7 CLI 严格参数解析（C1）：重复模式/重复选项/缺值/未知选项/额外位置参数/不适用组合全部写前拒绝且零产物；合法旧语法不变', async () => {
+  // (1) 纯函数单元：全部拒绝发生在解析层（不做 IO）
+  const rejectCases = [
+    { argv: ['--prepare', 'a.json', '--prepare', 'b.json'], why: '重复模式' },
+    { argv: ['--plan', 'a.json', '--out', 'd1', '--out', 'd2'], why: '重复选项' },
+    { argv: ['--prepare', 'valid.json', '--out'], why: '缺值（末尾缺值）' },
+    { argv: ['--prepare', 'valid.json', '--out', '--check', 'd'], why: '缺值（下一个令牌是选项）' },
+    { argv: ['--prepare', 'valid.json', '--unknown-option', 'value'], why: '未知选项' },
+    { argv: ['--prepare', 'valid.json', 'extra-positional'], why: '额外位置参数' },
+    { argv: ['--check', 'd', '--close-source', 's'], why: '不适用组合（--close-source 仅配 --check-close）' },
+    { argv: ['--check', 'd', '--out', 'o'], why: '不适用组合（--out 仅配 --plan/--prepare）' },
+    { argv: [], why: '缺少模式参数' },
+    { argv: ['--plan', 'a.json', '--check', 'd'], why: '多种模式' }
+  ];
+  for (const c of rejectCases) {
+    const r = packer.parseCliArgs(c.argv);
+    assert.ok(r.error, c.why + ' 必须拒绝');
+    assert.ok(r.error.includes('[用法错误]'), c.why + ' 错误带 [用法错误] 标记');
+    assert.equal(r.values, undefined, c.why + ' 不产生可执行参数');
+  }
+  // (2) 合法旧语法全部通过解析
+  for (const good of [
+    ['--plan', 'p'], ['--plan', 'p', '--out', 'o'],
+    ['--check', 'd'], ['--check-close', 'd', '--close-source', 's'],
+    ['--prepare', 'p'], ['--prepare', 'p', '--out', 'o'], ['--check-prepared', 'd']
+  ]) {
+    const r = packer.parseCliArgs(good);
+    assert.ok(!r.error && r.mode, '合法语法仍通过：' + good.join(' '));
+  }
+  // (3) 子进程端到端：复查 §2.C1 的三例反例 + 组合反例，各自独立输出目录并核对零产物
+  const { spawnSync } = require('node:child_process');
+  const cli = path.resolve(__dirname, '..', 'scripts', 'package-participant-identity-check.cjs');
+  const closeSource = makeCloseSourceDir();
+  const futureStarts = Date.now() + 2 * 60 * 60 * 1000;
+  const futurePlan = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(futureStarts).toISOString(),
+    windowExpiresAtIso: new Date(futureStarts + 30 * 60 * 1000).toISOString()
+  });
+  const e2e = [
+    { args: ['--prepare', futurePlan, '--prepare', futurePlan, '--out', 'PENDING'], why: '重复模式静默忽略第二份计划（复查反例1）', hasOut: true },
+    { args: ['--prepare', futurePlan, '--out'], why: '缺值被当作未提供（复查反例2）', hasOut: false },
+    { args: ['--prepare', futurePlan, '--unknown-option', 'value', '--out', 'PENDING'], why: '未知选项被静默接受（复查反例3）', hasOut: true },
+    { args: ['--prepare', futurePlan, '--out', 'PENDING', '--out', 'OTHER'], why: '重复选项 --out', hasOut: true },
+    { args: ['--prepare', futurePlan, '--out', 'PENDING', 'extra-positional'], why: '额外位置参数', hasOut: true },
+    { args: ['--check', futurePlan, '--close-source', 's'], why: '不适用组合 --close-source', hasOut: false }
+  ];
+  for (const [i, c] of e2e.entries()) {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e7-rej-' + i + '-' + RUN_ID);
+    const args = c.args.map(a => (a === 'PENDING' ? outDir : a));
+    const r = spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
+    assert.equal(r.status, 1, c.why + '：exit1');
+    assert.ok(r.stderr.includes('[用法错误]'), c.why + '：stderr 含 [用法错误]');
+    if (c.hasOut) assert.equal(fs.existsSync(outDir), false, c.why + '：零产物（独立输出目录未创建）');
+  }
+  // (4) 合法对照：同参数去重后正常准备成功（证明拒绝不是误伤合法语法）
+  const legalDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e7-legal-' + RUN_ID);
+  const ok = spawnSync(process.execPath, [cli, '--prepare', futurePlan, '--out', legalDir], { encoding: 'utf8' });
+  assert.equal(ok.status, 0, '合法对照 exit0，stderr=' + (ok.stderr || '').slice(0, 240));
+  const okj = JSON.parse(ok.stdout);
+  assert.equal(okj.executionReady, false);
+  assert.equal(okj.files, 15);
 });

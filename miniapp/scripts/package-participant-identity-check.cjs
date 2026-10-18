@@ -1098,23 +1098,61 @@ function checkCloseDir(closePackageDir) {
   return { ok: problems.length === 0, problems, files, expectedFiles: expectedMap.size };
 }
 
+const CLI_USAGE = [
+  '用法：',
+  '  node package-participant-identity-check.cjs --plan <计划绝对路径> [--out <输出目录>]',
+  '  node package-participant-identity-check.cjs --check <候选目录绝对路径>',
+  '  node package-participant-identity-check.cjs --check-close <候选目录绝对路径> --close-source <已受审关闭包目录>',
+  '  node package-participant-identity-check.cjs --prepare <计划绝对路径> [--out <输出目录>]',
+  '  node package-participant-identity-check.cjs --check-prepared <已准备候选目录绝对路径>'
+].join('\n');
+
+/**
+ * CLI 严格参数解析（C1）：逐项解析，纯函数不做任何 IO，全部拒绝发生在
+ * readPlan/build/prepare 之前（零产物）。拒绝：额外位置参数、未知选项、
+ * 重复选项、缺值（缺下一个令牌或下一个令牌是选项）、模式缺失/多种模式、
+ * 不适用组合（--close-source 仅配 --check-close；--out 仅配 --plan/--prepare）。
+ * 合法旧语法不变：--plan X [--out Y] | --check D | --check-close D --close-source S
+ * | --prepare X [--out Y] | --check-prepared D。
+ */
+function parseCliArgs(argv) {
+  const KNOWN = ['--plan', '--out', '--check', '--check-close', '--close-source', '--prepare', '--check-prepared'];
+  const MODE_FLAGS = ['--plan', '--check', '--check-close', '--prepare', '--check-prepared'];
+  const values = new Map();
+  for (let i = 0; i < argv.length; i++) {
+    const tok = argv[i];
+    if (!tok.startsWith('--')) return { error: '[用法错误] 出现额外位置参数：' + tok + '。本工具只接受「选项 值」形式。' };
+    if (!KNOWN.includes(tok)) return { error: '[用法错误] 未知选项：' + tok };
+    if (values.has(tok)) return { error: '[用法错误] 重复选项：' + tok };
+    if (i + 1 >= argv.length) return { error: '[用法错误] 选项缺少值：' + tok };
+    const value = argv[i + 1];
+    if (value.startsWith('--')) return { error: '[用法错误] 选项缺少值（下一个令牌是选项）：' + tok };
+    values.set(tok, value);
+    i++;
+  }
+  const modeFlags = MODE_FLAGS.filter(f => values.has(f));
+  if (modeFlags.length === 0) return { error: '[用法错误] 缺少模式参数（--plan/--check/--check-close/--prepare/--check-prepared 之一）。' };
+  if (modeFlags.length > 1) return { error: '[用法错误] 同时给定多种模式参数（' + modeFlags.join(', ') + '）；一次只能执行一种模式。' };
+  const mode = modeFlags[0];
+  if (values.has('--close-source') && mode !== '--check-close') return { error: '[用法错误] --close-source 仅可与 --check-close 搭配。' };
+  if (values.has('--out') && mode !== '--plan' && mode !== '--prepare') return { error: '[用法错误] --out 仅可与 --plan 或 --prepare 搭配。' };
+  return { mode, values };
+}
+
 function main() {
   const argv = process.argv.slice(2);
+  const parsed = parseCliArgs(argv); // 纯解析；任何拒绝都不触碰文件系统
+  if (parsed.error) {
+    console.error(parsed.error);
+    console.error(CLI_USAGE);
+    process.exitCode = 1;
+    return;
+  }
+  const mode = parsed.mode;
+  const values = parsed.values;
   try {
-    const arg = (name) => {
-      const i = argv.indexOf(name);
-      return i === -1 ? null : argv[i + 1];
-    };
-    // 模式互斥：一次只能执行一种模式；新模式不能被旧 --check 或默认 build 悄悄启用。
-    const modeFlags = ['--plan', '--check', '--check-close', '--prepare', '--check-prepared'].filter(f => argv.includes(f));
-    if (modeFlags.length > 1) {
-      console.error('[用法错误] 同时给定多种模式参数（' + modeFlags.join(', ') + '）；一次只能执行一种模式。');
-      process.exitCode = 1;
-      return;
-    }
-    if (argv[0] === '--check') {
-      const dir = arg('--check');
-      if (!dir) { console.error('用法：--check <候选目录>'); process.exitCode = 1; return; }
+    if (mode === '--check') {
+      const dir = values.get('--check');
       const r = checkDir(dir);
       console.log(JSON.stringify({
         ok: r.ok, dir, checkRoundId: r.manifest.checkRoundId,
@@ -1124,19 +1162,17 @@ function main() {
       if (!r.ok) process.exitCode = 1;
       return;
     }
-    if (argv[0] === '--check-close') {
-      const dir = arg('--check-close');
-      const source = arg('--close-source');
-      if (!dir || !source) { console.error('用法：--check-close <候选目录> --close-source <已受审关闭包目录>'); process.exitCode = 1; return; }
+    if (mode === '--check-close') {
+      const dir = values.get('--check-close');
+      const source = values.get('--close-source');
       process.env.PIC_CLOSE_SOURCE_DIR = source;
       const r = checkCloseDir(dir);
       console.log(JSON.stringify({ ok: r.ok, dir, files: r.files, expectedFiles: r.expectedFiles, problems: r.problems }, null, 2));
       if (!r.ok) process.exitCode = 1;
       return;
     }
-    if (argv[0] === '--check-prepared') {
-      const dir = arg('--check-prepared');
-      if (!dir) { console.error('用法：--check-prepared <已准备候选目录>'); process.exitCode = 1; return; }
+    if (mode === '--check-prepared') {
+      const dir = values.get('--check-prepared');
       const r = checkPreparedDir(dir);
       console.log(JSON.stringify({
         ok: r.ok, phase: r.phase, preparationValidated: r.preparationValidated,
@@ -1148,10 +1184,9 @@ function main() {
       if (!r.ok) process.exitCode = 1;
       return;
     }
-    if (argv[0] === '--prepare') {
-      const planPath = arg('--prepare');
-      const outOverride = arg('--out');
-      if (!planPath) { console.error('用法：--prepare <计划绝对路径> [--out <输出目录>]'); process.exitCode = 1; return; }
+    if (mode === '--prepare') {
+      const planPath = values.get('--prepare');
+      const outOverride = values.get('--out');
       const result = prepare(planPath, outOverride);
       const written = result.io.filter(f => f.action === 'written').length;
       const reused = result.io.filter(f => f.action === 'reused').length;
@@ -1165,9 +1200,9 @@ function main() {
       console.error('提示：提前准备仅表示本地制品完整（executionReady=false），不是执行批准；未部署、未调用平台，执行前仍须 checkDir 与剩余时间门槛。');
       return;
     }
-    const planPath = arg('--plan');
-    const outOverride = arg('--out');
-    if (!planPath) { console.error('用法：--plan <计划绝对路径> [--out <输出目录>]'); process.exitCode = 1; return; }
+    // mode === '--plan'（严格构建）
+    const planPath = values.get('--plan');
+    const outOverride = values.get('--out');
     const result = build(planPath, outOverride);
     const written = result.io.filter(f => f.action === 'written').length;
     const reused = result.io.filter(f => f.action === 'reused').length;
@@ -1220,5 +1255,6 @@ module.exports = Object.freeze({
   prepare,
   checkDir,
   checkPreparedDir,
-  checkCloseDir
+  checkCloseDir,
+  parseCliArgs
 });
