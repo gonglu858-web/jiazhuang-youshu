@@ -457,7 +457,14 @@ function readPlan(planPath, options) {
   });
 }
 
-function windowClockCheck(plan, at) {
+/**
+ * 窗口时钟检查（逐边界真实 Date.now 重读）。
+ * phase 由公开入口固定选择，不来自计划/清单/环境/命令行以外任何来源：
+ * - 'execute'（build/checkDir 默认）：now<starts 拒绝 WINDOW_NOT_OPEN；
+ * - 'prepare'（仅 prepare/checkPreparedDir 传入）：允许 now<starts 提前准备；
+ * 两类模式均拒绝 now>=expires（WINDOW_EXPIRED）与 NaN/时钟异常（原分类不变）。
+ */
+function windowClockCheck(plan, at, phase) {
   let nowMs;
   try {
     nowMs = Date.now();
@@ -468,7 +475,7 @@ function windowClockCheck(plan, at) {
     fail(ERR.CLOCK_INVALID, '服务端时钟无效[' + at + ']。');
   }
   if (plan.synthetic) return; // 合成模式跳过时效
-  if (nowMs < plan.windowStartsAtMs) fail(ERR.WINDOW_NOT_OPEN, '核验窗口尚未开始[' + at + ']。');
+  if (phase !== 'prepare' && nowMs < plan.windowStartsAtMs) fail(ERR.WINDOW_NOT_OPEN, '核验窗口尚未开始[' + at + ']。');
   // R5：恰到截止即拒绝（now >= expires），与核心模块口径统一。
   if (nowMs >= plan.windowExpiresAtMs) fail(ERR.WINDOW_EXPIRED, '核验窗口已截止[' + at + ']。');
 }
@@ -693,9 +700,16 @@ function computeArtifacts(plan) {
   return artifacts;
 }
 
-function build(planPath, outOverride) {
+/**
+ * build/prepare 共用装配主体；窗口模式由公开入口固定选择：
+ * - 'execute'：旧 build 严格行为（now<starts 拒绝）；
+ * - 'prepare'：允许未来窗口提前准备本地制品（now>=expires/NaN/抛错仍拒绝）。
+ * 不新增计划/清单字段，不写时间戳进 manifest——prepare 与 build 在相同计划/源码下
+ * 生成的候选及关闭制品逐字节一致；准备事实只出现在返回报告与外置证据。
+ */
+function buildInternal(planPath, outOverride, windowPhase) {
   const plan = readPlan(planPath);
-  windowClockCheck(plan, 'build.readPlan');
+  windowClockCheck(plan, 'build.readPlan', windowPhase);
   const closeFiles = verifyCloseSource(plan.closeSourceDir);
   const artifacts = computeArtifacts(plan);
   const planBytes = fs.readFileSync(planPath);
@@ -776,17 +790,25 @@ function build(planPath, outOverride) {
 
   const io = [];
   try {
-    windowClockCheck(plan, 'build.precheck');
+    windowClockCheck(plan, 'build.precheck', windowPhase);
     const reused = precheckOutDir(outDir, expected);
     for (const r of reused) io.push({ path: r.path, action: 'reused' });
     const reusedRels = new Set(reused.map(r => r.rel));
     for (const [rel, buf] of expected) {
       if (reusedRels.has(rel)) continue;
-      windowClockCheck(plan, 'build.write:' + rel);
+      windowClockCheck(plan, 'build.write:' + rel, windowPhase);
       writeExclusive(path.join(outDir, rel), buf, io, rel);
     }
-    windowClockCheck(plan, 'build.final');
-    return { outDir, manifest, io };
+    windowClockCheck(plan, 'build.final', windowPhase);
+    const result = { outDir, manifest, io };
+    if (windowPhase === 'prepare') {
+      // 提前准备仅表示本地制品完整（preparationValidated）；明确不是执行批准
+      //（executionReady=false，即使当前时间已处于窗口内也不升级）。
+      result.phase = 'preparation';
+      result.preparationValidated = true;
+      result.executionReady = false;
+    }
+    return result;
   } catch (error) {
     const written = io.filter(x => x.action === 'written').map(x => path.relative(outDir, x.path).split(path.sep).join('/'));
     if (written.length) {
@@ -804,11 +826,27 @@ function build(planPath, outOverride) {
   }
 }
 
+/** 旧严格构建：now<starts 拒绝（行为与既有事实一致；结果结构不变）。 */
+function build(planPath, outOverride) {
+  return buildInternal(planPath, outOverride, 'execute');
+}
+
 /**
- * check：从独立受审来源 + 目录内严格计划重建，逐字节比对精确文件集。
- * 固定计划文件名 plan.json；拒绝改名/别名/越界；逐读取边界与最终返回前重读时钟。
+ * 提前准备：允许未来窗口的真实模式计划在候选覆盖前完成本地制品准备。
+ * 结果 executionReady=false——仅表示本地制品完整，不是执行批准；
+ * 严格核对（checkDir）在窗口开启前对同一目录仍拒绝（WINDOW_NOT_OPEN）。
  */
-function checkDir(dir) {
+function prepare(planPath, outOverride) {
+  return buildInternal(planPath, outOverride, 'prepare');
+}
+
+/**
+ * check/检查已准备目录共用主体；窗口模式由公开入口固定选择：
+ * - 'execute'：旧 checkDir 严格行为（now<starts 拒绝）；
+ * - 'prepare'：checkPreparedDir——允许未来窗口（now>=expires/NaN/抛错仍拒绝），
+ *   结果附 phase='preparation'/executionReady=false；不得替代 checkDir 作为执行核对。
+ */
+function checkDirInternal(dir, windowPhase) {
   assertRealDirChain(dir, 'check 输入');
   const problems = [];
   const bad = msg => problems.push(msg);
@@ -822,7 +860,7 @@ function checkDir(dir) {
   const clockCheck = at => {
     if (!plan || clockStopped) return;
     try {
-      windowClockCheck(plan, at);
+      windowClockCheck(plan, at, windowPhase);
     } catch (error) {
       bad('窗口时效检查失败[' + (error.code || 'PIC_ERROR') + ']（' + at + '）：' + error.message);
       clockStopped = true;
@@ -978,13 +1016,32 @@ function checkDir(dir) {
   }
   function finish() {
     clockCheck('check.final');
-    return {
+    const result = {
       manifest, problems, ok: problems.length === 0,
       files: manifestFiles.length, closeFiles: manifestCloseFiles.length,
       planChecked: problems.length === 0 && Boolean(manifest)
     };
+    if (windowPhase === 'prepare') {
+      result.phase = 'preparation';
+      result.preparationValidated = result.ok;
+      result.executionReady = false; // 准备核对通过也不升级为执行批准
+    }
+    return result;
   }
   return finish();
+}
+
+/** 旧严格核对：now<starts 拒绝（行为与既有事实一致；结果结构不变）。 */
+function checkDir(dir) {
+  return checkDirInternal(dir, 'execute');
+}
+
+/**
+ * 已准备目录核对：允许未来窗口（now>=expires/NaN/抛错仍按原分类拒绝）。
+ * 成功仅表示本地制品完整（executionReady=false），不能替代 checkDir 的执行前核对。
+ */
+function checkPreparedDir(dir) {
+  return checkDirInternal(dir, 'prepare');
 }
 
 /**
@@ -1048,6 +1105,13 @@ function main() {
       const i = argv.indexOf(name);
       return i === -1 ? null : argv[i + 1];
     };
+    // 模式互斥：一次只能执行一种模式；新模式不能被旧 --check 或默认 build 悄悄启用。
+    const modeFlags = ['--plan', '--check', '--check-close', '--prepare', '--check-prepared'].filter(f => argv.includes(f));
+    if (modeFlags.length > 1) {
+      console.error('[用法错误] 同时给定多种模式参数（' + modeFlags.join(', ') + '）；一次只能执行一种模式。');
+      process.exitCode = 1;
+      return;
+    }
     if (argv[0] === '--check') {
       const dir = arg('--check');
       if (!dir) { console.error('用法：--check <候选目录>'); process.exitCode = 1; return; }
@@ -1068,6 +1132,37 @@ function main() {
       const r = checkCloseDir(dir);
       console.log(JSON.stringify({ ok: r.ok, dir, files: r.files, expectedFiles: r.expectedFiles, problems: r.problems }, null, 2));
       if (!r.ok) process.exitCode = 1;
+      return;
+    }
+    if (argv[0] === '--check-prepared') {
+      const dir = arg('--check-prepared');
+      if (!dir) { console.error('用法：--check-prepared <已准备候选目录>'); process.exitCode = 1; return; }
+      const r = checkPreparedDir(dir);
+      console.log(JSON.stringify({
+        ok: r.ok, phase: r.phase, preparationValidated: r.preparationValidated,
+        executionReady: r.executionReady, dir, checkRoundId: r.manifest ? r.manifest.checkRoundId : null,
+        participantCode: r.manifest ? r.manifest.participantCode : null,
+        files: r.files, closeFiles: r.closeFiles, problems: r.problems
+      }, null, 2));
+      console.error('提示：executionReady=false——准备核对只表示本地制品完整，不是执行批准；执行前仍须 checkDir。');
+      if (!r.ok) process.exitCode = 1;
+      return;
+    }
+    if (argv[0] === '--prepare') {
+      const planPath = arg('--prepare');
+      const outOverride = arg('--out');
+      if (!planPath) { console.error('用法：--prepare <计划绝对路径> [--out <输出目录>]'); process.exitCode = 1; return; }
+      const result = prepare(planPath, outOverride);
+      const written = result.io.filter(f => f.action === 'written').length;
+      const reused = result.io.filter(f => f.action === 'reused').length;
+      console.log(JSON.stringify({
+        ok: true, phase: result.phase, preparationValidated: result.preparationValidated,
+        executionReady: result.executionReady, outDir: result.outDir,
+        checkRoundId: result.manifest.checkRoundId, participantCode: result.manifest.participantCode,
+        synthetic: result.manifest.synthetic, files: result.manifest.files.length,
+        closeFiles: result.manifest.closePackage.files.length, written, reused
+      }, null, 2));
+      console.error('提示：提前准备仅表示本地制品完整（executionReady=false），不是执行批准；未部署、未调用平台，执行前仍须 checkDir 与剩余时间门槛。');
       return;
     }
     const planPath = arg('--plan');
@@ -1122,6 +1217,8 @@ module.exports = Object.freeze({
   readPlan,
   planDigest,
   build,
+  prepare,
   checkDir,
+  checkPreparedDir,
   checkCloseDir
 });

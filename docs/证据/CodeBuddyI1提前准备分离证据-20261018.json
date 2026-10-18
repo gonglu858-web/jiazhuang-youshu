@@ -1,0 +1,121 @@
+{
+  "schema": "codebuddy-i1-prepare-separation-evidence/1",
+  "observedAt": "2026-10-18T04:46:03.939Z",
+  "basisCommit": "a7ad58b",
+  "reviewBasis": "docs/CodeBuddy任务-核验包提前准备与执行时效分离-20261017.md（本轮任务书；离线阻断证据 证据/Codex核验包未来窗口准备阻断-20261017.json）",
+  "verificationKind": "offline evidence for prepare/execution time separation; synthetic plans/clocks/transport stubs; NOT platform verification, NOT an execution approval",
+  "ok": true,
+  "guardCounters": {
+    "sensitivityAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "total": 2
+  },
+  "sections": {
+    "a": {
+      "phase": "preparation",
+      "preparationValidated": true,
+      "executionReady": false,
+      "files": 15,
+      "closeFiles": 23,
+      "checkPreparedOk": true,
+      "checkPreparedExecutionReady": false,
+      "strictBuildNewDirNotCreated": true,
+      "strictCheckRejected": true,
+      "strictBuildCode": "PIC_WINDOW_NOT_OPEN",
+      "coreFutureCode": "PIC_WINDOW_NOT_OPEN",
+      "coreFutureReadAttempted": false
+    },
+    "b": {
+      "inWindowCheckOk": true,
+      "rebuildWritten": 0,
+      "bytesUnchanged": true
+    },
+    "c": {
+      "expiresNow": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "dirCreated": false
+      },
+      "expired": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "dirCreated": false
+      },
+      "nanClock": {
+        "code": "PIC_CLOCK_INVALID",
+        "dirCreated": false
+      },
+      "clockThrows": {
+        "code": "PIC_CLOCK_ERROR",
+        "dirCreated": false
+      },
+      "midFlight": {
+        "code": "PIC_WINDOW_EXPIRED",
+        "wroteFiles": 8,
+        "writtenList": [
+          "server/scheduleSandbox/participant-identity-check.js",
+          "server/scheduleSandbox/index.js",
+          "server/scheduleSandbox/package.json",
+          "server/scheduleSandbox/request-adapter.js",
+          "frontend/app.js",
+          "frontend/app.json",
+          "frontend/app.wxss",
+          "frontend/config/cloud.js"
+        ]
+      },
+      "crossIn": {
+        "phase": "preparation",
+        "executionReady": false
+      }
+    },
+    "d": {
+      "prepare": {
+        "code": 0,
+        "executionReady": true,
+        "phase": true
+      },
+      "checkPrepared": {
+        "code": 0,
+        "ok": true,
+        "executionReady": false
+      },
+      "strictCheckFuture": {
+        "code": 1,
+        "windowNotOpen": true
+      },
+      "defaultBuildFuture": {
+        "code": 1,
+        "windowNotOpen": true,
+        "dirCreated": false
+      },
+      "expiredPrepare": {
+        "code": 1,
+        "windowExpired": true
+      },
+      "mixedModes": {
+        "code": 1,
+        "usageError": true
+      },
+      "badArgs": {
+        "code": 1
+      }
+    },
+    "byteIdentity": {
+      "sameSize": true,
+      "allEqual": true
+    }
+  },
+  "runtimeDigests": {
+    "packerSha256": "802773cb4ce8d23e1f2a17663fc3ca753b9a0b60e4d0acb0848a1eab05c88b06",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+  },
+  "evidenceKinds": {
+    "sourceObservation": "windowClockCheck phase parameter and public prepare/checkPreparedDir entries read from product source",
+    "syntheticChain": "sections A/B/C use synthetic plans, controlled test clock (finally restored) and synthetic db/context",
+    "localCli": "section D spawns only process.execPath with this package CLI under a child network-guard preload (whitelist, not general spawn)",
+    "platform": "none — real platform/preview/deploy/call remains unverified"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "Preparation success means local artifacts only (executionReady=false); it is not an execution approval.",
+    "Real platform window behaviour is not verified; future execution needs a new specific package and user confirmation."
+  ]
+}

@@ -1,3 +1,7 @@
+## 2026-10-18 CodeBuddy 完成提前准备与执行时效分离：待审查
+
+- 本包打包器新增 prepare/checkPreparedDir 与 CLI --prepare/--check-prepared（模式互斥）：未来窗口可提前准备（now<starts 允许；expires/NaN/抛错仍拒绝），executionReady=false 不是执行批准；旧 build/checkDir 严格行为不变；核心/适配器/入口/客户端/页面/PINNED 零改动；manifest 无时间戳、prepare 与 build 字节一致。
+- 实测：核验包 41/41（E1–E6）、业务包 18/18、member-access-sdk 1/1；[提前准备证据](证据/CodeBuddyI1提前准备分离证据-20261018.json) ok=true 意外0；[审计 v9](证据/CodeBuddyI1入站审计v9-20261018.cjs) 14/14（新命名版本，v7/v8 原字节）；[收尾 v4](证据/CodeBuddy受控诊断R1R4收尾v4-20261018.cjs)（v3 原字节）；[操作说明](两位参与者本人身份只读核验包-本地准备操作说明-20261015.md) 补 CLI。待 Codex 审查；真实平台未验证未放行；1号/2号不重试，P不开展。
 ## 2026-10-17 Codex：未来窗口准备受现有打包器阻断，形成仅本地改动任务
 
 - 实查windowClockCheck/build/checkDir：真实模式now<starts时均拒绝；新离线证据用合成材料证明readPlan通过、build WINDOW_NOT_OPEN、产物目录未创建、源文件零改，探针2/意外0。不能用改系统时间或synthetic=true制造可部署真实包。

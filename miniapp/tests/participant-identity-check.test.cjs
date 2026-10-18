@@ -2285,9 +2285,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
-test('D6 审计v8失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7保持上一轮已交付字节）', () => {
+test('D6 审计v9失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7/v8保持各轮已交付字节）', () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v8-20261017.cjs');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v9-20261018.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;
@@ -2331,9 +2331,9 @@ test('D6 审计v8失败判定：业务期意外守卫（含被catch）必须非�
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
 });
 
-test('D7 收尾证据v3外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v2 已按 f7cb27f 字节恢复为历史版本；历史20261016脚本保留为347261a字节）', async () => {
+test('D7 收尾证据v4外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v3 保持上一轮已交付字节，v2 已按 f7cb27f 字节恢复，历史20261016脚本保留为347261a字节）', async () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v3-20261017.cjs');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v4-20261018.cjs');
   const source = fs.readFileSync(evidenceFile, 'utf8');
   const run = kind => {
     let src = source;
@@ -2797,4 +2797,378 @@ test('A5 完整入口 no-flag 敏感性（§4固化）：生成入口内存变�
   } finally {
     for (const [mod, key, original] of originals) mod[key] = original;
   }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// E1–E6 提前准备与执行时效分离（CodeBuddy任务-核验包提前准备与执行时效分离-20261017）
+// ════════════════════════════════════════════════════════════════════════════
+
+/** 可控时钟：仅测试内使用，finally 恢复；不提供给真实生产入口。 */
+async function withClock(now, fn) {
+  const orig = Date.now;
+  Date.now = typeof now === 'function' ? now : () => now;
+  try { return await fn(); } finally { Date.now = orig; }
+}
+
+test('E1 未来窗口可准备但严格执行仍拒绝：prepare 39 文件/checkPreparedDir 通过且 executionReady=false；旧 build 写前 WINDOW_NOT_OPEN 且目录未创建；旧 checkDir 拒绝；核心未来窗口拒绝 get=0', async () => {
+  const closeSource = makeCloseSourceDir();
+  const openid = 'openid-e1-' + RUN_ID;
+  const starts = Date.now() + 2 * 60 * 60 * 1000;
+  const planPath = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 30 * 60 * 1000).toISOString()
+  });
+  // (1) prepare：未来窗口真实模式计划可提前准备
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e1-prep-' + RUN_ID);
+  const prepared = packer.prepare(planPath, outDir);
+  assert.equal(prepared.phase, 'preparation');
+  assert.equal(prepared.preparationValidated, true);
+  assert.equal(prepared.executionReady, false, '准备结果明确不是执行批准');
+  assert.equal(prepared.manifest.files.length, 15, '候选 15 文件');
+  assert.equal(prepared.manifest.closePackage.files.length, 23, '关闭 23 文件');
+  assert.equal(fs.existsSync(path.join(outDir, 'manifest.json')), true, '39 文件已落盘（候选+计划+清单+关闭）');
+  // (2) checkPreparedDir：完整通过且 executionReady=false
+  const cp = packer.checkPreparedDir(outDir);
+  assert.equal(cp.ok, true, '准备核对完整通过');
+  assert.equal(cp.phase, 'preparation');
+  assert.equal(cp.preparationValidated, true);
+  assert.equal(cp.executionReady, false, '准备核对通过也不升级为执行批准');
+  // (3) 旧 build：写前 WINDOW_NOT_OPEN，且新目录未创建
+  const outDir2 = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e1-build-' + RUN_ID);
+  assert.throws(() => packer.build(planPath, outDir2),
+    e => e.code === packer.ERR.WINDOW_NOT_OPEN && /build\.readPlan/.test(e.message), '旧 build 写前拒绝');
+  assert.equal(fs.existsSync(outDir2), false, '严格构建未创建输出目录');
+  // (4) 旧 checkDir：同一时点对同一已准备目录拒绝（WINDOW_NOT_OPEN）
+  const strict = packer.checkDir(outDir);
+  assert.equal(strict.ok, false, '严格 checkDir 拒绝未开窗候选');
+  assert.ok(strict.problems.some(p => p.includes('WINDOW_NOT_OPEN')), '拒绝原因含 WINDOW_NOT_OPEN');
+  // (5) 核心：未来窗口在核心同样拒绝且 get=0（仅合成 db/trusted；核心接口为原四字段）
+  const db = makeTrapDb({ rows: [{ _id: core.deriveUserId(APPID, openid), openid, status: 'active' }] });
+  const r = await makeChecker(db, {
+    trusted: trustedContext(openid),
+    windowStartsAtMs: starts, windowExpiresAtMs: starts + 30 * 60 * 1000,
+    now: () => Date.now()
+  }).handle({ action: 'inspectSelf', checkRoundId: TEST_ROUND, passphrase: SYNTHETIC_PASSPHRASE });
+  assert.equal(r.code, 'PIC_WINDOW_NOT_OPEN', '核心未来窗口拒绝');
+  assert.equal(r.readAttempted, false);
+  assert.equal(db.calls.reads, 0, '零读取');
+});
+
+test('E2 同一未来包进入窗口后：旧 checkDir 通过、旧 build 完全复用 0 新写、候选/关闭/manifest 字节不变', async () => {
+  const closeSource = makeCloseSourceDir();
+  const starts = Date.now() + 2 * 60 * 60 * 1000;
+  const planPath = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 30 * 60 * 1000).toISOString()
+  });
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e2-prep-' + RUN_ID);
+  packer.prepare(planPath, outDir);
+  const snapshot = new Map();
+  (function snap(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) snap(p);
+      else snapshot.set(path.relative(outDir, p).split(path.sep).join('/'), crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'));
+    }
+  })(outDir);
+  assert.equal(snapshot.has('manifest.json'), true);
+  // 受控时钟进入有效窗口（仅测试内；finally 恢复）
+  await withClock(starts + 60 * 1000, () => {
+    const strict = packer.checkDir(outDir);
+    assert.equal(strict.ok, true, '进入窗口后同一包通过严格 checkDir');
+    assert.equal(Object.prototype.hasOwnProperty.call(strict, 'executionReady'), false, '旧 checkDir 结果结构不变');
+    const rebuilt = packer.build(planPath, outDir);
+    assert.equal(rebuilt.io.filter(x => x.action === 'written').length, 0, '完全复用，0 新写');
+    assert.ok(rebuilt.io.every(x => x.action === 'reused'), '全部条目为 reused');
+  });
+  const after = new Map();
+  (function snap2(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) snap2(p);
+      else after.set(path.relative(outDir, p).split(path.sep).join('/'), crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'));
+    }
+  })(outDir);
+  assert.equal(after.size, snapshot.size, '文件数不变');
+  for (const [rel, sha] of snapshot) assert.equal(after.get(rel), sha, '字节不变：' + rel);
+});
+
+test('E3 边界矩阵：expires==now/已过期/NaN/抛错/途中跨截止/最终前跨截止正反例；未来开始跨入窗口不升级 executionReady', async () => {
+  const closeSource = makeCloseSourceDir();
+  const baseStarts = Date.now() - 60 * 1000;
+  const planPath = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(baseStarts).toISOString(),
+    windowExpiresAtIso: new Date(baseStarts + 30 * 60 * 1000).toISOString()
+  });
+  const planExpiresMs = Date.parse(JSON.parse(fs.readFileSync(planPath, 'utf8')).windowExpiresAtIso);
+  // (1) expires==now：prepare/checkPreparedDir/旧checkDir 全部 WINDOW_EXPIRED
+  {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3a-' + crypto.randomBytes(3).toString('hex'));
+    await withClock(planExpiresMs, () => {
+      assert.throws(() => packer.prepare(planPath, outDir), e => e.code === packer.ERR.WINDOW_EXPIRED, 'prepare expires==now 拒绝');
+      assert.equal(fs.existsSync(outDir), false);
+    });
+    const built = packer.build(planPath, outDir); // 真实时钟（当前在窗口内）建立合法目录
+    assert.ok(built.manifest);
+    await withClock(planExpiresMs, () => {
+      const cp = packer.checkPreparedDir(outDir);
+      assert.equal(cp.ok, false);
+      assert.ok(cp.problems.some(p => p.includes('WINDOW_EXPIRED')), 'checkPreparedDir expires==now 拒绝');
+      const strict = packer.checkDir(outDir);
+      assert.equal(strict.ok, false);
+      assert.ok(strict.problems.some(p => p.includes('WINDOW_EXPIRED')), '旧 checkDir expires==now 拒绝');
+    });
+  }
+  // (2) 已过期：三类入口全部 WINDOW_EXPIRED
+  {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3b-' + crypto.randomBytes(3).toString('hex'));
+    await withClock(planExpiresMs + 1, () => {
+      assert.throws(() => packer.prepare(planPath, outDir), e => e.code === packer.ERR.WINDOW_EXPIRED, 'prepare 已过期拒绝');
+      assert.equal(fs.existsSync(outDir), false);
+    });
+    packer.build(planPath, outDir);
+    await withClock(planExpiresMs + 1, () => {
+      assert.equal(packer.checkPreparedDir(outDir).ok, false, 'checkPreparedDir 已过期拒绝');
+      assert.equal(packer.checkDir(outDir).ok, false, '旧 checkDir 已过期拒绝');
+    });
+  }
+  // (3) NaN 时钟：CLOCK_INVALID
+  {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3c-' + crypto.randomBytes(3).toString('hex'));
+    await withClock(NaN, () => {
+      assert.throws(() => packer.prepare(planPath, outDir), e => e.code === packer.ERR.CLOCK_INVALID, 'prepare NaN 拒绝');
+      assert.equal(fs.existsSync(outDir), false);
+    });
+    packer.build(planPath, outDir);
+    await withClock(NaN, () => {
+      assert.equal(packer.checkPreparedDir(outDir).ok, false, 'checkPreparedDir NaN 拒绝');
+      assert.equal(packer.checkDir(outDir).ok, false, '旧 checkDir NaN 拒绝');
+    });
+  }
+  // (4) Date.now 抛错：CLOCK_ERROR
+  {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3d-' + crypto.randomBytes(3).toString('hex'));
+    await withClock(() => { throw new Error('synthetic-clock-failure'); }, () => {
+      assert.throws(() => packer.prepare(planPath, outDir), e => e.code === packer.ERR.CLOCK_ERROR, 'prepare 抛错拒绝');
+      assert.equal(fs.existsSync(outDir), false);
+    });
+    packer.build(planPath, outDir);
+    await withClock(() => { throw new Error('synthetic-clock-failure'); }, () => {
+      assert.equal(packer.checkPreparedDir(outDir).ok, false, 'checkPreparedDir 抛错拒绝');
+      assert.equal(packer.checkDir(outDir).ok, false, '旧 checkDir 抛错拒绝');
+    });
+  }
+  // (5) 途中跨截止：前若干写入后时钟越过截止 → WINDOW_EXPIRED 且 wroteFiles 事实与已写数量一致
+  {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3e-' + crypto.randomBytes(3).toString('hex'));
+    let calls = 0;
+    await withClock(() => { calls++; return calls <= 10 ? baseStarts + 1000 : planExpiresMs + 1; }, () => {
+      try {
+        packer.prepare(planPath, outDir);
+        assert.fail('途中跨截止必须拒绝');
+      } catch (error) {
+        assert.equal(error.code, packer.ERR.WINDOW_EXPIRED, '途中跨截止错误码');
+        assert.ok(error.wroteFiles > 0, '已写事实>0：' + error.wroteFiles);
+        assert.equal(error.written.length, error.wroteFiles, 'written 列表与计数一致');
+      }
+    });
+  }
+  // (6) 最终返回前跨截止：全部写入后 final 边界拒绝 → wroteFiles=39
+  {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3f-' + crypto.randomBytes(3).toString('hex'));
+    let calls = 0;
+    await withClock(() => { calls++; return calls <= 41 ? baseStarts + 1000 : planExpiresMs + 1; }, () => {
+      try {
+        packer.prepare(planPath, outDir);
+        assert.fail('最终前跨截止必须拒绝');
+      } catch (error) {
+        assert.equal(error.code, packer.ERR.WINDOW_EXPIRED, '最终前跨截止错误码');
+        assert.equal(error.wroteFiles, 39, '全部 39 文件已写但被最终边界拒绝');
+      }
+    });
+  }
+  // (7) 未来开始跨入窗口：准备结果不升级为 executionReady
+  {
+    const futureStarts = Date.now() + 2 * 60 * 60 * 1000;
+    const futurePlan = writePicPlan(closeSource, {
+      synthetic: false,
+      windowStartsAtIso: new Date(futureStarts).toISOString(),
+      windowExpiresAtIso: new Date(futureStarts + 30 * 60 * 1000).toISOString()
+    });
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e3g-' + crypto.randomBytes(3).toString('hex'));
+    let calls = 0;
+    const r = await withClock(() => { calls++; return calls <= 5 ? futureStarts - 1000 : futureStarts + 60 * 1000; }, () => packer.prepare(futurePlan, outDir));
+    assert.equal(r.phase, 'preparation');
+    assert.equal(r.executionReady, false, '跨入窗口后准备结果不升级为执行批准');
+    assert.equal(r.preparationValidated, true);
+  }
+});
+
+test('E4 准备模式的来源/清单/目录/排他写保持：篡改拒绝、额外文件拒绝、junction 拒绝、EEXIST 事实', async () => {
+  const closeSource = makeCloseSourceDir();
+  const starts = Date.now() + 2 * 60 * 60 * 1000;
+  const planPath = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 30 * 60 * 1000).toISOString()
+  });
+  // (1) 制品篡改 → checkPreparedDir 拒绝（未来窗口不豁免内容校验）
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e4-prep-' + RUN_ID);
+  packer.prepare(planPath, outDir);
+  const entryPath = path.join(outDir, 'server', 'scheduleSandbox', 'index.js');
+  const orig = fs.readFileSync(entryPath);
+  fs.writeFileSync(entryPath, orig.toString('utf8').replace('const CONFIG_ENABLED = true;', 'const CONFIG_ENABLED = false;'));
+  const cp = packer.checkPreparedDir(outDir);
+  assert.equal(cp.ok, false, '制品篡改拒绝（准备模式不豁免）');
+  assert.ok(cp.problems.some(p => p.includes('index.js')));
+  fs.writeFileSync(entryPath, orig);
+  assert.equal(packer.checkPreparedDir(outDir).ok, true, '还原后通过');
+  // (2) 额外文件 → 拒绝
+  fs.writeFileSync(path.join(outDir, 'frontend', 'stray-e4.js'), '// stray\n');
+  assert.equal(packer.checkPreparedDir(outDir).ok, false, '额外文件拒绝');
+  fs.unlinkSync(path.join(outDir, 'frontend', 'stray-e4.js'));
+  // (3) junction → 拒绝（写前零写核对的准备态等价物）
+  fs.symlinkSync(path.join(outDir, 'frontend'), path.join(outDir, 'frontend-link'), 'junction');
+  assert.equal(packer.checkPreparedDir(outDir).ok, false, 'junction 拒绝');
+  fs.unlinkSync(path.join(outDir, 'frontend-link'));
+  assert.equal(packer.checkPreparedDir(outDir).ok, true, '清理后通过');
+  // (4) 排他写：预置同内容文件 → 完全复用；预置冲突文件 → EEXIST 且 wroteFiles 事实
+  const reuseDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e4-reuse-' + RUN_ID);
+  const again = packer.prepare(planPath, reuseDir);
+  assert.equal(again.io.filter(x => x.action === 'written').length, 39, '首次准备写入 39');
+  const again2 = packer.prepare(planPath, reuseDir);
+  assert.equal(again2.io.filter(x => x.action === 'written').length, 0, '二次准备完全复用');
+  // 排他写/写前事实：预置同内容文件 → 完全复用；预置冲突文件 → 预检阶段写入前拒绝
+  //（零写事实，planted 文件不被触碰）；竞态 EEXIST/部分写事实沿用既有 build 代表性用例（R 组）。
+  const conflictDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e4-conflict-' + crypto.randomBytes(3).toString('hex'));
+  const planted = path.join(conflictDir, 'plan.json');
+  fs.mkdirSync(conflictDir, { recursive: true });
+  fs.writeFileSync(planted, '// conflicting content\n');
+  try {
+    packer.prepare(planPath, conflictDir);
+    assert.fail('冲突文件必须拒绝');
+  } catch (error) {
+    assert.equal(error.code, packer.ERR.OUT_CONFLICT, '冲突以 PIC_OUT_CONFLICT 分类（写入前拒绝）');
+    assert.ok(!error.wroteFiles, '预检阶段零写事实（无已写计数）');
+    assert.ok(!Array.isArray(error.partialWrites) || error.partialWrites.length === 0, '无部分写');
+    assert.equal(fs.readFileSync(planted, 'utf8'), '// conflicting content\n', '冲突文件未被触碰');
+  }
+});
+
+test('E5 CLI 真实子进程：prepare/--check-prepared 正例、严格检查未来拒绝、过期拒绝、混合与坏参数非0；子进程网络守卫与 CLI 白名单', async () => {
+  const { spawn } = require('node:child_process');
+  const os = require('node:os');
+  const closeSource = makeCloseSourceDir();
+  const futureStarts = Date.now() + 2 * 60 * 60 * 1000;
+  const futurePlan = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(futureStarts).toISOString(),
+    windowExpiresAtIso: new Date(futureStarts + 30 * 60 * 1000).toISOString()
+  });
+  const expiresSoonPlan = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(Date.now() - 60 * 1000).toISOString(),
+    windowExpiresAtIso: new Date(Date.now() - 30 * 1000).toISOString()
+  });
+  const cli = path.resolve(__dirname, '..', 'scripts', 'package-participant-identity-check.cjs');
+  // 子进程网络守卫：仅显式 preload（不普遍放行 spawn；仅白名单 process.execPath + 本包 CLI）
+  const guardPreload = path.join(os.tmpdir(), 'pic-cli-net-guard-' + RUN_ID + '.cjs');
+  fs.writeFileSync(guardPreload, [
+    "'use strict';",
+    "const blocked = () => { throw new Error('CLI_OFFLINE_GUARD'); };",
+    "for (const m of ['http', 'https']) { const mod = require(m); mod.request = blocked; mod.get = blocked; }",
+    "const net = require('net'); net.connect = blocked; net.createConnection = blocked;"
+  ].join('\n'));
+  const runCli = args => new Promise(resolve => {
+    const child = spawn(process.execPath, [cli, ...args], {
+      env: Object.assign({}, process.env, { NODE_OPTIONS: (process.env.NODE_OPTIONS || '') + ' --require ' + guardPreload }),
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+    let out = '', err = '';
+    child.stdout.on('data', d => { out += d; });
+    child.stderr.on('data', d => { err += d; });
+    child.on('close', code => resolve({ code, out, err }));
+  });
+  try {
+    const preparedDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e5-prep-' + RUN_ID);
+    // (1) --prepare 未来计划：exit0 且 executionReady=false
+    const p1 = await runCli(['--prepare', futurePlan, '--out', preparedDir]);
+    assert.equal(p1.code, 0, 'CLI prepare exit0');
+    const p1j = JSON.parse(p1.out);
+    assert.equal(p1j.executionReady, false, 'CLI 准备结果明确非执行批准');
+    assert.equal(p1j.phase, 'preparation');
+    assert.equal(p1j.files, 15);
+    // (2) --check-prepared：exit0 且 executionReady=false
+    const p2 = await runCli(['--check-prepared', preparedDir]);
+    assert.equal(p2.code, 0, 'CLI check-prepared exit0');
+    const p2j = JSON.parse(p2.out);
+    assert.equal(p2j.executionReady, false);
+    assert.equal(p2j.ok, true);
+    // (3) 旧 --check 对同一未来目录：exit1 且 WINDOW_NOT_OPEN
+    const p3 = await runCli(['--check', preparedDir]);
+    assert.equal(p3.code, 1, '旧 --check 未来拒绝 exit1');
+    assert.ok(p3.out.includes('WINDOW_NOT_OPEN'), '拒绝原因 WINDOW_NOT_OPEN');
+    // (4) 默认 --plan 严格构建未来计划：exit1 且目录未创建
+    const strictDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e5-strict-' + RUN_ID);
+    const p4 = await runCli(['--plan', futurePlan, '--out', strictDir]);
+    assert.equal(p4.code, 1, '默认 build 未来拒绝 exit1');
+    assert.ok(p4.err.includes('WINDOW_NOT_OPEN'), '错误含 WINDOW_NOT_OPEN');
+    assert.equal(fs.existsSync(strictDir), false, '严格构建未创建目录');
+    // (5) 已过期计划 --prepare：exit1
+    const p5 = await runCli(['--prepare', expiresSoonPlan, '--out', path.join(OUT_ROOT, packer.OUT_PREFIX + 'e5-exp-' + RUN_ID)]);
+    assert.equal(p5.code, 1, '过期计划 prepare exit1');
+    assert.ok(p5.err.includes('WINDOW_EXPIRED'), '错误含 WINDOW_EXPIRED');
+    // (6) 混合模式参数：exit1 用法错误
+    const p6 = await runCli(['--prepare', futurePlan, '--check', preparedDir]);
+    assert.equal(p6.code, 1, '混合模式 exit1');
+    assert.ok(p6.err.includes('用法错误') || p6.err.includes('一次只能执行一种模式'), '混合模式明确拒绝');
+    // (7) 坏参数：--prepare 无路径 → exit1
+    const p7 = await runCli(['--prepare']);
+    assert.equal(p7.code, 1, '坏参数 exit1');
+  } finally {
+    fs.unlinkSync(guardPreload);
+  }
+});
+
+test('E6 字节一致性：同计划下 prepare 与受审旧 build 生成的候选/关闭/manifest 逐字节一致；关键身份门槛锚点保留', async () => {
+  const closeSource = makeCloseSourceDir();
+  const starts = Date.now() - 60 * 1000;
+  const planPath = writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 30 * 60 * 1000).toISOString()
+  });
+  const dirPrepare = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e6-prep-' + RUN_ID);
+  const dirBuild = path.join(OUT_ROOT, packer.OUT_PREFIX + 'e6-build-' + RUN_ID);
+  packer.prepare(planPath, dirPrepare);
+  packer.build(planPath, dirBuild);
+  const mapOf = dir => {
+    const m = new Map();
+    (function walk(d) {
+      for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+        const p = path.join(d, e.name);
+        if (e.isDirectory()) walk(p);
+        else m.set(path.relative(dir, p).split(path.sep).join('/'), crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'));
+      }
+    })(dir);
+    return m;
+  };
+  const mp = mapOf(dirPrepare), mb = mapOf(dirBuild);
+  assert.equal(mp.size, mb.size, '文件集一致');
+  for (const [rel, sha] of mb) assert.equal(mp.get(rel), sha, '逐字节一致：' + rel);
+  // 关键身份门槛锚点保留（生成入口仍含口令摘要/可信上下文/适配器接线）
+  const entry = fs.readFileSync(path.join(dirPrepare, 'server', 'scheduleSandbox', 'index.js'), 'utf8');
+  assert.ok(entry.includes('const CONFIG_PASSPHRASE_DIGEST = '), '口令摘要锚点');
+  assert.ok(entry.includes('getWXContext'), '可信微信上下文来源');
+  assert.ok(entry.includes("require('./request-adapter')"), '请求适配器接线');
+  // 完整编号默认不勾选；无新增复制/收集按钮
+  const pageJs = fs.readFileSync(path.join(dirPrepare, 'frontend', 'pages', 'identity-check', 'identity-check.js'), 'utf8');
+  const wxml = fs.readFileSync(path.join(dirPrepare, 'frontend', 'pages', 'identity-check', 'identity-check.wxml'), 'utf8');
+  assert.ok(pageJs.includes('wantFullUserId'), '完整编号勾选语义存在');
+  assert.equal(/wantFullUserId:\s*true/.test(pageJs), false, '完整编号默认不勾选（初始 data 不预置 true）');
+  assert.equal(wxml.includes('复制'), false, '无复制按钮');
+  assert.equal(wxml.includes('收集'), false, '无收集按钮');
 });
