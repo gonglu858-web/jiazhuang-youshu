@@ -1,0 +1,50 @@
+{
+  "schema": "codex-round-preview-design-basis/1",
+  "reviewBasis": "d3a03d0",
+  "observedAt": "2026-10-19T10:29:42.877Z",
+  "verificationKind": "static source anchors only; not implementation or platform test",
+  "sourceFiles": [
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js",
+      "sha256": "79e3ad4ebe2cd80e9c5da96fb12c9e14c605d9b948194fd9be4e3ba2433d48e1"
+    },
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js",
+      "sha256": "0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605"
+    },
+    {
+      "path": "miniapp/scripts/lib/participant-identity-check.cjs",
+      "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+    },
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/server/request-adapter.js",
+      "sha256": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc"
+    },
+    {
+      "path": "miniapp/scripts/package-participant-identity-check.cjs",
+      "sha256": "5769dd7239e990cd223aa47d0540a042931a3792435c21a0cc877f54efdcbe53"
+    }
+  ],
+  "taskDocument": {
+    "path": "docs/CodeBuddy任务-手机请求轮次与预览版本本地核对-20261019.md",
+    "sha256": "fe716650898daa2fac932e2a55da42391da7b07e6fe6abc3ce5ce945a6e244cc"
+  },
+  "sourceAnchorAssertions": 6,
+  "ok": true,
+  "plannedLayers": [
+    "local preview build ID",
+    "snapshot of round handed to SDK",
+    "server returned round"
+  ],
+  "implemented": false,
+  "requiredServerChanges": false,
+  "networkFieldsAdded": false,
+  "realCloudCalls": 0,
+  "credentialReads": 0,
+  "participantsAskedToRetry": false,
+  "limitations": [
+    "local handoff snapshot cannot prove platform ingress",
+    "build ID is package attribution, not official WeChat compilation attestation",
+    "new local implementation and independent review still required"
+  ]
+}
