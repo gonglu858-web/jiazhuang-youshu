@@ -7,6 +7,10 @@
 //   不接受自报 openid/appId/userId/集合/角色。
 // - R5：轮次由本页配置原样带回，不接受调用方覆盖；R2：完整内部 userId 只在
 //   调用方显式请求且本次核验有效时才由服务端返回。
+// - 手机提交轮次（2026-10-19 任务 §2.2）：构造完成、即将交给 wx.cloud.callFunction
+//   的同一个 payload，在紧邻调用前采集不可变快照（仅公共字段，经严格格式校验）；
+//   返回本地封套 {response, localRequestEvidence, transportOutcome}，与云函数 result
+//   严格分开；迟到响应/后续配置变动不得改写快照。
 
 const cloudConfig = require('../config/cloud');
 
@@ -25,6 +29,13 @@ const KEY_DIAGNOSTIC_SCOPE = 'request-keys-only';
 const KEY_DIAGNOSTIC_LABELS = ['CANDIDATE_USERINFO', 'CANDIDATE_WX_CLOUD_API_TOKEN'];
 const KEY_DIAGNOSTIC_BUCKETS = ['len<=4', 'len5-8', 'len9-16', 'len17-32', 'lenOver32'];
 const KEY_DIAGNOSTIC_MAX_LABELS = 8;
+
+// 本机请求证据（手机提交轮次）：固定 schema 与字段集（任务 §2.2）。
+const LOCAL_REQUEST_EVIDENCE_SCHEMA = 'participant-identity-local-request/1';
+// 轮次/构建标识格式约束与打包器一致：轮次 4–64 位字母数字-_ 且不以符号开头；
+// previewBuildId 为 64 位小写十六进制 SHA-256。
+const ROUND_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{3,63}$/;
+const BUILD_ID_RE = /^[0-9a-f]{64}$/;
 
 function isNonNegativeSafeInt(v) {
   return typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
@@ -84,6 +95,35 @@ function sanitizeKeyDiagnostic(raw) {
   return projected;
 }
 
+/**
+ * 本机请求证据（手机提交轮次）：从已构造、即将交给 wx.cloud.callFunction 的同一个
+ * payload 采集不可变快照。仅保存经严格格式校验的公共字符串/布尔；绝不复制
+ * payload/event/request，也不保存口令、用户编号、OPENID/UNIONID、身份、token、
+ * 附带字段或原始异常。handoffAttempted=true 仅表示程序已走到即将调用 SDK 这一步，
+ * 不是网络送达、云函数收到或数据库已读取的证明。校验失败返回 null
+ * （调用 SDK 前本地参数验证失败不生成已尝试快照）。
+ */
+function captureLocalRequestEvidence(payload) {
+  const pic = payload && payload.picRequest;
+  const requestRoundId = pic && typeof pic.checkRoundId === 'string' ? pic.checkRoundId : '';
+  const schema = pic && typeof pic.schema === 'string' ? pic.schema : '';
+  const previewBuildId = typeof cloudConfig.previewBuildId === 'string' ? cloudConfig.previewBuildId : '';
+  const functionName = typeof cloudConfig.identityCheckFunction === 'string' ? cloudConfig.identityCheckFunction : '';
+  if (!ROUND_ID_RE.test(requestRoundId)) return null;
+  if (!BUILD_ID_RE.test(previewBuildId)) return null;
+  if (!schema || schema !== cloudConfig.requestProtocol) return null;
+  if (!functionName) return null;
+  // 逐字段脱离引用并冻结：迟到响应/后续配置变动不得改写已捕获快照
+  return Object.freeze({
+    schema: LOCAL_REQUEST_EVIDENCE_SCHEMA,
+    previewBuildId: previewBuildId,
+    requestRoundId: requestRoundId,
+    requestProtocol: cloudConfig.requestProtocol,
+    functionName: functionName,
+    handoffAttempted: true
+  });
+}
+
 function callIdentityCheck(request) {
   if (!request || typeof request !== 'object') {
     return Promise.reject(new Error('请求参数无效'));
@@ -112,10 +152,15 @@ function callIdentityCheck(request) {
     }
   };
   if (request.includeFullUserId === true) payload.picRequest.includeFullUserId = true;
-  return wx.cloud.callFunction({
-    name: cloudConfig.identityCheckFunction,
-    data: payload
-  }).then(res => {
+  // 本机提交轮次快照：构造完成后、紧邻 SDK 调用前，从同一个 payload 采集；
+  // 此后不再修改 payload（快照与交给 SDK 的请求字段值精确一致）。
+  const localRequestEvidence = captureLocalRequestEvidence(payload);
+  const envelope = transportOutcome => Object.freeze({
+    response: null,
+    localRequestEvidence: localRequestEvidence,
+    transportOutcome: transportOutcome
+  });
+  const onSettled = res => {
     const result = (res && res.result) || null;
     // 只投影经过固定 schema 验证的净化诊断；无效或未提供时不携带该字段。
     if (result && typeof result === 'object' && !Array.isArray(result)) {
@@ -123,8 +168,19 @@ function callIdentityCheck(request) {
       if (diagnostic) result.keyDiagnostic = diagnostic;
       else delete result.keyDiagnostic;
     }
-    return result;
-  });
+    // 本地封套：response 是未改服务端结果；服务端任何同名字段都不进入本机证据。
+    return Object.freeze({ response: result, localRequestEvidence: localRequestEvidence, transportOutcome: 'returned' });
+  };
+  const onFailed = () => envelope('failed');
+  try {
+    return wx.cloud.callFunction({
+      name: cloudConfig.identityCheckFunction,
+      data: payload
+    }).then(onSettled, onFailed);
+  } catch (_) {
+    // 同步抛错同样保留「已尝试交给 SDK」的本机事实；不携带原始错误。
+    return Promise.resolve(onFailed());
+  }
 }
 
 module.exports = { callIdentityCheck };

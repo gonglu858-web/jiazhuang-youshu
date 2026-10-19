@@ -45,6 +45,8 @@ const MANIFEST_SCHEMA = 'participant-identity-check-candidate/2';
 const PLAN_SCHEMA = 'participant-identity-plan/2';
 /** 请求分层协议版本：计划/manifest/生成前端配置/服务端适配器四方绑定。 */
 const REQUEST_PROTOCOL = 'participant-identity-request/1';
+/** 手机预览版本证据（2026-10-19 任务 §2.1）：manifest/前端配置绑定的本机受审包标识。 */
+const PREVIEW_EVIDENCE_SCHEMA = 'participant-identity-preview-evidence/1';
 const OUT_PREFIX = 'participant-identity-';
 const MAX_WINDOW_MS = 30 * 60 * 1000;
 const RECOMMENDED_WINDOW_MS = 15 * 60 * 1000;
@@ -287,12 +289,12 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-identity-check/frontend/app.js': '1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
-  'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': '2cc499bd553a90f077131de5586f3550396bbeeb6e92a7855e59d1d42291814c',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '79e3ad4ebe2cd80e9c5da96fb12c9e14c605d9b948194fd9be4e3ba2433d48e1',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': '0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605',
+  'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'e11e6ced687dc3ffec1bd45973543329fb622dc3a37103aba6dd0b3c461f7ffc',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': 'd0ad76006ce9aa259bb3281df942f5792305e29c2d4c3b170fdf2a16eebe674f',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': 'debcf869ffd8bcaacdf8467d436e1b67acc5a9f8aa6cbb91df106aa8edae8fca',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': '1fba89aab35d742370085abecdf90fd363df7cb1677bf421479335cae5dd6305',
-  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss': 'e703046fa272d9b2cd61597649ea5f2af12b5e0c3a83ec7b1eaa445a143cc442'
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': 'a1a59cff10420e557a085c19543e646653a7f553037eccb31231e4e04e1282b4',
+  'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss': 'f8970ae650922d44e4c5a53e37aa0dca4b44ae75d3707d6b57ba586c0c74a89b'
 });
 
 /** 按独立基线校验一组来源字节；漂移即 SOURCE_DRIFT（写前调用）。 */
@@ -649,6 +651,37 @@ function verifyProjectLayout(expected /* Map<rel, Buffer> */) {
   return true;
 }
 
+/**
+ * 手机预览版本标识（2026-10-19 任务 §2.1）：对固定排序的规范 JSON 取小写 SHA-256。
+ * 输入字段（对象键顺序即序列化顺序）：previewEvidenceSchema、requestProtocol、
+ * checkRoundId、participantCode、appId、envId、functionName、windowStartsAtIso、
+ * windowExpiresAtIso、packerSourceSha256（本打包器源码字节摘要）、frontendTemplates
+ * （全部已钉定前端模板的相对路径及**注入前**原始字节摘要，按 FRONTEND_TEMPLATE_FILES
+ * 固定顺序）。明确排除：口令/口令摘要、用户标识、planDigest、绝对路径、当前时间、
+ * 随机数——同输入必然同标识与同字节；轮次/任一前端模板/打包器版本改变都会改变标识。
+ * 计划不接受自报 buildId 或证据豁免字段（计划字段严格枚举，未知字段写前拒绝）。
+ */
+function computePreviewBuildId(plan) {
+  const frontendTemplates = FRONTEND_TEMPLATE_FILES.map(rel => ({
+    rel: 'frontend/' + rel,
+    sha256: sha256Buffer(readTemplateBytes('frontend/' + rel))
+  }));
+  const canonical = {
+    previewEvidenceSchema: PREVIEW_EVIDENCE_SCHEMA,
+    requestProtocol: REQUEST_PROTOCOL,
+    checkRoundId: plan.checkRoundId,
+    participantCode: plan.participantCode,
+    appId: plan.appId,
+    envId: plan.envId,
+    functionName: plan.functionName,
+    windowStartsAtIso: plan.windowStartsAtIso,
+    windowExpiresAtIso: plan.windowExpiresAtIso,
+    packerSourceSha256: sha256Buffer(fs.readFileSync(__filename)),
+    frontendTemplates
+  };
+  return sha256Buffer(Buffer.from(JSON.stringify(canonical), 'utf8'));
+}
+
 function computeArtifacts(plan) {
   const artifacts = new Map();
   // 服务端：核心模块（逐字节复制）+ 入口（唯一锚点替换写入本轮配置）
@@ -689,7 +722,10 @@ function computeArtifacts(plan) {
     }
     const withRound = anchorReplace(raw, "  checkRoundId: ''",
       "  checkRoundId: '" + plan.checkRoundId + "'", 'frontend/config/cloud.js#checkRoundId');
-    artifacts.set('frontend/' + rel, withRound);
+    // 手机预览版本标识（2026-10-19 任务 §2.1）：按唯一锚点注入前端本地只读配置
+    const withPreview = anchorReplace(withRound, "  previewBuildId: ''",
+      "  previewBuildId: '" + computePreviewBuildId(plan) + "'", 'frontend/config/cloud.js#previewBuildId');
+    artifacts.set('frontend/' + rel, withPreview);
   }
   // R1：项目配置来自**本次受审模板**，根路径与实际目录一致：
   // miniprogramRoot=frontend/、cloudfunctionRoot=server/。
@@ -743,6 +779,9 @@ function buildInternal(planPath, outOverride, windowPhase) {
     userIdentitySource: 'trusted-wx-context：APPID/OPENID 只来自 cloud.getWXContext，本地产物不含任何 OPENID 或凭据',
     // 请求分层协议绑定：计划/manifest/生成前端配置/服务端适配器四方一致（participant-identity-request/1）
     requestProtocol: REQUEST_PROTOCOL,
+    // 手机预览版本证据（2026-10-19 任务 §2.1）：manifest 绑定 schema 版本与确定性本机包标识
+    previewEvidenceSchema: PREVIEW_EVIDENCE_SCHEMA,
+    previewBuildId: computePreviewBuildId(plan),
     // 受控键诊断绑定：开关来自计划；协议版本与核心字节逐字绑定（见 assertCoreDiagnosticBinding）
     keyDiagnostic: plan.keyDiagnostic === true,
     keyDiagnosticSchema: KEY_DIAGNOSTIC_SCHEMA,
@@ -901,7 +940,11 @@ function checkDirInternal(dir, windowPhase) {
     windowStartsAtIso: plan.windowStartsAtIso, windowExpiresAtIso: plan.windowExpiresAtIso,
     closeSourceDir: relOf(path.relative(ROOT, plan.closeSourceDir)),
     keyDiagnostic: plan.keyDiagnostic === true,
-    requestProtocol: plan.requestProtocol
+    requestProtocol: plan.requestProtocol,
+    // 手机预览版本证据（R2/2026-10-19 任务 §2.1）：从受审来源严格重建并比较，
+    // 不信任清单自报值；缺失/未知/伪造/配置与清单不一致均拒绝。
+    previewEvidenceSchema: PREVIEW_EVIDENCE_SCHEMA,
+    previewBuildId: computePreviewBuildId(plan)
   };
   for (const [k, v] of Object.entries(expectFields)) {
     if (JSON.stringify(manifest[k]) !== JSON.stringify(v)) bad('manifest.' + k + ' 与计划不一致');
@@ -1251,6 +1294,8 @@ module.exports = Object.freeze({
   KEY_DIAGNOSTIC_SCHEMA,
   KEY_DIAGNOSTIC_SCOPE,
   REQUEST_PROTOCOL,
+  PREVIEW_EVIDENCE_SCHEMA,
+  computePreviewBuildId,
   FRONTEND_TEMPLATE_FILES,
   IdentityPackageError,
   readPlan,

@@ -9,3 +9,4 @@
 .row { font-size: 28rpx; line-height: 44rpx; }
 .checkline { font-size: 26rpx; color: #5a6b7c; line-height: 40rpx; }
 .stop { margin-top: 20rpx; font-size: 26rpx; color: #b45309; line-height: 38rpx; }
+.buildid { font-size: 26rpx; color: #33475b; word-break: break-all; line-height: 40rpx; margin-bottom: 12rpx; }

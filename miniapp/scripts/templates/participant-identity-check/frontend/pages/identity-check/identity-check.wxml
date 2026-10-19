@@ -1,6 +1,14 @@
 <!-- 核验页：只有一个核验动作；无角色切换/登记/取号/重试/清缓存/项目操作控件。 -->
 <view class="wrap">
   <view class="card">
+    <view class="title">本机版本与轮次（提交前核对）</view>
+    <view class="row">本机预览版本：</view>
+    <view class="buildid">{{previewBuildId || '—'}}</view>
+    <view class="row">本机配置轮次：{{configCheckRoundId || '—'}}</view>
+    <view class="tip">以上来自随本包打入的本地只读配置，不来自服务器响应或本机缓存。请先与负责人执行页核对一致再继续；此步不产生任何网络请求。</view>
+  </view>
+
+  <view class="card">
     <view class="title">本人测试账号只读核验</view>
     <view class="desc">本页面只读取你自己这一个测试账号的登记状态，不会创建账号、不会写入任何记录、不会授予角色。请在本窗口内输入临时核验口令，由你本人操作。</view>
 
@@ -17,6 +25,13 @@
     <view class="tip">请只点一次。失败不会自动重试，重复点击在本次请求返回前无效。勾选完整编号后，请把编号当面交给负责人，不要转发给其他人。</view>
   </view>
 
+  <view class="card">
+    <view class="title">轮次对照（本机与服务器分开记录）</view>
+    <view class="row">提交轮次（本机调用记录）：{{localRequestRound || '—'}}</view>
+    <view class="row">服务端返回轮次：{{result ? result.serverRoundText : '未取得'}}</view>
+    <view class="tip">提交轮次来自本机在调用前捕获的记录，不随服务器响应改变；两栏不一致仅用于定位，不取消轮次校验。</view>
+  </view>
+
   <view class="card" wx:if="{{result}}">
     <view class="title">本次核验结果</view>
     <view class="row">身份已确认：{{result.identityConfirmed ? '是' : '否'}}</view>
@@ -25,7 +40,7 @@
     <view class="row">是否已发起读取：{{result.readAttempted ? '是' : '否'}}</view>
     <view class="row">内部编号尾号：{{result.userIdTail || '—'}}</view>
     <view class="row" wx:if="{{result.fullUserIdAvailable}}">完整内部编号：{{result.userId}}</view>
-    <view class="row">核验轮次：{{result.checkRoundId}}</view>
+    <view class="row">服务端返回轮次：{{result.serverRoundText}}</view>
     <view class="row">服务端时间：{{result.serverTime || '—'}}</view>
     <view class="row" wx:if="{{result.code}}">结果码：{{result.code}}</view>
     <!-- 受控键诊断：仅诊断轮且全部准入通过时出现；只含固定标签/计数/长度分桶，无原键名或值 -->
@@ -34,6 +49,7 @@
   </view>
 
   <view class="card" wx:if="{{!result && stopHint}}">
+    <view class="row">提交轮次（本机调用记录）：{{localRequestRound || '—'}}</view>
     <view class="stop">{{stopHint}}</view>
   </view>
 </view>

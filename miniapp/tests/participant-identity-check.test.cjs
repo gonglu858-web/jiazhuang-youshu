@@ -2045,7 +2045,7 @@ test('D2 生成链（请求分层协议）：外层附带键容忍进入本人�
       assert.equal(page.data.result.code, 'PIC_REQUEST_INVALID', name + '：净化失败码');
       assert.equal(page.data.result.registrationState, 'UNKNOWN', name + '：UNKNOWN');
       assert.equal(page.data.result.readAttempted, false, name + '：读取事实 false');
-      assert.equal(page.data.result.checkRoundId, planRound, name + '：轮次来自受审配置');
+      assert.equal(page.data.result.serverRoundText, planRound, name + '：服务端返回轮次来自受审配置');
       assert.equal(page.data.result.serverTime, '', name + '：不附服务端时间');
       assert.equal(page.data.passphrase, '', name + '：口令清除保持');
       assert.equal(neg.factory.databaseCalls, 0, name + '：零数据库工厂');
@@ -2201,7 +2201,7 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   let currentResult = null;
   const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: currentResult }) } };
   await withGlobalWx(wxStub, async () => {
-    const ctx = { module: { exports: {} }, require: () => ({ checkRoundId: TEST_ROUND }), wx: wxStub };
+    const ctx = { module: { exports: {} }, require: () => ({ checkRoundId: TEST_ROUND, requestProtocol: packer.REQUEST_PROTOCOL, previewBuildId: 'a'.repeat(64), identityCheckFunction: 'scheduleSandbox' }), wx: wxStub };
     vm.runInNewContext(fs.readFileSync(clientFile, 'utf8'), ctx, { filename: clientFile });
     const client = ctx.module.exports;
     const call = async diag => {
@@ -2210,7 +2210,12 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
         registrationState: 'UNKNOWN', recordMatched: null, readAttempted: false, userIdTail: '', code: 'PIC_REQUEST_INVALID', message: '请求含未登记字段。'
       };
       if (diag !== undefined) currentResult.keyDiagnostic = diag;
-      return client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'synthetic-r4-passphrase' });
+      // 2026-10-19 任务 §2.2：客户端返回本地封套 {response, localRequestEvidence, transportOutcome}；
+      // 本测试关注服务端 result 投影，故取封套内的 response（未改服务端结果）。
+      const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'synthetic-r4-passphrase' });
+      assert.ok(envelope && typeof envelope === 'object' && envelope.transportOutcome === 'returned', '封套结构：returned');
+      assert.ok(envelope.localRequestEvidence && envelope.localRequestEvidence.handoffAttempted === true, '封套携带已尝试本机快照');
+      return envelope.response;
     };
     // 畸形：整份丢弃（keyDiagnostic 字段消失），不修补
     for (const [name, mutate] of Object.entries(malformedCases)) {
@@ -2285,9 +2290,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
-test('D6 审计v11失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7/v8/v9/v10保持各轮已交付字节）', () => {
+test('D6 审计v12失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7–v11保持各轮已交付字节）', () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v11-20261018.cjs');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v12-20261019.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;
@@ -2331,9 +2336,9 @@ test('D6 审计v11失败判定：业务期意外守卫（含被catch）必须非
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
 });
 
-test('D7 收尾证据v6外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v5 保持上一轮已交付字节，v4/v3/v2 与历史20261016脚本保持原字节）', async () => {
+test('D7 收尾证据v7外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v6 保持上一轮已交付字节，v5/v4/v3/v2 与历史20261016脚本保持原字节）', async () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v6-20261018.cjs');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v7-20261019.cjs');
   const source = fs.readFileSync(evidenceFile, 'utf8');
   const run = kind => {
     let src = source;
@@ -3285,4 +3290,303 @@ test('E8 CLI 空值与必需配对（R4）：空字符串值/缺 --close-source 
 
 test('E9 共享守卫边界：父Socket/DNS/公共spawn拒绝；子DNS/Socket计数；按字节截断、超时、启动失败与畸形回执统一拒绝', async () => {
   await require('./helpers/pic-guard-boundary-proof.cjs').runBoundaryProof();
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// H1–H5 手机请求轮次与预览版本（CodeBuddy任务-手机请求轮次与预览版本本地核对-20261019 §5 A–E）
+// ════════════════════════════════════════════════════════════════════════════
+
+function root4H() { return path.resolve(__dirname, '..', '..'); }
+function shaHexH(content) { return crypto.createHash('sha256').update(content).digest('hex'); }
+
+test('H1 预览版本确定性（A）：同输入 build/prepare 同标识同字节；轮次变化标识变化；passphraseDigest 不参与；前端模板漂移写前拒绝；计划自报 buildId 拒绝', () => {
+  const closeSource = makeCloseSourceDir();
+  const starts = Date.now() - 60000;
+  const mkPlan = round => writePicPlan(closeSource, {
+    synthetic: false,
+    checkRoundId: round,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 30 * 60 * 1000).toISOString()
+  });
+  const planA = mkPlan('synthetic-round-h1-a');
+  const dirA1 = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h1-a1-' + RUN_ID);
+  const dirA2 = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h1-a2-' + RUN_ID);
+  const b1 = packer.build(planA, dirA1);
+  const b2 = packer.build(planA, dirA2);
+  const idA = b1.manifest.previewBuildId;
+  assert.match(idA, /^[0-9a-f]{64}$/, '64 位小写十六进制');
+  assert.equal(b1.manifest.previewEvidenceSchema, 'participant-identity-preview-evidence/1', 'manifest 携带证据 schema');
+  assert.equal(b2.manifest.previewBuildId, idA, '同输入同标识');
+  const prep = packer.prepare(planA, path.join(OUT_ROOT, packer.OUT_PREFIX + 'h1-prep-' + RUN_ID));
+  assert.equal(prep.manifest.previewBuildId, idA, 'prepare 与 build 同标识');
+  assert.equal(
+    shaHexH(fs.readFileSync(path.join(dirA1, 'frontend', 'config', 'cloud.js'))),
+    shaHexH(fs.readFileSync(path.join(prep.outDir, 'frontend', 'config', 'cloud.js'))),
+    'prepare/build 生成配置字节一致');
+  const cfgText = fs.readFileSync(path.join(dirA1, 'frontend', 'config', 'cloud.js'), 'utf8');
+  assert.ok(cfgText.includes("previewBuildId: '" + idA + "'"), 'previewBuildId 已注入生成配置');
+  // 轮次敏感性
+  const planB = mkPlan('synthetic-round-h1-b');
+  assert.notEqual(packer.computePreviewBuildId(JSON.parse(fs.readFileSync(planB, 'utf8'))), idA, '轮次变化 → 标识变化');
+  // passphraseDigest 不参与（仅改口令摘要字段）
+  const planObj = JSON.parse(fs.readFileSync(planA, 'utf8'));
+  const planCPath = planA.replace(/plan-[0-9a-f]+\.json/, 'plan-h1c.json');
+  fs.writeFileSync(planCPath, JSON.stringify(Object.assign({}, planObj, { passphraseDigest: shaHexH('h1-other-passphrase') }), null, 2));
+  assert.equal(packer.computePreviewBuildId(JSON.parse(fs.readFileSync(planCPath, 'utf8'))), idA, '口令摘要不参与标识');
+  // 前端模板漂移：写前拒绝（SOURCE_DRIFT）且零产物
+  const wxmlPath = path.join(root4H(), 'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml');
+  const wxmlOrig = fs.readFileSync(wxmlPath);
+  fs.writeFileSync(wxmlPath, wxmlOrig.toString('utf8') + '<!-- drift -->');
+  const driftDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h1-drift-' + RUN_ID);
+  try {
+    assert.throws(() => packer.build(planA, driftDir), e => e.code === packer.ERR.SOURCE_DRIFT, '受审源码漂移写前拒绝');
+    assert.equal(fs.existsSync(driftDir), false, '漂移零产物');
+  } finally {
+    fs.writeFileSync(wxmlPath, wxmlOrig);
+  }
+  // 计划自报 buildId：未知字段写前拒绝
+  const planDPath = planA.replace(/plan-[0-9a-f]+\.json/, 'plan-h1d.json');
+  fs.writeFileSync(planDPath, JSON.stringify(Object.assign({}, planObj, { previewBuildId: idA }), null, 2));
+  const selfDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h1-self-' + RUN_ID);
+  assert.throws(() => packer.build(planDPath, selfDir), e => /计划含未知字段/.test(e.message), '计划自报 buildId 拒绝');
+  assert.equal(fs.existsSync(selfDir), false, '自报 buildId 零产物');
+});
+
+test('H2 生成链三栏与payload（B）：加载/前台零发送且预览版本/配置轮次可见；捕获提交轮次与交给wx的payload精确一致；payload键集无新增', async () => {
+  const closeSource = makeCloseSourceDir();
+  const openid = 'openid-h2-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  const starts = Date.now() - 60000;
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h2-' + RUN_ID);
+  packer.build(writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 29 * 60 * 1000).toISOString()
+  }), outDir);
+  const manifest = JSON.parse(fs.readFileSync(path.join(outDir, 'manifest.json'), 'utf8'));
+  const sent = [];
+  const wxStub = {
+    cloud: {
+      _identityCheckEnvInited: false,
+      init() {},
+      callFunction(opts) {
+        sent.push({ type: 'callFunction', name: opts.name, data: opts.data });
+        const main = loadCandidateMain(outDir, {
+          appId: APPID, envId: ENV_ID, openid,
+          db: makeTrapDb({ rows: [{ _id: userId, openid, status: 'active' }] })
+        });
+        return main.main(opts.data).then(result => ({ result }));
+      }
+    }
+  };
+  await withGlobalWx(wxStub, async () => {
+    const page = loadCandidatePage(outDir, wxStub);
+    page.setData({});
+    page.onLoad();
+    if (page.onShow) page.onShow();
+    assert.equal(sent.filter(x => x.type === 'callFunction').length, 0, '加载/前台零发送');
+    assert.equal(page.data.previewBuildId, manifest.previewBuildId, '本机预览版本可见且与 manifest 一致');
+    assert.equal(page.data.configCheckRoundId, manifest.checkRoundId, '本机配置轮次可见');
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    const calls = sent.filter(x => x.type === 'callFunction');
+    assert.equal(calls.length, 1, '唯一提交一次发送');
+    const payload = calls[0].data;
+    assert.equal(payload.picRequest.checkRoundId, page.data.localRequestRound, '捕获提交轮次=交给wx的同一payload值');
+    assert.equal(Object.keys(payload).join(','), 'picRequest', '网络payload外层键集无新增');
+    assert.equal(Object.keys(payload.picRequest).sort().join(','), 'action,checkRoundId,passphrase,schema', '内层键集无新增（未勾选完整编号）');
+    assert.equal(page.data.result.registrationState, 'ACTIVE', '既有 server/adapter/core 链继续通过');
+    assert.equal(page.data.result.serverRoundText, manifest.checkRoundId, '服务端返回轮次展示');
+    assert.ok(page.data.localRequestRound, '提交轮次（本机调用记录）已展示');
+  });
+});
+
+test('H3 旧前端请求新服务端（C）：ROUND_MISMATCH/UNKNOWN/readAttempted=false、collection/get=0 与 factory=1 分述；页面同时显示旧提交轮次与新返回轮次且不被覆盖；正向同轮 ACTIVE', async () => {
+  const closeSource = makeCloseSourceDir();
+  const openid = 'openid-h3-' + RUN_ID;
+  const userId = core.deriveUserId(APPID, openid);
+  const starts = Date.now() - 60000;
+  const mk = round => {
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h3-' + round.slice(-4) + '-' + crypto.randomBytes(3).toString('hex'));
+    try {
+    packer.build(writePicPlan(closeSource, {
+      synthetic: false, checkRoundId: round,
+      windowStartsAtIso: new Date(starts).toISOString(),
+      windowExpiresAtIso: new Date(starts + 29 * 60 * 1000).toISOString()
+    }), outDir);
+    } catch (e) { throw new Error('H3 mk 构建失败[' + round + ' dir=' + outDir + ']: ' + e.message); }
+    return { outDir, round };
+  };
+  const oldPkg = mk('synthetic-round-h3-old');
+  const newPkg = mk('synthetic-round-h3-new');
+  const counters = { factory: 0, collections: [], gets: 0 };
+  const db = {
+    collection(name) { counters.collections.push(name); if (name !== core.FIXED_TARGET.collection) throw Error('TRAP 集合'); return { doc(id) { if (id !== userId) throw Error('TRAP 主键'); return { async get() { counters.gets++; throw Error('unprojected get'); }, field(f) { return { async get() { counters.gets++; return { data: { _id: userId, openid, status: 'active' } }; } }; } }; } }; }
+  };
+  const srvMain = loadCandidateMain(newPkg.outDir, {
+    appId: APPID, envId: ENV_ID, openid, db, onDatabase: () => counters.factory++
+  });
+  const loadOldModule = rel => {
+    const m = { exports: {} };
+    vm.runInNewContext(fs.readFileSync(path.join(oldPkg.outDir, rel), 'utf8'), { module: m, exports: m.exports }, { filename: rel });
+    return m.exports;
+  };
+  const clientOld = { module: { exports: {} }, require: name => {
+    if (name === '../config/cloud') return loadOldModule(path.join('frontend', 'config', 'cloud.js'));
+    throw Error('unexpected require ' + name);
+  }, wx: null };
+  clientOld.wx = { cloud: { _identityCheckEnvInited: false, init() {}, callFunction: async opts => ({ result: await srvMain.main(opts.data) }) } };
+  vm.runInNewContext(fs.readFileSync(path.join(oldPkg.outDir, 'frontend', 'utils', 'identity-check-client.js'), 'utf8'), clientOld, { filename: 'client-old.js' });
+  const envelope = await clientOld.module.exports.callIdentityCheck({ action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE });
+  assert.equal(envelope.localRequestEvidence.requestRoundId, oldPkg.round, '本机快照=旧配置轮次');
+  assert.equal(envelope.transportOutcome, 'returned');
+  assert.equal(envelope.response.code, 'PIC_ROUND_MISMATCH', '轮次校验仍拒绝');
+  assert.equal(envelope.response.registrationState, 'UNKNOWN');
+  assert.equal(envelope.response.readAttempted, false, '零登记读取');
+  assert.equal(counters.factory, 1, 'SDK 工厂已构造（按实际计数分述）');
+  assert.equal(counters.collections.length, 0, '集合零访问');
+  assert.equal(counters.gets, 0, 'get 零次');
+  const pageStub = { cloud: { _identityCheckEnvInited: false, init() {}, callFunction: async opts => ({ result: await srvMain.main(opts.data) }) } };
+  await withGlobalWx(pageStub, async () => {
+    const page = loadCandidatePage(oldPkg.outDir, pageStub);
+    page.onLoad();
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(page.data.localRequestRound, oldPkg.round, '提交轮次（本机调用记录）=旧轮次');
+    assert.equal(page.data.result.serverRoundText, newPkg.round, '服务端返回轮次=新轮次');
+    assert.equal(page.data.result.serverRoundText, newPkg.round, '服务端返回轮次保持新值（原始值不进页面数据）');
+    assert.equal(page.data.result.code, 'PIC_ROUND_MISMATCH');
+  });
+  const okStub = { cloud: { _identityCheckEnvInited: false, init() {}, callFunction: async opts => ({ result: await srvMain.main(opts.data) }) } };
+  await withGlobalWx(okStub, async () => {
+    const page = loadCandidatePage(newPkg.outDir, okStub);
+    page.onLoad();
+    page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+    await page.onCheckTap();
+    assert.equal(page.data.result.registrationState, 'ACTIVE', '同轮正向 ACTIVE');
+    assert.equal(page.data.localRequestRound, newPkg.round);
+    assert.equal(page.data.result.serverRoundText, newPkg.round);
+  });
+});
+
+test('H4 响应伪造与泄漏防护（D）：伪造 localRequestEvidence/previewBuildId、恶意/超长返回轮次、秘密字符串不被采信不泄漏；采样后配置/响应改变证据不变', async () => {
+  const TEST_ROUND2 = 'synthetic-round-h4';
+  const baseConfig = { envId: 'cloud1-d8gcq5ag39d847723', identityCheckFunction: 'scheduleSandbox', requestProtocol: packer.REQUEST_PROTOCOL, checkRoundId: TEST_ROUND2, previewBuildId: 'b'.repeat(64) };
+  const mkClient = (configOverrides, wxStub) => {
+    const cfg = configOverrides || baseConfig;
+    const ctx = { module: { exports: {} }, require: () => cfg, wx: wxStub };
+    vm.runInNewContext(fs.readFileSync(path.join(root4H(), 'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js'), 'utf8'), ctx, { filename: 'client-h4.js' });
+    return ctx.module.exports;
+  };
+  {
+    const forged = {
+      checkRoundId: TEST_ROUND2, ok: false, code: 'PIC_ROUND_MISMATCH', registrationState: 'UNKNOWN', readAttempted: false,
+      localRequestEvidence: { schema: 'participant-identity-local-request/1', requestRoundId: 'forged-server-round', handoffAttempted: true },
+      previewBuildId: 'f'.repeat(64),
+      serverSecret: 'synthetic-server-secret-value'
+    };
+    const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: forged }) } };
+    const client = mkClient(null, wxStub);
+    const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'synthetic-h4-passphrase' });
+    assert.equal(envelope.transportOutcome, 'returned');
+    assert.notEqual(envelope.localRequestEvidence, forged.localRequestEvidence, '不采信服务端伪造本机证据');
+    assert.equal(envelope.localRequestEvidence.previewBuildId, 'b'.repeat(64), '本机 previewBuildId 不被服务端覆盖');
+    assert.equal(envelope.localRequestEvidence.requestRoundId, TEST_ROUND2, '本机提交轮次保持实际捕获值');
+    assert.equal(JSON.stringify(envelope.localRequestEvidence).includes('synthetic-server-secret-value'), false, '本机证据不含服务端秘密字符串');
+  }
+  {
+    const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: { checkRoundId: '<script>alert(1)</script>', ok: false, code: 'PIC_ROUND_MISMATCH', registrationState: 'UNKNOWN', readAttempted: false } }) } };
+    const closeSource = makeCloseSourceDir();
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h4-page-' + RUN_ID);
+    packer.build(writePicPlan(closeSource, { synthetic: false, windowStartsAtIso: new Date(Date.now() - 60000).toISOString(), windowExpiresAtIso: new Date(Date.now() + 28 * 60 * 1000).toISOString() }), outDir);
+    await withGlobalWx(wxStub, async () => {
+      const page = loadCandidatePage(outDir, wxStub);
+      page.onLoad();
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.serverRoundText, '未取得', '恶意返回轮次显示未取得');
+      assert.ok(!JSON.stringify(page.data.result).includes('<script>'), '恶意文本不回显');
+      assert.equal(page.data.localRequestRound, page.data.configCheckRoundId, '本机提交轮次不被响应覆盖');
+    });
+    const longStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: { checkRoundId: 'x'.repeat(500), ok: false, code: 'PIC_ROUND_MISMATCH', registrationState: 'UNKNOWN', readAttempted: false } }) } };
+    await withGlobalWx(longStub, async () => {
+      const page = loadCandidatePage(outDir, longStub);
+      page.onLoad();
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(page.data.result.serverRoundText, '未取得', '超长返回轮次显示未取得');
+    });
+  }
+  {
+    let configRound = TEST_ROUND2;
+    const changingConfig = { get checkRoundId() { return configRound; }, envId: 'cloud1-d8gcq5ag39d847723', identityCheckFunction: 'scheduleSandbox', requestProtocol: packer.REQUEST_PROTOCOL, previewBuildId: 'c'.repeat(64) };
+    let servedResult = { checkRoundId: TEST_ROUND2, ok: true, registrationState: 'ACTIVE', readAttempted: true };
+    const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async () => ({ result: servedResult }) } };
+    const client = mkClient(changingConfig, wxStub);
+    const envelopeBefore = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'synthetic-h4-passphrase' });
+    const evidenceBefore = JSON.stringify(envelopeBefore.localRequestEvidence);
+    configRound = 'synthetic-round-changed';
+    servedResult = { checkRoundId: 'synthetic-round-changed', ok: false, code: 'PIC_ROUND_MISMATCH', registrationState: 'UNKNOWN', readAttempted: false, localRequestEvidence: { requestRoundId: 'forged' } };
+    const envelopeAfter = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'synthetic-h4-passphrase' });
+    assert.equal(envelopeBefore.localRequestEvidence.requestRoundId, TEST_ROUND2, '先前证据不被改写');
+    assert.equal(JSON.stringify(envelopeBefore.localRequestEvidence), evidenceBefore, '先前证据字节级不变（冻结）');
+    assert.equal(envelopeAfter.localRequestEvidence.requestRoundId, 'synthetic-round-changed', '新调用捕获新值（每次独立快照）');
+    assert.equal(JSON.stringify(envelopeAfter.localRequestEvidence).includes('forged'), false, '响应伪造不进入本机证据');
+  }
+});
+
+test('H5 失败路径保留本机事实（E）：同步抛错/异步reject/缺result保留快照与口令清除、无自动重试；前置拒绝无假发送事实', async () => {
+  const mkClient = (callFunctionImpl) => {
+    const ctx = { module: { exports: {} }, require: () => ({ envId: 'cloud1-d8gcq5ag39d847723', identityCheckFunction: 'scheduleSandbox', requestProtocol: packer.REQUEST_PROTOCOL, checkRoundId: 'synthetic-round-h5', previewBuildId: 'd'.repeat(64) }), wx: { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: callFunctionImpl } } };
+    vm.runInNewContext(fs.readFileSync(path.join(root4H(), 'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js'), 'utf8'), ctx, { filename: 'client-h5.js' });
+    return ctx.module.exports;
+  };
+  {
+    const client = mkClient(function () { throw new Error('synthetic-sync-throw'); });
+    const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'p' });
+    assert.equal(envelope.transportOutcome, 'failed');
+    assert.equal(envelope.response, null);
+    assert.equal(envelope.localRequestEvidence.handoffAttempted, true, '同步抛错保留已尝试事实');
+    assert.equal(JSON.stringify(envelope).includes('synthetic-sync-throw'), false, '不带原始异常');
+  }
+  {
+    const client = mkClient(async () => { throw new Error('synthetic-async-reject'); });
+    const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'p' });
+    assert.equal(envelope.transportOutcome, 'failed');
+    assert.equal(envelope.localRequestEvidence.handoffAttempted, true);
+    assert.equal(JSON.stringify(envelope).includes('synthetic-async-reject'), false);
+  }
+  {
+    const client = mkClient(async () => ({ nothing: true }));
+    const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: 'p' });
+    assert.equal(envelope.response, null);
+    assert.equal(envelope.transportOutcome, 'returned');
+    assert.equal(envelope.localRequestEvidence.handoffAttempted, true);
+  }
+  {
+    const closeSource = makeCloseSourceDir();
+    const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h5-' + RUN_ID);
+    packer.build(writePicPlan(closeSource, { synthetic: false, windowStartsAtIso: new Date(Date.now() - 60000).toISOString(), windowExpiresAtIso: new Date(Date.now() + 28 * 60 * 1000).toISOString() }), outDir);
+    let calls = 0;
+    const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction(opts) { calls++; throw new Error('synthetic transport failure'); } } };
+    const hadWx = Object.prototype.hasOwnProperty.call(globalThis, 'wx');
+    const prevWx = globalThis.wx;
+    globalThis.wx = wxStub; // 多次 await 的用例：手动作用域保证 wx 全程可用（finally 还原）
+    try {
+      const page = loadCandidatePage(outDir, wxStub);
+      page.onLoad();
+      await page.onCheckTap(); // 无口令前置拒绝
+      assert.equal(calls, 0, '前置拒绝零发送');
+      assert.equal(page.data.localRequestRound, '', '前置拒绝无假发送事实');
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      assert.equal(page.data.passphrase, SYNTHETIC_PASSPHRASE, '口令已输入（sending=' + page.data.sending + '）');
+      await page.onCheckTap();
+      assert.equal(calls, 1, '失败不自动重试（实际 calls=' + calls + ' stopHint=' + page.data.stopHint + ' sending=' + page.data.sending + '）');
+      assert.equal(page.data.passphrase, '', '失败也清除口令（stopHint=' + page.data.stopHint + ' sending=' + page.data.sending + ' passphrase=' + page.data.passphrase + '）');
+      assert.ok(page.data.localRequestRound, '失败保留本机调用事实（提交轮次）');
+      assert.equal(page.data.result, null);
+    } finally {
+      if (hadWx) globalThis.wx = prevWx; else delete globalThis.wx;
+    }
+  }
 });
