@@ -1,0 +1,29 @@
+{
+  "schema": "codex-i2-preview-config-reconciliation/1",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "observedAt": "2026-10-19T04:36:44.231Z",
+  "initialCheckFailed": true,
+  "onlyFrozenFileChanged": "project.config.json",
+  "addedSettings": [
+    "setting.compileWorklet",
+    "setting.uglifyFileName",
+    "setting.uploadWithSourceMap",
+    "setting.localPlugins",
+    "setting.disableUseStrict",
+    "setting.useCompilerPlugins",
+    "setting.condition"
+  ],
+  "allExistingConfigValuesUnchanged": true,
+  "other38FilesMatched": true,
+  "newLocalFile": "project.private.config.json",
+  "observedConfigSha256": "a1d6a0809afcdc70ca53a6df6fd5e25d89a6c2c252122faa3c7b316ee11c17e4",
+  "privateFileSha256": "639d28bfab192ff86936e25880f3f2d1db0f56ef98b54e72d27f285ac5fcad95",
+  "backupDir": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i2-control-i2prepare-20261019-d8e85ad1bc8a\\manual-preview-config-backup",
+  "action": "preserved observed config; moved private config into excluded control backup; restored exact pinned project.config template",
+  "preparedCheckAfter": true,
+  "executionReady": false,
+  "closeCheckAfter": true,
+  "closeFiles": 23,
+  "previewSource": "user report; no second preview requested",
+  "cloudActions": 0
+}

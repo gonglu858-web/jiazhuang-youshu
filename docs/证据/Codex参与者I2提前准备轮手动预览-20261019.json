@@ -1,0 +1,20 @@
+{
+  "schema": "codex-i2-manual-preview-observation/1",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "recordedAt": "2026-10-19T04:36:02.701Z",
+  "source": "user report via asynchronous question reply",
+  "userReport": "二维码已出现，无报错",
+  "manualPreviewReportedSuccess": true,
+  "assistantDidNotPerformPreview": true,
+  "postPreviewPreparationCheck": false,
+  "postPreviewProblems": [
+    "盘上字节/哈希与重建不符：project.config.json",
+    "额外文件：project.private.config.json"
+  ],
+  "closeCheck": true,
+  "windowStartsAtIso": "2026-10-19T05:00:00.0000000Z",
+  "windowExpiresAtIso": "2026-10-19T05:30:00.0000000Z",
+  "cloudCredentialFetches": 0,
+  "deploymentAttempts": 0,
+  "realFunctionInvocations": 0
+}
