@@ -1,0 +1,45 @@
+{
+  "schema": "codex-i2-execution-and-close-result/1",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "observedAt": "2026-10-19T05:04:12.411Z",
+  "authorizationSource": "docs/证据/Codex参与者I2提前准备轮批准-20261019.json",
+  "manualPreview": "user reported QR without error",
+  "candidate": {
+    "status": "REMOTE_ZIP_OBTAINED_VERIFICATION_PENDING",
+    "sourceFilesMatched": 4,
+    "deployCalls": 1,
+    "finishedAt": "2026-10-19T05:01:08.853Z"
+  },
+  "stop": {
+    "reason": "local passphrase-display DateTime reparsing lost UTC kind; false INSUFFICIENT_TIME",
+    "windowActuallyValid": true,
+    "plaintextFileCreated": false,
+    "passphraseDecrypted": false,
+    "displayCommandStoppedBeforeDecryption": true,
+    "participantResultReceived": false,
+    "participantIdentityConfirmed": false,
+    "registrationState": "NOT_VERIFIED",
+    "scope": "no repeated candidate deployment this round"
+  },
+  "closed": {
+    "finishedAt": "2026-10-19T05:02:27.205Z",
+    "beijingTime": "2026-10-19 13:02:27",
+    "sourceFilesMatched": 8,
+    "codeSha256": "947befece75aa7142db2daf05bd82930db9bb8970fc083c3dbf656f17eed6c09",
+    "wxServerSdk": "3.0.1",
+    "databaseVersion": "1.4.1",
+    "deployCalls": 1
+  },
+  "counts": {
+    "credentialFetchRequested": 2,
+    "scfReadApiProcesses": 5,
+    "zipDownloads": 2,
+    "candidateDeploy": 1,
+    "closeDeploy": 1,
+    "assistantFunctionInvocations": 0,
+    "businessDatabaseCalls": 0
+  },
+  "fees": "authorized existing-plan usage; actual billing not read",
+  "plaintextCleanup": "not needed: file not created; encrypted passphrase remains in excluded control directory",
+  "next": "local-only integrate tested timezone-safe display guard into future frozen execution script; new actual round requires specific confirmation"
+}

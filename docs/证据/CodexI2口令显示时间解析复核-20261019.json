@@ -1,0 +1,33 @@
+{
+  "schema": "codex-local-time-parsing-proof/1",
+  "testedAt": "2026-10-19T05:03:18.2451006Z",
+  "runtime": "7.6.5",
+  "localZone": "China Standard Time",
+  "autoType": "System.DateTime",
+  "autoKind": "Utc",
+  "incorrectReparseDeadline": "2026-10-18T21:25:00.0000000Z",
+  "correctUtcDeadline": "2026-10-19T05:25:00.0000000+00:00",
+  "actualTimeAtFailure": "2026-10-19T05:01:58.0000000+00:00",
+  "falseRejectionReproduced": true,
+  "correctedAllowsActualTime": true,
+  "boundaryCases": [
+    {
+      "now": "2026-10-19T05:24:59Z",
+      "allowDisplay": true,
+      "expected": true
+    },
+    {
+      "now": "2026-10-19T05:25:00Z",
+      "allowDisplay": false,
+      "expected": false
+    },
+    {
+      "now": "2026-10-19T05:25:01Z",
+      "allowDisplay": false,
+      "expected": false
+    }
+  ],
+  "secretRead": false,
+  "networkUsed": false,
+  "ok": true
+}
