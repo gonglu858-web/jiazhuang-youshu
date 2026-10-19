@@ -1,0 +1,26 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..'),hits=[],guard=require('../../miniapp/tests/helpers/pic-guard-runner.cjs').installParentGuards({hits,getPhase:()=> 'review',allowedScripts:[]});
+const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+async function main(){
+ const packer=require('../../miniapp/scripts/package-participant-identity-check.cjs');
+ const previous=JSON.parse(fs.readFileSync(path.join(__dirname,'Codex参与者I2固化显示续接轮包准备-20261019.json')));
+ const scratch=path.join(root,'artifacts/schedule-sandbox/business-test','codex-preview-review-'+crypto.randomUUID());fs.mkdirSync(scratch,{recursive:true});
+ const plan={...previous.plan,synthetic:true,checkRoundId:'synthetic-codex-preview-review',passphraseDigest:sha('synthetic-review-secret'),windowStartsAtIso:'2030-01-01T00:00:00.000Z',windowExpiresAtIso:'2030-01-01T00:10:00.000Z'};
+ const pp=path.join(scratch,'plan.json');fs.writeFileSync(pp,JSON.stringify(plan),{flag:'wx'});const built=packer.build(pp,path.join(path.dirname(scratch),'participant-identity-review-'+path.basename(scratch)));process.env.PIC_CLOSE_SOURCE_DIR=plan.closeSourceDir;
+ assert(packer.checkDir(built.outDir).ok);assert(packer.checkPreparedDir(built.outDir).ok);
+ const cfgContext={module:{exports:{}}};vm.runInNewContext(fs.readFileSync(path.join(built.outDir,'frontend/config/cloud.js'),'utf8'),cfgContext);const cfg=cfgContext.module.exports;
+ const clientSource=fs.readFileSync(path.join(built.outDir,'frontend/utils/identity-check-client.js'),'utf8');
+ async function clientCase(label,patch,result={result:{code:'synthetic-result'}}){let calls=0,initialized=0;const config={...cfg,...patch};const ctx={module:{exports:{}},require:n=>{assert.equal(n,'../config/cloud');return config;},wx:{cloud:{init(){initialized++;},callFunction(o){calls++;return Promise.resolve(result);}}}};vm.runInNewContext(clientSource,ctx,{timeout:1000});let e=null,thrown=false;try{e=await ctx.module.exports.callIdentityCheck({action:'inspectSelf',passphrase:'synthetic-review-secret'});}catch(_){thrown=true;}return {label,calls,initialized,thrown,evidencePresent:!!e?.localRequestEvidence,recordedProtocol:e?.localRequestEvidence?.requestProtocol||null,recordedFunction:e?.localRequestEvidence?.functionName||null,transportOutcome:e?.transportOutcome||null,responsePresent:!!e?.response};}
+ const clientCases=[];for(const [n,p]of [['valid',{}],['missingBuildId',{previewBuildId:''}],['malformedBuildId',{previewBuildId:'not-a-build-id'}],['invalidRound',{checkRoundId:'!'}],['wrongProtocol',{requestProtocol:'unapproved-protocol/9'}],['wrongFunction',{identityCheckFunction:'unapprovedFunction'}]])clientCases.push(await clientCase(n,p));
+ assert.equal(clientCases[0].calls,1);assert(clientCases[0].evidencePresent);
+ for(const x of clientCases.slice(1,4)){assert.equal(x.calls,1);assert.equal(x.evidencePresent,false);}
+ for(const x of clientCases.slice(4)){assert.equal(x.calls,1);assert.equal(x.evidencePresent,true);}
+ const missingResult=await clientCase('missingResult',{},{});assert.equal(missingResult.transportOutcome,'returned');assert.equal(missingResult.responsePresent,false);
+ const template=path.join(root,'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js'),before=fs.readFileSync(template),origRead=fs.readFileSync,drift=[];
+ try{fs.readFileSync=function(p,...a){const b=origRead.call(fs,p,...a);if(typeof p==='string'&&path.resolve(p)===template){return Buffer.isBuffer(b)?Buffer.concat([b,Buffer.from('\n// synthetic source drift')]):b+'\n// synthetic source drift';}return b;};for(const method of ['checkDir','checkPreparedDir']){try{const r=packer[method](built.outDir);drift.push({method,threw:false,ok:r.ok,problems:r.problems});}catch(e){drift.push({method,threw:true,code:e.code});}}}finally{fs.readFileSync=origRead;}
+ assert(fs.readFileSync(template).equals(before));for(const x of drift){assert(x.threw);assert.equal(x.code,'PIC_SOURCE_DRIFT');}assert(packer.checkDir(built.outDir).ok);assert(packer.checkPreparedDir(built.outDir).ok);const close=packer.checkCloseDir(built.outDir);assert(close.ok&&close.files===23);
+ const report={schema:'codex-preview-round-review-counterexamples/1',reviewedCommit:'60967bf',observedAt:new Date().toISOString(),verificationKind:'generated artifacts + vm synthetic SDK boundary; in-memory source drift only',clientCases,missingResult,sourceDrift:drift,sourceBytesUnchanged:true,legalCheckControlsPassed:true,closeFiles:23,implementationSha256:sha(fs.readFileSync(path.join(root,'miniapp/scripts/package-participant-identity-check.cjs'))),unexpectedGuardHits:hits.length,realCloudCalls:0,credentialReads:0,counterexamplesReproduced:true};assert.equal(hits.length,0);
+ if(process.argv.length===2)console.log(JSON.stringify(report,null,2));else{assert.equal(process.argv.length,4);assert.equal(process.argv[2],'--out');fs.writeFileSync(process.argv[3],JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({counterexamplesReproduced:true,clientCases:clientCases.length,driftChecks:drift.length,unexpected:0}));}
+}
+main().catch(e=>{console.error(e.stack);process.exitCode=1;}).finally(()=>guard.restoreAll());

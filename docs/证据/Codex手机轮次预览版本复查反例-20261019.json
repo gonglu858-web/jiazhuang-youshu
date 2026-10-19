@@ -1,0 +1,105 @@
+{
+  "schema": "codex-preview-round-review-counterexamples/1",
+  "reviewedCommit": "60967bf",
+  "observedAt": "2026-10-19T15:54:55.543Z",
+  "verificationKind": "generated artifacts + vm synthetic SDK boundary; in-memory source drift only",
+  "clientCases": [
+    {
+      "label": "valid",
+      "calls": 1,
+      "initialized": 1,
+      "thrown": false,
+      "evidencePresent": true,
+      "recordedProtocol": "participant-identity-request/1",
+      "recordedFunction": "scheduleSandbox",
+      "transportOutcome": "returned",
+      "responsePresent": true
+    },
+    {
+      "label": "missingBuildId",
+      "calls": 1,
+      "initialized": 1,
+      "thrown": false,
+      "evidencePresent": false,
+      "recordedProtocol": null,
+      "recordedFunction": null,
+      "transportOutcome": "returned",
+      "responsePresent": true
+    },
+    {
+      "label": "malformedBuildId",
+      "calls": 1,
+      "initialized": 1,
+      "thrown": false,
+      "evidencePresent": false,
+      "recordedProtocol": null,
+      "recordedFunction": null,
+      "transportOutcome": "returned",
+      "responsePresent": true
+    },
+    {
+      "label": "invalidRound",
+      "calls": 1,
+      "initialized": 1,
+      "thrown": false,
+      "evidencePresent": false,
+      "recordedProtocol": null,
+      "recordedFunction": null,
+      "transportOutcome": "returned",
+      "responsePresent": true
+    },
+    {
+      "label": "wrongProtocol",
+      "calls": 1,
+      "initialized": 1,
+      "thrown": false,
+      "evidencePresent": true,
+      "recordedProtocol": "unapproved-protocol/9",
+      "recordedFunction": "scheduleSandbox",
+      "transportOutcome": "returned",
+      "responsePresent": true
+    },
+    {
+      "label": "wrongFunction",
+      "calls": 1,
+      "initialized": 1,
+      "thrown": false,
+      "evidencePresent": true,
+      "recordedProtocol": "participant-identity-request/1",
+      "recordedFunction": "unapprovedFunction",
+      "transportOutcome": "returned",
+      "responsePresent": true
+    }
+  ],
+  "missingResult": {
+    "label": "missingResult",
+    "calls": 1,
+    "initialized": 1,
+    "thrown": false,
+    "evidencePresent": true,
+    "recordedProtocol": "participant-identity-request/1",
+    "recordedFunction": "scheduleSandbox",
+    "transportOutcome": "returned",
+    "responsePresent": false
+  },
+  "sourceDrift": [
+    {
+      "method": "checkDir",
+      "threw": true,
+      "code": "PIC_SOURCE_DRIFT"
+    },
+    {
+      "method": "checkPreparedDir",
+      "threw": true,
+      "code": "PIC_SOURCE_DRIFT"
+    }
+  ],
+  "sourceBytesUnchanged": true,
+  "legalCheckControlsPassed": true,
+  "closeFiles": 23,
+  "implementationSha256": "ac4d609b229a5bf1dabbe60aee04d5ac779cd2ac8176116cba18e2060c11f4ce",
+  "unexpectedGuardHits": 0,
+  "realCloudCalls": 0,
+  "credentialReads": 0,
+  "counterexamplesReproduced": true
+}
