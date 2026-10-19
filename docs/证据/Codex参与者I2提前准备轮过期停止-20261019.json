@@ -1,0 +1,28 @@
+{
+  "schema": "codex-i2-authorization-after-expiry-stop/1",
+  "basisCommit": "bbca0d84151946b038c6ad26bbb4c9ddc3e0e1c1",
+  "observedAt": "2026-10-19T04:14:01.876Z",
+  "roundId": "i2prepare-20261019-face8e3c5d14",
+  "userApprovalReceived": true,
+  "userQuote": "同意执行本轮 face8e3c5d14 的2号只读核验，手动预览、本人核验一次并立即关闭，允许必要凭据获取和现有套餐用量；完整编号由2号自主勾选后当面交付。",
+  "decision": "STOPPED_BEFORE_EXECUTION_WINDOW_EXPIRED",
+  "window": {
+    "starts": "2026-10-18T16:25:00.0000000Z",
+    "expires": "2026-10-18T16:55:00.0000000Z"
+  },
+  "strictRejectedExpired": true,
+  "preparationRejectedExpired": true,
+  "independentCloseCheck": {
+    "ok": true,
+    "files": 23
+  },
+  "frozenPlanAndManifestUnchanged": true,
+  "executionAuthorizationFileCreated": false,
+  "credentialFetches": 0,
+  "previewAttempts": 0,
+  "remoteQueries": 0,
+  "deploymentAttempts": 0,
+  "realFunctionInvocations": 0,
+  "guardUnexpected": 0,
+  "next": "confirm present availability, prepare NEW round and future window; new specific package requires user confirmation"
+}
