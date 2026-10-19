@@ -1,0 +1,17 @@
+{
+  "basisCommit": "4292a19",
+  "files": [
+    {
+      "path": "docs/进展与待办.md",
+      "oldBytes": 869636,
+      "oldSha256": "62a064cd3090184a731cb7a260dde51f76e805e293b2050420083349d53a43cd",
+      "suffixEqual": true
+    },
+    {
+      "path": "docs/CodeBuddy开发交接.md",
+      "oldBytes": 40297,
+      "oldSha256": "53df9e7c90ab5a9e132f9b3fa7db78bd0126a1f40f4cb17b6834931674e054de",
+      "suffixEqual": true
+    }
+  ]
+}

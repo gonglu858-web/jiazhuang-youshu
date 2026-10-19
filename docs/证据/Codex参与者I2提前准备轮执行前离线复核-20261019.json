@@ -1,0 +1,26 @@
+{
+  "schema": "codex-i2-local-preflight/1",
+  "reviewedCommit": "4292a19",
+  "observedAt": "2026-10-19T04:27:02.063Z",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "ok": true,
+  "preparationValidated": true,
+  "executionReady": false,
+  "strictBeforeWindowRejected": true,
+  "packageFiles": 39,
+  "candidateServerFiles": 4,
+  "closeFiles": 23,
+  "closedServerFiles": 8,
+  "allFileHashesMatched": true,
+  "scriptsMatched": true,
+  "scriptSyntaxChecked": "Node vm.Script only; no execution of cloud entry",
+  "approvalPresent": false,
+  "previewPerformed": false,
+  "remoteQueried": false,
+  "remoteExecuted": false,
+  "guard": {
+    "probes": 2,
+    "unexpected": 0
+  },
+  "scriptSha256": "64828d7cc73d7a9ab2e792d2f28bfc6e023249eb6448369a0ba671e6b39125bb"
+}

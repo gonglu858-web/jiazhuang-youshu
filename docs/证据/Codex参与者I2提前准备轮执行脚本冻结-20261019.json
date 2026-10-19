@@ -1,0 +1,19 @@
+{
+  "schema": "codex-i2-execution-scripts-freeze/1",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "planSha256": "72d1e3e970e60688a7d1d279717790b73ec39d14e57801b8017ba289776872de",
+  "manifestSha256": "4e2439b9c863728e3290ca997d4e6747b2ffd76f45a27d869c51fd7fc6b70ee3",
+  "scriptBasis": "bbca0d8 frozen execution scripts; new round/file/hash bindings only; prior expired authorization not reused",
+  "scripts": [
+    {
+      "name": "Codex参与者I2提前准备轮部署关闭-20261019.cjs",
+      "sha256": "608d95b34551e20777e850db93357b5694bd59d005f187f3694e6402df27f96f"
+    },
+    {
+      "name": "Codex参与者I2提前准备轮字节核对-20261019.py",
+      "sha256": "0e492450f394e5da5337295841c2f2daa45734540ddf2c4269aa715a2deedaf8"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}
