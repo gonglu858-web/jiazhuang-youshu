@@ -1,0 +1,167 @@
+{
+  "schema": "codex-i2-frozen-display-local-summary/1",
+  "basisCommit": "a276381",
+  "observedAt": "2026-10-19T07:10:57.893Z",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "helperTests": {
+    "schema": "codex-local-display-executor-test/1",
+    "observedAt": "2026-10-19T05:06:39.5627700Z",
+    "runtime": "7.6.5",
+    "moduleSha256": "df4ee180d3ecf0634e6cb2fd7dfbc7562b62d54c5bf321b238241509c6facfe7",
+    "ok": true,
+    "timeCases": [
+      {
+        "ok": true,
+        "case": "2026-10-19T04:59:59Z",
+        "allowed": false
+      },
+      {
+        "ok": true,
+        "case": "2026-10-19T05:00:00Z",
+        "allowed": true
+      },
+      {
+        "ok": true,
+        "case": "2026-10-19T05:01:58Z",
+        "allowed": true
+      },
+      {
+        "ok": true,
+        "case": "2026-10-19T05:24:59Z",
+        "allowed": true
+      },
+      {
+        "ok": true,
+        "case": "2026-10-19T05:25:00Z",
+        "allowed": false
+      },
+      {
+        "ok": true,
+        "case": "2026-10-19T05:25:01Z",
+        "allowed": false
+      }
+    ],
+    "explicitOffsetEquivalent": true,
+    "invalidTimeCasesRejected": 3,
+    "syntheticDpapiScenarios": [
+      {
+        "plaintextRemaining": false,
+        "ok": true,
+        "secretReads": 1,
+        "cleanupCalls": 0,
+        "case": "normal",
+        "writes": 1,
+        "launchAttempts": 1
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 0,
+        "cleanupCalls": 0,
+        "case": "beforeOpen",
+        "writes": 0,
+        "launchAttempts": 0
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 0,
+        "cleanupCalls": 0,
+        "case": "atDeadline",
+        "writes": 0,
+        "launchAttempts": 0
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 1,
+        "cleanupCalls": 0,
+        "case": "afterReadExpired",
+        "writes": 0,
+        "launchAttempts": 0
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 1,
+        "cleanupCalls": 1,
+        "case": "beforeLaunchExpired",
+        "writes": 1,
+        "launchAttempts": 0
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 1,
+        "cleanupCalls": 0,
+        "case": "digestMismatch",
+        "writes": 0,
+        "launchAttempts": 0
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 1,
+        "cleanupCalls": 1,
+        "case": "writeFailure",
+        "writes": 1,
+        "launchAttempts": 0
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 1,
+        "cleanupCalls": 1,
+        "case": "launchFailure",
+        "writes": 1,
+        "launchAttempts": 1
+      },
+      {
+        "plaintextRemaining": false,
+        "ok": false,
+        "secretReads": 0,
+        "cleanupCalls": 0,
+        "case": "clockThrows",
+        "writes": 0,
+        "launchAttempts": 0
+      }
+    ],
+    "realCredentialRead": false,
+    "actualNotepadStarted": false,
+    "networkInvoked": false,
+    "limitation": "synthetic DPAPI and files are real; clocks and process launch are injected; no platform verification"
+  },
+  "wrapperTests": {
+    "wrapperCopiedWithoutByteChanges": true,
+    "limitations": "actual wrapper copied unchanged into isolated synthetic records; only Start-Process replaced with local stub; real platform records not manufactured",
+    "secretOutputLeak": false,
+    "observedAt": "2026-10-19T07:10:04.8167875+00:00",
+    "cloudOperations": 0,
+    "realNotepadStarted": false,
+    "cleanupAfterSyntheticClosePassed": true,
+    "realPassphraseRead": false,
+    "launchStubCount": 1,
+    "ok": true,
+    "schema": "codex-i2-display-wrapper-local-proof/1",
+    "duplicateShowRejected": true,
+    "syntheticDpapiShowPassed": true,
+    "missingApprovalRejected": true
+  },
+  "initialWrapperTestFailure": "test Start-Process stub used script-scope counter unavailable in imported module scope; fixture only changed to uniquely named global counter; copied actual wrapper bytes unchanged",
+  "prepChecks": {
+    "preparationValidated": true,
+    "executionReady": false,
+    "strictCheckRejectedBeforeWindow": true,
+    "close": true,
+    "closeFiles": 23,
+    "totalFiles": 39,
+    "written": 39,
+    "sensitivityAttempts": 2,
+    "unexpectedAttempts": 0
+  },
+  "realSecretRead": false,
+  "realNotepadStarted": false,
+  "cloudOperations": 0,
+  "expiredUnexecutedRound": "i2display-20261019-c1b6b6a2f148",
+  "limits": "local synthetic verification does not prove real platform outcome; latest confirmed close remains13:02:27"
+}

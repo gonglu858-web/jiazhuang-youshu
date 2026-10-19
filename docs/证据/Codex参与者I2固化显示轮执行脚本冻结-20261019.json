@@ -1,0 +1,27 @@
+{
+  "schema": "codex-i2-execution-scripts-freeze/2",
+  "roundId": "i2display-20261019-c1b6b6a2f148",
+  "planSha256": "de6303ba742be11b70cef5f246943a1fdeda9d5fd0d0e0e137f432caa8b0de3f",
+  "manifestSha256": "81367bd3ba7b4b8cbdcc56a6d9456dcc9433c3d2ff24daf941e7e289d1c1fbe3",
+  "scriptBasis": "prior reviewed deploy/readback; updated exact round and closed baseline, new frozen local display and pre-deploy no-secret check",
+  "scripts": [
+    {
+      "name": "Codex参与者I2固化显示轮部署关闭-20261019.cjs",
+      "sha256": "808d7b9bac0f5f00d9fccab3474f4f7966f21d24205820125b2d9bfbd9b3c887"
+    },
+    {
+      "name": "Codex参与者I2固化显示轮字节核对-20261019.py",
+      "sha256": "8520ad2f7299d93f15cfd0c35146ab6f7735c7d7f5c88222179fcc640402966c"
+    },
+    {
+      "name": "Codex参与者I2固化显示轮口令执行-20261019.ps1",
+      "sha256": "c6ae3512c2c4edf3ff51bd2561c27e0302b1aadfafbaab2b258e8bb498c980b2"
+    },
+    {
+      "name": "CodexI2口令执行辅助-20261019.psm1",
+      "sha256": "df4ee180d3ecf0634e6cb2fd7dfbc7562b62d54c5bf321b238241509c6facfe7"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "codex-i2-execution-scripts-freeze/2",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "planSha256": "09106337e0dc62a311f77918ab971d4d91566676a9bff5ee9be57b1b487c7446",
+  "manifestSha256": "ec4db33e0dcb44e4eb06dea2eebf45a9b488d8a5185d0e8b052b930c41d99f19",
+  "scripts": [
+    {
+      "name": "Codex参与者I2固化显示续接轮部署关闭-20261019.cjs",
+      "sha256": "f6da81281e7092937b42200bf37b06737a5d54364202254537e5a25e47e3dd15"
+    },
+    {
+      "name": "Codex参与者I2固化显示续接轮字节核对-20261019.py",
+      "sha256": "f162660a4e8a39866d47943f024c0eb2d869cf3abc46fdd2d8b1703756714703"
+    },
+    {
+      "name": "Codex参与者I2固化显示续接轮口令执行-20261019.ps1",
+      "sha256": "c724af56e92844d07c51016a5d67b0793cc15dc9ff58af5e60194f2071f2cd81"
+    },
+    {
+      "name": "CodexI2口令执行辅助-20261019.psm1",
+      "sha256": "df4ee180d3ecf0634e6cb2fd7dfbc7562b62d54c5bf321b238241509c6facfe7"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}

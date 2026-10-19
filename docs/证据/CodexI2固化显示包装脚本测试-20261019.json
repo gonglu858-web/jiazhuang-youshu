@@ -1,0 +1,16 @@
+{
+  "wrapperCopiedWithoutByteChanges": true,
+  "limitations": "actual wrapper copied unchanged into isolated synthetic records; only Start-Process replaced with local stub; real platform records not manufactured",
+  "secretOutputLeak": false,
+  "observedAt": "2026-10-19T07:10:04.8167875+00:00",
+  "cloudOperations": 0,
+  "realNotepadStarted": false,
+  "cleanupAfterSyntheticClosePassed": true,
+  "realPassphraseRead": false,
+  "launchStubCount": 1,
+  "ok": true,
+  "schema": "codex-i2-display-wrapper-local-proof/1",
+  "duplicateShowRejected": true,
+  "syntheticDpapiShowPassed": true,
+  "missingApprovalRejected": true
+}

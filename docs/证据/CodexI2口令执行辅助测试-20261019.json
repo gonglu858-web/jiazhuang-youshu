@@ -1,0 +1,128 @@
+{
+  "schema": "codex-local-display-executor-test/1",
+  "observedAt": "2026-10-19T05:06:39.5627700Z",
+  "runtime": "7.6.5",
+  "moduleSha256": "df4ee180d3ecf0634e6cb2fd7dfbc7562b62d54c5bf321b238241509c6facfe7",
+  "ok": true,
+  "timeCases": [
+    {
+      "ok": true,
+      "case": "2026-10-19T04:59:59Z",
+      "allowed": false
+    },
+    {
+      "ok": true,
+      "case": "2026-10-19T05:00:00Z",
+      "allowed": true
+    },
+    {
+      "ok": true,
+      "case": "2026-10-19T05:01:58Z",
+      "allowed": true
+    },
+    {
+      "ok": true,
+      "case": "2026-10-19T05:24:59Z",
+      "allowed": true
+    },
+    {
+      "ok": true,
+      "case": "2026-10-19T05:25:00Z",
+      "allowed": false
+    },
+    {
+      "ok": true,
+      "case": "2026-10-19T05:25:01Z",
+      "allowed": false
+    }
+  ],
+  "explicitOffsetEquivalent": true,
+  "invalidTimeCasesRejected": 3,
+  "syntheticDpapiScenarios": [
+    {
+      "plaintextRemaining": false,
+      "ok": true,
+      "secretReads": 1,
+      "cleanupCalls": 0,
+      "case": "normal",
+      "writes": 1,
+      "launchAttempts": 1
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 0,
+      "cleanupCalls": 0,
+      "case": "beforeOpen",
+      "writes": 0,
+      "launchAttempts": 0
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 0,
+      "cleanupCalls": 0,
+      "case": "atDeadline",
+      "writes": 0,
+      "launchAttempts": 0
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 1,
+      "cleanupCalls": 0,
+      "case": "afterReadExpired",
+      "writes": 0,
+      "launchAttempts": 0
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 1,
+      "cleanupCalls": 1,
+      "case": "beforeLaunchExpired",
+      "writes": 1,
+      "launchAttempts": 0
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 1,
+      "cleanupCalls": 0,
+      "case": "digestMismatch",
+      "writes": 0,
+      "launchAttempts": 0
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 1,
+      "cleanupCalls": 1,
+      "case": "writeFailure",
+      "writes": 1,
+      "launchAttempts": 0
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 1,
+      "cleanupCalls": 1,
+      "case": "launchFailure",
+      "writes": 1,
+      "launchAttempts": 1
+    },
+    {
+      "plaintextRemaining": false,
+      "ok": false,
+      "secretReads": 0,
+      "cleanupCalls": 0,
+      "case": "clockThrows",
+      "writes": 0,
+      "launchAttempts": 0
+    }
+  ],
+  "realCredentialRead": false,
+  "actualNotepadStarted": false,
+  "networkInvoked": false,
+  "limitation": "synthetic DPAPI and files are real; clocks and process launch are injected; no platform verification"
+}

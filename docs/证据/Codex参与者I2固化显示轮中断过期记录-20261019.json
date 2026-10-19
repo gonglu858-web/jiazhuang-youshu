@@ -1,0 +1,9 @@
+{
+  "roundId": "i2display-20261019-c1b6b6a2f148",
+  "observedAt": "2026-10-19T07:08:30.573Z",
+  "status": "EXPIRED_WITHOUT_EXECUTION",
+  "approvalCreated": false,
+  "cloudActions": 0,
+  "oldPlanUnchanged": true,
+  "replacementRound": "i2display-20261019-49e9564b6313"
+}
