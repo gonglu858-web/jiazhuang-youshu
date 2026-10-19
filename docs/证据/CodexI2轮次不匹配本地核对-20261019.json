@@ -1,0 +1,59 @@
+{
+  "schema": "codex-i2-round-mismatch-local-review/1",
+  "observedAt": "2026-10-19T10:10:54.650Z",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "imageSha256": "32d5702f400d556b65afb8684c2ff3722d00f307fe3f3b3479a514f0cb3e8be2",
+  "imageContentsCopiedToRepo": false,
+  "screenshotTranscription": {
+    "identityConfirmed": false,
+    "registrationState": "UNKNOWN",
+    "readAttempted": false,
+    "recordMatched": null,
+    "userIdTail": null,
+    "serverTime": null,
+    "code": "PIC_ROUND_MISMATCH",
+    "displayedRound": "i2display-20261019-49e9564b6313",
+    "checkboxVisibleChecked": false
+  },
+  "localHashes": [
+    {
+      "rel": "frontend/config/cloud.js",
+      "sha256": "06748c30906db6fc9a4780fb3e947d9e3425fce7f19fafa72cc60e1495d1db67"
+    },
+    {
+      "rel": "frontend/utils/identity-check-client.js",
+      "sha256": "79e3ad4ebe2cd80e9c5da96fb12c9e14c605d9b948194fd9be4e3ba2433d48e1"
+    },
+    {
+      "rel": "frontend/pages/identity-check/identity-check.js",
+      "sha256": "0e77ac8a54d691947ac092a7219cbd48e9e617cc21abd3dc581f2bfecfd33605"
+    },
+    {
+      "rel": "server/scheduleSandbox/index.js",
+      "sha256": "4e36ca0153b8445549d152c78ab301c03368d6c2e920845cda247b778f4f0dbb"
+    },
+    {
+      "rel": "server/scheduleSandbox/request-adapter.js",
+      "sha256": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc"
+    },
+    {
+      "rel": "server/scheduleSandbox/participant-identity-check.js",
+      "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+    }
+  ],
+  "syntheticClientCalls": 1,
+  "syntheticRequestRoundMatchesConfig": true,
+  "adapterPreservesRound": true,
+  "serverConfiguredRoundMatchesPlan": true,
+  "displayedRoundSource": "response.checkRoundId, server baseResult uses configured round; does not prove phone request round",
+  "conclusion": "screen reports rejection before registration read; local current source chain agrees, actual phone request round and preview build not captured; root cause unresolved",
+  "notEstablished": [
+    "phone sent round value",
+    "which preview build phone loaded",
+    "platform transport preservation",
+    "registration status",
+    "full ID delivery"
+  ],
+  "realCredentialRead": false,
+  "realCloudCalls": 0
+}
