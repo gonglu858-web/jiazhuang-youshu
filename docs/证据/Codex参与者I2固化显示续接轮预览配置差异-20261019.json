@@ -1,0 +1,21 @@
+{
+  "schema": "codex-i2-preview-config-restoration/1",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "observedAt": "2026-10-19T07:37:49.991Z",
+  "cause": "observed after user manual preview; IDE attribution inferred, not process traced",
+  "beforeBytes": 928,
+  "beforeSha256": "a1d6a0809afcdc70ca53a6df6fd5e25d89a6c2c252122faa3c7b316ee11c17e4",
+  "addedSettings": {
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false
+  },
+  "expectedBytes": 686,
+  "expectedSha256": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+  "action": "restore exact frozen template bytes only; no plan/window/code change",
+  "otherFrozenFilesMatched": 38
+}

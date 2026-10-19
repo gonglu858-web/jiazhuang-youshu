@@ -1,0 +1,30 @@
+{
+  "schema": "codex-i2-completed-close-summary/1",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "recordedAt": "2026-10-19T10:06:59.021Z",
+  "candidateReadbackFiles": 4,
+  "closeReadbackFiles": 8,
+  "closeRemoteReadbackFinishedAt": "2026-10-19T08:05:24.287Z",
+  "closeOfflineVerificationAt": "2026-10-19T10:06:01.386449+00:00",
+  "closeCodeSha256": "9ae9b524076686c96aff5f4d62c03f8a6f31e1571df334c64ed592df8a5eec79",
+  "wxServerSdk": "3.0.1",
+  "databaseVersion": "1.4.1",
+  "credentialFetches": 2,
+  "deployCalls": 2,
+  "scfReadCalls": 5,
+  "zipDownloads": 2,
+  "assistantFunctionInvocations": 0,
+  "assistantBusinessDatabaseCalls": 0,
+  "participantSubmissionReported": true,
+  "participantResultContentsReceived": false,
+  "registrationStatus": null,
+  "fullIdDeliveryConfirmed": false,
+  "cleanup": {
+    "roundId": "i2display-20261019-49e9564b6313",
+    "cleanedAt": "2026-10-19T10:06:01.8585147+00:00",
+    "plaintextFileAbsent": true,
+    "notepadMemoryNotClaimedCleared": true
+  },
+  "interruption": "close deploy and ZIP download completed16:05:24 Beijing; interruption delayed offline ZIP verification and plaintext cleanup until18:06; no second deploy or cloud query on resume",
+  "costActualBillChecked": false
+}

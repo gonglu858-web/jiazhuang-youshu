@@ -1,0 +1,15 @@
+{
+  "schema": "codex-participant-submission-report/1",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "recordedAt": "2026-10-19T08:05:16.941Z",
+  "source": "user async answer",
+  "userQuote": "已经提交，结果已出现，请关闭",
+  "participantSubmissionReported": true,
+  "resultContentsReceived": false,
+  "identityConfirmed": null,
+  "registrationStatus": null,
+  "fullUserIdReceivedByAssistant": false,
+  "closeRequested": true,
+  "closeStarted": true,
+  "assistantBusinessFunctionInvocations": 0
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "codex-i2-execution-approval/1",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "approved": true,
+  "recordedAt": "2026-10-19T07:16:22.605Z",
+  "planSha256": "09106337e0dc62a311f77918ab971d4d91566676a9bff5ee9be57b1b487c7446",
+  "manifestSha256": "ec4db33e0dcb44e4eb06dea2eebf45a9b488d8a5185d0e8b052b930c41d99f19",
+  "userQuote": "同意执行本轮49e9564b6313的2号只读核验，手动预览、本人核验一次并立即关闭，允许必要凭据获取和现有套餐用量；完整编号由2号自主勾选后当面交付。",
+  "scope": "执行页第2–4节；一次本人读取及立即关闭；不登记/写库/授角色",
+  "preparationValidated": true,
+  "executionReady": false
+}

@@ -1,0 +1,11 @@
+{
+  "roundId": "i2display-20261019-49e9564b6313",
+  "requestedAt": "2026-10-19T08:02:17.6491566+00:00",
+  "displayPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i2-control-i2display-20261019-49e9564b6313\\本轮2号临时口令-核验后删除.txt",
+  "displaySha256": "0a2ce2b4b066d532fe4d8323edc482dee3810d2c61bfad308505867249ff5758",
+  "processId": 47476,
+  "displayDeadlineUtc": "2026-10-19T08:25:00.0000000Z",
+  "displayedToUserConfirmed": false,
+  "plaintextEmitted": false,
+  "cleanupRequired": true
+}

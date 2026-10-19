@@ -1,0 +1,48 @@
+{
+  "runId": "codex-i2-candidate-4f6ad82f-4699-4075-b855-bee45fbc16d8",
+  "observedAt": "2026-10-19T08:01:59.701869+00:00",
+  "archiveSha256": "75e13d5e2562a2e87897d1de4e4ece84b56ff57aff44e56562fda0530c2ef033",
+  "mode": "candidate",
+  "roundId": "i2display-20261019-49e9564b6313",
+  "databaseVersion": "1.4.1",
+  "files": [
+    {
+      "path": "index.js",
+      "bytes": 4897,
+      "sha256": "4e36ca0153b8445549d152c78ab301c03368d6c2e920845cda247b778f4f0dbb",
+      "matched": true
+    },
+    {
+      "path": "package.json",
+      "bytes": 273,
+      "sha256": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+      "matched": true
+    },
+    {
+      "path": "participant-identity-check.js",
+      "bytes": 28458,
+      "sha256": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+      "matched": true
+    },
+    {
+      "path": "request-adapter.js",
+      "bytes": 7445,
+      "sha256": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc",
+      "matched": true
+    }
+  ],
+  "matched": 4,
+  "wxServerSdk": "3.0.1",
+  "symlinksInspected": [
+    "node_modules/.bin/semver",
+    "node_modules/.bin/sshpk-conv",
+    "node_modules/.bin/sshpk-sign",
+    "node_modules/.bin/sshpk-verify",
+    "node_modules/.bin/uuid"
+  ],
+  "status": "REMOTE_FILES_MATCH_FROZEN_I2_PACKAGE",
+  "extracted": false,
+  "downloadedCodeExecuted": false,
+  "platformWritePermissionVerified": false,
+  "participantIdentityVerified": false
+}
