@@ -1,0 +1,13 @@
+{
+  "schema": "codex-specific-execution-approval/1",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "approved": true,
+  "recordedAt": "2026-10-19T04:29:29.716Z",
+  "userQuote": "同意执行新轮 d8e85ad1bc8a，沿用2号只读核验、手动预览、本人提交一次后立即关闭、必要凭据及现有套餐用量范围；完整编号由2号自主勾选后当面交付。",
+  "planSha256": "72d1e3e970e60688a7d1d279717790b73ec39d14e57801b8017ba289776872de",
+  "manifestSha256": "4e2439b9c863728e3290ca997d4e6747b2ffd76f45a27d869c51fd7fc6b70ee3",
+  "windowStartsAtIso": "2026-10-19T05:00:00.0000000Z",
+  "windowExpiresAtIso": "2026-10-19T05:30:00.0000000Z",
+  "scope": "manual preview once; existing scheduleSandbox candidate/close each once and readback; one participant2 self-read; required temporary credentials and existing-plan usage; no registration or roles",
+  "candidateMustWaitForWindow": true
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "codex-i2-local-project-open/1",
+  "roundId": "i2prepare-20261019-d8e85ad1bc8a",
+  "observedAt": "2026-10-19T04:30:33.909Z",
+  "authorizationRecorded": true,
+  "preparationCheckPassed": true,
+  "independentCloseCheckPassed": true,
+  "configuredAppIdMatched": true,
+  "statusTool": {
+    "connectionInitiallyFailed": true,
+    "cliReportedAutomaticLocalAuth": true,
+    "loginStatusNotEstablished": true
+  },
+  "openAttempt": {
+    "tool": "wechatide open_project_window",
+    "project": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-i2prepare-20261019-d8e85ad1bc8a-60d3b5196abf",
+    "windowMode": "fullMode",
+    "ok": false,
+    "code": "APPID_ERROR",
+    "message": "aborted"
+  },
+  "cause": "not established; matching local AppID does not establish IDE account state",
+  "manualImportInstructionsProvided": true,
+  "manualPreviewConfirmed": false,
+  "cloudCredentialFetches": 0,
+  "cloudQueries": 0,
+  "deploymentAttempts": 0,
+  "functionInvocations": 0,
+  "next": "user imports exact new directory and reports one manual preview result; candidate waits until13:00 with >15min remaining"
+}
