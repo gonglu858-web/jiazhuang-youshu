@@ -1,0 +1,39 @@
+{
+  "schema": "codex-i1-manual-mobile-preview/1",
+  "observedAt": "2026-10-20T15:13:42.442Z",
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "participantCode": "1",
+  "manualPreviewReportedSuccess": true,
+  "manualPreviewEvidenceBasis": "User supplied actual phone screenshots after instructed manual preview; no separate QR success text response. Loaded page is directly visible.",
+  "mobilePreviewConfirmed": true,
+  "mobilePreviewBuildId": "4b6d4ccfbe8b041902c322a9b539b543b0fbcd617fa05795a07ac918b3b43c00",
+  "mobileConfiguredRound": "i1handoff-20261020-863ca4553633",
+  "fullBuildIdMatched": true,
+  "fullRoundMatched": true,
+  "sources": [
+    {
+      "name": "bcd7c7d4d1565a3de86bec97e3556c17.png",
+      "sha256": "1119702b6f11b6a80e47f51addddb00069bbd3d084520fd4d1528f3793d224f2"
+    },
+    {
+      "name": "9b9508efbaa277bc2ac10bef19d39671.png",
+      "sha256": "f7a09f92b2bcdbc536d6ac9c9389b15fb23eb16dc3fba4ca20220262513c7639"
+    }
+  ],
+  "screenshotDisplayedTime": "23:12",
+  "phoneObservations": {
+    "passphraseInputEmpty": true,
+    "fullIdCheckboxChecked": false,
+    "localRequestRoundDisplayed": "—",
+    "serverRoundDisplayed": "未取得"
+  },
+  "limitations": [
+    "截图显示页面尚无本机调用记录；未查云日志，不作为网络请求次数独立证明",
+    "参与者1来源为用户同场安排，不仅凭截图认定现实本人",
+    "原图不复制进仓库；未读取或保存完整内部编号"
+  ],
+  "remoteOperationPerformedThisStage": false,
+  "credentialAcquisitionPerformedThisStage": false,
+  "executionWindowBeijing": "2026-10-20 23:30 至 2026-10-21 00:00",
+  "candidateStartRequiresRemainingMinutesStrictlyGreaterThan": 15
+}
