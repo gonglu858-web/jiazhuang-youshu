@@ -1,0 +1,21 @@
+{
+  "schema": "codex-i1-project-open/1",
+  "observedAt": "2026-10-20T15:08:03.673Z",
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "tool": "open_project_window",
+  "clientName": "Codex",
+  "project": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/artifacts/schedule-sandbox/business-test/participant-identity-i1handoff-20261020-863ca4553633-d7ee7a689aed",
+  "toolResult": {
+    "ok": true,
+    "result": {
+      "success": true,
+      "type": "newopen",
+      "winId": "s3"
+    }
+  },
+  "userReport": "找不到新项目或预览按钮",
+  "manualPreviewConfirmed": false,
+  "actualPhoneObserved": false,
+  "credentialAcquisitionPerformed": false,
+  "cloudOperationPerformed": false
+}
