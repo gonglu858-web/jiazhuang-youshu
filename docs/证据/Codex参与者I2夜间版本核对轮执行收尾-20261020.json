@@ -1,0 +1,53 @@
+{
+  "schema": "codex-i2-execution-close-summary/1",
+  "roundId": "i2preview-20261020-c3e94fb1c482",
+  "recordedAt": "2026-10-20T13:35:14.602Z",
+  "authorizationFile": "Codex参与者I2夜间版本核对轮批准-20261020.json",
+  "mobilePreviewEvidence": "Codex参与者I2夜间版本核对轮手动预览-20261020.json",
+  "participantSubmission": {
+    "source": "本聊天用户选择",
+    "userQuote": "已经提交，结果已出现，请关闭",
+    "reported": true,
+    "exactPlatformInvocationCountIndependentlyVerified": false,
+    "resultScreenshotReceived": false,
+    "identityConfirmed": null,
+    "registrationStatus": null,
+    "fullInternalIdReceived": false
+  },
+  "candidate": {
+    "deploymentCalls": 1,
+    "finishedAt": "2026-10-20T13:31:18.462Z",
+    "sourceFilesMatched": 4,
+    "codeSha256": "bebe919b6a42e69bd008ba05184d0ffdb57097989cfaa45be37e726da8e17cc7"
+  },
+  "closed": {
+    "deploymentCalls": 1,
+    "finishedAt": "2026-10-20T13:33:18.373Z",
+    "verifiedAt": "2026-10-20T13:33:35.381512+00:00",
+    "sourceFilesMatched": 8,
+    "codeSha256": "dc4a846a9f28ad099db2164d05591fc266d2d44814f056fe7e48f2b05ad6518a",
+    "status": "REMOTE_FILES_MATCH_FROZEN_I2_PACKAGE"
+  },
+  "usage": {
+    "credentialFetchRequested": 2,
+    "scfReadApiProcesses": 5,
+    "zipDownloads": 2,
+    "assistantFunctionInvocations": 0,
+    "assistantBusinessDatabaseCalls": 0
+  },
+  "passphrase": {
+    "notEmittedInChat": true,
+    "displayRequested": true,
+    "plaintextPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i2-control-i2preview-20261020-c3e94fb1c482\\本轮2号临时口令-核验后删除.txt",
+    "plaintextFileAbsent": true,
+    "cleanupEvidence": "Codex参与者I2夜间版本核对轮口令清理-20261020.json",
+    "notepadMemoryClearedVerified": false
+  },
+  "limitations": [
+    "本人提交来自用户报告，尚未收到结果截图，不能确认身份或登记状态",
+    "关闭以远端配置/ZIP及8源文件比对为据，未额外调用云函数探测",
+    "现有套餐实际计费未查询，不承诺零费用/平台零日志",
+    "完整内部编号由本人自主勾选当面交付，未采集或推算"
+  ],
+  "next": "收取遮挡完整编号的结果截图，核对状态及两种轮次；不重试，不登记授角色"
+}

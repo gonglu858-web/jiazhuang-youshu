@@ -1,0 +1,8 @@
+{
+  "runId": "codex-i2-candidate-e58bed96-d5be-497b-8e9a-bae2cffb68c1",
+  "startedAt": "2026-10-20T13:30:40.216Z",
+  "authorization": "同意执行本轮c3e94fb1c482，按21:30—22:00窗口，沿用只读核验、手动预览、一次提交后立即关闭、必要凭据及现有套餐用量范围；完整编号由2号自主勾选后当面交付。",
+  "roundId": "i2preview-20261020-c3e94fb1c482",
+  "mode": "candidate",
+  "scope": "I2分层只读核验具体执行页第3节；本阶段一批凭据、一次覆盖及回读，不重试部署"
+}
