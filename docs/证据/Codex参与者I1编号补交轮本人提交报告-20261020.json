@@ -1,0 +1,14 @@
+{
+  "schema": "codex-i1-participant-submit-report/1",
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "participantCode": "1",
+  "recordedAt": "2026-10-20T15:33:15.480Z",
+  "source": "用户对本轮操作状态询问的直接回复",
+  "userQuote": "已经提交，结果已出现，请关闭",
+  "participantSubmissionReported": true,
+  "exactInvocationCountIndependentlyVerified": false,
+  "resultScreenshotReceived": false,
+  "resultStatusNotYetDetermined": true,
+  "closureRequested": true,
+  "closureStarted": true
+}

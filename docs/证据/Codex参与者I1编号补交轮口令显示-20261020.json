@@ -1,0 +1,11 @@
+{
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "requestedAt": "2026-10-20T15:31:44.0281941+00:00",
+  "displayPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\i1-control-i1handoff-20261020-863ca4553633\\本轮1号临时口令-核验后删除.txt",
+  "displaySha256": "5c67ce530c18d92038e00e8c89233b0af73135893bad3818eb335e5baa4f6613",
+  "processId": 26260,
+  "displayDeadlineUtc": "2026-10-20T15:55:00.0000000Z",
+  "displayedToUserConfirmed": false,
+  "plaintextEmitted": false,
+  "cleanupRequired": true
+}
