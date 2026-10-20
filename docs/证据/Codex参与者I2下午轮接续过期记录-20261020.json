@@ -1,0 +1,33 @@
+{
+  "schema": "codex-i2-resumption-expired/1",
+  "roundId": "i2preview-20261020-41fd797bef41",
+  "approvalRecorded": true,
+  "userPresenceSource": "用户回复：我现在和2号同时在场",
+  "clockObservationUtc": "2026-10-20T09:32:30Z",
+  "clockObservationBeijing": "2026-10-20T17:32:30+08:00",
+  "windowExpiresAt": "2026-10-20T15:00:00+08:00",
+  "checkResult": "PIC_WINDOW_EXPIRED at check.start",
+  "fileHashesMatched": 39,
+  "scriptHashesMatched": 7,
+  "openProjectAttempted": false,
+  "previewAttempted": false,
+  "credentialFetchAttempted": false,
+  "cloudOperationAttempted": false,
+  "note": "本地checkPreparedDir时效检查失败使同条命令后续open_project_window未执行；之后核时并读取结构化拒绝原因。没有再次打开项目，没有改变冻结窗口。",
+  "earlierDevtoolsStatus": {
+    "success": true,
+    "loginExpired": false,
+    "versionRelation": "equal",
+    "cliTokenRequired": false,
+    "calls": 2,
+    "reasonForSecondCall": "首次CLI装饰文本不能直接作为JSON解析；第二次只提取固定状态字段，未输出用户标识或令牌"
+  },
+  "possibleContinuation": {
+    "roundId": "i2preview-20261020-f491378eb469",
+    "window": "2026-10-20 18:00—18:30 Asia/Shanghai",
+    "localRecheck": "39文件、7脚本指纹、checkPreparedDir、关闭23文件均通过",
+    "currentlyStopped": true,
+    "requiresExplicitUserRestoration": true,
+    "newPackageGenerated": false
+  }
+}
