@@ -1,0 +1,43 @@
+{
+  "schema": "codex-i2-manual-preview-observation/1",
+  "roundId": "i2preview-20261020-f491378eb469",
+  "manualPreviewReportedSuccess": true,
+  "manualPreviewEvidence": "用户按手动预览与本人手机扫码要求提供手机截图；未独立记录点击次数或扫描者身份",
+  "mobilePreviewConfirmed": true,
+  "mobilePreviewBuildId": "a864cb287bc0f246b072e89a0e460252c3b826cbfbdba26e9a401cf067cea479",
+  "mobileConfiguredRound": "i2preview-20261020-f491378eb469",
+  "participantCode": "2",
+  "participantSource": "本聊天用户此前说明与2号同时在场；截图按本轮2号流程提供，不从设备推断现实身份",
+  "observedAtUtc": "2026-10-20T10:17:42Z",
+  "sources": [
+    {
+      "basename": "2349912ac59570867c95bdb0f60936bf.jpg",
+      "sha256": "2e3ef22a759a5a640342489747d1da5dc890c7466b9fdf409ee640f087ba5a0d"
+    },
+    {
+      "basename": "493a105dfe8b541b8528e48e07c9b221.jpg",
+      "sha256": "a32a1422adf1a709c18607e74a84eb40f57cfc708bdc58f1476497fc3963e897"
+    }
+  ],
+  "rawScreenshotsCommitted": false,
+  "screenshotFacts": {
+    "passphraseInputEmpty": true,
+    "fullIdCheckboxUnchecked": true,
+    "localRequestRoundDisplayed": "—",
+    "serverResponseRoundDisplayed": "未取得",
+    "phoneClockText": "6:16"
+  },
+  "requestNotShownInScreenshot": true,
+  "identityConfirmed": false,
+  "registrationStatusVerified": false,
+  "remainingSeconds": 738,
+  "candidateStartAllowed": false,
+  "decision": "STOP_BEFORE_DEPLOY_REMAINING_NOT_GREATER_THAN_900",
+  "cloudOperationAttempted": false,
+  "passphraseDelivered": false,
+  "limitations": [
+    "手机版本与配置轮次核对通过，不等于身份或登记确认",
+    "截图不能证明全局无请求历史",
+    "手机号/OPENID/完整编号/口令均未采集"
+  ]
+}
