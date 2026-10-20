@@ -1,0 +1,48 @@
+{
+  "schema": "codex-i2-result-screenshot-observation/1",
+  "roundId": "i2preview-20261020-c3e94fb1c482",
+  "recordedAt": "2026-10-20T13:38:47.037Z",
+  "source": {
+    "kind": "user-supplied-phone-screenshot",
+    "basename": "85d897d998d3f8fae5c7c1118c902674.jpg",
+    "sha256": "d789d5f79f83c848c6557fe00207ba8cc32d5a18c224cd250b8697be87e8b578",
+    "rawImageCommitted": false
+  },
+  "observation": {
+    "identityConfirmed": true,
+    "registrationState": "ABSENT",
+    "recordOwnershipMatched": null,
+    "recordOwnershipDisplay": "未核实",
+    "readAttempted": true,
+    "userIdTail": "7dbd6e",
+    "fullIdCheckboxChecked": true,
+    "fullIdVisibleInScreenshot": true,
+    "fullIdTranscribedOrPersisted": false,
+    "requestRoundId": "i2preview-20261020-c3e94fb1c482",
+    "serverRoundId": "i2preview-20261020-c3e94fb1c482",
+    "serverTimeIso": "2026-10-20T13:32:25.827Z",
+    "serverTimeBeijing": "2026-10-20 21:32:25.827",
+    "roundsMatch": true
+  },
+  "participantBindingSource": "用户声明与2号同场，并按2号本人一次核验流程提交截图；不根据设备或编号自行推定现实身份",
+  "interpretation": "本轮本人身份核验通过；固定测试集合内未查到本人主键登记记录，不等于已登记或授予师傅角色",
+  "fullIdHandoff": {
+    "participantConsentedOnScreen": true,
+    "responsiblePersonConfirmedReceipt": false,
+    "note": "截图已包含完整编号，仅观察其存在，不复述或落入项目文件；当面交付完成仍待负责人确认"
+  },
+  "closure": {
+    "verified": true,
+    "matched": 8,
+    "verifiedAt": "2026-10-20T13:33:35.381512+00:00",
+    "codeSha256": "dc4a846a9f28ad099db2164d05591fc266d2d44814f056fe7e48f2b05ad6518a",
+    "evidence": "Codex参与者I2夜间版本核对轮字节核对-20261020.closed.json"
+  },
+  "limits": [
+    "来源是用户手机截图，不是本轮额外调用云函数或查询云日志",
+    "ABSENT仅对应固定测试集合与该本人主键，不能推断全部平台或生产登记",
+    "核验不执行登记、写库、授角色，不构成P登记证据",
+    "原图和完整内部编号均不入Git；既有收尾记录保持当时等待截图的历史事实"
+  ],
+  "next": "保持关闭，不重试；确认当面编号交付后再本地规划后续登记前置，真实写操作另需具体包批准"
+}
