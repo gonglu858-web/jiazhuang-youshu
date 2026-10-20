@@ -1,0 +1,69 @@
+{
+  "schema": "codex-participant-registration-prerequisites/1",
+  "basisCommit": "2f6f0f1",
+  "observedAt": "2026-10-20T13:50:11.589Z",
+  "kind": "local-static-source-and-saved-evidence-check",
+  "ok": true,
+  "sources": [
+    {
+      "file": "miniapp/scripts/package-sandbox-registration.cjs",
+      "bytes": 33134,
+      "sha256": "f812fa83ec43963414474ca362727118ba8ff7b1e2a8aefb0844efb561ff7abd"
+    },
+    {
+      "file": "miniapp/scripts/package-business-test.cjs",
+      "bytes": 67793,
+      "sha256": "c36643a3661f8c97aea8c5b18d58bf6ee25f6c77307bdeecca8d31527746a703"
+    },
+    {
+      "file": "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55"
+    },
+    {
+      "file": "docs/证据/Codex参与者I2夜间版本核对轮结果截图核对-20261020.json",
+      "bytes": 2349,
+      "sha256": "a813a0694ffd398133331eaf6f10ef2b1d721e8412ea952677e39167a3555611"
+    },
+    {
+      "file": "docs/证据/Codex参与者I2夜间版本核对轮字节核对-20261020.closed.json",
+      "bytes": 2222,
+      "sha256": "c4dc6899c152148e36b12c2326e0dbd166bda259fa0af57d53596e7307173265"
+    }
+  ],
+  "participant2Handoff": {
+    "source": "本聊天用户对当面核对及保存问题的明确答复",
+    "userQuote": "已当面核对并保存",
+    "personallyCheckedAndSavedByOwner": true,
+    "fullValueCopiedIntoProject": false,
+    "machinePrivateInputCompleted": false
+  },
+  "participant1Scheduling": {
+    "presenceSource": "用户回复：1号现在也在场，可以安排",
+    "latestDecision": "用户拒绝22:30—23:00建议，回复：太晚了，改天另约；先整理本地方案",
+    "newWindowAgreed": false,
+    "newPackageCreated": false
+  },
+  "findings": {
+    "oldRegistrationRealModeRestrictedToFixedOwner": true,
+    "oldRegistrationAllowsOneUserOnly": true,
+    "businessIdentityMayCreateUserAndAudit": true,
+    "businessIdentityReadsPrimary": true,
+    "participantEvidenceRequiresLocalRecordBinding": true,
+    "participant2RegistrationConfirmedAbsentAtObservation": true,
+    "laterRegistrationStateRefreshed": false
+  },
+  "historicalClosure": {
+    "source": "docs/证据/Codex参与者I2夜间版本核对轮字节核对-20261020.closed.json",
+    "verifiedAt": "2026-10-20T13:33:35.381512+00:00",
+    "sourceFiles": 8,
+    "codeSha256": "dc4a846a9f28ad099db2164d05591fc266d2d44814f056fe7e48f2b05ad6518a",
+    "queriedAgainThisTurn": false
+  },
+  "limitations": [
+    "静态源码观察不是新登记能力验收，未运行产品测试或SDK。",
+    "本地文件结构校验不证明平台记录真实；ABSENT结果不能改写为登记回读。",
+    "完整编号交付完成来自用户明确陈述；未复制完整值、未读取剪贴板。",
+    "本轮只制定本地方案，没有运行云操作入口。"
+  ]
+}
