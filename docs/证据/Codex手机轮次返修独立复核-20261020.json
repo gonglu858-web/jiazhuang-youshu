@@ -1,0 +1,133 @@
+{
+  "schema": "codex-phone-round-repair-review/1",
+  "reviewedCommit": "7f4dcf3",
+  "reviewBasis": "a32ebdd R1/R2/C1",
+  "observedAt": "2026-10-20T02:59:04.739Z",
+  "verificationKind": "generated client + synthetic wx; in-memory source failures; no platform activity",
+  "cases": [
+    {
+      "label": "valid",
+      "calls": 1,
+      "rejected": false,
+      "evidencePresent": true,
+      "handoffAttempted": true,
+      "transportOutcome": "returned",
+      "responsePresent": true
+    },
+    {
+      "label": "missingBuildId",
+      "calls": 0,
+      "rejected": true,
+      "evidencePresent": false,
+      "handoffAttempted": false,
+      "transportOutcome": null,
+      "responsePresent": false
+    },
+    {
+      "label": "malformedBuildId",
+      "calls": 0,
+      "rejected": true,
+      "evidencePresent": false,
+      "handoffAttempted": false,
+      "transportOutcome": null,
+      "responsePresent": false
+    },
+    {
+      "label": "invalidRound",
+      "calls": 0,
+      "rejected": true,
+      "evidencePresent": false,
+      "handoffAttempted": false,
+      "transportOutcome": null,
+      "responsePresent": false
+    },
+    {
+      "label": "wrongProtocol",
+      "calls": 0,
+      "rejected": true,
+      "evidencePresent": false,
+      "handoffAttempted": false,
+      "transportOutcome": null,
+      "responsePresent": false
+    },
+    {
+      "label": "wrongFunction",
+      "calls": 0,
+      "rejected": true,
+      "evidencePresent": false,
+      "handoffAttempted": false,
+      "transportOutcome": null,
+      "responsePresent": false
+    }
+  ],
+  "missingResult": {
+    "label": "missingResult",
+    "calls": 1,
+    "rejected": false,
+    "evidencePresent": true,
+    "handoffAttempted": true,
+    "transportOutcome": "returned",
+    "responsePresent": false
+  },
+  "sourceFailures": [
+    {
+      "mode": "drift",
+      "method": "checkDir",
+      "ok": false,
+      "planChecked": false,
+      "executionReady": null,
+      "classified": true
+    },
+    {
+      "mode": "drift",
+      "method": "checkPreparedDir",
+      "ok": false,
+      "planChecked": false,
+      "executionReady": false,
+      "classified": true
+    },
+    {
+      "mode": "ENOENT",
+      "method": "checkDir",
+      "ok": false,
+      "planChecked": false,
+      "executionReady": null,
+      "classified": true
+    },
+    {
+      "mode": "ENOENT",
+      "method": "checkPreparedDir",
+      "ok": false,
+      "planChecked": false,
+      "executionReady": false,
+      "classified": true
+    },
+    {
+      "mode": "EACCES",
+      "method": "checkDir",
+      "ok": false,
+      "planChecked": false,
+      "executionReady": null,
+      "classified": true
+    },
+    {
+      "mode": "EACCES",
+      "method": "checkPreparedDir",
+      "ok": false,
+      "planChecked": false,
+      "executionReady": false,
+      "classified": true
+    }
+  ],
+  "legalControls": true,
+  "closeFiles": 23,
+  "sourceBytesUnchanged": true,
+  "packerSha256": "695e0d0c8bee68b5379470ffca85d2492c3102ae1974b5510e1f0c1bce8b04e6",
+  "clientSha256": "80dac506c1b1eb03b65fbfd8dedd1de63fe18c953e92e7ad02502bfce22ccfa8",
+  "temporaryDirectories": [
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\codex-round-repair-04be166c-4dc1-41df-a437-03edde8d0786",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\participant-identity-review-04be166c-4dc1-41df-a437-03edde8d0786"
+  ],
+  "unexpectedGuardHits": 0,
+  "ok": true
+}

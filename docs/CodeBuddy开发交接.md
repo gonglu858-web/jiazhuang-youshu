@@ -1,3 +1,10 @@
+## 2026-10-20 Codex复核7f4dcf3：手机轮次R1/R2及C1本地验收通过
+
+- 依据：[复查报告](Codex复查-手机轮次R1R2返修-20261020.md)。独立复跑核验51/51、业务18/18、交付证据v2通过；独立member-access-sdk本轮未重跑。
+- 新增[独立脚本](证据/Codex手机轮次返修独立复核-20261020.cjs)与[JSON](证据/Codex手机轮次返修独立复核-20261020.json)：5类前置拒绝零callFunction+合法对照，3类来源失败×2检查器均结构化返回，关闭23文件通过；意外守卫0。产品及历史证据未改。
+- R1/R2/C1关闭，本节点无需CodeBuddy返修；下一步Codex准备新2号具体执行页，再由用户确认。真实执行未放行，1号2号不重试，P不开展。本轮未查询云端，最近关闭事实与2号已提交但读取前拒绝事实保持。
+- 两处独立复核合成目录已登记报告§5；单独清理被自动审批blocked by policy拒绝，未重试绕过，目录保留、不入Git。AGENTS.md既有修改保留并排除提交。
+
 ## 2026-10-20 CodeBuddy 完成「手机请求轮次与预览版本」R1/R2 返修：待复查
 
 - R1：客户端发送前置校验——buildId 缺失/非法、轮次非法、协议非 participant-identity-request/1、函数非 scheduleSandbox 在调用前拒绝（零发送、无 handoffAttempted=true 假事实）；协议按固定常量+配置双向核对；页面失败未知/口令清除/无自动重试保持。R2：checkDir/checkPreparedDir 的 previewBuildId 来源依赖计算纳入受控重建出口——漂移/缺失/读取异常返回 ok=false/problems（分类保留）/planChecked=false，不抛异常、不信任清单自报值，准备不升级 executionReady。C1：returned=仅 SDK Promise 兑现、不保证有效服务端结果，页面按失败/未知处理（代码/测试/操作说明统一）。
