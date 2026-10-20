@@ -1,0 +1,18 @@
+{
+  "schema": "codex-i2-restore-approval/1",
+  "roundId": "i2preview-20261020-f491378eb469",
+  "approved": true,
+  "userQuote": "恢复本轮f491378eb469，按18:00—18:30核验，沿用已确认的只读核验、手动预览、一次提交后立即关闭及费用范围。",
+  "clockObservedUtc": "2026-10-20T09:37:32Z",
+  "originalApproval": "docs/证据/Codex参与者I2晚间版本核对轮批准-20261020.json",
+  "planSha256": "f6e857dd04c35dca46738a3f1fbf14f3fd6ad1bde9f64d95f26e5f8290877b49",
+  "manifestSha256": "e9339b87d100be5173b91c77e9e3696bbb618d8d7f63a970ac97bb4575c1944c",
+  "frozenPackageChanged": false,
+  "localCheck": {
+    "fileHashes": 39,
+    "scriptHashes": 7,
+    "prepared": true,
+    "closeFiles": 23
+  },
+  "cloudOperationPerformed": false
+}

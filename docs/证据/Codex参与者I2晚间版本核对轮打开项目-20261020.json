@@ -1,0 +1,16 @@
+{
+  "schema": "codex-i2-project-open/1",
+  "roundId": "i2preview-20261020-f491378eb469",
+  "project": "C:/Users/30591/Documents/ChatGPT/装修进度验收APP/artifacts/schedule-sandbox/business-test/participant-identity-i2preview-20261020-f491378eb469-5769ccf7994e",
+  "tool": "wechatide open_project_window",
+  "client": "Codex",
+  "windowMode": "fullMode",
+  "result": {"success": true, "type": "newopen", "winId": "s1"},
+  "preOpenChecks": {"packageFileHashes": 39, "frozenScriptHashes": 7, "prepared": true, "close": true, "appidMatched": true, "miniprogramRoot": "frontend/"},
+  "manualPreviewRequested": true,
+  "manualPreviewConfirmed": false,
+  "mobilePreviewObserved": false,
+  "credentialFetchAttempted": false,
+  "cloudOperationAttempted": false,
+  "next": "用户手动预览；2号扫码仅观察手机版本与配置轮次，不输入口令不提交；截图核对后窗口内候选执行"
+}
