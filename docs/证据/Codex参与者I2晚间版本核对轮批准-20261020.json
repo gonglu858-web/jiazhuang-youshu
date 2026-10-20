@@ -1,0 +1,29 @@
+{
+  "schema": "codex-i2-specific-package-approval/1",
+  "roundId": "i2preview-20261020-f491378eb469",
+  "approved": true,
+  "source": "本聊天用户明确批准本轮具体执行包",
+  "userQuote": "同意执行本轮f491378eb469的2号只读核验，17:30开始准备，18:00—18:30读取窗口，先手动预览并核对手机版本，本人提交一次后立即关闭，允许必要凭据获取和现有套餐用量；完整编号由2号自主勾选后当面交付。",
+  "clockObservedAfterApprovalUtc": "2026-10-20T05:24:06Z",
+  "preparationStartsAt": "2026-10-20T17:30:00+08:00",
+  "windowStartsAt": "2026-10-20T18:00:00+08:00",
+  "windowExpiresAt": "2026-10-20T18:30:00+08:00",
+  "planSha256": "f6e857dd04c35dca46738a3f1fbf14f3fd6ad1bde9f64d95f26e5f8290877b49",
+  "manifestSha256": "e9339b87d100be5173b91c77e9e3696bbb618d8d7f63a970ac97bb4575c1944c",
+  "previewBuildId": "a864cb287bc0f246b072e89a0e460252c3b826cbfbdba26e9a401cf067cea479",
+  "packageCommit": "fcf0541",
+  "executionPage": "docs/Codex执行页-I2晚间版本核对轮-20261020.md",
+  "participantCode": "2",
+  "manualPreviewConfirmed": false,
+  "mobilePreviewConfirmed": false,
+  "credentialsObtained": false,
+  "remoteExecuted": false,
+  "conditions": [
+    "17:30用户同场就绪后接续；未设置后台自动启动",
+    "手动预览后先核对手机完整版本与配置轮次，不冒充实际手机观察",
+    "18:00入窗，候选开始必须剩余严格大于15分钟",
+    "本人只提交一次，结果出现即关闭；最迟18:25开始关闭并回读8源文件",
+    "完整编号本人自主勾选，当面交付；不登记、不写库、不授角色、不处理P",
+    "本批准仅限此冻结包，不自动转移到其他轮次"
+  ]
+}
