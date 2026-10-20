@@ -1,0 +1,40 @@
+{
+  "schema": "codex-i2-execution-scripts-freeze/3",
+  "reviewBasis": "7f4dcf3 / 1923158; I1 participant and latest closure rebinding",
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "planSha256": "789155ce47b85caed8ee81078a339eab72eb482890c6598432aa755e219afa11",
+  "manifestSha256": "9f111424713eb75c3f1414ff37386d92269ebda33c811b24f441e3999a733240",
+  "previewBuildId": "4b6d4ccfbe8b041902c322a9b539b543b0fbcd617fa05795a07ac918b3b43c00",
+  "scripts": [
+    {
+      "name": "Codex参与者I1编号补交轮部署关闭-20261020.cjs",
+      "sha256": "d5ac8487c263af3642a314477539533603ce25723ed1caf2f19bf4e6dc6fd7f3"
+    },
+    {
+      "name": "Codex参与者I1编号补交轮字节核对-20261020.py",
+      "sha256": "900484ff7651733098f9635dcc3422e73779b4a0b033f6e202e3292426b95002"
+    },
+    {
+      "name": "Codex参与者I1编号补交轮口令执行-20261020.ps1",
+      "sha256": "efa379f508ba3d693e589e000ecdaf2a11b9de87cec1bc63ba773abeeef31f82"
+    },
+    {
+      "name": "CodexI2口令执行辅助-20261019.psm1",
+      "sha256": "df4ee180d3ecf0634e6cb2fd7dfbc7562b62d54c5bf321b238241509c6facfe7"
+    },
+    {
+      "name": "Codex参与者I1编号补交轮包准备-20261020.cjs",
+      "sha256": "b3ddf4ab0c0138d5bee8d702172ad11817dac8eab5661d9d50d3ae0dcb53e8be"
+    },
+    {
+      "name": "Codex参与者I1编号补交轮包准备-20261020.ps1",
+      "sha256": "6bd264076671f02f85a0cf713679d09c6e799f533af84ec0fcc0b87fe2835fd8"
+    },
+    {
+      "name": "Codex参与者I1编号补交轮执行前离线复核-20261020.cjs",
+      "sha256": "a074ec265ea9eb25321d7117967b31f57c5e472b3a0bb0cca41e820809ffe4d7"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}

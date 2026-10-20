@@ -1,0 +1,14 @@
+{
+  "schema": "codex-i1-handoff-local-binding/1",
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "ok": true,
+  "participantCode": "1",
+  "frontendRoundAndVersionMatched": true,
+  "frontendParticipantFieldPresent": false,
+  "phoneGateAndDisplayParticipantMatched": true,
+  "latestClosureMatched": true,
+  "midnightDeadlineMatched": true,
+  "powershellSyntaxFiles": 2,
+  "correctedCheck": "首个补充断言误认为frontend/config具有participantCode，实际为undefined；未改产品，改按计划/执行门槛和前后端轮次分述核对",
+  "cloudOperation": false
+}
