@@ -1,0 +1,18 @@
+{
+  "schema": "codex-i2-preparation-schedule-declined/1",
+  "roundId": "i2preview-20261020-0c1a9c2ded40",
+  "proposedWindow": "2026-10-20 14:00—14:30 Asia/Shanghai",
+  "userReply": "今天晚些时候，请另约",
+  "decision": "本轮不执行，等待用户提供晚些时候的具体同场时间",
+  "localPreparation": "异步询问期间本地提前准备已完成，39文件、关闭23文件、7脚本绑定及离线门槛正向1反例4通过",
+  "approved": false,
+  "approvalFileCreated": false,
+  "credentialsObtained": false,
+  "previewRequested": false,
+  "cloudQueried": false,
+  "cloudExecuted": false,
+  "passphraseDelivered": false,
+  "next": "用户随后确定17:30—18:30同场；据此另建晚间新轮，本14:00包不执行，不改冻结窗口或沿用旧授权",
+  "artifacts": "本轮本地包与DPAPI密文保留于Git忽略目录，未纳入提交；无一次性临时脚本",
+  "limitations": "本地核对不证明手机或平台行为；最近远端关闭仅沿用此前历史，本轮未查询"
+}
