@@ -1,0 +1,12 @@
+{
+  "schema": "codex-i2-manual-preview-report/1",
+  "roundId": "i2preview-20261020-c3e94fb1c482",
+  "recordedAt": "2026-10-20T13:03:45.145Z",
+  "source": "用户回复本轮手动预览问题",
+  "userQuote": "二维码已出现，无报错",
+  "manualPreviewReportedSuccess": true,
+  "mobilePreviewConfirmed": false,
+  "credentialFetchAttempted": false,
+  "cloudOperationAttempted": false,
+  "next": "2号本人扫码后提供本机预览版本与配置轮次截图；暂不填口令或提交；21:30入窗后才可执行已批准候选"
+}
