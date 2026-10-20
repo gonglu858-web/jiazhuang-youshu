@@ -1,0 +1,40 @@
+{
+  "schema": "codex-i2-execution-scripts-freeze/3",
+  "reviewBasis": "7f4dcf3 / 7bb5694",
+  "roundId": "i2preview-20261020-41fd797bef41",
+  "planSha256": "4acb3f7b22c158dec714196397c1cc3186bbfcbb78335ce4d5691af83b53f6d8",
+  "manifestSha256": "b297ec9ea548e709c2b44020bf6d2d3469825e28698e98f6d2759a2c7ea3dfa0",
+  "previewBuildId": "e47efeaf57f3d9f2e75999484881d1494f6a47a6d7a71166ce9a5e66b43823e8",
+  "scripts": [
+    {
+      "name": "Codex参与者I2下午版本核对轮部署关闭-20261020.cjs",
+      "sha256": "cf65e36478b45b7d217727c6e4f045f5b2c1f18d201cf62bc29a6590c49fe3c0"
+    },
+    {
+      "name": "Codex参与者I2下午版本核对轮字节核对-20261020.py",
+      "sha256": "536971a5f6400710563162fcb80a12cc5e2557643ba7fa619e074103e9b47366"
+    },
+    {
+      "name": "Codex参与者I2下午版本核对轮口令执行-20261020.ps1",
+      "sha256": "e66d1e560c19f0eb4396793cc72767eb5b295d6cb898c4e291cf244fe7e6cbd4"
+    },
+    {
+      "name": "CodexI2口令执行辅助-20261019.psm1",
+      "sha256": "df4ee180d3ecf0634e6cb2fd7dfbc7562b62d54c5bf321b238241509c6facfe7"
+    },
+    {
+      "name": "Codex参与者I2下午版本核对轮包准备-20261020.cjs",
+      "sha256": "e51b98007509a76e0b348e8aee5760b555a02e11cc33fe968942d5eb0e2f0328"
+    },
+    {
+      "name": "Codex参与者I2下午版本核对轮包准备-20261020.ps1",
+      "sha256": "a29752d9d92e45cab7063925059e86858c5c1c3c76b46113ec66a1bd56dde676"
+    },
+    {
+      "name": "Codex参与者I2下午版本核对轮执行前离线复核-20261020.cjs",
+      "sha256": "75c44075f0e2e3460c62ded5e4a22857283d2e735b896c5a72276ec01f17a064"
+    }
+  ],
+  "authorizationFileCreated": false,
+  "remoteExecuted": false
+}

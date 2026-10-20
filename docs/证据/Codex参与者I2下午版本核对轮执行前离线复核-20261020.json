@@ -1,0 +1,34 @@
+{
+  "schema": "codex-i2-local-preflight/1",
+  "reviewedCommit": "7bb5694",
+  "observedAt": "2026-10-20T05:43:08.510Z",
+  "roundId": "i2preview-20261020-41fd797bef41",
+  "ok": true,
+  "preparationValidated": true,
+  "executionReady": false,
+  "strictBeforeWindowRejected": true,
+  "packageFiles": 39,
+  "candidateServerFiles": 4,
+  "closeFiles": 23,
+  "closedServerFiles": 8,
+  "allFileHashesMatched": true,
+  "scriptsMatched": true,
+  "scriptSyntaxChecked": "Node vm.Script only; no execution of cloud entry",
+  "approvalPresent": false,
+  "previewPerformed": false,
+  "remoteQueried": false,
+  "remoteExecuted": false,
+  "guard": {
+    "probes": 2,
+    "unexpected": 0
+  },
+  "scriptSha256": "75c44075f0e2e3460c62ded5e4a22857283d2e735b896c5a72276ec01f17a064",
+  "mobilePreviewGate": {
+    "source": "extracted exact function from frozen deployment script; VM synthetic records",
+    "validAccepted": true,
+    "negativeCases": 4,
+    "candidateOnly": true,
+    "configMatchesManifest": true,
+    "actualPhoneObserved": false
+  }
+}

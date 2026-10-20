@@ -1,0 +1,29 @@
+{
+  "schema": "codex-i2-schedule-change/1",
+  "userQuote": "时间改为下午14：00-15：00",
+  "clockObservedUtc": "2026-10-20T05:42:21Z",
+  "supersededRound": "i2preview-20261020-f491378eb469",
+  "supersededRoundDisposition": "晚间轮停用；原批准记录与冻结包保留为历史，不再依旧时段执行",
+  "newRound": "i2preview-20261020-41fd797bef41",
+  "preparationStartsAt": "2026-10-20T14:00:00+08:00",
+  "windowStartsAt": "2026-10-20T14:30:00+08:00",
+  "windowExpiresAt": "2026-10-20T15:00:00+08:00",
+  "newPackageConfirmationPending": true,
+  "realOperationsPerformed": false,
+  "localPreparation": {
+    "packageFiles": 39,
+    "closeFiles": 23,
+    "frozenScriptDigests": 7,
+    "mobileGatePositiveCases": 1,
+    "mobileGateNegativeCases": 4,
+    "executionReady": false,
+    "strictBeforeWindowRejected": true,
+    "passphraseCheckSecretRead": false
+  },
+  "notes": [
+    "只改变时间和新轮次绑定，产品与身份权限校验不变",
+    "新执行页首次内存变换遇到不存在的文本锚点，在写入前拒绝；删除该无效替换项后新建成功，没有改写旧页",
+    "本轮无一次性临时脚本；本地包及DPAPI控制材料留Git忽略目录，不入提交",
+    "不自动启动、不承诺后台关闭；具体包确认后按约定同场继续"
+  ]
+}
