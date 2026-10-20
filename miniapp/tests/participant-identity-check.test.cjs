@@ -2290,9 +2290,9 @@ test('D5 R4 客户端严格验证：畸形诊断整份丢弃不修补；合法�
   assert.ok(typeof newLabelShown === 'string' && newLabelShown.includes('CANDIDATE_WX_CLOUD_API_TOKEN'), '生成页面：新候选标签展示');
 });
 
-test('D6 审计v12失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7–v11保持各轮已交付字节）', () => {
+test('D6 审计v13失败判定：业务期意外守卫（含被catch）必须非零退出且ok=false；正常对照意外0退出0；漂移反例退出1；探针单独记账（历史20261016脚本保留为347261a字节，v7–v12保持各轮已交付字节）', () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v12-20261019.cjs');
+  const auditFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddyI1入站审计v13-20261020.cjs');
   const auditSource = fs.readFileSync(auditFile, 'utf8');
   const runAudit = kind => {
     let source = auditSource;
@@ -2336,9 +2336,9 @@ test('D6 审计v12失败判定：业务期意外守卫（含被catch）必须非
   assert.equal(drift.exitCode, 1, '漂移必须非零退出');
 });
 
-test('D7 收尾证据v7外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v6 保持上一轮已交付字节，v5/v4/v3/v2 与历史20261016脚本保持原字节）', async () => {
+test('D7 收尾证据v8外层判定：外层被catch意外>0 时 ok=false/exit1；正常对照意外0/exit0；守卫计数写入JSON且与内部审计预期反例分述（v7 保持上一轮已交付字节，v6/v5/v4/v3/v2 与历史20261016脚本保持原字节）', async () => {
   const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v7-20261019.cjs');
+  const evidenceFile = path.join(PROJECT_ROOT, 'docs', '证据', 'CodeBuddy受控诊断R1R4收尾v8-20261020.cjs');
   const source = fs.readFileSync(evidenceFile, 'utf8');
   const run = kind => {
     let src = source;
@@ -3588,5 +3588,173 @@ test('H5 失败路径保留本机事实（E）：同步抛错/异步reject/缺re
     } finally {
       if (hadWx) globalThis.wx = prevWx; else delete globalThis.wx;
     }
+  }
+});
+
+test('H6 发送前置校验（R1）：buildId 缺失/非法、轮次非法、协议错误、函数错误均在 callFunction 前拒绝零发送且无 handoffAttempted 假事实；合法正向、C1 口径与页面失败路径保持', async () => {
+  const closeSource = makeCloseSourceDir();
+  const starts = Date.now() - 60000;
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h6-' + crypto.randomBytes(3).toString('hex'));
+  packer.build(writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 29 * 60 * 1000).toISOString()
+  }), outDir);
+  // 真实生成服务端链（同 H3 模式），供合法正向使用：
+  // trusted OPENID 必须是原始值，服务端 deriveUserId(OPENID) 才会命中关闭来源用户
+  const openid = 'synthetic-owner' + RUN_ID;
+  const userId = 'u_' + crypto.createHash('sha256').update(APPID + ':synthetic-owner' + RUN_ID).digest('hex').slice(0, 40);
+  const db = { collection(name) { if (name !== core.FIXED_TARGET.collection) throw Error('TRAP 集合'); return { doc(id) { if (id !== userId) throw Error('TRAP 主键'); return { async get() { throw Error('unprojected get'); }, field(f) { return { async get() { return { data: { _id: userId, openid, status: 'active' } }; } }; } }; } }; } };
+  const srvMain = loadCandidateMain(outDir, { appId: APPID, envId: ENV_ID, openid, db, onDatabase: () => {} });
+  const clientPath = path.join(outDir, 'frontend', 'utils', 'identity-check-client.js');
+  const mkClient = (configOverrides, wxStub) => {
+    const cfg = (() => {
+      const m = { exports: {} };
+      vm.runInNewContext(fs.readFileSync(path.join(outDir, 'frontend', 'config', 'cloud.js'), 'utf8'), { module: m, exports: m.exports }, { filename: 'h6-cloud.js' });
+      return Object.assign(m.exports, configOverrides || {});
+    })();
+    const ctx = { module: { exports: {} }, require: name => { if (name === '../config/cloud') return cfg; throw Error('unexpected require ' + name); }, wx: wxStub };
+    vm.runInNewContext(fs.readFileSync(clientPath, 'utf8'), ctx, { filename: 'h6-client.js' });
+    return ctx.module.exports;
+  };
+  const activeResult = { ok: true, registrationState: 'ACTIVE', code: null, readAttempted: true, userId };
+  const mkSendStub = sends => ({ cloud: { _identityCheckEnvInited: true, init() {}, callFunction(opts) { sends.push(opts); return Promise.resolve({ result: activeResult }); } } });
+  // (1)–(5) 前置拒绝：零发送、无 handoffAttempted=true 假事实（拒绝而非封套）
+  const rejectCases = [
+    { why: '缺失 buildId', override: { previewBuildId: '' } },
+    { why: '非法 buildId', override: { previewBuildId: 'not-a-hash' } },
+    { why: '非法轮次', override: { checkRoundId: 'x' } },
+    { why: '错误协议（payload 与配置一致但均非固定值，杜绝配置自比绕过）', override: { requestProtocol: 'unapproved-protocol/9' } },
+    { why: '错误函数', override: { identityCheckFunction: 'unapprovedFunction' } }
+  ];
+  for (const c of rejectCases) {
+    const sends = [];
+    const client = mkClient(c.override, mkSendStub(sends));
+    await assert.rejects(client.callIdentityCheck({ action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE }), /本机核验参数校验未通过/, c.why + ' 必须调用前拒绝');
+    assert.equal(sends.length, 0, c.why + '：零 callFunction');
+  }
+  // (6) C1 口径：缺 result 时 transportOutcome=returned（SDK Promise 兑现）+ response=null，
+  //     不保证有效服务端结果；页面按失败/未知处理（页面级在 (8) 验证）
+  {
+    const sends = [];
+    const client = mkClient(null, { cloud: { _identityCheckEnvInited: true, init() {}, callFunction(opts) { sends.push(opts); return Promise.resolve({}); } } });
+    const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE });
+    assert.equal(envelope.transportOutcome, 'returned', 'C1：缺 result 仍为 returned（仅 SDK Promise 兑现）');
+    assert.equal(envelope.response, null, 'C1：无有效服务端结果时 response=null');
+    assert.ok(envelope.localRequestEvidence && envelope.localRequestEvidence.handoffAttempted === true);
+    assert.equal(sends.length, 1);
+  }
+  // (7) 合法正向：客户端级 ACTIVE 保持
+  {
+    const sends = [];
+    const client = mkClient(null, mkSendStub(sends));
+    const envelope = await client.callIdentityCheck({ action: 'inspectSelf', passphrase: SYNTHETIC_PASSPHRASE });
+    assert.equal(sends.length, 1, '合法正向发送 1 次（实际 ' + sends.length + '）');
+    assert.equal(envelope.transportOutcome, 'returned');
+    assert.equal(envelope.response.registrationState, 'ACTIVE', '合法正向 ACTIVE（response=' + JSON.stringify(envelope.response).slice(0, 160) + '）');
+  }
+  // (8) 页面级：无效配置的生成包副本 → 前置拒绝 → 零发送、失败未知、口令清除、无自动重试
+  //     （client 经 createRequire 加载、其 wx 取自 globalThis，因此手动设置作用域）
+  {
+    const badDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h6bad-' + crypto.randomBytes(3).toString('hex'));
+    fs.cpSync(outDir, badDir, { recursive: true });
+    const cfgPath = path.join(badDir, 'frontend', 'config', 'cloud.js');
+    fs.writeFileSync(cfgPath, fs.readFileSync(cfgPath, 'utf8').replace(/checkRoundId: '[^']*'/, "checkRoundId: 'x'"));
+    let pageSends = 0;
+    const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction(opts) { pageSends++; return Promise.resolve({ result: activeResult }); } } };
+    const hadWx = Object.prototype.hasOwnProperty.call(globalThis, 'wx');
+    const prevWx = globalThis.wx;
+    globalThis.wx = wxStub;
+    try {
+      const page = loadCandidatePage(badDir, wxStub);
+      page.onLoad();
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(pageSends, 0, '页面级前置拒绝：零发送（实际 ' + pageSends + ' stopHint=' + page.data.stopHint + '）');
+      assert.equal(page.data.passphrase, '', '失败也清除口令（实际=' + page.data.passphrase + '）');
+      assert.equal(page.data.result, null);
+      assert.ok(page.data.stopHint && page.data.stopHint.includes('未完成'), '失败未知文案（实际=' + page.data.stopHint + '）');
+      await page.onCheckTap();
+      assert.equal(pageSends, 0, '无自动重试：第二次点击仍前置拒绝');
+      assert.equal(page.data.passphrase, '', '状态一致');
+    } finally {
+      if (hadWx) globalThis.wx = prevWx; else delete globalThis.wx;
+    }
+  }
+  // (9) 页面级合法正向：真实链 ACTIVE 保持
+  {
+    let pageSends = 0;
+    const wxStub = { cloud: { _identityCheckEnvInited: true, init() {}, callFunction: async opts => { pageSends++; return { result: await srvMain.main(opts.data) }; } } };
+    const hadWx = Object.prototype.hasOwnProperty.call(globalThis, 'wx');
+    const prevWx = globalThis.wx;
+    globalThis.wx = wxStub;
+    try {
+      const page = loadCandidatePage(outDir, wxStub);
+      page.onLoad();
+      page.onPassphraseInput({ detail: { value: SYNTHETIC_PASSPHRASE } });
+      await page.onCheckTap();
+      assert.equal(pageSends, 1, '页面级正向发送 1 次（实际 ' + pageSends + '）');
+      assert.equal(page.data.result && page.data.result.registrationState, 'ACTIVE', '页面级合法正向 ACTIVE（result=' + JSON.stringify(page.data.result).slice(0, 160) + '）');
+    } finally {
+      if (hadWx) globalThis.wx = prevWx; else delete globalThis.wx;
+    }
+  }
+});
+
+test('H7 来源漂移结构化失败（R2）：checkDir/checkPreparedDir 对前端模板漂移/缺失/读取异常返回 ok=false/problems/planChecked=false 不抛原始异常、不信任清单自报值；准备不升级 executionReady；合法对照与关闭独立检查保持', () => {
+  const closeSource = makeCloseSourceDir();
+  const starts = Date.now() - 60000;
+  const outDir = path.join(OUT_ROOT, packer.OUT_PREFIX + 'h7-' + crypto.randomBytes(3).toString('hex'));
+  packer.build(writePicPlan(closeSource, {
+    synthetic: false,
+    windowStartsAtIso: new Date(starts).toISOString(),
+    windowExpiresAtIso: new Date(starts + 29 * 60 * 1000).toISOString()
+  }), outDir);
+  const withTemplateRead = (fn, mode) => {
+    const orig = fs.readFileSync;
+    fs.readFileSync = function (p, ...rest) {
+      const s = String(p);
+      if (s.includes('participant-identity-check') && s.includes('frontend')) {
+        if (mode === 'drift') return Buffer.concat([orig.call(fs, p, ...rest), Buffer.from('\n// synthetic-source-drift\n')]);
+        if (mode === 'missing') { const e = new Error('ENOENT: no such file or directory, open ' + s); e.code = 'ENOENT'; throw e; }
+        if (mode === 'readError') { const e = new Error('EACCES: permission denied, open ' + s); e.code = 'EACCES'; throw e; }
+      }
+      return orig.call(fs, p, ...rest);
+    };
+    try { return fn(); } finally { fs.readFileSync = orig; }
+  };
+  // 清单自报值在此场景下仍完整有效——结构化失败证明不信任自报值
+  const manifestSelfReport = JSON.parse(fs.readFileSync(path.join(outDir, 'manifest.json'), 'utf8')).previewBuildId;
+  assert.ok(/^[0-9a-f]{64}$/.test(manifestSelfReport), '清单自报 previewBuildId 本身合法（漂移时仍被拒绝）');
+  const cases = [['前端模板漂移', 'drift', 'SOURCE_DRIFT'], ['前端模板缺失', 'missing', 'ENOENT'], ['前端模板读取异常', 'readError', 'EACCES']];
+  for (const [name, mode, classification] of cases) {
+    withTemplateRead(() => {
+      let r1 = null;
+      r1 = packer.checkDir(outDir); // 不抛：结构化失败
+      assert.equal(r1.ok, false, name + '：checkDir ok=false');
+      assert.ok(r1.problems.some(p => p.includes('预览版本标识重建失败')), name + '：问题含重建失败条目');
+      assert.ok(r1.problems.some(p => p.includes(classification)), name + '：错误分类保留');
+      assert.equal(r1.planChecked, false, name + '：planChecked=false');
+      const r2 = packer.checkPreparedDir(outDir);
+      assert.equal(r2.ok, false, name + '：checkPreparedDir ok=false');
+      assert.equal(r2.phase, 'preparation', name + '：阶段标记保持');
+      assert.equal(r2.executionReady, false, name + '：准备结果不升级 executionReady');
+      assert.equal(r2.planChecked, false, name + '：checkPreparedDir planChecked=false');
+    }, mode);
+  }
+  // 合法对照：撤回注入后两检查器均通过（窗口内），且不依赖清单自报值（重算一致）
+  const ok1 = packer.checkDir(outDir);
+  assert.equal(ok1.ok, true, '合法对照 checkDir 通过');
+  const ok2 = packer.checkPreparedDir(outDir);
+  assert.equal(ok2.ok, true, '合法对照 checkPreparedDir 通过');
+  assert.equal(ok2.executionReady, false, '准备结果仍不升级 executionReady');
+  // 关闭独立检查：不受候选来源重建/窗口影响
+  process.env.PIC_CLOSE_SOURCE_DIR = closeSource;
+  try {
+    const closeResult = packer.checkCloseDir(outDir);
+    assert.equal(closeResult.ok, true, '关闭 23 文件独立检查保持');
+    assert.equal(closeResult.files, 23);
+  } finally {
+    delete process.env.PIC_CLOSE_SOURCE_DIR;
   }
 });

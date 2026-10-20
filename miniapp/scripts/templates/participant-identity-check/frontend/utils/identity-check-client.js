@@ -11,6 +11,11 @@
 //   的同一个 payload，在紧邻调用前采集不可变快照（仅公共字段，经严格格式校验）；
 //   返回本地封套 {response, localRequestEvidence, transportOutcome}，与云函数 result
 //   严格分开；迟到响应/后续配置变动不得改写快照。
+// - R1（2026-10-20）：快照有效性是发送前置条件——previewBuildId 缺失/非法、轮次
+//   非法、协议非 participant-identity-request/1、函数非 scheduleSandbox 一律在
+//   调用前拒绝（零发送、无 handoffAttempted=true 假事实）。
+// - C1 口径（2026-10-20）：transportOutcome='returned' 仅表示 SDK Promise 兑现，
+//   不保证存在有效服务端结果（result 可为 null）；页面按失败/未知处理。
 
 const cloudConfig = require('../config/cloud');
 
@@ -32,6 +37,10 @@ const KEY_DIAGNOSTIC_MAX_LABELS = 8;
 
 // 本机请求证据（手机提交轮次）：固定 schema 与字段集（任务 §2.2）。
 const LOCAL_REQUEST_EVIDENCE_SCHEMA = 'participant-identity-local-request/1';
+// 请求分层协议与目标函数为固定值（任务 §2.2，R1 收紧）：不与配置互相比对作为唯一依据，
+// 必须精确等于固定常量；配置值本身也须等于固定值才允许发送。
+const REQUEST_PROTOCOL = 'participant-identity-request/1';
+const FIXED_FUNCTION_NAME = 'scheduleSandbox';
 // 轮次/构建标识格式约束与打包器一致：轮次 4–64 位字母数字-_ 且不以符号开头；
 // previewBuildId 为 64 位小写十六进制 SHA-256。
 const ROUND_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{3,63}$/;
@@ -102,17 +111,25 @@ function sanitizeKeyDiagnostic(raw) {
  * 附带字段或原始异常。handoffAttempted=true 仅表示程序已走到即将调用 SDK 这一步，
  * 不是网络送达、云函数收到或数据库已读取的证明。校验失败返回 null
  * （调用 SDK 前本地参数验证失败不生成已尝试快照）。
+ *
+ * R1（2026-10-20 收紧）：本机证据有效性即发送前置条件——协议必须精确等于
+ * participant-identity-request/1（payload.schema 与本页配置双向一致，且配置本身
+ * 等于固定值，杜绝“配置自比”绕过）、函数必须精确等于 scheduleSandbox；
+ * previewBuildId 缺失/非法、轮次非法同样判无效。返回 null 表示禁止发送。
  */
 function captureLocalRequestEvidence(payload) {
   const pic = payload && payload.picRequest;
   const requestRoundId = pic && typeof pic.checkRoundId === 'string' ? pic.checkRoundId : '';
   const schema = pic && typeof pic.schema === 'string' ? pic.schema : '';
+  const configProtocol = typeof cloudConfig.requestProtocol === 'string' ? cloudConfig.requestProtocol : '';
   const previewBuildId = typeof cloudConfig.previewBuildId === 'string' ? cloudConfig.previewBuildId : '';
   const functionName = typeof cloudConfig.identityCheckFunction === 'string' ? cloudConfig.identityCheckFunction : '';
   if (!ROUND_ID_RE.test(requestRoundId)) return null;
   if (!BUILD_ID_RE.test(previewBuildId)) return null;
-  if (!schema || schema !== cloudConfig.requestProtocol) return null;
-  if (!functionName) return null;
+  // R1：协议与函数精确等于固定常量；payload.schema 须与本页配置一致且两者都是固定值
+  if (configProtocol !== REQUEST_PROTOCOL) return null;
+  if (schema !== configProtocol || schema !== REQUEST_PROTOCOL) return null;
+  if (functionName !== FIXED_FUNCTION_NAME) return null;
   // 逐字段脱离引用并冻结：迟到响应/后续配置变动不得改写已捕获快照
   return Object.freeze({
     schema: LOCAL_REQUEST_EVIDENCE_SCHEMA,
@@ -155,6 +172,12 @@ function callIdentityCheck(request) {
   // 本机提交轮次快照：构造完成后、紧邻 SDK 调用前，从同一个 payload 采集；
   // 此后不再修改 payload（快照与交给 SDK 的请求字段值精确一致）。
   const localRequestEvidence = captureLocalRequestEvidence(payload);
+  // R1（2026-10-20）：本机证据无效（buildId 缺失/非法、轮次非法、协议或函数不是
+  // 固定值）时，在调用 wx.cloud.callFunction **之前**拒绝——零发送、无
+  // handoffAttempted=true 的假事实，不消耗本轮唯一一次核验。
+  if (!localRequestEvidence) {
+    return Promise.reject(new Error('本机核验参数校验未通过，本次未发送请求'));
+  }
   const envelope = transportOutcome => Object.freeze({
     response: null,
     localRequestEvidence: localRequestEvidence,
@@ -169,6 +192,10 @@ function callIdentityCheck(request) {
       else delete result.keyDiagnostic;
     }
     // 本地封套：response 是未改服务端结果；服务端任何同名字段都不进入本机证据。
+    // C1 口径（2026-10-20）：transportOutcome='returned' 仅表示 wx.cloud.callFunction
+    // 的 SDK Promise 正常兑现，**不保证存在有效服务端结果**（result 可能为 null 或
+    // 云函数自身错误结构）；是否有效由 response 与页面状态判断，页面此时仍按
+    // 失败/未知处理，不描述为云端处理成功。'failed' 表示调用未完成（同步抛错/拒绝）。
     return Object.freeze({ response: result, localRequestEvidence: localRequestEvidence, transportOutcome: 'returned' });
   };
   const onFailed = () => envelope('failed');

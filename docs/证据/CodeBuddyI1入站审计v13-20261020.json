@@ -1,0 +1,166 @@
+{
+  "schema": "codebuddy-i1-inbound-envelope-audit/3",
+  "observedAt": "2026-10-20T02:47:27.896Z",
+  "basisCommit": "a32ebdd",
+  "basisNote": "HEAD at audit time; audit baselines are commit-bound constants inside this script",
+  "verificationKind": "offline read-only source audit; external fixed baselines (packager self digest + PINNED_SOURCES extracted from hash-verified packager bytes); drift counterexample rejected in memory",
+  "outputMode": "stdout+file(wx)",
+  "outPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodeBuddyI1入站审计v13-20261020.json",
+  "counters": {
+    "checksRun": 17,
+    "checkFailures": 0,
+    "sensitivityGuardAttempts": 2,
+    "businessPhaseGuardAttempts": 0,
+    "guardAttemptsTotal": 2,
+    "cloudOperations": 0
+  },
+  "packagerSelfDigest": {
+    "rel": "miniapp/scripts/package-participant-identity-check.cjs",
+    "sha256": "695e0d0c8bee68b5379470ffca85d2492c3102ae1974b5510e1f0c1bce8b04e6",
+    "expectedSha256": "695e0d0c8bee68b5379470ffca85d2492c3102ae1974b5510e1f0c1bce8b04e6",
+    "match": true,
+    "note": "打包器自身摘要单独核对；不在其自身 PINNED_SOURCES 表内"
+  },
+  "sourcePins": {
+    "total": 14,
+    "driftHits": 0,
+    "changedThisRound": [
+      "miniapp/scripts/templates/participant-identity-check/server/request-adapter.js",
+      "miniapp/scripts/templates/participant-identity-check/server/index.js"
+    ],
+    "entries": [
+      {
+        "rel": "miniapp/scripts/lib/participant-identity-check.cjs",
+        "changedThisRound": false,
+        "pinnedSha": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+        "actualSha": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/project.config.json",
+        "changedThisRound": false,
+        "pinnedSha": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+        "actualSha": "ac3b591b49378d6aa231eca7b742cad7eb550eca4d8701a8c3916e52f2b64b67",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/server/index.js",
+        "changedThisRound": true,
+        "pinnedSha": "76e5b938612bd9dbb10df37f408923eff990e2198e21ee125bbd557decb07bd9",
+        "actualSha": "76e5b938612bd9dbb10df37f408923eff990e2198e21ee125bbd557decb07bd9",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/server/request-adapter.js",
+        "changedThisRound": true,
+        "pinnedSha": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc",
+        "actualSha": "06e641fe2bd7e0d711f439979070f5688bac469a723c09f76b96bd622f39a5dc",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/server/package.json",
+        "changedThisRound": false,
+        "pinnedSha": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+        "actualSha": "e7b16fdd6e5df8b4aa150f456f933be15dbe42bc1f1bce7f003dad09202618d9",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/app.js",
+        "changedThisRound": false,
+        "pinnedSha": "1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36",
+        "actualSha": "1034d53f9b0f40f04eaecb7700d7a0bae8db892f10f17e3e4c656afd24b7fa36",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/app.json",
+        "changedThisRound": false,
+        "pinnedSha": "c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce",
+        "actualSha": "c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/app.wxss",
+        "changedThisRound": false,
+        "pinnedSha": "a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846",
+        "actualSha": "a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js",
+        "changedThisRound": false,
+        "pinnedSha": "e11e6ced687dc3ffec1bd45973543329fb622dc3a37103aba6dd0b3c461f7ffc",
+        "actualSha": "e11e6ced687dc3ffec1bd45973543329fb622dc3a37103aba6dd0b3c461f7ffc",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js",
+        "changedThisRound": false,
+        "pinnedSha": "80dac506c1b1eb03b65fbfd8dedd1de63fe18c953e92e7ad02502bfce22ccfa8",
+        "actualSha": "80dac506c1b1eb03b65fbfd8dedd1de63fe18c953e92e7ad02502bfce22ccfa8",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js",
+        "changedThisRound": false,
+        "pinnedSha": "debcf869ffd8bcaacdf8467d436e1b67acc5a9f8aa6cbb91df106aa8edae8fca",
+        "actualSha": "debcf869ffd8bcaacdf8467d436e1b67acc5a9f8aa6cbb91df106aa8edae8fca",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json",
+        "changedThisRound": false,
+        "pinnedSha": "e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e",
+        "actualSha": "e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml",
+        "changedThisRound": false,
+        "pinnedSha": "a1a59cff10420e557a085c19543e646653a7f553037eccb31231e4e04e1282b4",
+        "actualSha": "a1a59cff10420e557a085c19543e646653a7f553037eccb31231e4e04e1282b4",
+        "match": true
+      },
+      {
+        "rel": "miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxss",
+        "changedThisRound": false,
+        "pinnedSha": "f8970ae650922d44e4c5a53e37aa0dca4b44ae75d3707d6b57ba586c0c74a89b",
+        "actualSha": "f8970ae650922d44e4c5a53e37aa0dca4b44ae75d3707d6b57ba586c0c74a89b",
+        "match": true
+      }
+    ]
+  },
+  "driftCounterexample": {
+    "method": "append comment to core bytes in memory",
+    "rejected": true,
+    "writtenToDisk": false
+  },
+  "sdkFacts": {
+    "wxServerSdk": {
+      "version": "3.0.1",
+      "indexSha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04",
+      "indexBytes": 320781,
+      "userInfoCountInIndex": 0,
+      "callFunctionPassthrough": "data passed unchanged to tcb instance",
+      "getWXContextSource": "process.env.WX_CONTEXT_KEYS (+WX_* env keys; ENV from TCB_ENV/SCF_NAMESPACE; SOURCE from TCB_SOURCE)"
+    },
+    "cloudbaseNodeSdk": {
+      "version": "2.10.0",
+      "functionsIndexSha256": "13c149cafd0ccfd70f6d05450815990f3182d0f02efbbbd13f69a0984dfc272f",
+      "callFunctionPassthrough": "request_data = JSON.stringify(data)",
+      "libJsFilesScanned": 22,
+      "userInfoCountInLib": 5,
+      "userInfoOnlyInModules": [
+        "auth/index.js",
+        "storage/index.js"
+      ]
+    }
+  },
+  "checkFailures": [],
+  "limitations": [
+    "Platform envelope between phone wx.cloud.callFunction(data) and exports.main(event) is not present in any local artifact; actual extra key name, source and injection point remain unknown; userInfo is a public-documentation hypothesis only.",
+    "Server-side outgoing callFunction passthrough does not represent the phone inbound path; node-sdk serializes via JSON.stringify, so no byte-exact claim is made.",
+    "Entry CONFIG_APP_ID/CONFIG_ENV_ID are packaging constants; reaching the core does not prove cloud.getWXContext-based trusted target verification passed.",
+    "Static anchors are not platform behavior verification."
+  ],
+  "ok": true
+}

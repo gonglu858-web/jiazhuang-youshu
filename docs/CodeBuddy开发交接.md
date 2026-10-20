@@ -1,3 +1,7 @@
+## 2026-10-20 CodeBuddy 完成「手机请求轮次与预览版本」R1/R2 返修：待复查
+
+- R1：客户端发送前置校验——buildId 缺失/非法、轮次非法、协议非 participant-identity-request/1、函数非 scheduleSandbox 在调用前拒绝（零发送、无 handoffAttempted=true 假事实）；协议按固定常量+配置双向核对；页面失败未知/口令清除/无自动重试保持。R2：checkDir/checkPreparedDir 的 previewBuildId 来源依赖计算纳入受控重建出口——漂移/缺失/读取异常返回 ok=false/problems（分类保留）/planChecked=false，不抛异常、不信任清单自报值，准备不升级 executionReady。C1：returned=仅 SDK Promise 兑现、不保证有效服务端结果，页面按失败/未知处理（代码/测试/操作说明统一）。
+- 实测：核验包 51/51（H6+H7 新增）、业务包 18/18、member-access-sdk 1/1；[证据 v2](证据/CodeBuddy手机轮次与预览版本证据v2-20261020.json) ok=true 意外0；[审计 v13](证据/CodeBuddyI1入站审计v13-20261020.json) 14/14（v7–v12 原字节）；[收尾 v8](证据/CodeBuddy受控诊断R1R4收尾v8-20261020.json)（v7 原字节）。本地自测通过待 Codex 复查，真实执行未放行；1号2号不重试，P不开展。
 ## 2026-10-19 Codex复查60967bf：手机轮次/预览版本，R1/R2待返修
 
 - 依据：[复查报告](Codex复查-手机请求轮次与预览版本-20261019.md)；独立复跑核验49/49、业务18/18、本地SDK1/1，交付证据ok=true。

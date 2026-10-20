@@ -290,7 +290,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-identity-check/frontend/app.json': 'c4c2ae031c66b97d072b6e91425d42122a3717b37ffb04876ecb07d558d5fcce',
   'miniapp/scripts/templates/participant-identity-check/frontend/app.wxss': 'a775e064562da8b885d00e224057ed71c50ffa9095c0f68ef2e95c994deca846',
   'miniapp/scripts/templates/participant-identity-check/frontend/config/cloud.js': 'e11e6ced687dc3ffec1bd45973543329fb622dc3a37103aba6dd0b3c461f7ffc',
-  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': 'd0ad76006ce9aa259bb3281df942f5792305e29c2d4c3b170fdf2a16eebe674f',
+  'miniapp/scripts/templates/participant-identity-check/frontend/utils/identity-check-client.js': '80dac506c1b1eb03b65fbfd8dedd1de63fe18c953e92e7ad02502bfce22ccfa8',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.js': 'debcf869ffd8bcaacdf8467d436e1b67acc5a9f8aa6cbb91df106aa8edae8fca',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.json': 'e98244d8ae77ed59807799067801efaabcb0d35f0d031759b7ee78af8efd073e',
   'miniapp/scripts/templates/participant-identity-check/frontend/pages/identity-check/identity-check.wxml': 'a1a59cff10420e557a085c19543e646653a7f553037eccb31231e4e04e1282b4',
@@ -943,9 +943,19 @@ function checkDirInternal(dir, windowPhase) {
     requestProtocol: plan.requestProtocol,
     // 手机预览版本证据（R2/2026-10-19 任务 §2.1）：从受审来源严格重建并比较，
     // 不信任清单自报值；缺失/未知/伪造/配置与清单不一致均拒绝。
-    previewEvidenceSchema: PREVIEW_EVIDENCE_SCHEMA,
-    previewBuildId: computePreviewBuildId(plan)
+    previewEvidenceSchema: PREVIEW_EVIDENCE_SCHEMA
   };
+  // R2（2026-10-20 复查返修）：previewBuildId 依赖受审来源（前端模板与打包器自身字节），
+  // 必须在受控重建出口内计算——来源漂移/缺失/读取异常按原检查 API 契约返回
+  // ok=false/problems（错误分类保留在问题文本、planChecked=false），不向调用方抛出
+  // 原始异常，也不吞掉异常后改用 manifest 自报值；checkDir 与 checkPreparedDir 共用本路径，
+  // 准备结果因此不得升级 executionReady。
+  try {
+    expectFields.previewBuildId = computePreviewBuildId(plan);
+  } catch (error) {
+    bad('预览版本标识重建失败[' + (error.code || 'PIC_ERROR') + ']：' + error.message);
+    return finish();
+  }
   for (const [k, v] of Object.entries(expectFields)) {
     if (JSON.stringify(manifest[k]) !== JSON.stringify(v)) bad('manifest.' + k + ' 与计划不一致');
   }

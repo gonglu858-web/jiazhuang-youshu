@@ -1,0 +1,214 @@
+{
+  "schema": "codebuddy-i1-round-preview-evidence/2",
+  "observedAt": "2026-10-20T02:47:15.459Z",
+  "basisCommit": "a32ebdd",
+  "reviewBasis": "docs/Codex复查-手机请求轮次与预览版本-20261019.md §2–§4（R1/R2 返修 + C1 口径）",
+  "verificationKind": "offline evidence; synthetic plans/clocks/transport stubs; NOT platform verification, NOT an execution approval",
+  "ok": true,
+  "guardCounters": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "receiptFailures": 0,
+    "total": 2
+  },
+  "verdict": {
+    "ok": true,
+    "exitCode": 0
+  },
+  "sections": {
+    "a": {
+      "idFormatOk": true,
+      "sameBuild": true,
+      "samePrepare": true,
+      "configInjected": true,
+      "roundSensitive": true
+    },
+    "b": {
+      "zeroSendOnLoad": true,
+      "previewBuildIdVisible": true,
+      "configRoundVisible": true,
+      "oneSend": true,
+      "capturedRoundEqualsPayload": true,
+      "payloadOuterKeys": "picRequest",
+      "payloadInnerKeys": "action,checkRoundId,passphrase,schema",
+      "chainActive": true
+    },
+    "r1": {
+      "rejects": [
+        {
+          "why": "缺失 buildId",
+          "sends": 0
+        },
+        {
+          "why": "非法 buildId",
+          "sends": 0
+        },
+        {
+          "why": "非法轮次",
+          "sends": 0
+        },
+        {
+          "why": "错误协议（payload 与配置一致但均非固定值）",
+          "sends": 0
+        },
+        {
+          "why": "错误函数",
+          "sends": 0
+        }
+      ],
+      "c1MissingResult": {
+        "transportOutcome": "returned",
+        "responseNull": true,
+        "sends": 1
+      },
+      "legalForward": {
+        "sends": 1,
+        "state": "ACTIVE"
+      },
+      "pageReject": {
+        "sends": 0,
+        "passphraseCleared": true,
+        "resultNull": true,
+        "failureUnknownHint": true,
+        "noAutoRetry": true
+      }
+    },
+    "r2": {
+      "manifestSelfReportValid": true,
+      "cases": [
+        {
+          "name": "前端模板漂移",
+          "checkDirOkFalse": true,
+          "problemClassified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "preparedExecutionReadyFalse": true,
+          "preparedPlanCheckedFalse": true
+        },
+        {
+          "name": "前端模板缺失",
+          "checkDirOkFalse": true,
+          "problemClassified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "preparedExecutionReadyFalse": true,
+          "preparedPlanCheckedFalse": true
+        },
+        {
+          "name": "前端模板读取异常",
+          "checkDirOkFalse": true,
+          "problemClassified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "preparedExecutionReadyFalse": true,
+          "preparedPlanCheckedFalse": true
+        }
+      ],
+      "legalControl": {
+        "checkDirOk": true,
+        "preparedOk": true,
+        "executionReady": false
+      },
+      "closeIndependent": {
+        "ok": true,
+        "files": 23
+      }
+    },
+    "c": {
+      "localRound": "synthetic-round-evidence-old",
+      "serverCode": "PIC_ROUND_MISMATCH",
+      "serverState": "UNKNOWN",
+      "serverReadAttempted": false,
+      "factory": 1,
+      "collections": 0,
+      "gets": 0
+    },
+    "d": {
+      "evidenceNotOverwritten": true,
+      "forgedNotInEvidence": true,
+      "immutableAfterConfigChange": true
+    },
+    "e": {
+      "syncThrow": {
+        "transportOutcome": "failed",
+        "handoffAttempted": true,
+        "noRawError": true
+      }
+    },
+    "f": {
+      "wrongRoundStillRejected": true,
+      "closeIndependentOk": true,
+      "closeFiles": 23
+    },
+    "g": {
+      "prepare": {
+        "code": 0,
+        "executionReady": false,
+        "childUnexpected": 0,
+        "receiptFailures": 0
+      },
+      "emptyOut": {
+        "code": 1,
+        "usageError": true,
+        "childUnexpected": 0,
+        "receiptFailures": 0
+      },
+      "expectedExit1ReceiptChecked": {
+        "code": 1,
+        "receiptOk": true
+      }
+    },
+    "selfFaults": {
+      "normal": {
+        "code": 0,
+        "verdictExitCode": 0,
+        "probes": 2,
+        "parentUnexpected": 0
+      },
+      "earlyRequire": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "duringCloseSource": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "businessHit": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "nonWhitelistSpawn": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "publicSpawnBypass": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      }
+    }
+  },
+  "runtimeDigests": {
+    "packerSha256": "695e0d0c8bee68b5379470ffca85d2492c3102ae1974b5510e1f0c1bce8b04e6",
+    "coreSha256Unchanged": "cd4de68150e8d69afc69af43451f7d99c5395e8088e425630604cc8cf9ed92e7"
+  },
+  "evidenceKinds": {
+    "sourceObservation": "client pre-send validation (R1) and controlled checker failure exits (R2) read from product source",
+    "syntheticChain": "sections A–F use synthetic plans/windows/passphrases and synthetic wx/db",
+    "localCli": "section G spawns only whitelisted scripts via the shared helper runner with child guard preload and receipts",
+    "selfFaults": "self-run fault modes with independent accounting through the real verdict exit",
+    "c1Semantics": "transportOutcome='returned' means the SDK promise fulfilled only; a null result is still shown as failure/unknown by the page",
+    "platform": "none — whether the SDK actually delivered the request to the server remains unverified; previewBuildId is a local audited-package identifier, not a WeChat platform build id"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "No new network payload fields; previewBuildId/localRequestEvidence never enter the network payload.",
+    "handoffAttempted only means the program reached the SDK call; not proof of network delivery.",
+    "Pre-send rejection (R1) means this round was NOT consumed; it is a local failure, not a server verdict."
+  ]
+}
