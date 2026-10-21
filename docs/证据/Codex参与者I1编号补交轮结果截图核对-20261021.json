@@ -1,0 +1,47 @@
+{
+  "schema": "codex-i1-result-screenshot-observation/1",
+  "observedAt": "2026-10-21T04:25:06.975Z",
+  "roundId": "i1handoff-20261020-863ca4553633",
+  "participantCode": "1",
+  "source": {
+    "kind": "user-provided-phone-screenshot",
+    "name": "codex-clipboard-c8595190-6e77-46db-ae3d-9d8a1cd19280.png",
+    "sha256": "014714bfec684e07770f9232cb859191f044e419f4a1f0dff9dfb768bd1d720a",
+    "rawImageCopiedToRepository": false
+  },
+  "observed": {
+    "identityConfirmed": true,
+    "registrationStatus": "ABSENT",
+    "recordOwnership": "未核实",
+    "readAttempted": true,
+    "userIdTail": "dc619c",
+    "fullUserIdCheckboxChecked": true,
+    "fullUserIdRowPresent": true,
+    "fullUserIdRedacted": true,
+    "localRequestRound": "i1handoff-20261020-863ca4553633",
+    "serverRound": "i1handoff-20261020-863ca4553633",
+    "serverTimeIso": "2026-10-20T15:32:25.732Z",
+    "serverTimeBeijing": "2026-10-20 23:32:25.732 +08:00"
+  },
+  "handoff": {
+    "source": "用户直接回复",
+    "quote": "已当面核对并保存",
+    "confirmed": true,
+    "fullValueStoredInRepository": false,
+    "machineControlledInputCompleted": false
+  },
+  "interpretation": {
+    "roundsMatch": true,
+    "tailMatchesPriorI1": true,
+    "registrationNotCompleted": true,
+    "roleNotGranted": true,
+    "notProjectPreparationEvidence": true
+  },
+  "closureReference": "Codex参与者I1编号补交轮字节核对-20261020.closed.json",
+  "limitations": [
+    "依据用户提供截图核对，不独立查询云日志或计数请求",
+    "ABSENT仅说明当时本人测试记录不存在；记录归属未核实，不推断归属一致",
+    "完整编号已遮挡，不尝试恢复；当面交付保存来自用户确认",
+    "本次仅本地记录，无新增凭据或云端操作"
+  ]
+}
