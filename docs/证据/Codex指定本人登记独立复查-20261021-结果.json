@@ -1,0 +1,289 @@
+{
+  "schema": "codex-self-registration-review/1",
+  "reviewedCommit": "54fc06c",
+  "basis": "77c5ddd",
+  "ok": true,
+  "meaning": "counterexamples reproduced, NOT product acceptance",
+  "cases": 16,
+  "results": [
+    {
+      "name": "positiveSyntheticMemory",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": true,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "CREATED_AND_VERIFIED",
+        "code": null,
+        "created": true,
+        "message": "本人用户与登记审计已同事务新增并回读通过"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 2,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R1_beforeWindowStillCreates",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": true,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "CREATED_AND_VERIFIED",
+        "code": null,
+        "created": true,
+        "message": "本人用户与登记审计已同事务新增并回读通过"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 2,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R1_expiryDuringReadbackStillSuccess",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": true,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "CREATED_AND_VERIFIED",
+        "code": null,
+        "created": true,
+        "message": "本人用户与登记审计已同事务新增并回读通过"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 2,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R3_wrongOpenidAccepted",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": false,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": false
+        },
+        "outcome": "ALREADY_ACTIVE",
+        "code": null,
+        "message": "本人账号已有效存在，本包零新增（不伪造本包创建回执）"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 0,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R3_incompleteAuditAccepted",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": false,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "ALREADY_ACTIVE",
+        "code": null,
+        "message": "本人账号已有效存在，本包零新增（不伪造本包创建回执）"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 0,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R3_missingReadbackStillActive",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": false,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": false,
+          "audit": false
+        },
+        "outcome": "ALREADY_ACTIVE",
+        "code": null,
+        "message": "本人账号已有效存在，本包零新增（不伪造本包创建回执）"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 0,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R3_noProjection",
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 2,
+        "creates": 2,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R3_priorRoundAuditRejected",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-registration",
+        "userIdTail": "7290b9",
+        "auditIdTail": "117b69",
+        "writeAttempted": false,
+        "commitConfirmed": false,
+        "readBack": {
+          "user": false,
+          "audit": false
+        },
+        "outcome": "REJECTED_NO_WRITE",
+        "code": "PIC_AUDIT_CONFLICT",
+        "message": "既有登记审计冲突或孤立，不修复不覆盖"
+      },
+      "calls": {
+        "collections": 2,
+        "transactions": 1,
+        "gets": 0,
+        "creates": 0,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R3_rawSdkCodeEcho",
+      "rawSyntheticCodeEchoed": true,
+      "outcome": "REJECTED_NO_WRITE"
+    },
+    {
+      "name": "R3_wrongRoundEchoesClient",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "outcome": "REJECTED_NO_WRITE",
+        "code": "PIC_ROUND_MISMATCH",
+        "registrationRoundId": "synthetic-old-client",
+        "userIdTail": "7290b9",
+        "writeAttempted": false,
+        "commitConfirmed": false,
+        "readBack": {
+          "user": false,
+          "audit": false
+        },
+        "message": "登记轮次与本包配置不一致"
+      },
+      "calls": {
+        "collections": 0,
+        "transactions": 0,
+        "gets": 0,
+        "creates": 0,
+        "fields": 0
+      }
+    },
+    {
+      "name": "R1_entryFactoryBeforeRejection",
+      "factory": 1,
+      "collections": 0,
+      "code": "PIC_PASSPHRASE_MISMATCH",
+      "scope": "template constants injected in memory; adapter substitute; actual entry/core"
+    },
+    {
+      "name": "R2_realSdkTransactionClassIncompatible",
+      "sdkFileSha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04",
+      "classSourceSha256": "475e4e317d23b553baaa16b8f128a336a299bb7dea08b78b23cf67c1fa21336a",
+      "methods": {
+        "collection": "function",
+        "get": "undefined",
+        "create": "undefined"
+      },
+      "code": "PIC_TRANSACTION_FAILED",
+      "scope": "exact installed wx 3.0.1 Transaction class evaluated; no complete SDK transport/retry verification"
+    },
+    {
+      "name": "R4_privateBindingsNotValidated",
+      "invalidDecryptedBindingAccepted": true,
+      "arbitraryTargetAccepted": true,
+      "absentSourceTimeAccepted": true,
+      "broadSidAclAccepted": true,
+      "targetFileNotLstatChecked": true,
+      "scope": "fs/DPAPI/process substitutes; no private file read or OS ACL changed"
+    },
+    {
+      "name": "R6_guardBypassAndUncountedDenial",
+      "uncountedDeniedCalls": 1,
+      "arbitraryScriptPassedToNativeSpy": 1,
+      "realProcessesStarted": 0
+    },
+    {
+      "name": "R5_manifestMappingAndUnknownFieldsAccepted",
+      "fixture": "artifacts\\schedule-sandbox\\business-test\\participant-self-registration-ev-a-29add7",
+      "originalAccepted": true,
+      "forgedMappingAccepted": true,
+      "unknownTopAndFileFieldsAccepted": true,
+      "diskUnchanged": true,
+      "scope": "manifest bytes substituted only in memory"
+    },
+    {
+      "name": "R3_malformedResponsePresentedAsNoWrite",
+      "malformedResultClaimsNoWrite": true,
+      "passphraseCleared": true
+    }
+  ],
+  "guard": {
+    "probes": 2,
+    "unexpected": [],
+    "processesStarted": 0
+  },
+  "runtimeDigests": {
+    "core": "1cde8033a5675611ea226238784796324964dce0a4280f75d0a7c41f44e82d01",
+    "packer": "67bac52be37e19867e214552b278a8f50a1ebd985b28fca452fc488a4412b048"
+  },
+  "limitations": [
+    "Memory DB is not platform transaction verification",
+    "Private storage tests use synthetic DPAPI/fs substitutes",
+    "No real ID input or network/cloud operation"
+  ]
+}
