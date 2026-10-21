@@ -1,0 +1,16 @@
+{
+  "schema": "codex-local-registration-design-confirmation/1",
+  "recordedAt": "2026-10-21T04:39:25.410Z",
+  "source": "user direct reply to local design proposal",
+  "userQuote": "确认",
+  "basisCommit": "931cfcd",
+  "taskPath": "docs/CodeBuddy任务-指定本人登记与私密编号输入本地实现-20261021.md",
+  "taskSha256": "2e572eaa31494d8734a069d084b6497db72935633300dff92f53c378ba85acef",
+  "localImplementationWithSyntheticData": true,
+  "realPrivateIdInputApproved": false,
+  "realRegistrationOrCloudExecutionApproved": false,
+  "implementationStartedByCodex": false,
+  "automaticallySentToCodeBuddy": false,
+  "oldPlanAndEvidencePreserved": true,
+  "historySuffixPreserved": true
+}
