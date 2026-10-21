@@ -1,0 +1,19 @@
+<view class="page">
+  <view class="warning">{{warningText}}</view>
+  <view class="meta">
+    <view class="row"><text class="label">本机预览版本</text><text class="value">{{registrationBuildId}}</text></view>
+    <view class="row"><text class="label">本机配置轮次</text><text class="value">{{configRegistrationRoundId}}</text></view>
+    <view class="row"><text class="label">本机提交轮次</text><text class="value">{{localRequestRound || '—'}}</text></view>
+    <view class="row"><text class="label">服务端返回轮次</text><text class="value">{{serverRoundText}}</text></view>
+  </view>
+  <view class="field">
+    <text class="label">临时核验口令</text>
+    <input password="{{true}}" value="{{passphrase}}" bindinput="onPassphraseInput" placeholder="仅本窗口口令" />
+  </view>
+  <button class="register" bindtap="onRegisterTap" disabled="{{sending}}">登记本人账号</button>
+  <view class="hint" wx:if="{{stopHint}}">{{stopHint}}</view>
+  <view class="result" wx:if="{{result}}">
+    <view class="row"><text class="label">结果</text><text class="value">{{result.outcome}}</text></view>
+    <view class="row"><text class="label">写入事实</text><text class="value">writeAttempted={{result.writeAttempted}} commitConfirmed={{result.commitConfirmed}}</text></view>
+  </view>
+</view>

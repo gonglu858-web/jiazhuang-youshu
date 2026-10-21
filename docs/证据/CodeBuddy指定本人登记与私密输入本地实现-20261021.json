@@ -1,0 +1,334 @@
+{
+  "schema": "codebuddy-self-registration-evidence/1",
+  "observedAt": "2026-10-21T06:25:04.378Z",
+  "basisCommit": "77c5ddd",
+  "reviewBasis": "docs/CodeBuddy任务-指定本人登记与私密编号输入本地实现-20261021.md §1–§6；docs/Codex方案-指定本人登记与私密编号输入-20261021.md §6",
+  "verificationKind": "offline evidence; synthetic plans/accounts/passphrases and synthetic wx/db; NOT platform verification, NOT an execution approval; NO real number entry, NO cloud registration",
+  "ok": true,
+  "guardCounters": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "receiptFailures": 0,
+    "total": 2
+  },
+  "localToolCalls": {
+    "policy": "git check-ignore|ls-files / icacls read-only / fixed DPAPI ConvertTo|From-SecureString scripts (plaintext via stdin); everything else blocked as unexpected",
+    "count": 12,
+    "calls": [
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      }
+    ]
+  },
+  "verdict": {
+    "ok": true,
+    "exitCode": 0
+  },
+  "sections": {
+    "a": {
+      "dpapiRoundtrip": true,
+      "exclusive": "PSR_PRIVATE_EXISTS",
+      "exclusiveRejected": true,
+      "receiptSanitized": true,
+      "tailOnly": true,
+      "boundary": "PSR_PRIVATE_PATH_BOUNDARY",
+      "boundaryRejected": true,
+      "sameTailDifferentAccount": true
+    },
+    "b": {
+      "cases": [
+        {
+          "name": "非名单账号",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_NOT_ALLOWED",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "缺身份",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "错AppID",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "错轮次",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_ROUND_MISMATCH",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "错口令",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_PASSPHRASE_MISMATCH",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "窗口过期",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_WINDOW_EXPIRED",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        }
+      ]
+    },
+    "c": {
+      "created": {
+        "outcome": "CREATED_AND_VERIFIED",
+        "creates": 2,
+        "userOk": true,
+        "auditOk": true
+      },
+      "alreadyActive": {
+        "outcome": "ALREADY_ACTIVE",
+        "creates": 0
+      },
+      "zeroWrite": {
+        "disabled": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_USER_CONFLICT",
+          "creates": 0
+        },
+        "missingFields": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_USER_CONFLICT",
+          "creates": 0
+        },
+        "orphanAudit": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_AUDIT_CONFLICT",
+          "creates": 0
+        },
+        "auditConflict": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_AUDIT_CONFLICT",
+          "creates": 0
+        }
+      },
+      "rollback": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "users": false
+      },
+      "concurrent": {
+        "outcomes": [
+          "ALREADY_ACTIVE",
+          "CREATED_AND_VERIFIED"
+        ],
+        "creates": 2
+      }
+    },
+    "d": {
+      "secondWriteFail": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "writeAttempted": true,
+        "commitConfirmed": false
+      },
+      "commitTimeout": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "writeAttempted": true
+      },
+      "readbackFail": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "commitConfirmed": true
+      },
+      "noAutoRetry": {
+        "callbackRuns": 1
+      }
+    },
+    "e": {
+      "deterministic": {
+        "sameBuild": true,
+        "samePrepare": true,
+        "executionReady": false
+      },
+      "accountNotInvolved": true,
+      "roundSensitive": true
+    },
+    "f": {
+      "drift": [
+        {
+          "name": "前端模板漂移",
+          "checkDirOkFalse": true,
+          "classified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "executionReadyFalse": true
+        },
+        {
+          "name": "前端模板缺失",
+          "checkDirOkFalse": true,
+          "classified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "executionReadyFalse": true
+        }
+      ],
+      "legalControl": true,
+      "tamperDetected": true,
+      "restoredOk": true,
+      "closeIndependent": {
+        "ok": true,
+        "files": 23,
+        "expectedFiles": 23
+      }
+    },
+    "g": {
+      "fullChain": {
+        "outcome": "CREATED_AND_VERIFIED",
+        "writeAttempted": true
+      },
+      "notAllowed": {
+        "code": "PIC_NOT_ALLOWED",
+        "factoryDelta": 0
+      },
+      "wrongRound": {
+        "code": "PIC_ROUND_MISMATCH"
+      },
+      "oldActionUnreachable": "PIC_REQUEST_INVALID",
+      "page": {
+        "zeroSendOnLoad": true,
+        "warningDisclosesWrite": true,
+        "buildIdVisible": true,
+        "configRoundVisible": true,
+        "singleSend": true,
+        "payloadRound": "synthetic-self-reg-ev5921e912",
+        "passphraseCleared": true,
+        "localRound": "synthetic-self-reg-ev5921e912",
+        "serverRoundText": "synthetic-self-reg-ev5921e912"
+      },
+      "evidenceNotOverwritten": true,
+      "disclosure": {
+        "entryContainsAccount": true,
+        "clientClean": true,
+        "pageClean": true,
+        "manifestClean": true,
+        "planContainsFixture": true
+      }
+    },
+    "h": {
+      "normal": {
+        "code": 0,
+        "verdictExitCode": 0,
+        "probes": 2,
+        "parentUnexpected": 0
+      },
+      "earlyRequire": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "duringCloseSource": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "businessHit": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "nonWhitelistSpawn": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "publicSpawnBypass": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      }
+    }
+  },
+  "runtimeDigests": {
+    "packerSha256": "67bac52be37e19867e214552b278a8f50a1ebd985b28fca452fc488a4412b048",
+    "coreSha256": "1cde8033a5675611ea226238784796324964dce0a4280f75d0a7c41f44e82d01",
+    "privateStoreSha256": "da3f55287360ee06bf0343ec689df20569aa816df5ebd44712f82b88b759bbe7"
+  },
+  "evidenceKinds": {
+    "sourceObservation": "pre-send validation, local evidence capture, atomic two-write transaction and disclosure boundaries read from product source",
+    "syntheticChain": "sections B–G use synthetic accounts/passphrases/windows and synthetic wx/db (serialized local transaction model)",
+    "privateStore": "DPAPI (CurrentUser) roundtrip via node on Windows; PS1 SelfTestCheck covered by the test file (evidence does not spawn non-whitelisted processes)",
+    "localCli": "section H self-runs only the whitelisted evidence script via the shared audited runner with guard preload and receipts",
+    "selfFaults": "five fault modes with independent accounting through the real verdict exit",
+    "platform": "none — whether the SDK would actually deliver/commit on the platform remains unverified; no real number entry; no cloud registration"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "The private-source real-mode assembly (synthetic:false) is rejected at plan level in this round; it requires a separately approved execution package.",
+    "Concurrency is modeled by serialized local transactions; the platform relies on transaction conflict detection + retry for the same at-most-one-set guarantee.",
+    "writeAttempted/commitConfirmed describe the program reaching the SDK write call; OUTCOME_UNKNOWN after submit is not retried automatically."
+  ]
+}

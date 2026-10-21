@@ -1,0 +1,9 @@
+{
+  "pages": [
+    "pages/self-registration/self-registration"
+  ],
+  "window": {
+    "navigationBarTitleText": "本人登记"
+  },
+  "sitemapLocation": "sitemap.json"
+}

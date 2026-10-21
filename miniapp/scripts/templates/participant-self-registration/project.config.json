@@ -1,0 +1,6 @@
+{
+  "appid": "wxfb4db1615ac15531",
+  "miniprogramRoot": "frontend/",
+  "cloudfunctionRoot": "server/",
+  "projectname": "participant-self-registration-candidate"
+}

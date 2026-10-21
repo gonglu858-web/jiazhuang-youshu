@@ -1,0 +1,4 @@
+{
+  "desc": "本人登记页不被索引",
+  "rules": [{ "action": "disallow", "page": "*" }]
+}
