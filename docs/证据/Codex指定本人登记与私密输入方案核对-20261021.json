@@ -1,0 +1,80 @@
+{
+  "schema": "codex-participant-registration-local-design-review/1",
+  "observedAt": "2026-10-21T04:30:11.242Z",
+  "basisCommit": "6919090224bdba7d7163594944cfae8c2aaee460",
+  "plan": {
+    "path": "docs/Codex方案-指定本人登记与私密编号输入-20261021.md",
+    "sha256": "14b56e3b4befdd4dbce36f7729c7082a8811aff97bde0ba5c73a715d0af0a4b3"
+  },
+  "evidenceKind": "local source inspection and design only",
+  "sources": [
+    {
+      "path": "miniapp/scripts/package-sandbox-registration.cjs",
+      "bytes": 33134,
+      "sha256": "f812fa83ec43963414474ca362727118ba8ff7b1e2a8aefb0844efb561ff7abd",
+      "matchesHead": true
+    },
+    {
+      "path": "miniapp/cloudfunctions/scheduleSandbox/vendor/service.js",
+      "bytes": 26713,
+      "sha256": "c5e93d81e0245471efb0bf681836cd94f796fbc6a5547b690d0298a7f6a89e55",
+      "matchesHead": true
+    },
+    {
+      "path": "miniapp/cloudfunctions/scheduleSandbox/collection-map.js",
+      "bytes": 12303,
+      "sha256": "09c5aa9bea3c779aa8c65ea4991c77691db8005380099179ce4281f153046ae6",
+      "matchesHead": true
+    },
+    {
+      "path": "miniapp/scripts/package-business-test.cjs",
+      "bytes": 67793,
+      "sha256": "c36643a3661f8c97aea8c5b18d58bf6ee25f6c77307bdeecca8d31527746a703",
+      "matchesHead": true
+    },
+    {
+      "path": "miniapp/scripts/templates/participant-identity-check/server/index.js",
+      "bytes": 4737,
+      "sha256": "76e5b938612bd9dbb10df37f408923eff990e2198e21ee125bbd557decb07bd9",
+      "matchesHead": true
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 877,
+      "sha256": "97dfe58887ddf16b2ff2096d811e2fc5b76af921114baf503ce53af845554a3a",
+      "matchesHead": true
+    },
+    {
+      "path": "docs/需求与业务规则.md",
+      "bytes": 55987,
+      "sha256": "8712bce422fca93e8229a22304dbd1f20490d40df725644be09f28119a224506",
+      "matchesHead": true
+    }
+  ],
+  "observations": {
+    "oldRegistrationRealAccountFixedAndSingle": true,
+    "existingIdentityCreatesUserAndAuditInTransaction": true,
+    "existingIdentityAlsoReadsPrimary": true,
+    "testCollectionPrefixConfirmed": true,
+    "proposedPrivatePathIgnored": true,
+    "privatePathProbeCreated": false,
+    "participant1HandoffConfirmed": true,
+    "participant2HandoffConfirmed": true
+  },
+  "limits": {
+    "newRegistrationImplementation": false,
+    "privateInputImplementation": false,
+    "syntheticRuntimeTestsExecuted": false,
+    "realIdInputPerformed": false,
+    "realPackageGenerated": false,
+    "credentialFetch": false,
+    "networkOrCloudOperation": false,
+    "cloudCollectionsOrPermissionsQueried": false,
+    "roleGrant": false
+  },
+  "inspectionNote": "首次按猜测文件名db-adapter.js定位未命中，文件清单确认实际为collection-map.js。首次内联记录命令因字段名笔误解析失败、零执行；纠正后执行本次核对。未运行候选或业务模块。",
+  "protection": {
+    "productSourcesUnchanged": true,
+    "existingAgentsChangePreserved": true
+  }
+}
