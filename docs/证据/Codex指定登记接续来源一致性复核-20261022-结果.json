@@ -1,0 +1,125 @@
+{
+  "schema": "codex-psr-source-review/1",
+  "reviewedCommit": "921b07e",
+  "ok": true,
+  "exitCode": 0,
+  "interpretation": "ok仅表示34项对照/反例断言完成且守卫正常；产品来源绑定问题仍存在。",
+  "checks": 34,
+  "rows": [
+    {
+      "mode": "control",
+      "entry": "buildReal",
+      "buildReturned": true,
+      "serverUsesOriginallyDecryptedAccount": true,
+      "manifestHashMatchesDecryptedBytes": true,
+      "manifestHashMatchesLaterBytes": true,
+      "copiedPlanRoundMatchesManifest": true,
+      "laterCheckerAccepts": true
+    },
+    {
+      "mode": "control",
+      "entry": "prepareReal",
+      "buildReturned": true,
+      "serverUsesOriginallyDecryptedAccount": true,
+      "manifestHashMatchesDecryptedBytes": true,
+      "manifestHashMatchesLaterBytes": true,
+      "copiedPlanRoundMatchesManifest": true,
+      "laterCheckerAccepts": true
+    },
+    {
+      "mode": "cipherChangesDuringDecrypt",
+      "entry": "buildReal",
+      "buildReturned": true,
+      "serverUsesOriginallyDecryptedAccount": true,
+      "manifestHashMatchesDecryptedBytes": false,
+      "manifestHashMatchesLaterBytes": true,
+      "copiedPlanRoundMatchesManifest": true,
+      "laterCheckerAccepts": false
+    },
+    {
+      "mode": "cipherChangesDuringDecrypt",
+      "entry": "prepareReal",
+      "buildReturned": true,
+      "serverUsesOriginallyDecryptedAccount": true,
+      "manifestHashMatchesDecryptedBytes": false,
+      "manifestHashMatchesLaterBytes": true,
+      "copiedPlanRoundMatchesManifest": true,
+      "laterCheckerAccepts": false
+    },
+    {
+      "mode": "planChangesDuringDecrypt",
+      "entry": "buildReal",
+      "buildReturned": true,
+      "serverUsesOriginallyDecryptedAccount": true,
+      "manifestHashMatchesDecryptedBytes": true,
+      "manifestHashMatchesLaterBytes": true,
+      "copiedPlanRoundMatchesManifest": false,
+      "laterCheckerAccepts": false
+    },
+    {
+      "mode": "planChangesDuringDecrypt",
+      "entry": "prepareReal",
+      "buildReturned": true,
+      "serverUsesOriginallyDecryptedAccount": true,
+      "manifestHashMatchesDecryptedBytes": true,
+      "manifestHashMatchesLaterBytes": true,
+      "copiedPlanRoundMatchesManifest": false,
+      "laterCheckerAccepts": false
+    }
+  ],
+  "guard": {
+    "probes": 2,
+    "unexpected": 0
+  },
+  "sourceFacts": [
+    {
+      "rel": "miniapp/scripts/package-participant-self-registration.cjs",
+      "sha256": "2deaa9b6685db7378e06bb78db666551ba45d586f74e7051d65d5590dfe58d60"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-private-store.cjs",
+      "sha256": "e9ac99da28642f0c4b243bc3f9c80ce43dfa50090c8610bfbd4aa4a1cf13c115"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-self-registration.cjs",
+      "sha256": "bf02b17d57e7a820f82eecef30bdffbabd2004408dcdf2a77297303d427cb4d3"
+    },
+    {
+      "rel": "miniapp/scripts/participant-private-input.ps1",
+      "sha256": "ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357"
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-repair-fixtures.cjs",
+      "sha256": "b3b4276885ef3fc896b3adbea1c86c74b523aa70093c834d376b9c98ee35404d"
+    }
+  ],
+  "syntheticArtifacts": [
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-close-plan.json",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-close",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-0-plan.json",
+    "artifacts/schedule-sandbox/business-test/participant-self-registration-codex-source-987c9f225c91-0",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-1-plan.json",
+    "artifacts/schedule-sandbox/business-test/participant-self-registration-codex-source-987c9f225c91-1",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-2-plan.json",
+    "artifacts/schedule-sandbox/business-test/participant-self-registration-codex-source-987c9f225c91-2",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-3-plan.json",
+    "artifacts/schedule-sandbox/business-test/participant-self-registration-codex-source-987c9f225c91-3",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-4-plan.json",
+    "artifacts/schedule-sandbox/business-test/participant-self-registration-codex-source-987c9f225c91-4",
+    "artifacts/schedule-sandbox/business-test/codex-source-987c9f225c91-5-plan.json",
+    "artifacts/schedule-sandbox/business-test/participant-self-registration-codex-source-987c9f225c91-5"
+  ],
+  "boundaries": {
+    "realPrivateRead": false,
+    "dpapiInvoked": false,
+    "aclMutated": false,
+    "processesSpawned": 0,
+    "cloudCalls": 0,
+    "productEdited": false
+  },
+  "limitations": [
+    "内存FS/ACL/DPAPI均为合成；使用实际异步存储/打包器源码。",
+    "真实PS1执行策略被拒项未重试。",
+    "这些变动需在本机异步消费期间发生，不是手机输入绕过；后续check会拒绝已失配包。"
+  ]
+}
