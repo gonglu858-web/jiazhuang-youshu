@@ -51,7 +51,9 @@ exports.main = async (event) => {
   if (!parsed.ok) return sanitized();
   const wxContext = cloud.getWXContext();
   const checker = registrationCore.createSelfRegistrationChecker({
-    db: cloud.database ? cloud.database() : null,
+    // R1：数据库工厂后置——核心在全部准入通过后才调用 cloud.database()；
+    // 非名单/错轮次/错口令等拒绝时零 database/collection/事务/写。
+    dbFactory: cloud.database ? () => cloud.database() : null,
     trusted: { appId: wxContext.APPID, envId: CONFIG_ENV_ID, OPENID: wxContext.OPENID },
     config: {
       registrationRoundId: CONFIG_REGISTRATION_ROUND_ID,

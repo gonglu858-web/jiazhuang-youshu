@@ -1,0 +1,1292 @@
+{
+  "schema": "codebuddy-self-registration-evidence/1",
+  "observedAt": "2026-10-22T04:28:38.122Z",
+  "basisCommit": "b639d7c",
+  "reviewBasis": "docs/CodeBuddy任务-指定本人登记与私密编号输入本地实现-20261021.md §1–§6；docs/Codex复查-指定本人登记与私密输入本地实现-20261021.md §2–§3（R1–R6 返修验证）",
+  "verificationKind": "offline evidence; synthetic plans/accounts/passphrases and synthetic wx/db; NOT platform verification, NOT an execution approval; NO real number entry, NO cloud registration",
+  "ok": true,
+  "guardCounters": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "receiptFailures": 0,
+    "total": 2
+  },
+  "localToolCalls": {
+    "policy": "git check-ignore|ls-files / icacls read-only / fixed DPAPI ConvertTo|From-SecureString scripts (plaintext via stdin); everything else blocked as unexpected",
+    "count": 3233,
+    "calls": [
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "whoami",
+        "argv0": "/user",
+        "argc": 4
+      },
+      {
+        "tool": "whoami",
+        "argv0": "/groups",
+        "argc": 4
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-evfc06a07f.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-evfc06a07f.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev02bce1de.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev07b4eb3d.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev3f6c283f.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev411c931d.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev47753834.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev828578bc.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev86d63c66.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-ev9d00a99c.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-evc86657bc.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-evd05b7f13.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-dup-evfb8c5807.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev01184263.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev0191f078.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev02bce1de.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev07b4eb3d.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev0c94538f.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev17091ff2.bin",
+        "argc": 1
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev191c2d70.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev2160eab2.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev280d199f.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev3971d2ef.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev3e38ab2c.bin",
+        "argc": 1
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev3e5cf257.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev3f6c283f.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev411c931d.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev43678e39.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev437620a4.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev45aa27ed.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev46592417.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev47753834.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev548ecea4.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev5921e912.bin",
+        "argc": 1
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev6006b540.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev6014085d.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev6ddcad4a.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev7077f9b1.bin",
+        "argc": 1
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private/evidence-ev73a985ec.bin",
+        "argc": 1
+      },
+      {
+        "tool": "powershell.exe",
+        "argv0": "-NoProfile",
+        "argc": 4
+      },
+      {
+        "tool": "git",
+        "argv0": "ls-files",
+        "argc": 3
+      },
+      {
+        "tool": "git",
+        "argv0": "check-ignore",
+        "argc": 3
+      },
+      {
+        "tool": "icacls",
+        "argv0": "artifacts/schedule-sandbox/.participant-private",
+        "argc": 1
+      }
+    ]
+  },
+  "verdict": {
+    "ok": true,
+    "exitCode": 0
+  },
+  "sections": {
+    "a": {
+      "dpapiRoundtrip": true,
+      "exclusive": "PSR_PRIVATE_EXISTS",
+      "exclusiveRejected": true,
+      "receiptSanitized": true,
+      "tailOnly": true,
+      "boundary": "PSR_PRIVATE_PATH_BOUNDARY",
+      "boundaryRejected": true,
+      "sourceBindingRejected": true,
+      "deliveryRequired": true,
+      "sameTailDifferentAccount": true
+    },
+    "b": {
+      "cases": [
+        {
+          "name": "非名单账号",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_NOT_ALLOWED",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "缺身份",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "错AppID",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_REQUEST_INVALID",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "错轮次",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_ROUND_MISMATCH",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "错口令",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_PASSPHRASE_MISMATCH",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        },
+        {
+          "name": "窗口过期",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_WINDOW_EXPIRED",
+          "factory": 0,
+          "transactions": 0,
+          "creates": 0
+        }
+      ]
+    },
+    "c": {
+      "created": {
+        "outcome": "CREATED_AND_VERIFIED",
+        "creates": 2,
+        "userOk": true,
+        "auditOk": true
+      },
+      "alreadyActive": {
+        "outcome": "ALREADY_ACTIVE",
+        "creates": 0
+      },
+      "zeroWrite": {
+        "disabled": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_USER_CONFLICT",
+          "creates": 0
+        },
+        "missingFields": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_USER_CONFLICT",
+          "creates": 0
+        },
+        "orphanAudit": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_AUDIT_CONFLICT",
+          "creates": 0
+        },
+        "auditConflict": {
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_USER_CONFLICT",
+          "creates": 0
+        }
+      },
+      "rollback": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "users": false
+      },
+      "concurrent": {
+        "outcomes": [
+          "ALREADY_ACTIVE",
+          "CREATED_AND_VERIFIED"
+        ],
+        "creates": 2
+      }
+    },
+    "d": {
+      "secondWriteFail": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "writeAttempted": true,
+        "commitConfirmed": false
+      },
+      "commitTimeout": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "writeAttempted": true
+      },
+      "readbackFail": {
+        "outcome": "OUTCOME_UNKNOWN",
+        "commitConfirmed": true
+      },
+      "noAutoRetry": {
+        "callbackRuns": 1
+      }
+    },
+    "e": {
+      "deterministic": {
+        "sameBuild": true,
+        "samePrepare": true,
+        "executionReady": false
+      },
+      "accountNotInvolved": true,
+      "roundSensitive": true,
+      "consumeBindingRejected": true,
+      "consumed": {
+        "accountOk": true,
+        "participantCode": "1"
+      },
+      "privateAccountRequired": true,
+      "realAssembly": {
+        "entryContainsAccount": true,
+        "executionReady": false
+      },
+      "realCheck": {
+        "ok": true,
+        "planChecked": true,
+        "executionReady": false
+      },
+      "dedupRejected": true
+    },
+    "f": {
+      "drift": [
+        {
+          "name": "前端模板漂移",
+          "checkDirOkFalse": true,
+          "classified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "executionReadyFalse": true
+        },
+        {
+          "name": "前端模板缺失",
+          "checkDirOkFalse": true,
+          "classified": true,
+          "planCheckedFalse": true,
+          "preparedOkFalse": true,
+          "executionReadyFalse": true
+        }
+      ],
+      "legalControl": true,
+      "tamperDetected": true,
+      "restoredOk": true,
+      "closeIndependent": {
+        "ok": true,
+        "files": 23,
+        "expectedFiles": 23
+      }
+    },
+    "g": {
+      "fullChain": {
+        "outcome": "CREATED_AND_VERIFIED",
+        "writeAttempted": true
+      },
+      "notAllowed": {
+        "code": "PIC_NOT_ALLOWED",
+        "factoryDelta": 0
+      },
+      "wrongRound": {
+        "code": "PIC_ROUND_MISMATCH"
+      },
+      "oldActionUnreachable": "PIC_REQUEST_INVALID",
+      "page": {
+        "zeroSendOnLoad": true,
+        "warningDisclosesWrite": true,
+        "buildIdVisible": true,
+        "configRoundVisible": true,
+        "singleSend": true,
+        "payloadRound": "synthetic-self-reg-evfc06a07f",
+        "passphraseCleared": true,
+        "localRound": "synthetic-self-reg-evfc06a07f",
+        "serverRoundText": "synthetic-self-reg-evfc06a07f"
+      },
+      "evidenceNotOverwritten": true,
+      "disclosure": {
+        "entryContainsAccount": true,
+        "clientClean": true,
+        "pageClean": true,
+        "manifestClean": true,
+        "planContainsFixture": true
+      }
+    },
+    "h": {
+      "normal": {
+        "code": 0,
+        "verdictExitCode": 0,
+        "probes": 2,
+        "parentUnexpected": 0
+      },
+      "earlyRequire": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "duringCloseSource": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "businessHit": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "nonWhitelistSpawn": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      },
+      "publicSpawnBypass": {
+        "code": 1,
+        "parentUnexpected": 1,
+        "verdictExitCode": 1
+      }
+    }
+  },
+  "runtimeDigests": {
+    "packerSha256": "7f75cc96494f5282da722d9e1655e12f674f6e6dbd1d0cbc71ab39e3628aa443",
+    "coreSha256": "74c006b0238ac5f482c069b40d027b643ff74cdddcf0cd4f8351327226a7c5df",
+    "privateStoreSha256": "a4aa63a85f671ec682e04fa49bac4f897e11aee6b5e9c2f9eb9d8a4cc3240d19"
+  },
+  "evidenceKinds": {
+    "sourceObservation": "pre-send validation, local evidence capture, atomic two-write transaction and disclosure boundaries read from product source",
+    "syntheticChain": "sections B–G use synthetic accounts/passphrases/windows and synthetic wx/db (serialized local transaction model)",
+    "privateStore": "DPAPI (CurrentUser) roundtrip via node on Windows; PS1 SelfTestCheck covered by the test file (evidence does not spawn non-whitelisted processes)",
+    "localCli": "section H self-runs only the whitelisted evidence script via the shared audited runner with guard preload and receipts",
+    "selfFaults": "five fault modes with independent accounting through the real verdict exit",
+    "platform": "none — whether the SDK would actually deliver/commit on the platform remains unverified; no real number entry; no cloud registration"
+  },
+  "cloudOperations": 0,
+  "limitations": [
+    "The private-source real-mode assembly (synthetic:false) is rejected at plan level in this round; it requires a separately approved execution package.",
+    "Concurrency is modeled by serialized local transactions; the platform relies on transaction conflict detection + retry for the same at-most-one-set guarantee.",
+    "writeAttempted/commitConfirmed describe the program reaching the SDK write call; OUTCOME_UNKNOWN after submit is not retried automatically."
+  ]
+}

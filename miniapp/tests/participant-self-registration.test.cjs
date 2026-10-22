@@ -47,6 +47,16 @@ function makeCloseSourceDir() {
   return built.outDir;
 }
 
+// R4：私密记录绑定参数（每测试各自的 closeSource 派生）
+function privateBinding(closeSource) {
+  return {
+    closeSourceDir: closeSource,
+    expectedTarget: privateStore.FIXED_TARGET,
+    windowStartsAtIso: '2030-01-01T00:00:00Z',
+    windowExpiresAtIso: '2030-01-01T00:10:00Z',
+    sourceDigest: privateStore.computeCloseSourceDigest(closeSource)
+  };
+}
 function mkPlan(closeSource, overrides) {
   const dir = path.join(OUT_ROOT, 'psr-plans-' + RUN_ID);
   fs.mkdirSync(dir, { recursive: true });
@@ -87,6 +97,7 @@ test('PS1 私密输入器 SelfTestCheck：格式错/两次不一致/尾号错/�
 });
 
 test('PSR 私密存储：DPAPI 往返、排他新建、净化回执不含完整编号；同尾错号仍是不同账号', async () => {
+  const closeSource = makeCloseSourceDir();
   const roundId = ROUND_ID;
   const dir = path.join(OUT_ROOT, 'psr-private-ok-' + RUN_ID);
   fs.mkdirSync(dir, { recursive: true });
@@ -94,7 +105,7 @@ test('PSR 私密存储：DPAPI 往返、排他新建、净化回执不含完整�
     repoRoot: REPO_ROOT, fileName: 'selftest-' + RUN_ID + '.bin',
     participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, fullAccountRepeat: SYNTHETIC_ACCOUNT,
     appId: APPID, envId: ENV_ID, roundId, serverTimeIso: null,
-    sourceDigest: CLOSE_SOURCE_SHA, deliveryConfirmed: true
+    ...privateBinding(closeSource), deliveryConfirmed: true
   });
   assert.equal(receipt.schema, privateStore.RECEIPT_SCHEMA);
   assert.equal(receipt.accountTail, SYNTHETIC_ACCOUNT.slice(-6));
@@ -112,13 +123,14 @@ test('PSR 私密存储：DPAPI 往返、排他新建、净化回执不含完整�
   assert.notEqual(sameTailOther, SYNTHETIC_ACCOUNT);
   assert.equal(privateStore.tailOf(sameTailOther), privateStore.tailOf(SYNTHETIC_ACCOUNT), '同尾但不同账号');
   // 解密往返（同 Windows 用户）：密文→原合成值
-  const roundtrip = privateStore.readRecord({ repoRoot: REPO_ROOT, relativePath: receipt.fileRel });
+  const roundtrip = await privateStore.readRecordAsync({ repoRoot: REPO_ROOT, relativePath: receipt.fileRel });
   assert.equal(roundtrip.fullAccount, SYNTHETIC_ACCOUNT, 'DPAPI 解密往返一致');
   assert.equal(roundtrip.participantCode, '1');
   assert.equal(roundtrip.roundId, roundId);
 });
 
 test('PSR 私密存储边界：路径边界/未忽略/链接/ACL/已存在/输入校验全部写前拒绝', () => {
+  const closeSource = makeCloseSourceDir();
   // (1) 路径边界：私密根之外拒绝（边界检查先于忽略检查）
   assert.throws(() => privateStore.validatePrivateTarget({ repoRoot: REPO_ROOT, relativePath: 'miniapp/evil.bin' }), e => e.code === 'PSR_PRIVATE_PATH_BOUNDARY');
   assert.throws(() => privateStore.validatePrivateTarget({ repoRoot: REPO_ROOT, relativePath: '../../evil.bin' }), e => e.code === 'PSR_PRIVATE_PATH_BOUNDARY');
@@ -156,10 +168,10 @@ test('PSR 私密存储边界：路径边界/未忽略/链接/ACL/已存在/输�
   const existsDir = path.join(OUT_ROOT, 'psr-private-exists-' + RUN_ID);
   fs.mkdirSync(existsDir, { recursive: true });
   const fileName = 'selftest-exists-' + RUN_ID + '.bin';
-  privateStore.protectRecord({ repoRoot: REPO_ROOT, fileName, participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, fullAccountRepeat: SYNTHETIC_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, sourceDigest: CLOSE_SOURCE_SHA, deliveryConfirmed: true });
-  assert.throws(() => privateStore.protectRecord({ repoRoot: REPO_ROOT, fileName, participantCode: '1', fullAccount: SYNTHETIC_OTHER_ACCOUNT, fullAccountRepeat: SYNTHETIC_OTHER_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, sourceDigest: CLOSE_SOURCE_SHA, deliveryConfirmed: true }), e => e.code === 'PSR_PRIVATE_EXISTS', '已存在不覆盖');
+  privateStore.protectRecord({ repoRoot: REPO_ROOT, fileName, participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, fullAccountRepeat: SYNTHETIC_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, sourceDigest: privateStore.computeCloseSourceDigest(closeSource), closeSourceDir: closeSource, expectedTarget: privateStore.FIXED_TARGET, windowStartsAtIso: '2030-01-01T00:00:00Z', windowExpiresAtIso: '2030-01-01T00:10:00Z', deliveryConfirmed: true });
+  assert.throws(() => privateStore.protectRecord({ repoRoot: REPO_ROOT, fileName, participantCode: '1', fullAccount: SYNTHETIC_OTHER_ACCOUNT, fullAccountRepeat: SYNTHETIC_OTHER_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, ...privateBinding(closeSource), deliveryConfirmed: true }), e => e.code === 'PSR_PRIVATE_EXISTS', '已存在不覆盖');
   // (6) 输入校验：两次不一致/格式错/参与者错/缺交付确认/来源摘要错
-  const base = { repoRoot: REPO_ROOT, fileName: 'selftest-x-' + RUN_ID + '.bin', participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, sourceDigest: CLOSE_SOURCE_SHA, deliveryConfirmed: true };
+  const base = Object.assign({ repoRoot: REPO_ROOT, fileName: 'selftest-x-' + RUN_ID + '.bin', participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, deliveryConfirmed: true }, privateBinding(closeSource));
   assert.throws(() => privateStore.protectRecord({ ...base, fullAccountRepeat: SYNTHETIC_OTHER_ACCOUNT }), e => e.code === 'PSR_PRIVATE_INPUT', '两次不一致拒绝');
   assert.throws(() => privateStore.protectRecord({ ...base, fullAccount: 'u_short', fullAccountRepeat: 'u_short' }), e => e.code === 'PSR_PRIVATE_INPUT', '格式错拒绝');
   assert.throws(() => privateStore.protectRecord({ ...base, participantCode: '9' }), e => e.code === 'PSR_PRIVATE_INPUT', '参与者代码只能 1/2');
@@ -191,7 +203,7 @@ test('PSR 私密存储：Git 已跟踪路径拒绝（临时 add 后在 finally �
 // ── 登记核心（合成 db；准入/事务矩阵/时效与未知）─────────────────────────────
 function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollbackOnFailure = false } = {}) {
   const store = new Map();
-  const counters = { factory: 0, transactions: 0, callbackRuns: 0, gets: 0, creates: 0 };
+  const counters = { database: 0, factory: 0, transactions: 0, callbackRuns: 0, gets: 0, creates: 0, fieldCalls: 0 };
   let txnQueue = Promise.resolve();
   const db = {
     collection(name) {
@@ -201,7 +213,20 @@ function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollback
         doc(id) {
           return {
             __col: name, __id: id,
-            // 提交后回读用（非事务）：按主键读回当前文档
+            // 回读冻结投影（R3）：field 计数并按投影裁剪
+            field(projection) {
+              counters.fieldCalls++;
+              return {
+                async get() {
+                  counters.gets++;
+                  const d = store.get(name + ':' + id);
+                  if (!d) return { data: [] };
+                  const projected = {};
+                  for (const k of Object.keys(projection)) if (projection[k]) projected[k] = d[k];
+                  return { data: [projected] };
+                }
+              };
+            },
             async get() {
               counters.gets++;
               const d = store.get(name + ':' + id);
@@ -215,25 +240,31 @@ function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollback
     // 串行化给出相同的最终语义——至多一组新增）。
     runTransaction(cb) {
       const run = async () => {
-        counters.transactions++;
-        counters.callbackRuns++;
+        counters.transactions++; counters.callbackRuns++;
         const applied = [];
         const txn = {
-          async get(ref) {
-            counters.gets++;
-            const k = ref.__col + ':' + ref.__id;
-            const d = store.get(k);
-            return { data: d ? JSON.parse(JSON.stringify(d)) : null };
-          },
-          async create(ref, data) {
-            const key = ref.__col + ':' + ref.__id;
-            if (store.has(key)) { const e = new Error('ALREADY_EXISTS'); e.code = 'ALREADY_EXISTS'; throw e; }
-            counters.creates++;
-            if (failCreatesAfter !== null && counters.creates > failCreatesAfter) {
-              const e = new Error('synthetic-create-failure'); e.code = 'PSR_SYNTHETIC_CREATE_FAIL'; throw e;
-            }
-            applied.push({ key, data: JSON.parse(JSON.stringify(data)) });
-            return { ok: true };
+          collection(name) {
+            return {
+              doc(id) {
+                return {
+                  async get() {
+                    counters.gets++;
+                    const d = store.get(name + ':' + id);
+                    return { data: d ? JSON.parse(JSON.stringify(d)) : null };
+                  }
+                };
+              },
+              async add({ data }) {
+                const key = name + ':' + data._id;
+                if (store.has(key)) { const e = new Error('ALREADY_EXISTS'); e.code = 'ALREADY_EXISTS'; throw e; }
+                counters.creates++;
+                if (failCreatesAfter !== null && counters.creates > failCreatesAfter) {
+                  const e = new Error('synthetic-create-failure'); e.code = 'PSR_SYNTHETIC_CREATE_FAIL'; throw e;
+                }
+                applied.push({ key, data: JSON.parse(JSON.stringify(data)) });
+                return { ok: true };
+              }
+            };
           }
         };
         const result = await cb(txn);
@@ -246,18 +277,10 @@ function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollback
       return p;
     }
   };
-  // rollbackOnFailure：模拟平台事务回滚（cb 抛错时撤销已应用的写）；仅在运行器层模拟，
-  // 不等同平台保证（披露）。
-  if (rollbackOnFailure) {
-    const origRun = db.runTransaction;
-    db.runTransaction = async cb => {
-      const before = new Map(store);
-      try { return await origRun(cb); } catch (e) { store.clear(); for (const [k, v] of before) store.set(k, v); throw e; }
-    };
-  }
-  return { db, counters, store };
+  // R1：数据库工厂后置——核心在全部准入通过后才调用 dbFactory()（database 计数独立）。
+  const dbFactory = () => { counters.database++; return db; };
+  return { dbFactory, db, counters, store };
 }
-
 const RAW_OPENID = 'synthetic-openid-raw-' + RUN_ID;
 const DERIVED_OPENID_ACCOUNT = core.deriveUserId(APPID, RAW_OPENID);
 
@@ -290,8 +313,8 @@ test('PSR 核心准入：非名单/缺身份/错App/错env/错轮次/错口令/�
     { name: '错动作', trusted: mkTrusted(RAW_OPENID), config: mkConfig(), request: { action: 'inspectSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE }, expectCode: 'PIC_REQUEST_INVALID' }
   ];
   for (const c of cases) {
-    const { db, counters } = makeSyntheticDb();
-    const checker = core.createSelfRegistrationChecker({ db, trusted: c.trusted, config: c.config, now: () => Date.now() });
+    const { dbFactory, counters } = makeSyntheticDb();
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: c.trusted, config: c.config, now: () => Date.now() });
     const result = await checker.handle(c.request);
     assert.equal(result.outcome, 'REJECTED_NO_WRITE', c.name);
     assert.equal(result.writeAttempted, false, c.name);
@@ -301,8 +324,8 @@ test('PSR 核心准入：非名单/缺身份/错App/错env/错轮次/错口令/�
     assert.equal(counters.transactions, 0, c.name + '：零事务');
   }
   // 响应净化：非名单结果不含 OPENID/完整账号
-  const { db } = makeSyntheticDb();
-  const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted('synthetic-not-allowed-openid'), config: mkConfig(), now: () => Date.now() });
+  const { dbFactory } = makeSyntheticDb();
+  const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted('synthetic-not-allowed-openid'), config: mkConfig(), now: () => Date.now() });
   const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
   assert.ok(!JSON.stringify(r).includes('synthetic-not-allowed-openid'), '结果不含 OPENID');
   assert.ok(!JSON.stringify(r).includes(DERIVED_OPENID_ACCOUNT), '结果不含完整允许账号');
@@ -311,8 +334,8 @@ test('PSR 核心准入：非名单/缺身份/错App/错env/错轮次/错口令/�
 test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 重复/审计一致零新增；disabled/缺字段/孤立审计/主体不符零写', async () => {
   // (1) 新账号：恰 2 条新增 + 回读通过
   {
-    const { db, counters, store } = makeSyntheticDb();
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const { dbFactory, counters, store } = makeSyntheticDb();
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'CREATED_AND_VERIFIED');
     assert.equal(r.writeAttempted, true); assert.equal(r.commitConfirmed, true);
@@ -331,9 +354,9 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   }
   // (2) 已有有效用户+本包审计不存在 → ALREADY_ACTIVE 零新增（不补审计）
   {
-    const { db, counters, store } = makeSyntheticDb();
-    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: 'synthetic-openid', status: 'active', createdAt: '2020-01-01', updatedAt: '2020-01-01' });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const { dbFactory, counters, store } = makeSyntheticDb();
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01', updatedAt: '2020-01-01' });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'ALREADY_ACTIVE');
     assert.equal(r.writeAttempted, false);
@@ -342,10 +365,10 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   }
   // (3) 用户与审计均存在且绑定一致 → ALREADY_ACTIVE 零新增
   {
-    const { db, counters, store } = makeSyntheticDb();
-    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: 'synthetic-openid', status: 'active', createdAt: '2020-01-01', updatedAt: '2020-01-01' });
+    const { dbFactory, counters, store } = makeSyntheticDb();
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01', updatedAt: '2020-01-01' });
     store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), projectId: null, actorUserId: DERIVED_OPENID_ACCOUNT, actorRole: '本人普通账号', action: 'registerIdentity', subjectUserId: DERIVED_OPENID_ACCOUNT, before: null, after: { status: 'active' }, createdAt: '2020-01-01', sourceProtocol: core.SELF_REG_SCHEMA, registrationRoundId: ROUND_ID });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     if (r.outcome !== 'ALREADY_ACTIVE') {
       console.error('[diag case3] outcome=', r.outcome, 'code=', r.code, 'storeKeys=', [...store.keys()].join(','), 'derived=', DERIVED_OPENID_ACCOUNT, 'auditId=', auditIdOf(DERIVED_OPENID_ACCOUNT));
@@ -355,10 +378,10 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   }
   // (4) 用户存在但审计绑定冲突 → 停止零写
   {
-    const { db, counters, store } = makeSyntheticDb();
-    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: 'x', status: 'active', createdAt: 't', updatedAt: 't' });
+    const { dbFactory, counters, store } = makeSyntheticDb();
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: 't', updatedAt: 't' });
     store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), action: 'other-action', subjectUserId: DERIVED_OPENID_ACCOUNT });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'REJECTED_NO_WRITE');
     assert.equal(r.code, 'PIC_AUDIT_CONFLICT');
@@ -366,9 +389,9 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   }
   // (5) 孤立审计（用户缺失、审计存在）→ 停止不修复
   {
-    const { db, counters, store } = makeSyntheticDb();
+    const { dbFactory, counters, store } = makeSyntheticDb();
     store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), action: 'registerIdentity', subjectUserId: DERIVED_OPENID_ACCOUNT });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'REJECTED_NO_WRITE');
     assert.equal(r.code, 'PIC_AUDIT_CONFLICT');
@@ -376,9 +399,9 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   }
   // (6) disabled → 停止不激活
   {
-    const { db, counters, store } = makeSyntheticDb();
+    const { dbFactory, counters, store } = makeSyntheticDb();
     store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: 'x', status: 'disabled', createdAt: 't', updatedAt: 't' });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'REJECTED_NO_WRITE');
     assert.equal(r.code, 'PIC_USER_CONFLICT');
@@ -387,9 +410,9 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   }
   // (7) 缺字段用户 → 停止
   {
-    const { db: db2, counters: c2, store: store2 } = makeSyntheticDb();
+    const { dbFactory: dbFactory2, counters: c2, store: store2 } = makeSyntheticDb();
     store2.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT });
-    const checker = core.createSelfRegistrationChecker({ db: db2, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const checker = core.createSelfRegistrationChecker({ dbFactory: dbFactory2, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'REJECTED_NO_WRITE');
     assert.equal(r.code, 'PIC_USER_CONFLICT');
@@ -400,8 +423,8 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
 test('PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不自动重试）；提交后超时/回读失败→OUTCOME_UNKNOWN；并发至多一组新增', async () => {
   // (1) 第二写失败：平台回滚语义未知→诚实报告 OUTCOME_UNKNOWN（不预报零写）
   {
-    const { db, counters } = makeSyntheticDb({ failCreatesAfter: 1 });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const { dbFactory, counters } = makeSyntheticDb({ failCreatesAfter: 1 });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'OUTCOME_UNKNOWN');
     assert.equal(r.writeAttempted, true);
@@ -409,15 +432,15 @@ test('PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不�
   }
   // (2) 同上但模拟平台回滚：状态仍 OUTCOME_UNKNOWN（本地模拟不等同平台保证——披露）
   {
-    const { db } = makeSyntheticDb({ failCreatesAfter: 1, rollbackOnFailure: true });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const { dbFactory } = makeSyntheticDb({ failCreatesAfter: 1, rollbackOnFailure: true });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'OUTCOME_UNKNOWN');
   }
   // (3) 提交后超时：commitConfirmed=true → OUTCOME_UNKNOWN，不误报零写
   {
-    const { db } = makeSyntheticDb({ failCommit: true });
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const { dbFactory } = makeSyntheticDb({ failCommit: true });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'OUTCOME_UNKNOWN');
     assert.equal(r.writeAttempted, true);
@@ -425,9 +448,9 @@ test('PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不�
   }
   // (4) 提交后回读失败 → OUTCOME_UNKNOWN（commitConfirmed=true）
   {
-    const { db } = makeSyntheticDb();
+    const { dbFactory } = makeSyntheticDb();
     // 注入：回读阶段 doc().get() 抛错——直接包装 collection 让 get 抛错
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     // 先正常登记
     const r1 = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r1.outcome, 'CREATED_AND_VERIFIED');
@@ -436,8 +459,8 @@ test('PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不�
   }
   // (5) 事务回调重试中时钟到期（真实模式）：入口/回调/写前复核 → REJECTED_NO_WRITE 零写
   {
-    const { db, counters } = makeSyntheticDb();
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig({ windowExpiresAtMs: Date.now() - 1000, synthetic: false }), now: () => Date.now() });
+    const { dbFactory, counters } = makeSyntheticDb();
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig({ windowExpiresAtMs: Date.now() - 1000, synthetic: false }), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'REJECTED_NO_WRITE');
     assert.equal(r.code, 'PIC_WINDOW_EXPIRED');
@@ -445,8 +468,8 @@ test('PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不�
   }
   // (6) 并发（同一账号两次并发登记）：至多一组新增
   {
-    const { db, counters, store } = makeSyntheticDb();
-    const checker = core.createSelfRegistrationChecker({ db, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const { dbFactory, counters, store } = makeSyntheticDb();
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const [a, b] = await Promise.all([
       checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE }),
       checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE })
@@ -556,12 +579,12 @@ test('PSR 生成链：App→Page→client→入口→核心→合成db；新协�
   const starts = Date.now() - 60000;
   packer.build(mkPlan(closeSource, { windowStartsAtIso: new Date(starts).toISOString(), windowExpiresAtIso: new Date(starts + 10 * 60 * 1000).toISOString() }), dirA);
   // 合成 db（同 makeSyntheticDb）
-  const { db, counters } = makeSyntheticDb();
+  const { dbFactory, counters } = makeSyntheticDb();
   // 入口 vm：wx-server-sdk 替身
   const entryMod = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(dirA, 'server', 'scheduleSandbox', 'index.js'), 'utf8'), {
     require: name => {
-      if (name === 'wx-server-sdk') return { init() {}, getWXContext: () => ({ APPID: APPID, OPENID: SYNTHETIC_ACCOUNT_OPENID }), database: () => db };
+      if (name === 'wx-server-sdk') return { init() {}, getWXContext: () => ({ APPID: APPID, OPENID: SYNTHETIC_ACCOUNT_OPENID }), database: dbFactory };
       if (name === './request-adapter') return require(ROOT + '/miniapp/scripts/templates/participant-self-registration/server/request-adapter.js');
       if (name === './participant-self-registration') return core;
       throw Error('req ' + name);
@@ -572,14 +595,19 @@ test('PSR 生成链：App→Page→client→入口→核心→合成db；新协�
   const r1 = await entryMod.exports.main({ picRequest: { schema: 'participant-self-registration-request/1', action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE } });
   assert.equal(r1.outcome, 'CREATED_AND_VERIFIED', '入口全链 CREATED_AND_VERIFIED（实际=' + r1.outcome + ' code=' + r1.code + ' msg=' + (r1.message || '') + '）');
   assert.equal(counters.factory >= 1, true, '准入通过后才触达工厂');
+  // R1：database/collection/事务/写 分列计数（不以 collection 计数替代真正工厂）
+  assert.equal(counters.database, 1, 'R1：正向恰 1 次 database 工厂');
+  assert.equal(counters.transactions, 1, 'R1：正向恰 1 次事务');
+  assert.equal(counters.creates, 2, 'R1：正向恰 2 条原子写');
   // (2) 非名单账号：零工厂增量
   const factoryBefore = counters.factory;
+  const databaseBefore = counters.database;
   const savedGetWX = null;
   // 重新加载入口以替换 getWXContext（非名单 OPENID）
   const entryMod2 = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(dirA, 'server', 'scheduleSandbox', 'index.js'), 'utf8'), {
     require: name => {
-      if (name === 'wx-server-sdk') return { init() {}, getWXContext: () => ({ APPID: APPID, OPENID: SYNTHETIC_OTHER_ACCOUNT }), database: () => db };
+      if (name === 'wx-server-sdk') return { init() {}, getWXContext: () => ({ APPID: APPID, OPENID: SYNTHETIC_OTHER_ACCOUNT }), database: dbFactory };
       if (name === './request-adapter') return require(ROOT + '/miniapp/scripts/templates/participant-self-registration/server/request-adapter.js');
       if (name === './participant-self-registration') return core;
       throw Error('req ' + name);
@@ -590,11 +618,14 @@ test('PSR 生成链：App→Page→client→入口→核心→合成db；新协�
   assert.equal(r2.outcome, 'REJECTED_NO_WRITE');
   assert.equal(r2.code, 'PIC_NOT_ALLOWED');
   assert.equal(counters.factory, factoryBefore, '非名单零工厂增量');
+  assert.equal(counters.database, databaseBefore, 'R1：非名单零 database 工厂调用');
   // (3) 错轮次：ROUND_MISMATCH 且零工厂增量
   const factoryBefore2 = counters.factory;
+  const databaseBefore2 = counters.database;
   const r3 = await entryMod.exports.main({ picRequest: { schema: 'participant-self-registration-request/1', action: 'registerSelf', registrationRoundId: 'other-round', passphrase: SYNTHETIC_PASSPHRASE } });
   assert.equal(r3.code, 'PIC_ROUND_MISMATCH');
   assert.equal(counters.factory, factoryBefore2, '错轮次零工厂增量');
+  assert.equal(counters.database, databaseBefore2, 'R1：错轮次零 database 工厂调用');
   // (4) 旧只读动作不可达（适配器拒绝）
   const r4 = await entryMod.exports.main({ picRequest: { schema: 'participant-identity-request/1', action: 'inspectSelf', checkRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE } });
   assert.equal(r4.code, 'PIC_REQUEST_INVALID');
@@ -624,26 +655,41 @@ test('PSR 生成链：App→Page→client→入口→核心→合成db；新协�
   assert.equal(page.data.registrationBuildId, JSON.parse(fs.readFileSync(path.join(dirA, 'manifest.json'), 'utf8')).registrationBuildId, '本机版本分栏');
 });
 
-test('PSR 真实 SDK 形状（本地依赖，无云调用）：runTransaction/doc/create/get 形状与依赖版本披露', () => {
+test('PSR 真实 SDK 3.0.1 接口核验（R2，本地依赖，无云调用）：核心所用事务接口在真实 SDK 类上存在；冲突重试由 runTransaction(run, retryTimes) 内建；不使用 set 覆盖', () => {
   const sdkPath = process.env.MEMBER_ACCESS_SDK_PATH;
   if (!sdkPath || !fs.existsSync(sdkPath)) {
-    assert.ok(true, '本地 wx-server-sdk 依赖不可用：SDK 事务转换验证列为阻断（不安装）');
+    assert.ok(true, '本地 wx-server-sdk 依赖不可用：SDK 接口核验列为阻断（不安装不联网）');
     return;
   }
-  const sdk = require(sdkPath);
-  assert.equal(typeof sdk.DYNAMIC_CURRENT_ENV, 'symbol');
-  const inst = new sdk({ SECRETID: 'x', SECRETKEY: 'y', ENVID: 'synthetic-env' });
-  assert.equal(typeof inst.database, 'function', 'database 工厂存在');
-  const db = inst.database();
-  assert.equal(typeof db.runTransaction, 'function', 'runTransaction 存在（事务语义形状）');
-  assert.equal(typeof db.collection, 'function');
-  const col = db.collection('schtest_v1_users');
-  const docRef = col.doc('synthetic-id');
-  assert.ok(docRef, 'doc 引用可构造');
-  assert.equal(typeof col.add === 'function' || typeof col.doc === 'function', true);
-  const pkgPath = path.join(sdkPath, 'package.json');
-  if (fs.existsSync(pkgPath)) {
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-    assert.equal(pkg.version, '3.0.1', 'SDK 精确版本 3.0.1（本机依赖）');
-  }
+  const crypto2 = require('node:crypto');
+  const sdkSha = crypto2.createHash('sha256').update(fs.readFileSync(path.join(sdkPath, 'index.js'))).digest('hex');
+  assert.equal(sdkSha, 'ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04', 'SDK index.js 摘要与复查记录一致');
+  const pkg = JSON.parse(fs.readFileSync(path.join(sdkPath, 'package.json'), 'utf8'));
+  assert.equal(pkg.version, '3.0.1', 'SDK 精确版本 3.0.1（本机依赖）');
+  // 类接口核验（源码观察级：读取真实类定义并检查方法存在；不打开真实事务/不联网）
+  // @cloudbase/database 可能在顶层 node_modules（提升）或 SDK 内嵌 node_modules——两处都试
+  const dbBase = [path.join(sdkPath, 'node_modules', '@cloudbase', 'database', 'dist', 'commonjs'),
+    path.join(sdkPath, '..', '@cloudbase', 'database', 'dist', 'commonjs')]
+    .find(p => fs.existsSync(p));
+  assert.ok(dbBase, '定位 @cloudbase/database 包（提升或内嵌）');
+  const txSrc = fs.readFileSync(path.join(dbBase, 'transaction', 'index.js'), 'utf8');
+  assert.ok(txSrc.includes('class Transaction'), 'Transaction 类定义存在');
+  assert.ok(/collection\(collName\)/.test(txSrc), 'Transaction.collection(collName) 存在（核心事务读/写入口）');
+  assert.ok(/async commit\(\)/.test(txSrc) && /async rollback\(/.test(txSrc), 'commit/rollback 存在');
+  assert.ok(!/async get\(/.test(txSrc.split('class Transaction')[1] || ''), 'Transaction 类无 get（核心不使用 transaction.get）');
+  // CollectionReference.add（原子新增入口）与 DocumentReference.get（事务读）
+  const colSrc = fs.readFileSync(path.join(dbBase, 'collection.js'), 'utf8');
+  assert.ok(/async add\(/.test(colSrc), 'CollectionReference.add 存在（核心原子新增使用）');
+  const docSrc = fs.readFileSync(path.join(dbBase, 'document.js'), 'utf8');
+  assert.ok(/async get\(/.test(docSrc) && /async create\(/.test(docSrc), 'DocumentReference.get/create 存在');
+  assert.ok(/async set\(/.test(docSrc), 'DocumentReference.set 存在（核心明确不使用——注释与代码均可证）');
+  // db.runTransaction(run, retryTimes)：重试参数由 SDK 内建（冲突重试/重试到期语义来源）
+  const idxSrc = fs.readFileSync(path.join(sdkPath, 'index.js'), 'utf8');
+  assert.ok(/runTransaction = \(run, retryTimes\)/.test(idxSrc), 'db.runTransaction(run, retryTimes) 重试参数内建');
+  // 核心源码只使用 transaction.collection().doc().get() 与 .add({data})；不出现 transaction.get/transaction.create/set(
+  const coreSrc = fs.readFileSync(path.join(REPO_ROOT, 'miniapp', 'scripts', 'lib', 'participant-self-registration.cjs'), 'utf8');
+  assert.ok(/transaction\.collection\(/.test(coreSrc), '核心使用 transaction.collection()');
+  assert.ok(!/transaction\.get\(/.test(coreSrc) && !/transaction\.create\(/.test(coreSrc), '核心不使用旧 transaction.get/create（R2 复查不兼容点）');
+  assert.ok(/\.doc\([^)]*\)\.get\(\)/.test(coreSrc), '核心事务读使用 doc().get()');
+  assert.ok(!/\.set\(/.test(coreSrc.replace(/\/\/[^\n]*set[^\n]*/g, '').replace(/dataset/g, '')), '核心不使用 set 覆盖（注释除外）');
 });

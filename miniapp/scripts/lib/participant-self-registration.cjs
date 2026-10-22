@@ -1,24 +1,36 @@
 'use strict';
 // 独立参与者本人登记核心（participant-self-registration/1）。
 //
-// 任务：docs/CodeBuddy任务-指定本人登记与私密编号输入本地实现-20261021.md §4；方案 §4。
+// 任务：docs/CodeBuddy任务-指定本人登记与私密编号输入本地实现-20261021.md §4；方案 §4；
+// 返修：docs/Codex复查-指定本人登记与私密输入本地实现-20261021.md §2 R1/R2/R3。
 // 设计边界（不得放宽）：
 // - 每包只允许一个完整允许账号（config.allowedAccount）；可信微信身份只取注入的
 //   getWXContext 结果（trusted），派生 u_+sha256(APPID+':'+OPENID)[0:40] 并与其精确
 //   匹配；尾号只辅助查错，不作为身份校验。
-// - 全部准入检查（协议/动作/轮次/口令摘要/窗口/身份/允许账号）发生在数据库工厂
-//   （db.collection / db.runTransaction）之前；非名单账号零工厂零事务零写。
+// - 全部准入检查（协议/动作/轮次/口令摘要/时钟结构/窗口/身份/允许账号）发生在数据库
+//   工厂（dbFactory → db.collection / db.runTransaction）之前；非名单账号零工厂零事务零写。
+//   数据库工厂以 dbFactory 注入，仅在准入全部通过后调用一次（R1）。
+// - 时钟结构校验（异常/非有限数）在合成与真实模式一律生效；真实模式另受窗口开始/截止
+//   约束。复核点：handle 入口、每次事务回调入口、每次写前、回读后最终返回前（R1）。
 // - 仅固定两集合两主键：本人用户（users 集合，主键=完整允许账号）与确定性登记审计
 //   （audit 集合，主键=a_reg_+sha256('participant-self-registration/1:'+appId+':'+envId+':'+完整userId)[0:40]）。
 //   不 list/where，不读写项目/邀请/成员/管理员，不加载通用 identify/execute。
+// - 事务接口使用真实 wx-server-sdk 3.0.1 支持的形状（R2）：transaction.collection(name)
+//   → .doc(id).get()（事务内返回 {data: 文档|null}）与 .add({data})（insertDocument 原子
+//   新增，支持显式 _id）；不使用 set 覆盖，不杜撰 SDK 方法。冲突重试由 SDK
+//   runTransaction(callback, times) 内建；回调内不做外部副作用且每次重试全部重查。
 // - 用户与审计必须同事务原子新增；已有有效用户零新增且不补写/不修复审计；
-//   disabled/缺字段/主体不符/孤立或冲突审计一律停止；禁用 set 覆盖。
-// - 并发由确定性主键+事务保证最终至多一组新增；SDK 事务回调自动重试时每次都复核
-//   时钟与记录，回调内不做任何外部副作用。
+//   停用/缺字段/主体（openid 绑定）不符/孤立或冲突审计一律停止；禁用 set 覆盖。
+//   审计轮次为历史合法登记轮次时视为既有有效登记（不因换轮补写/覆盖/误判，R3）。
+// - 回读使用冻结投影（doc.field(固定投影).get()），校验冻结字段集/类型/主键/可信
+//   openid/主体/动作/状态；回读不确定不得报有效（R3）。
 // - 写前失败（REJECTED_NO_WRITE）与已提交后未知（OUTCOME_UNKNOWN）严格区分：
 //   保留 writeAttempted/commitConfirmed 等真实事实，已知未提交才可称零写；
-//   提交后超时/回读失败不自动重试、不误报零写或成功。
-// - 响应净化：不输出 OPENID、完整允许账号、口令、原始 SDK 错误与堆栈。
+//   提交后超时/回读失败/返回前时钟复核失败不自动重试、不误报零写或成功；
+//   已尝试写后失败保留实际提交事实（R1）。
+// - 响应净化：registrationRoundId 恒为本服务端配置轮次（不回填客户端请求值，R3）；
+//   SDK/传输错误码白名单净化（非白名单一律 PIC_TRANSACTION_FAILED，不外泄，R3）；
+//   不输出 OPENID、完整允许账号、口令、原始 SDK 错误与堆栈。
 
 const crypto = require('node:crypto');
 
@@ -37,6 +49,20 @@ const AUDIT_REQUIRED_FIELDS = Object.freeze(['_id', 'projectId', 'actorUserId', 
 // 受控附加字段（来源绑定，冻结写入；消费者按既有结构读取其余字段不受影响）
 const SOURCE_PROTOCOL_FIELD = 'sourceProtocol';
 const REGISTRATION_ROUND_FIELD = 'registrationRoundId';
+// 回读冻结投影（R3：强制投影，不做整文档回退读取）
+const USER_READBACK_PROJECTION = Object.freeze({ _id: 1, openid: 1, status: 1, createdAt: 1, updatedAt: 1 });
+const AUDIT_READBACK_PROJECTION = Object.freeze({
+  _id: 1, projectId: 1, actorUserId: 1, actorRole: 1, action: 1,
+  subjectUserId: 1, before: 1, after: 1, createdAt: 1,
+  [SOURCE_PROTOCOL_FIELD]: 1, [REGISTRATION_ROUND_FIELD]: 1
+});
+// 本核心自有错误码白名单（R3：非白名单 SDK/传输错误码一律净化）
+const OWN_ERROR_CODES = Object.freeze(new Set([
+  'PIC_REQUEST_INVALID', 'PIC_ROUND_MISMATCH', 'PIC_PASSPHRASE_MISMATCH',
+  'PIC_NOT_ALLOWED', 'PIC_CLOCK_INVALID', 'PIC_CLOCK_ERROR', 'PIC_WINDOW_EXPIRED', 'PIC_WINDOW_NOT_OPEN',
+  'PIC_AUDIT_CONFLICT', 'PIC_USER_CONFLICT', 'PIC_DB_FACTORY_UNAVAILABLE', 'PIC_TRANSACTION_FAILED',
+  'PIC_OUTCOME_UNKNOWN'
+]));
 
 const sha256 = s => crypto.createHash('sha256').update(String(s), 'utf8').digest('hex');
 const tailOf = v => (typeof v === 'string' && v.length >= 6 ? v.slice(-6) : '');
@@ -56,23 +82,35 @@ function isPlainObject(v) {
 }
 
 /**
- * 创建本人登记检查器（依赖注入：db/trusted/config/now）。
- * - db：合成或真实 wx-server-sdk 形状（collection(name).doc(id)、runTransaction(cb)）。
+ * 创建本人登记检查器（依赖注入：dbFactory/trusted/config/now）。
+ * - dbFactory：返回真实 wx-server-sdk 形状数据库的工厂（collection(name).doc(id).get()/
+ *   .field(p).get()、collection(name).add({data})、runTransaction(cb)）。仅在全部准入
+ *   通过后由 handle 调用一次（R1）；准入拒绝时零工厂零事务零写。
  * - trusted：{ appId, envId, OPENID }（仅来自 cloud.getWXContext 及受审运行环境）。
  * - config：{ registrationRoundId, passphraseDigest, allowedAccount, windowStartsAtMs,
- *   windowExpiresAtMs, usersCollection, auditCollection, sourceProtocol }。
- * - now：受审时钟（入口/事务回调入口/每次写前/返回前复核）。
+ *   windowExpiresAtMs, usersCollection, auditCollection, sourceProtocol, synthetic }。
+ * - now：受审时钟（入口/事务回调入口/每次写前/回读后最终返回前复核）。
  */
-function createSelfRegistrationChecker({ db, trusted, config, now }) {
+function createSelfRegistrationChecker({ dbFactory, trusted, config, now }) {
   if (!isPlainObject(trusted) || !isPlainObject(config) || typeof now !== 'function') {
     return invalid('运行环境配置无效');
   }
+  if (typeof dbFactory !== 'function') {
+    return invalid('数据库工厂配置无效');
+  }
   const state = { clock: now };
+  /**
+   * 时钟复核（R1）：结构校验（异常/非有限数）在合成与真实模式一律生效；
+   * 真实模式另查开始（now<starts）与截止（now>=expires）；合成模式只跳过窗口比较。
+   */
   const clockCheck = at => {
     let t;
     try { t = state.clock(); } catch (e) { return { ok: false, code: 'PIC_CLOCK_ERROR', at }; }
     if (typeof t !== 'number' || !Number.isFinite(t)) return { ok: false, code: 'PIC_CLOCK_INVALID', at };
-    if (t >= config.windowExpiresAtMs) return { ok: false, code: 'PIC_WINDOW_EXPIRED', at };
+    if (config.synthetic !== true) {
+      if (t < config.windowStartsAtMs) return { ok: false, code: 'PIC_WINDOW_NOT_OPEN', at };
+      if (t >= config.windowExpiresAtMs) return { ok: false, code: 'PIC_WINDOW_EXPIRED', at };
+    }
     return { ok: true, now: t };
   };
 
@@ -84,9 +122,35 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
     };
   }
 
+  // 错误码白名单净化（R3：SDK/传输原始错误码不外泄）
+  const safeCode = e => (e && typeof e.code === 'string' && OWN_ERROR_CODES.has(e.code)) ? e.code : 'PIC_TRANSACTION_FAILED';
+
+  /** 事务内/回读统一取文档：兼容事务形状 {data:doc|null} 与非事务形状 {data:[doc]}。 */
+  const docOf = snap => {
+    if (!snap || !snap.data) return null;
+    const d = snap.data;
+    return Array.isArray(d) ? (d[0] || null) : d;
+  };
+
+  /** 审计既有记录的结构与绑定校验（R3）：字段集/类型/主键/主体/动作/协议。 */
+  function auditWellFormed(audit, auditId, derivedUserId) {
+    return Boolean(audit && AUDIT_REQUIRED_FIELDS.every(f => Object.prototype.hasOwnProperty.call(audit, f))
+      && audit._id === auditId
+      && audit.projectId === null && audit.before === null
+      && audit.action === 'registerIdentity'
+      && audit.subjectUserId === derivedUserId && audit.actorUserId === derivedUserId
+      && typeof audit.actorRole === 'string' && audit.actorRole.length > 0
+      && typeof audit.createdAt === 'string' && audit.createdAt.length > 0
+      && isPlainObject(audit.after)
+      && audit[SOURCE_PROTOCOL_FIELD] === SELF_REG_SCHEMA
+      && typeof audit[REGISTRATION_ROUND_FIELD] === 'string'
+      && ROUND_ID_RE.test(audit[REGISTRATION_ROUND_FIELD]));
+  }
+
   /**
    * 处理一次登记请求（request 已由适配器净化为三字段对象）。
-   * 返回净化结果；绝不外露 OPENID/完整允许账号/口令/原始 SDK 错误。
+   * 返回净化结果；registrationRoundId 恒为本服务端配置轮次；
+   * 绝不外露 OPENID/完整允许账号/口令/非白名单 SDK 错误码。
    */
   async function handle(request) {
     // ── 准入检查（全部在数据库工厂之前）─────────────────────────────────────
@@ -102,26 +166,31 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
     }
     if (typeof trusted.OPENID !== 'string' || trusted.OPENID.length === 0) return invalid('缺少可信微信身份');
     if (config.sourceProtocol !== SELF_REG_SCHEMA) return invalid('登记来源协议不符');
+    // 时钟结构校验（合成/真实一律生效）；真实模式另查窗口开始/截止（R1：开始时间闭合）
+    {
+      const c = clockCheck('handle.start');
+      if (!c.ok) {
+        const r = { ...invalid('窗口时效检查未通过'), code: c.code };
+        r.registrationRoundId = config.registrationRoundId;
+        return r;
+      }
+    }
     if (request.registrationRoundId !== config.registrationRoundId) {
-      const r = { ...invalid('登记轮次与本包配置不一致'), code: 'PIC_ROUND_MISMATCH', registrationRoundId: request.registrationRoundId };
+      // R3：registrationRoundId 恒为本服务端配置轮次（不回填客户端请求值）
+      const r = { ...invalid('登记轮次与本包配置不一致'), code: 'PIC_ROUND_MISMATCH', registrationRoundId: config.registrationRoundId };
       r.userIdTail = tailOf(deriveUserId(trusted.appId, trusted.OPENID));
       return r;
     }
     if (sha256(request.passphrase) !== config.passphraseDigest) {
-      const r = { ...invalid('口令校验未通过'), code: 'PIC_PASSPHRASE_MISMATCH' };
+      const r = { ...invalid('口令校验未通过'), code: 'PIC_PASSPHRASE_MISMATCH', registrationRoundId: config.registrationRoundId };
       r.userIdTail = tailOf(deriveUserId(trusted.appId, trusted.OPENID));
       return r;
-    }
-    // 时钟（入口复核；真实模式才受窗口约束，合成模式跳过时效但保留 NaN/异常拒绝）
-    if (!config.synthetic) {
-      const c = clockCheck('entry');
-      if (!c.ok) return { ...invalid('窗口时效检查未通过'), code: c.code };
     }
     // 身份派生与允许账号精确匹配（尾号不能替代）
     const derivedUserId = deriveUserId(trusted.appId, trusted.OPENID);
     if (!ACCOUNT_RE.test(derivedUserId)) return invalid('派生身份格式无效');
     if (config.allowedAccount !== derivedUserId) {
-      const r = { ...invalid('当前微信身份不在本包允许名单'), code: 'PIC_NOT_ALLOWED' };
+      const r = { ...invalid('当前微信身份不在本包允许名单'), code: 'PIC_NOT_ALLOWED', registrationRoundId: config.registrationRoundId };
       r.userIdTail = tailOf(derivedUserId);
       return r;
     }
@@ -130,83 +199,92 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
     const auditId = deriveRegistrationAuditId(trusted.appId, trusted.envId, derivedUserId);
     const userTail = tailOf(derivedUserId);
 
-    // ── 数据库工厂与事务（准入全部通过后才触达）────────────────────────────
-    let usersCol, auditCol;
+    // ── 数据库工厂（R1：准入全部通过后才调用恰一次）──────────────────────────
+    let db;
     try {
-      usersCol = db.collection(usersCollection);
-      auditCol = db.collection(auditCollection);
+      db = dbFactory();
+      if (!db || typeof db.collection !== 'function' || typeof db.runTransaction !== 'function') {
+        throw new Error('bad db');
+      }
     } catch (e) {
       const r = invalid('数据库工厂不可用，未写入');
       r.code = 'PIC_DB_FACTORY_UNAVAILABLE';
+      r.registrationRoundId = config.registrationRoundId;
       return r;
     }
+    const usersCol = db.collection(usersCollection);
+    const auditCol = db.collection(auditCollection);
     const userRef = usersCol.doc(derivedUserId);
     const auditRef = auditCol.doc(auditId);
 
-    const fact = { writeAttempted: false, commitConfirmed: false, callbackThrows: false, createsIssued: 0 };
+    const fact = { writeAttempted: false, commitConfirmed: false, createsIssued: 0 };
     const serverNowIso = () => new Date(state.clock()).toISOString();
-    let txnRead = { user: null, audit: null };
 
     let commitError = null;
-    let txnOutcome = null; // 事务回调的即时分类（ALREADY_ACTIVE 零新增 / CREATED_PENDING_COMMIT）
+    let txnOutcome = null; // 事务回调的即时分类（每次重试覆盖，不残留，R3）
     try {
       await db.runTransaction(async transaction => {
-        // 事务回调入口复核时钟（SDK 自动重试每次都会重新执行本回调）
-        if (!config.synthetic) {
+        // 每次回调重置本次分类（SDK 自动重试时分类不残留上次结果，R3）
+        txnOutcome = null;
+        // 事务回调入口复核时钟（真实模式受窗口约束；结构校验一律生效）
+        {
           const c = clockCheck('transaction.callback');
           if (!c.ok) { const e = new Error('窗口时效检查未通过'); e.code = c.code; throw e; }
         }
-        const userSnap = await transaction.get(userRef);
-        const auditSnap = await transaction.get(auditRef);
-        const user = userSnap && userSnap.data ? userSnap.data : null;
-        const audit = auditSnap && auditSnap.data ? auditSnap.data : null;
-        txnRead = { user, audit };
+        // R2：真实 SDK 事务接口 —— transaction.collection(name).doc(id).get() /
+        // transaction.collection(name).add({data})
+        const usersTx = transaction.collection(usersCollection);
+        const auditTx = transaction.collection(auditCollection);
+        const userSnap = await usersTx.doc(derivedUserId).get();
+        const auditSnap = await auditTx.doc(auditId).get();
+        const user = docOf(userSnap);
+        const audit = docOf(auditSnap);
         const nowIso = serverNowIso();
-        const userValid = user && USER_REQUIRED_FIELDS.every(f => Object.prototype.hasOwnProperty.call(user, f))
-          && user._id === derivedUserId && typeof user.openid === 'string' && user.openid.length > 0
-          && user.status === 'active';
+        // 用户有效性：字段集/主键/可信 openid 主体绑定/状态（R3：openid 属他人即主体不符）
+        const userValid = Boolean(user && USER_REQUIRED_FIELDS.every(f => Object.prototype.hasOwnProperty.call(user, f))
+          && user._id === derivedUserId && user.openid === trusted.OPENID
+          && user.status === 'active');
         if (userValid && !audit) {
-          // 矩阵第 2 行：已有有效用户、本包审计不存在 → ALREADY_ACTIVE，零新增，不补审计
-          txnOutcome = 'ALREADY_ACTIVE';
+          // 已有有效用户、本包审计不存在 → ALREADY_ACTIVE，零新增，不补审计
+          // （回读要求：仅用户存在即可；审计本就不存在，readBack.audit=false 属实）
+          txnOutcome = 'ALREADY_ACTIVE_NO_AUDIT';
           return { outcome: 'ALREADY_ACTIVE', created: [] };
         }
         if (userValid && audit) {
-          // 矩阵第 3 行：均存在且绑定一致 → ALREADY_ACTIVE，零新增
-          const auditConsistent = audit._id === auditId && audit.action === 'registerIdentity'
-            && audit.subjectUserId === derivedUserId && audit.actorUserId === derivedUserId
-            && audit[SOURCE_PROTOCOL_FIELD] === SELF_REG_SCHEMA
-            && audit[REGISTRATION_ROUND_FIELD] === config.registrationRoundId;
-          if (!auditConsistent) { const e = new Error('既有审计与本包绑定冲突'); e.code = 'PIC_AUDIT_CONFLICT'; throw e; }
+          // 均存在：结构+绑定校验（R3：AUDIT_REQUIRED_FIELDS 实际用于检查）。
+          // 审计轮次为历史合法登记轮次时视为既有有效登记（R3：不因换轮误判/补写/覆盖）。
+          if (!auditWellFormed(audit, auditId, derivedUserId)) {
+            const e = new Error('既有登记审计与本包绑定冲突'); e.code = 'PIC_AUDIT_CONFLICT'; throw e;
+          }
           txnOutcome = 'ALREADY_ACTIVE';
           return { outcome: 'ALREADY_ACTIVE', created: [] };
         }
         if (!user && audit) { const e = new Error('审计存在而用户缺失，不修复'); e.code = 'PIC_AUDIT_CONFLICT'; throw e; }
         if (user && !userValid) { const e = new Error('既有用户状态或主体不符，不激活不覆盖'); e.code = 'PIC_USER_CONFLICT'; throw e; }
         if (user) { const e = new Error('既有用户无法判定'); e.code = 'PIC_USER_CONFLICT'; throw e; }
-        // 矩阵第 1 行：同事务原子新增用户与登记审计（恰 2 条）。
+        // 原子新增用户与登记审计（恰 2 条）。
         // writeAttempted 在首次写调用前置位：写一旦开始，提交状态即不再可判定为零写。
-        if (!config.synthetic) {
+        {
           const cw = clockCheck('transaction.write.user');
           if (!cw.ok) { const e = new Error('窗口时效检查未通过'); e.code = cw.code; throw e; }
         }
         fact.writeAttempted = true;
-        await transaction.create(userRef, {
+        await usersTx.add({ data: {
           _id: derivedUserId, openid: trusted.OPENID, status: 'active', createdAt: nowIso, updatedAt: nowIso
-        });
+        } });
         fact.createsIssued += 1;
-        if (!config.synthetic) {
+        {
           const cw = clockCheck('transaction.write.audit');
           if (!cw.ok) { const e = new Error('窗口时效检查未通过'); e.code = cw.code; throw e; }
         }
-        await transaction.create(auditRef, {
+        await auditTx.add({ data: {
           _id: auditId, projectId: null, actorUserId: derivedUserId, actorRole: '本人普通账号',
           action: 'registerIdentity', subjectUserId: derivedUserId, before: null, after: { status: 'active' },
           createdAt: nowIso,
           [SOURCE_PROTOCOL_FIELD]: SELF_REG_SCHEMA,
           [REGISTRATION_ROUND_FIELD]: config.registrationRoundId
-        });
+        } });
         fact.createsIssued += 1;
-        fact.writeAttempted = true;
         return { outcome: 'CREATED_PENDING_COMMIT', created: ['user', 'audit'] };
       });
       fact.commitConfirmed = true;
@@ -221,15 +299,18 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
       readBack: { user: false, audit: false }
     };
 
-    // 事务回调在未发出任何写之前失败 → REJECTED_NO_WRITE（可判定零写）
+    // 事务回调在未发出任何写之前失败 → REJECTED_NO_WRITE（可判定零写）。
+    // R3：错误码白名单净化——非本核心自有码一律 PIC_TRANSACTION_FAILED，不外泄。
     if (commitError && !fact.writeAttempted) {
-      const code = commitError && commitError.code ? commitError.code : 'PIC_TRANSACTION_FAILED';
+      const code = safeCode(commitError);
       const messages = {
         PIC_AUDIT_CONFLICT: '既有登记审计冲突或孤立，不修复不覆盖',
         PIC_USER_CONFLICT: '既有用户状态或主体不符，不激活不覆盖',
         PIC_WINDOW_EXPIRED: '窗口已截止，未写入',
+        PIC_WINDOW_NOT_OPEN: '窗口未开始，未写入',
         PIC_CLOCK_INVALID: '时钟无效，未写入',
-        PIC_CLOCK_ERROR: '时钟异常，未写入'
+        PIC_CLOCK_ERROR: '时钟异常，未写入',
+        PIC_TRANSACTION_FAILED: '登记事务未开始写入'
       };
       return Object.assign(base, {
         outcome: 'REJECTED_NO_WRITE', code,
@@ -237,7 +318,7 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
       });
     }
 
-    // 已提交（commitConfirmed）但随后异常/超时 → OUTCOME_UNKNOWN，不误报零写、不自动重试
+    // 已尝试写后失败/提交后返回前时钟复核失败 → OUTCOME_UNKNOWN（R1：保留实际提交事实）
     if (commitError && fact.writeAttempted) {
       return Object.assign(base, {
         outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
@@ -245,28 +326,19 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
       });
     }
 
-    // 提交后返回前时钟复核：到期/异常 → 提交事实保留，结果待核实（不自动重试）
-    if (!config.synthetic) {
-      const c = clockCheck('post.commit');
-      if (!c.ok) {
-        return Object.assign(base, {
-          outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
-          message: '提交后时钟复核未通过：提交状态待核实，不自动重试'
-        });
-      }
-    }
-
-    // 提交后同请求内按固定主键回读本人用户与确定性审计（冻结投影）
+    // 提交后同请求内按固定主键回读本人用户与确定性审计（冻结投影，R3：强制投影）
     try {
       const [userSnap, auditSnap] = await Promise.all([
-        Promise.resolve(usersCol.doc(derivedUserId).get()),
-        Promise.resolve(auditCol.doc(auditId).get())
+        Promise.resolve(usersCol.doc(derivedUserId).field(USER_READBACK_PROJECTION).get()),
+        Promise.resolve(auditCol.doc(auditId).field(AUDIT_READBACK_PROJECTION).get())
       ]);
-      const user = userSnap && userSnap.data ? userSnap.data : null;
-      const audit = auditSnap && auditSnap.data ? auditSnap.data : null;
-      base.readBack.user = Boolean(user && user._id === derivedUserId && user.status === 'active');
-      base.readBack.audit = Boolean(audit && audit._id === auditId && audit.action === 'registerIdentity'
-        && audit.subjectUserId === derivedUserId && audit[SOURCE_PROTOCOL_FIELD] === SELF_REG_SCHEMA);
+      const user = docOf(userSnap);
+      const audit = docOf(auditSnap);
+      // 回读事实按冻结字段集/类型/主键/主体/动作/状态核验（R3）
+      base.readBack.user = Boolean(user && user._id === derivedUserId
+        && typeof user.openid === 'string' && user.openid === trusted.OPENID
+        && user.status === 'active');
+      base.readBack.audit = auditWellFormed(audit, auditId, derivedUserId);
     } catch (e) {
       return Object.assign(base, {
         outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
@@ -274,11 +346,48 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
       });
     }
 
-    if (txnOutcome === 'ALREADY_ACTIVE') {
-      // 事务回调判定为既有有效：零新增；回读仅作存在确认，不伪称本次创建
+    // 回读后最终返回前时钟复核（R1）：失败保留提交事实，结果待核实
+    {
+      const c = clockCheck('readback.final');
+      if (!c.ok) {
+        // 零新增路径（ALREADY）：未写可安全拒绝；已提交路径保留事实报未知
+        if (txnOutcome === 'ALREADY_ACTIVE') {
+          return Object.assign(base, {
+            outcome: 'REJECTED_NO_WRITE', code: c.code,
+            message: '返回前时钟复核未通过：本包零新增'
+          });
+        }
+        return Object.assign(base, {
+          outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
+          message: '回读后时钟复核未通过：提交状态待核实，不自动重试'
+        });
+      }
+    }
+
+    if (txnOutcome === 'ALREADY_ACTIVE_NO_AUDIT') {
+      // R3：ALREADY（无本包审计）以用户回读事实确认为前提；审计本就不存在
+      if (base.readBack.user) {
+        return Object.assign(base, {
+          outcome: 'ALREADY_ACTIVE', code: null,
+          message: '本人账号已有效存在（无本包审计），本包零新增（不伪造本包创建回执）'
+        });
+      }
       return Object.assign(base, {
-        outcome: 'ALREADY_ACTIVE', code: null,
-        message: '本人账号已有效存在，本包零新增（不伪造本包创建回执）'
+        outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
+        message: '既有有效判定与回读事实不一致：状态待核实，不自动重试'
+      });
+    }
+    if (txnOutcome === 'ALREADY_ACTIVE') {
+      // R3：ALREADY（含本包审计）必须以双记录回读事实确认为前提
+      if (base.readBack.user && base.readBack.audit) {
+        return Object.assign(base, {
+          outcome: 'ALREADY_ACTIVE', code: null,
+          message: '本人账号已有效存在，本包零新增（不伪造本包创建回执）'
+        });
+      }
+      return Object.assign(base, {
+        outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
+        message: '既有有效判定与回读事实不一致：状态待核实，不自动重试'
       });
     }
     if (base.readBack.user && base.readBack.audit) {
@@ -287,7 +396,7 @@ function createSelfRegistrationChecker({ db, trusted, config, now }) {
         message: '本人用户与登记审计已同事务新增并回读通过'
       });
     }
-    // 事务提交但回读未确认两条记录：按未知处理（不伪称新增成功）
+    // 事务提交但回读未确认两条记录：按未知处理（不伪称新增成功，R3）
     return Object.assign(base, {
       outcome: 'OUTCOME_UNKNOWN', code: 'PIC_OUTCOME_UNKNOWN',
       message: '提交后回读未确认本人用户与登记审计：状态待核实，不自动重试'
@@ -306,6 +415,8 @@ module.exports = Object.freeze({
   ACCOUNT_RE,
   USER_REQUIRED_FIELDS,
   AUDIT_REQUIRED_FIELDS,
+  USER_READBACK_PROJECTION,
+  AUDIT_READBACK_PROJECTION,
   SOURCE_PROTOCOL_FIELD,
   REGISTRATION_ROUND_FIELD,
   deriveRegistrationAuditId,

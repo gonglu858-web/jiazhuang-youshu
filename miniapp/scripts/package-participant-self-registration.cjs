@@ -44,8 +44,10 @@ const PLAN_FIELDS = Object.freeze([
   'schema', 'synthetic', 'registrationRoundId', 'participantCode',
   'appId', 'envId', 'functionName', 'usersCollection', 'auditCollection',
   'passphraseDigest', 'windowStartsAtIso', 'windowExpiresAtIso',
-  'closeSourceDir', 'requestProtocol', 'note', 'syntheticAccount'
+  'closeSourceDir', 'requestProtocol', 'note', 'syntheticAccount', 'privateSource'
 ]);
+// R4：真实计划必须携带私密来源引用（固定私密根内的记录文件名；绑定核验在消费时进行）。
+// PRIVATE_SOURCE_SCHEMA 常量沿用文件头既有声明。
 const PARTICIPANT_CODE_RE = /^[12]$/;
 
 const SERVER_FN_DIR = 'scheduleSandbox';
@@ -74,9 +76,9 @@ const PINNED_WX_SERVER_SDK_VERSION = '3.0.1';
 
 /** 受审内容基线（本包自己的模板/核心；新增来源进入本表，不改旧包哈希）。 */
 const PINNED_SOURCES = Object.freeze({
-  'miniapp/scripts/lib/participant-self-registration.cjs': '1cde8033a5675611ea226238784796324964dce0a4280f75d0a7c41f44e82d01',
+  'miniapp/scripts/lib/participant-self-registration.cjs': '74c006b0238ac5f482c069b40d027b643ff74cdddcf0cd4f8351327226a7c5df',
   'miniapp/scripts/templates/participant-self-registration/project.config.json': '945df870609a93d410a729d218df2a0844185d3c0c631a9f99833494449327be',
-  'miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/index.js': '9807e189461a54d6363fa50f5bae8933bbc015c1107a94b8077ccc94b80e1497',
+  'miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/index.js': '0bed614862e15331c7723ceb30fc4e2606491a6a66c3ee00d696ea937d3e721e',
   'miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/package.json': 'f401be55ff4d656d5c86afb59e5f97c8714c6ca2f945293b7fc5984718297d21',
   'miniapp/scripts/templates/participant-self-registration/server/request-adapter.js': 'c256ee48b32547a0b12e02e3d75ae83235aa6a1328e1be0c48a10dfd7ee83ed5',
   'miniapp/scripts/templates/participant-self-registration/frontend/app.js': 'ae4099b3b67d7ab00ec8ed432aa5482495009e1676cda7403c4525a55ec33e41',
@@ -85,7 +87,7 @@ const PINNED_SOURCES = Object.freeze({
   'miniapp/scripts/templates/participant-self-registration/frontend/sitemap.json': '83cd820fc77c8de3d105964e57c3aa2c555f2bbc44b9dc696967960a92b781d8',
   'miniapp/scripts/templates/participant-self-registration/frontend/config/cloud.js': 'c14e345205c440fadd3e093ae65057839386dc9bde095bb8f7ff901c3efe9a18',
   'miniapp/scripts/templates/participant-self-registration/frontend/utils/registration-check-client.js': 'e780071d79a47ad1319acfde9cbbca13eedc87cd89e12b75abec7a51608426dc',
-  'miniapp/scripts/templates/participant-self-registration/frontend/pages/self-registration/self-registration.js': 'ba84d21a81ad529d24e0d156854a3e7c2f6f517c0231619eb518992905038528',
+  'miniapp/scripts/templates/participant-self-registration/frontend/pages/self-registration/self-registration.js': '85cba98a37db317ed781e36fc2feb663b99ff777e10b8ba71ef8b30b05779f1a',
   'miniapp/scripts/templates/participant-self-registration/frontend/pages/self-registration/self-registration.json': '13b2546519a1e4365ebe3d476a90282454f814909541ab9d1bb647004afdef96',
   'miniapp/scripts/templates/participant-self-registration/frontend/pages/self-registration/self-registration.wxml': '93e4f459e51c1d3a342c23c2bdc1855bde3706953a2229781a5ef3e8d23e1787',
   'miniapp/scripts/templates/participant-self-registration/frontend/pages/self-registration/self-registration.wxss': 'fcd42ebfa5012d155f8ae0f4c4c0d5472df425ca3eaa311b0907fc78b001d999'
@@ -97,6 +99,7 @@ const ERR = Object.freeze({
   PLAN_PASSPHRASE_INVALID: 'PSR_PLAN_PASSPHRASE_INVALID',
   PLAN_TARGET_INVALID: 'PSR_PLAN_TARGET_INVALID',
   PLAN_ACCOUNT_INVALID: 'PSR_PLAN_ACCOUNT_INVALID',
+  REAL_NOT_PERMITTED: 'PSR_REAL_NOT_PERMITTED',
   REAL_NOT_PERMITTED: 'PSR_REAL_NOT_PERMITTED',
   SOURCE_MISSING: 'PSR_SOURCE_MISSING',
   SOURCE_DRIFT: 'PSR_SOURCE_DRIFT',
@@ -296,15 +299,29 @@ function readPlan(planPath) {
   if (typeof raw.closeSourceDir !== 'string' || !path.isAbsolute(raw.closeSourceDir)) {
     fail(ERR.PLAN_INVALID, 'closeSourceDir 必须是已受审关闭包目录的绝对路径。');
   }
-  // 账号来源隔离：synthetic 计划必须用显式标注的合成夹具账号；非合成计划本轮未放行
+  // 账号来源隔离（R4）：synthetic 计划必须用显式标注的合成夹具账号且不得携带私密引用；
+  // 非合成计划（真实模式）必须携带格式合法的私密来源引用——解密与绑定核验在消费时进行，
+  // 本轮仅合成来源用于本地全链验证，真实编号录入仍被禁止。
+  let privateSource = null;
   if (raw.synthetic === false) {
-    fail(ERR.REAL_NOT_PERMITTED,
-      '真实登记包需要已核准私密来源（DPAPI 密文）与单独执行批准；本轮未放行，不接受计划自报账号。');
+    const ps = raw.privateSource;
+    if (!ps || typeof ps !== 'object' || Array.isArray(ps)) {
+      fail(ERR.REAL_NOT_PERMITTED, '真实登记计划必须携带 privateSource（私密来源引用）。');
+    }
+    for (const k of Object.keys(ps)) {
+      if (!['schema', 'recordFile'].includes(k)) fail(ERR.PLAN_INVALID, 'privateSource 含未知字段：' + k);
+    }
+    if (ps.schema !== PRIVATE_SOURCE_SCHEMA) fail(ERR.PLAN_INVALID, 'privateSource.schema 必须是 ' + PRIVATE_SOURCE_SCHEMA + '。');
+    if (typeof ps.recordFile !== 'string' || !/^[A-Za-z0-9._-]+\.bin$/.test(ps.recordFile)) {
+      fail(ERR.PLAN_INVALID, 'privateSource.recordFile 必须是固定私密根内的 <名称>.bin。');
+    }
+    privateSource = Object.freeze({ schema: ps.schema, recordFile: ps.recordFile });
   }
   if (raw.synthetic === true) {
     if (typeof raw.syntheticAccount !== 'string' || !ACCOUNT_RE.test(raw.syntheticAccount)) {
       fail(ERR.PLAN_ACCOUNT_INVALID, '合成计划必须提供格式合法的 syntheticAccount（u_+40 位小写十六进制合成夹具）。');
     }
+    if (raw.privateSource !== undefined) fail(ERR.PLAN_INVALID, '合成计划不得携带 privateSource。');
   }
   return Object.freeze({
     schema: raw.schema, synthetic: raw.synthetic,
@@ -317,7 +334,8 @@ function readPlan(planPath) {
     closeSourceDir: path.resolve(raw.closeSourceDir),
     requestProtocol: raw.requestProtocol,
     note: raw.note || '',
-    syntheticAccount: raw.synthetic === true ? raw.syntheticAccount : null
+    syntheticAccount: raw.synthetic === true ? raw.syntheticAccount : null,
+    privateSource
   });
 }
 
@@ -412,7 +430,7 @@ function computeRegistrationBuildId(plan) {
   return sha256Buffer(Buffer.from(JSON.stringify(canonical), 'utf8'));
 }
 
-function computeArtifacts(plan) {
+function computeArtifacts(plan, account) {
   const artifacts = new Map();
   const coreBytes = readCoreModuleBytes();
   artifacts.set(SERVER_FN_ROOT + 'participant-self-registration.js', coreBytes);
@@ -430,7 +448,7 @@ function computeArtifacts(plan) {
     buf = anchorReplace(buf, 'const CONFIG_WINDOW_STARTS_AT_MS = 0;', 'const CONFIG_WINDOW_STARTS_AT_MS = ' + plan.windowStartsAtMs + ';', 'index.js#CONFIG_WINDOW_STARTS_AT_MS');
     buf = anchorReplace(buf, 'const CONFIG_WINDOW_EXPIRES_AT_MS = 0;', 'const CONFIG_WINDOW_EXPIRES_AT_MS = ' + plan.windowExpiresAtMs + ';', 'index.js#CONFIG_WINDOW_EXPIRES_AT_MS');
     // 完整允许账号仅进入服务端入口配置（真实装配由私密来源解密注入；合成装配用标注夹具）
-    buf = anchorReplace(buf, "const CONFIG_ALLOWED_ACCOUNT = '';", "const CONFIG_ALLOWED_ACCOUNT = '" + plan.syntheticAccount + "';", 'index.js#CONFIG_ALLOWED_ACCOUNT');
+    buf = anchorReplace(buf, "const CONFIG_ALLOWED_ACCOUNT = '';", "const CONFIG_ALLOWED_ACCOUNT = '" + account + "';", 'index.js#CONFIG_ALLOWED_ACCOUNT');
     buf = anchorReplace(buf, "const CONFIG_USERS_COLLECTION = 'schtest_v1_users';", "const CONFIG_USERS_COLLECTION = '" + plan.usersCollection + "';", 'index.js#CONFIG_USERS_COLLECTION');
     buf = anchorReplace(buf, "const CONFIG_AUDIT_COLLECTION = 'schtest_v1_audit_events';", "const CONFIG_AUDIT_COLLECTION = '" + plan.auditCollection + "';", 'index.js#CONFIG_AUDIT_COLLECTION');
     buf = anchorReplace(buf, 'const CONFIG_SYNTHETIC = false;', 'const CONFIG_SYNTHETIC = ' + Boolean(plan.synthetic) + ';', 'index.js#CONFIG_SYNTHETIC');
@@ -449,13 +467,25 @@ function computeArtifacts(plan) {
 
 /**
  * build/prepare 共用装配主体（窗口模式由公开入口固定选择）。
- * manifest 不含时间戳；prepare 与 build 同计划同源码逐字节一致。
+ * opts.privateAccount：真实模式（synthetic:false）必须由 consumePrivateSource 解析后注入；
+ * 合成模式使用计划内标注夹具账号。manifest 不含时间戳；prepare 与 build 同计划同源码逐字节一致。
  */
-function buildInternal(planPath, outOverride, windowPhase) {
+function buildInternal(planPath, outOverride, windowPhase, opts) {
+  const options = opts || {};
   const plan = readPlan(planPath);
   windowClockCheck(plan, 'build.readPlan', windowPhase);
+  let account = null;
+  if (plan.synthetic === true) {
+    account = plan.syntheticAccount;
+  } else {
+    // R4：真实装配必须携带经私密来源解析的账号（不接受计划自报）
+    if (typeof options.privateAccount !== 'string' || !ACCOUNT_RE.test(options.privateAccount)) {
+      fail(ERR.REAL_NOT_PERMITTED, '真实装配必须先经 consumePrivateSource 解析私密来源并提供 privateAccount。');
+    }
+    account = options.privateAccount;
+  }
   const closeFiles = verifyCloseSource(plan.closeSourceDir);
-  const artifacts = computeArtifacts(plan);
+  const artifacts = computeArtifacts(plan, account);
   const planBytes = fs.readFileSync(planPath);
   const digest = planDigest(plan);
 
@@ -552,14 +582,54 @@ function buildInternal(planPath, outOverride, windowPhase) {
   }
 }
 
-function build(planPath, outOverride) { return buildInternal(planPath, outOverride, 'execute'); }
-function prepare(planPath, outOverride) { return buildInternal(planPath, outOverride, 'prepare'); }
+function build(planPath, outOverride, opts) { return buildInternal(planPath, outOverride, 'execute', opts); }
+function prepare(planPath, outOverride, opts) { return buildInternal(planPath, outOverride, 'prepare', opts); }
+
+/**
+ * R4：受控来源→解密→绑定核验→账号解析（完整消费链；仅合成来源用于本轮本地验证）。
+ * - 计划必须为 synthetic:false 且携带 privateSource；
+ * - 枚举固定私密根全部记录并 1/2 排重；
+ * - 逐项绑定核验：参与者代码/appId/envId/登记轮次/窗口起止/来源摘要（对 closeSourceDir
+ *   重算）/交付确认；
+ * - 返回 { account }（仅内存使用；不写日志/证据）。
+ */
+async function consumePrivateSource(planPath, { repoRoot } = {}) {
+  const plan = readPlan(planPath);
+  if (plan.synthetic !== false || !plan.privateSource) {
+    fail(ERR.REAL_NOT_PERMITTED, 'consumePrivateSource 仅适用于真实模式计划（synthetic:false + privateSource）。');
+  }
+  const store = require('./lib/participant-private-store.cjs');
+  const records = await store.readAllRecordsAsync({ repoRoot: repoRoot || ROOT });
+  if (records.length === 0) fail(ERR.REAL_NOT_PERMITTED, '固定私密根内没有可消费的私密记录。');
+  const target = records.find(r => r.fileName === plan.privateSource.recordFile);
+  if (!target) fail(ERR.REAL_NOT_PERMITTED, '私密来源引用的记录文件不存在：' + plan.privateSource.recordFile);
+  // R4：1/2 排重——先核验目标记录绑定，再对同码/同账号执行排重（历史残留不阻断当前核验）
+  const p = target.payload;
+  const bindingFailures = [];
+  if (p.participantCode !== plan.participantCode) bindingFailures.push('参与者代码');
+  if (p.appId !== plan.appId || p.envId !== plan.envId) bindingFailures.push('固定目标');
+  if (p.roundId !== plan.registrationRoundId) bindingFailures.push('登记轮次');
+  if (p.windowStartsAtIso !== plan.windowStartsAtIso || p.windowExpiresAtIso !== plan.windowExpiresAtIso) bindingFailures.push('窗口起止');
+  if (p.sourceDigest !== store.computeCloseSourceDigest(plan.closeSourceDir)) bindingFailures.push('来源摘要');
+  if (p.deliveryConfirmed !== true) bindingFailures.push('交付确认');
+  if (bindingFailures.length) {
+    fail(ERR.REAL_NOT_PERMITTED, '私密来源绑定核验未通过：' + bindingFailures.join('/'));
+  }
+  // R4：排重——仅对同来源（同 sourceDigest）的记录执行 1/2 排重
+  const sameSource = records.filter(r => r.payload.sourceDigest === p.sourceDigest);
+  const sameCode = sameSource.filter(r => r.payload.participantCode === p.participantCode);
+  const codeAccounts = new Set(sameCode.map(r => r.payload.fullAccount));
+  if (codeAccounts.size > 1) fail(ERR.REAL_NOT_PERMITTED, '同一参与者代码对应不同账号（跨记录排重）。');
+  const crossCode = sameSource.find(r => r.payload.fullAccount === p.fullAccount && r.payload.participantCode !== p.participantCode);
+  if (crossCode) fail(ERR.REAL_NOT_PERMITTED, '同一账号同时挂在多个参与者代码下。');
+  return { account: p.fullAccount, recordRef: p.ref, participantCode: p.participantCode };
+}
 
 /**
  * check/检查已准备目录共用主体（与只读包同构；previewBuildId 换为 registrationBuildId，
  * 其来源依赖计算在受控重建出口内——漂移/缺失/读取异常返回结构化失败）。
  */
-function checkDirInternal(dir, windowPhase) {
+function checkDirInternal(dir, windowPhase, account) {
   assertRealDirChain(dir, 'check 输入');
   const problems = [];
   const bad = msg => problems.push(msg);
@@ -583,6 +653,39 @@ function checkDirInternal(dir, windowPhase) {
   manifestFiles = Array.isArray(manifest.files) ? manifest.files : [];
   manifestCloseFiles = manifest.closePackage && Array.isArray(manifest.closePackage.files) ? manifest.closePackage.files : [];
   if (manifest.schema !== MANIFEST_SCHEMA) bad('manifest schema 不符。');
+  // R5：manifest 顶层字段集严格重建（未知字段/缺失字段拒绝；不以自报值为准）
+  {
+    const MANIFEST_KEYS = ['schema', 'synthetic', 'registrationRoundId', 'participantCode', 'appId', 'envId',
+      'functionName', 'usersCollection', 'auditCollection', 'windowStartsAtIso', 'windowExpiresAtIso',
+      'windowMinutes', 'passphraseDigestRecorded', 'userIdentitySource', 'requestProtocol',
+      'previewEvidenceSchema', 'registrationBuildId', 'privateSource', 'planFile', 'planSha256',
+      'planDigest', 'closeSourceDir', 'boundaries', 'files', 'closePackage'];
+    for (const k of Object.keys(manifest)) {
+      if (!MANIFEST_KEYS.includes(k)) bad('manifest 含未知字段：' + k);
+    }
+    for (const k of MANIFEST_KEYS) {
+      if (!Object.prototype.hasOwnProperty.call(manifest, k)) bad('manifest 缺少字段：' + k);
+    }
+    // privateSource 字段集与合成/真实模式匹配
+    const ps = manifest.privateSource;
+    if (!ps || typeof ps !== 'object' || Array.isArray(ps)) {
+      bad('manifest.privateSource 缺失');
+    } else {
+      const PS_KEYS = ['schema', 'mode', 'syntheticFixtureLabel', 'realSourceConsumed', 'disclosure'];
+      for (const k of Object.keys(ps)) if (!PS_KEYS.includes(k)) bad('manifest.privateSource 含未知字段：' + k);
+      for (const k of PS_KEYS) if (!Object.prototype.hasOwnProperty.call(ps, k)) bad('manifest.privateSource 缺少字段：' + k);
+    }
+    // closePackage 字段集与映射声明严格重建（R5：伪造 mapping/未知字段拒绝）
+    const cp = manifest.closePackage;
+    if (!cp || typeof cp !== 'object' || Array.isArray(cp)) {
+      bad('manifest.closePackage 缺失');
+    } else {
+      const CP_KEYS = ['note', 'sourceDir', 'mapping', 'files'];
+      for (const k of Object.keys(cp)) if (!CP_KEYS.includes(k)) bad('manifest.closePackage 含未知字段：' + k);
+      for (const k of CP_KEYS) if (!Object.prototype.hasOwnProperty.call(cp, k)) bad('manifest.closePackage 缺少字段：' + k);
+      if (cp.mapping !== CLOSE_MAPPING_DECLARATION) bad('closePackage.mapping 与受审映射声明不一致：' + JSON.stringify(cp.mapping).slice(0, 120));
+    }
+  }
   if (manifest.planFile !== undefined && manifest.planFile !== 'plan.json') bad('manifest.planFile 必须固定为 plan.json。');
   const planPath = path.join(dir, 'plan.json');
   if (!fs.existsSync(planPath)) { bad('缺少目录内计划 plan.json'); return finish(); }
@@ -625,8 +728,13 @@ function checkDirInternal(dir, windowPhase) {
   }
   let expected;
   let closeFiles;
+  // R4：真实模式重建必须携带经私密来源解析的账号（缺失=调用方错误，结构化失败）
+  if (plan.synthetic === false && !account) {
+    bad('真实模式核对必须先经 consumePrivateSource 解析私密来源账号（checkDirResolved）');
+    return finish();
+  }
   try {
-    expected = computeArtifacts(plan);
+    expected = computeArtifacts(plan, plan.synthetic === true ? plan.syntheticAccount : account);
     closeFiles = verifyCloseSource(plan.closeSourceDir)
       .map(f => ({ rel: adaptCloseRel(f.rel), sourceRel: f.rel, buf: f.buf }));
     for (const f of closeFiles) expected.set('close/' + f.rel, f.buf);
@@ -641,7 +749,11 @@ function checkDirInternal(dir, windowPhase) {
   if (manifestCloseFiles.length === 0) bad('closePackage.files 清单为空');
   expected.set('plan.json', planBytes); // plan.json 参与清单交叉核对（与 manifest.json 一样单独核对字节）
   for (const f of manifestFiles) {
-    if (!f || typeof f.rel !== 'string' || !/^[A-Za-z0-9_.\-/]+$/.test(f.rel)) { bad('files 清单含非法条目'); continue; }
+    if (!f || typeof f !== 'object' || Array.isArray(f)) { bad('files 清单含非法条目'); continue; }
+    // R5：条目字段集严格（未知字段如 note 拒绝）
+    for (const k of Object.keys(f)) if (!['rel', 'bytes', 'sha256'].includes(k)) bad('files 条目含未知字段：' + f.rel + ':' + k);
+    if (!f || typeof f.rel !== 'string' || !/^[A-Za-z0-9_.\-/]+$/.test(f.rel)
+      || !Number.isInteger(f.bytes) || !/^[0-9a-f]{64}$/.test(f.sha256 || '')) { bad('files 清单含非法条目'); continue; }
     if (declared.has(f.rel)) bad('重复清单条目：' + f.rel);
     declared.add(f.rel);
     const buf = expected.get(f.rel);
@@ -649,8 +761,11 @@ function checkDirInternal(dir, windowPhase) {
     if (f.bytes !== buf.length || f.sha256 !== sha256Buffer(buf)) bad('清单条目与重建不一致：' + f.rel);
   }
   for (const f of manifestCloseFiles) {
-    // 关闭清单条目 rel 为映射后路径（不含 close/ 前缀）；查找时补前缀
-    if (!f || typeof f.rel !== 'string' || f.sourceRel === undefined || adaptCloseRel(f.sourceRel) !== f.rel) {
+    // 关闭清单条目 rel 为映射后路径（不含 close/ 前缀）；查找时补前缀；字段集严格（R5）
+    if (!f || typeof f !== 'object' || Array.isArray(f)) { bad('关闭清单含非法条目'); continue; }
+    for (const k of Object.keys(f)) if (!['rel', 'sourceRel', 'bytes', 'sha256'].includes(k)) bad('关闭条目含未知字段：' + (f.rel || '?') + ':' + k);
+    if (!f || typeof f.rel !== 'string' || f.sourceRel === undefined || adaptCloseRel(f.sourceRel) !== f.rel
+      || !Number.isInteger(f.bytes) || !/^[0-9a-f]{64}$/.test(f.sha256 || '')) {
       bad('关闭清单含非法条目');
       continue;
     }
@@ -688,15 +803,19 @@ function checkDirInternal(dir, windowPhase) {
     if (!exp) continue;
     if (disk.length !== exp.length || !disk.equals(exp)) bad('关闭磁盘文件与重建不一致：close/' + f.rel);
   }
-  // 盘上多余文件：未声明的一切文件拒绝（含根下散文件）
+  // 盘上多余文件：未声明的一切文件拒绝（含根下散文件）；链接/junction 拒绝（R5）
   const extra = new Set();
+  const links = [];
   const walk = d => {
     for (const e of fs.readdirSync(d, { withFileTypes: true })) {
       const p = path.join(d, e.name);
-      if (e.isDirectory()) walk(p); else extra.add(path.relative(dir, p).split(path.sep).join('/'));
+      const rel = path.relative(dir, p).split(path.sep).join('/');
+      if (e.isSymbolicLink()) { links.push(rel); continue; }
+      if (e.isDirectory()) walk(p); else extra.add(rel);
     }
   };
   try { walk(dir); } catch (e) { bad('候选目录遍历失败：' + e.message); }
+  for (const rel of links) bad('候选目录含符号链接/junction：' + rel);
   for (const rel of extra) {
     if (rel === 'plan.json' || rel === 'manifest.json') continue;
     if (declared.has(rel)) continue;
@@ -720,8 +839,28 @@ function checkDirInternal(dir, windowPhase) {
   return finish();
 }
 
-function checkDir(dir) { return checkDirInternal(dir, 'execute'); }
-function checkPreparedDir(dir) { return checkDirInternal(dir, 'prepare'); }
+/** 旧严格核对：now<starts 拒绝（行为与既有事实一致；结果结构不变）。
+ *  真实模式计划（synthetic:false）必须改用 checkDirResolved（私密来源解析账号后重建）。 */
+function checkDir(dir) { return checkDirInternal(dir, 'execute', null); }
+function checkPreparedDir(dir) { return checkDirInternal(dir, 'prepare', null); }
+
+/** R4：真实模式核对——先经 consumePrivateSource 解析账号再严格重建（execute 相位）。 */
+async function checkDirResolved(dir, opts) {
+  const planPath = path.join(path.resolve(dir), 'plan.json');
+  const plan = readPlan(planPath);
+  if (plan.synthetic === true) return checkDirInternal(dir, 'execute', null);
+  const { account } = await consumePrivateSource(planPath, opts);
+  return checkDirInternal(dir, 'execute', account);
+}
+
+/** R4：真实模式准备核对（prepare 相位；executionReady 仍恒 false）。 */
+async function checkPreparedDirResolved(dir, opts) {
+  const planPath = path.join(path.resolve(dir), 'plan.json');
+  const plan = readPlan(planPath);
+  if (plan.synthetic === true) return checkDirInternal(dir, 'prepare', null);
+  const { account } = await consumePrivateSource(planPath, opts);
+  return checkDirInternal(dir, 'prepare', account);
+}
 
 function checkCloseDir(closePackageDir) {
   assertRealDirChain(closePackageDir, 'check-close 输入');
@@ -773,5 +912,6 @@ module.exports = Object.freeze({
   PLAN_SCHEMA, MANIFEST_SCHEMA, REQUEST_PROTOCOL, PREVIEW_EVIDENCE_SCHEMA, PRIVATE_SOURCE_SCHEMA,
   FIXED_TARGET,
   build, prepare, checkDir, checkPreparedDir, checkCloseDir,
+  checkDirResolved, checkPreparedDirResolved, consumePrivateSource,
   readPlan, planDigest, computeRegistrationBuildId
 });

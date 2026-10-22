@@ -12,6 +12,10 @@ param(
   [string]$SourceDigest = '',
   [string]$RepoRoot = '',
   [string]$FileName = '',
+  [string]$CloseSourceDir = '',
+  [string]$WindowStartsAtIso = '',
+  [string]$WindowExpiresAtIso = '',
+  [string]$ServerTimeIso = '',
   [switch]$SelfTestCheck,
   [string]$SelfTestValue1 = '',
   [string]$SelfTestValue2 = ''
@@ -88,20 +92,26 @@ $buttonShow.Location = New-Object System.Drawing.Point(12, 166)
 $buttonShow.Size = New-Object System.Drawing.Size(240, 28)
 $form.Controls.Add($buttonShow)
 
+$checkDelivery = New-Object System.Windows.Forms.CheckBox
+$checkDelivery.Text = '本人完整编号已当面交付（显式交付确认事实）'
+$checkDelivery.Location = New-Object System.Drawing.Point(12, 200)
+$checkDelivery.Size = New-Object System.Drawing.Size(520, 22)
+$form.Controls.Add($checkDelivery)
+
 $buttonOk = New-Object System.Windows.Forms.Button
 $buttonOk.Text = '确认并加密保存'
-$buttonOk.Location = New-Object System.Drawing.Point(12, 210)
+$buttonOk.Location = New-Object System.Drawing.Point(12, 226)
 $buttonOk.Size = New-Object System.Drawing.Size(180, 32)
 $form.Controls.Add($buttonOk)
 
 $buttonCancel = New-Object System.Windows.Forms.Button
 $buttonCancel.Text = '取消（不保存）'
-$buttonCancel.Location = New-Object System.Drawing.Point(200, 210)
+$buttonCancel.Location = New-Object System.Drawing.Point(200, 226)
 $buttonCancel.Size = New-Object System.Drawing.Size(140, 32)
 $form.Controls.Add($buttonCancel)
 
 $labelStatus = New-Object System.Windows.Forms.Label
-$labelStatus.Location = New-Object System.Drawing.Point(12, 250)
+$labelStatus.Location = New-Object System.Drawing.Point(12, 264)
 $labelStatus.Size = New-Object System.Drawing.Size(520, 24)
 $form.Controls.Add($labelStatus)
 
@@ -126,6 +136,10 @@ $buttonOk.Add_Click({
     $labelStatus.Text = '尾号与已核验记录不符。请核对后重新输入；不回显原值。'
     return
   }
+  if (-not $checkDelivery.Checked) {
+    $labelStatus.Text = '缺少交付确认：请先勾选交付确认事实。'
+    return
+  }
   $form.Tag = 'OK'
   $form.Close()
 })
@@ -147,7 +161,12 @@ $cliArgs = @($storeScript, 'protect',
   '--participant-code', $ParticipantCode,
   '--round-id', $RoundId,
   '--source-digest', $SourceDigest,
+  '--close-source-dir', $CloseSourceDir,
+  '--delivery-confirmed', 'true',
+  '--window-starts-at-iso', $WindowStartsAtIso,
+  '--window-expires-at-iso', $WindowExpiresAtIso,
   '--file-name', $FileName)
+if ($ServerTimeIso) { $cliArgs += @('--server-time-iso', $ServerTimeIso) }
 $psi = New-Object System.Diagnostics.ProcessStartInfo
 $psi.FileName = 'node'
 $psi.Arguments = ($cliArgs -join ' ')

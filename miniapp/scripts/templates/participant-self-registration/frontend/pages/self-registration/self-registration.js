@@ -48,10 +48,17 @@ Page({
           && /^[A-Za-z0-9][A-Za-z0-9_-]{3,63}$/.test(response.registrationRoundId)
           ? response.registrationRoundId : '未取得'
       });
-      if (!response || typeof response !== 'object') {
-        // C1：returned 不保证有效服务端结果——按失败/未知处理
+      // R3：严格响应契约——schema/outcome/事实布尔齐备才算有效结果；
+      // 畸形/缺字段对象（如 {errCode:...}）一律按"提交状态未知"处理，不声称未写入。
+      const contractOk = Boolean(response && typeof response === 'object'
+        && response.schema === 'participant-self-registration-result/1'
+        && typeof response.outcome === 'string'
+        && ['CREATED_AND_VERIFIED', 'ALREADY_ACTIVE', 'REJECTED_NO_WRITE', 'OUTCOME_UNKNOWN'].indexOf(response.outcome) !== -1
+        && typeof response.writeAttempted === 'boolean'
+        && typeof response.commitConfirmed === 'boolean');
+      if (!contractOk) {
         this.setData({
-          stopHint: '本次登记未完成（结果未知）。请停止并联系负责人，不要重复点击；系统不会自动重试。',
+          stopHint: '结果格式无效，提交状态未知。请停止并联系负责人，先关闭再另行只读核对；不要重复点击。',
           result: null
         });
         return;
@@ -64,7 +71,9 @@ Page({
             ? '本人账号已有效存在，本次零新增。'
             : response.outcome === 'OUTCOME_UNKNOWN'
               ? '提交状态未知：请停止并联系负责人，先关闭再另行只读核对；不要重复点击。'
-              : '登记未通过，未写入：' + (response.message || '请停止并联系负责人。')
+              : response.outcome === 'REJECTED_NO_WRITE'
+                ? '登记未通过，未写入：' + (response.message || '请停止并联系负责人。')
+                : '提交状态未知：请停止并联系负责人。'
       });
     } catch (_) {
       // 前置拒绝/传输失败：本机事实已在客户端侧记录；页面按失败/未知处理
