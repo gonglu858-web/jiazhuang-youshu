@@ -9,14 +9,17 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const vm = require('node:vm');
 const os = require('node:os');
-const { spawnSync } = require('node:child_process');
+const guardHits = [];
+let guardPhase = 'business';
+const guarded = require('./helpers/psr-guard-runner.cjs').installParentGuardsWithLocalTools({hits:guardHits,getPhase:()=>guardPhase,allowedScripts:[]});
+// 守卫先于所有业务 require。默认无真实工具/DPAPI/ACL/索引操作。
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const OUT_ROOT = path.join(ROOT, 'artifacts', 'schedule-sandbox', 'business-test');
 const REPO_ROOT = ROOT;
 const core = require(ROOT + '/miniapp/scripts/lib/participant-self-registration.cjs');
 const packer = require(ROOT + '/miniapp/scripts/package-participant-self-registration.cjs');
-const privateStore = require(ROOT + '/miniapp/scripts/lib/participant-private-store.cjs');
+
 const business = require(ROOT + '/miniapp/scripts/package-business-test.cjs');
 
 const RUN_ID = 'r' + crypto.randomBytes(4).toString('hex');
@@ -47,14 +50,18 @@ function makeCloseSourceDir() {
   return built.outDir;
 }
 
-// R4：私密记录绑定参数（每测试各自的 closeSource 派生）
-function privateBinding(closeSource) {
+// R4（来源分离）：私密记录绑定参数 = 只读核验会话事实（核验轮次/窗口/来源摘要/交付），
+// 不再绑定关闭包摘要（关闭包摘要不能证明编号交付来源）；readonlySourceDigest 为
+// 只读核验会话记录的合成摘要（64hex，格式核验；登记包不重算——如实披露）。
+const SYNTHETIC_CHECK_ROUND = 'synthetic-check-' + RUN_ID;
+const SYNTHETIC_READONLY_SOURCE_DIGEST = crypto.createHash('sha256').update('synthetic-readonly-source-' + RUN_ID).digest('hex');
+function privateBinding() {
   return {
-    closeSourceDir: closeSource,
-    expectedTarget: privateStore.FIXED_TARGET,
-    windowStartsAtIso: '2030-01-01T00:00:00Z',
-    windowExpiresAtIso: '2030-01-01T00:10:00Z',
-    sourceDigest: privateStore.computeCloseSourceDigest(closeSource)
+    expectedTarget: {appId:APPID, envId:ENV_ID},
+    checkRoundId: SYNTHETIC_CHECK_ROUND,
+    checkWindowStartsAtIso: '2030-01-01T00:00:00Z',
+    checkWindowExpiresAtIso: '2030-01-01T00:10:00Z',
+    readonlySourceDigest: SYNTHETIC_READONLY_SOURCE_DIGEST
   };
 }
 function mkPlan(closeSource, overrides) {
@@ -82,126 +89,7 @@ function mkPlan(closeSource, overrides) {
   return file;
 }
 
-// ── 私密存储（DPAPI/边界/回执净化）────────────────────────────────────────────
-test('PS1 私密输入器 SelfTestCheck：格式错/两次不一致/尾号错/合法通过（合成值，不开窗口不写盘）', () => {
-  const ps1 = path.join(ROOT, 'miniapp', 'scripts', 'participant-private-input.ps1');
-  const v = SYNTHETIC_ACCOUNT;
-  const run = (args) => spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', ps1, '-SelfTestCheck', ...args], { encoding: 'utf8', windowsHide: true });
-  const bad = 'u_SHORT';
-  assert.ok(run(['-SelfTestValue1', bad, '-SelfTestValue2', bad]).stdout.includes('FORMAT_FAIL'), '格式错必须失败');
-  assert.ok(run(['-SelfTestValue1', v, '-SelfTestValue2', SYNTHETIC_OTHER_ACCOUNT]).stdout.includes('MISMATCH_FAIL'), '两次不一致必须失败');
-  const r3 = run(['-Tail', '000000', '-SelfTestValue1', v, '-SelfTestValue2', v]);
-  assert.ok(r3.stdout.includes('TAIL_FAIL'), '尾号不符必须失败（尾号仅辅助查错）');
-  const r4 = run(['-Tail', v.slice(-6), '-SelfTestValue1', v, '-SelfTestValue2', v]);
-  assert.ok(r4.stdout.includes('PASS'), '合法一致通过');
-});
-
-test('PSR 私密存储：DPAPI 往返、排他新建、净化回执不含完整编号；同尾错号仍是不同账号', async () => {
-  const closeSource = makeCloseSourceDir();
-  const roundId = ROUND_ID;
-  const dir = path.join(OUT_ROOT, 'psr-private-ok-' + RUN_ID);
-  fs.mkdirSync(dir, { recursive: true });
-  const receipt = privateStore.protectRecord({
-    repoRoot: REPO_ROOT, fileName: 'selftest-' + RUN_ID + '.bin',
-    participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, fullAccountRepeat: SYNTHETIC_ACCOUNT,
-    appId: APPID, envId: ENV_ID, roundId, serverTimeIso: null,
-    ...privateBinding(closeSource), deliveryConfirmed: true
-  });
-  assert.equal(receipt.schema, privateStore.RECEIPT_SCHEMA);
-  assert.equal(receipt.accountTail, SYNTHETIC_ACCOUNT.slice(-6));
-  assert.equal(receipt.encrypted, 'dpapi-currentuser');
-  assert.equal(receipt.source, 'manual-input-not-platform-readback');
-  assert.ok(receipt.ref && receipt.cipherSha256 && receipt.gitIgnored === true);
-  // 回执不含完整编号/OPENID/口令/裸编号哈希
-  const receiptText = JSON.stringify(receipt);
-  assert.ok(!receiptText.includes(SYNTHETIC_ACCOUNT), '回执不含完整编号');
-  assert.ok(!receiptText.includes(crypto.createHash('sha256').update(SYNTHETIC_ACCOUNT).digest('hex')), '回执不含裸编号哈希');
-  // 同尾错号：不同完整编号是不同账号（同尾仅辅助查错）——翻转倒数第 7 位保持尾号一致
-  const seventhFromEnd = SYNTHETIC_ACCOUNT.slice(-7, -6);
-  const flipped = seventhFromEnd === '0' ? '1' : '0';
-  const sameTailOther = SYNTHETIC_ACCOUNT.slice(0, -7) + flipped + SYNTHETIC_ACCOUNT.slice(-6);
-  assert.notEqual(sameTailOther, SYNTHETIC_ACCOUNT);
-  assert.equal(privateStore.tailOf(sameTailOther), privateStore.tailOf(SYNTHETIC_ACCOUNT), '同尾但不同账号');
-  // 解密往返（同 Windows 用户）：密文→原合成值
-  const roundtrip = await privateStore.readRecordAsync({ repoRoot: REPO_ROOT, relativePath: receipt.fileRel });
-  assert.equal(roundtrip.fullAccount, SYNTHETIC_ACCOUNT, 'DPAPI 解密往返一致');
-  assert.equal(roundtrip.participantCode, '1');
-  assert.equal(roundtrip.roundId, roundId);
-});
-
-test('PSR 私密存储边界：路径边界/未忽略/链接/ACL/已存在/输入校验全部写前拒绝', () => {
-  const closeSource = makeCloseSourceDir();
-  // (1) 路径边界：私密根之外拒绝（边界检查先于忽略检查）
-  assert.throws(() => privateStore.validatePrivateTarget({ repoRoot: REPO_ROOT, relativePath: 'miniapp/evil.bin' }), e => e.code === 'PSR_PRIVATE_PATH_BOUNDARY');
-  assert.throws(() => privateStore.validatePrivateTarget({ repoRoot: REPO_ROOT, relativePath: '../../evil.bin' }), e => e.code === 'PSR_PRIVATE_PATH_BOUNDARY');
-  assert.throws(() => privateStore.validatePrivateTarget({ repoRoot: REPO_ROOT, relativePath: 'docs/x.bin' }), e => e.code === 'PSR_PRIVATE_PATH_BOUNDARY');
-  // (1b) 忽略机制本身（git check-ignore 语义）：私密根命中忽略、仓库内普通文件未命中
-  {
-    const { spawnSync } = require('node:child_process');
-    const hit = spawnSync('git', ['check-ignore', '--', 'artifacts/schedule-sandbox/.participant-private/x.bin'], { cwd: REPO_ROOT, encoding: 'utf8' });
-    assert.equal(hit.status, 0, '私密根必须被 Git 忽略');
-    const miss = spawnSync('git', ['check-ignore', '--', 'docs/x.bin'], { cwd: REPO_ROOT, encoding: 'utf8' });
-    assert.notEqual(miss.status, 0, 'docs/ 未被忽略（忽略检查机制有效）');
-  }
-  // (3) 链接/junction：链路检查对 junction 目录直接拒绝（assertNoLinks）
-  const junctionDir = path.join(OUT_ROOT, 'psr-junction-' + RUN_ID);
-  const linkPath = path.join(OUT_ROOT, 'psr-junction-link-' + RUN_ID);
-  fs.mkdirSync(junctionDir, { recursive: true });
-  let created = false;
-  try {
-    fs.symlinkSync(junctionDir, linkPath, 'junction');
-    created = true;
-  } catch (_) { /* 某些环境不允许 junction；有创建才断言 */ }
-  if (created) {
-    assert.throws(() => privateStore.assertNoLinks(REPO_ROOT, linkPath), e => e.code === 'PSR_PRIVATE_LINK', 'junction 目录链路检查拒绝');
-  }
-  // (4) ACL 宽泛授权拒绝：建目录并授 Everyone
-  const aclDir = path.join(OUT_ROOT, 'psr-acl-' + RUN_ID);
-  fs.mkdirSync(aclDir, { recursive: true });
-  const g = spawnSync('icacls', [aclDir, '/grant', 'Everyone:F'], { encoding: 'utf8', windowsHide: true });
-  if (g.status === 0) {
-    assert.throws(() => privateStore.assertPrivateAcl(aclDir), e => e.code === 'PSR_PRIVATE_ACL', '宽泛 ACL 必须拒绝');
-  } else {
-    assert.ok(true, 'icacls 授予不可用，跳过（环境披露）');
-  }
-  // (5) 已存在同名记录：不覆盖
-  const existsDir = path.join(OUT_ROOT, 'psr-private-exists-' + RUN_ID);
-  fs.mkdirSync(existsDir, { recursive: true });
-  const fileName = 'selftest-exists-' + RUN_ID + '.bin';
-  privateStore.protectRecord({ repoRoot: REPO_ROOT, fileName, participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, fullAccountRepeat: SYNTHETIC_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, sourceDigest: privateStore.computeCloseSourceDigest(closeSource), closeSourceDir: closeSource, expectedTarget: privateStore.FIXED_TARGET, windowStartsAtIso: '2030-01-01T00:00:00Z', windowExpiresAtIso: '2030-01-01T00:10:00Z', deliveryConfirmed: true });
-  assert.throws(() => privateStore.protectRecord({ repoRoot: REPO_ROOT, fileName, participantCode: '1', fullAccount: SYNTHETIC_OTHER_ACCOUNT, fullAccountRepeat: SYNTHETIC_OTHER_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, ...privateBinding(closeSource), deliveryConfirmed: true }), e => e.code === 'PSR_PRIVATE_EXISTS', '已存在不覆盖');
-  // (6) 输入校验：两次不一致/格式错/参与者错/缺交付确认/来源摘要错
-  const base = Object.assign({ repoRoot: REPO_ROOT, fileName: 'selftest-x-' + RUN_ID + '.bin', participantCode: '1', fullAccount: SYNTHETIC_ACCOUNT, appId: APPID, envId: ENV_ID, roundId: ROUND_ID, serverTimeIso: null, deliveryConfirmed: true }, privateBinding(closeSource));
-  assert.throws(() => privateStore.protectRecord({ ...base, fullAccountRepeat: SYNTHETIC_OTHER_ACCOUNT }), e => e.code === 'PSR_PRIVATE_INPUT', '两次不一致拒绝');
-  assert.throws(() => privateStore.protectRecord({ ...base, fullAccount: 'u_short', fullAccountRepeat: 'u_short' }), e => e.code === 'PSR_PRIVATE_INPUT', '格式错拒绝');
-  assert.throws(() => privateStore.protectRecord({ ...base, participantCode: '9' }), e => e.code === 'PSR_PRIVATE_INPUT', '参与者代码只能 1/2');
-  assert.throws(() => privateStore.protectRecord({ ...base, deliveryConfirmed: false }), e => e.code === 'PSR_PRIVATE_INPUT', '缺交付确认拒绝');
-  assert.throws(() => privateStore.protectRecord({ ...base, sourceDigest: 'zz' }), e => e.code === 'PSR_PRIVATE_INPUT', '来源摘要无效拒绝');
-  // 重复参与者号约束：1/2 号各用独立记录文件（不同 fileName），同一文件排他不覆盖已在 (5) 验证
-});
-
-test('PSR 私密存储：Git 已跟踪路径拒绝（临时 add 后在 finally 复原索引）', () => {
-  const dir = path.join(REPO_ROOT, 'artifacts', 'schedule-sandbox', '.participant-private');
-  fs.mkdirSync(dir, { recursive: true });
-  const fileName = 'tracked-' + RUN_ID + '.bin';
-  const targetRel = privateStore.PRIVATE_ROOT_REL + '/' + fileName;
-  fs.writeFileSync(path.join(REPO_ROOT, targetRel), 'placeholder');
-  const abs = path.join(REPO_ROOT, targetRel);
-  const added = spawnSync('git', ['add', '-f', targetRel], { cwd: REPO_ROOT, encoding: 'utf8' });
-  try {
-    if (added.status === 0) {
-      assert.throws(() => privateStore.validatePrivateTarget({ repoRoot: REPO_ROOT, relativePath: targetRel }), e => e.code === 'PSR_PRIVATE_TRACKED', '已被跟踪的私密路径必须拒绝');
-    } else {
-      assert.ok(true, 'git add 不可用，跳过（环境披露）');
-    }
-  } finally {
-    spawnSync('git', ['reset', '-q', '--', targetRel], { cwd: REPO_ROOT, encoding: 'utf8' });
-    try { fs.unlinkSync(abs); } catch (_) {}
-  }
-});
-
-// ── 登记核心（合成 db；准入/事务矩阵/时效与未知）─────────────────────────────
-function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollbackOnFailure = false } = {}) {
+function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollbackOnFailure = false, malformedTxGet = false, dropReadbackTimes = false, txShape, readShape } = {}) {
   const store = new Map();
   const counters = { database: 0, factory: 0, transactions: 0, callbackRuns: 0, gets: 0, creates: 0, fieldCalls: 0 };
   let txnQueue = Promise.resolve();
@@ -223,7 +111,8 @@ function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollback
                   if (!d) return { data: [] };
                   const projected = {};
                   for (const k of Object.keys(projection)) if (projection[k]) projected[k] = d[k];
-                  return { data: [projected] };
+                  if (dropReadbackTimes) { delete projected.createdAt; delete projected.updatedAt; }
+                  return readShape ? readShape(projected) : { data: [projected] };
                 }
               };
             },
@@ -249,6 +138,8 @@ function makeSyntheticDb({ failCreatesAfter = null, failCommit = false, rollback
                 return {
                   async get() {
                     counters.gets++;
+                    if (txShape) return txShape();
+                    if (malformedTxGet) return {}; // R3：缺 data 的畸形响应
                     const d = store.get(name + ':' + id);
                     return { data: d ? JSON.parse(JSON.stringify(d)) : null };
                   }
@@ -321,7 +212,32 @@ test('PSR 核心准入：非名单/缺身份/错App/错env/错轮次/错口令/�
     assert.equal(result.commitConfirmed, false, c.name);
     assert.equal(result.code, c.expectCode, c.name);
     assert.equal(counters.factory, 0, c.name + '：零数据库工厂');
+    assert.equal(counters.database, 0, c.name + '：零 database 调用');
     assert.equal(counters.transactions, 0, c.name + '：零事务');
+  }
+  // R1：核心配置失败闭合（工厂前；不靠 NaN 比较结果）——窗口 NaN/顺序/超上限、非批准集合、协议/账号/摘要/轮次配置
+  const configCases = [
+    { name: '窗口起点 NaN', config: mkConfig({ windowStartsAtMs: NaN }) },
+    { name: '窗口截止 NaN', config: mkConfig({ windowExpiresAtMs: NaN }) },
+    { name: '窗口顺序倒置', config: mkConfig({ windowStartsAtMs: Date.now() + 60000, windowExpiresAtMs: Date.now() - 1000 }) },
+    { name: '窗口超上限（>24h）', config: mkConfig({ windowStartsAtMs: Date.now() - 60000, windowExpiresAtMs: Date.now() + 25 * 60 * 60 * 1000 }) },
+    { name: '非批准用户集合', config: mkConfig({ usersCollection: 'synthetic-unapproved-users' }) },
+    { name: '非批准审计集合', config: mkConfig({ auditCollection: 'synthetic-unapproved-audit' }) },
+    { name: '允许账号格式错', config: mkConfig({ allowedAccount: 'u_short' }) },
+    { name: '口令摘要格式错', config: mkConfig({ passphraseDigest: 'nothex' }) },
+    { name: '登记轮次配置格式错', config: mkConfig({ registrationRoundId: 'x' }) },
+    { name: '来源协议配置错', config: mkConfig({ sourceProtocol: 'other-protocol/9' }) }
+  ];
+  for (const c of configCases) {
+    const { dbFactory, counters } = makeSyntheticDb();
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: c.config, now: () => Date.now() });
+    const result = await checker.handle({ action: 'registerSelf', registrationRoundId: c.config.registrationRoundId === 'x' ? 'x' : ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
+    assert.equal(result.outcome, 'REJECTED_NO_WRITE', c.name);
+    assert.equal(result.code, 'PIC_REQUEST_INVALID', c.name + '：配置失败闭合');
+    assert.equal(result.writeAttempted, false, c.name);
+    assert.equal(counters.database, 0, c.name + '：零 database');
+    assert.equal(counters.factory, 0, c.name + '：零 collection');
+    assert.equal(counters.creates, 0, c.name + '：零写');
   }
   // 响应净化：非名单结果不含 OPENID/完整账号
   const { dbFactory } = makeSyntheticDb();
@@ -355,7 +271,7 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   // (2) 已有有效用户+本包审计不存在 → ALREADY_ACTIVE 零新增（不补审计）
   {
     const { dbFactory, counters, store } = makeSyntheticDb();
-    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01', updatedAt: '2020-01-01' });
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' });
     const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     assert.equal(r.outcome, 'ALREADY_ACTIVE');
@@ -366,8 +282,8 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
   // (3) 用户与审计均存在且绑定一致 → ALREADY_ACTIVE 零新增
   {
     const { dbFactory, counters, store } = makeSyntheticDb();
-    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01', updatedAt: '2020-01-01' });
-    store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), projectId: null, actorUserId: DERIVED_OPENID_ACCOUNT, actorRole: '本人普通账号', action: 'registerIdentity', subjectUserId: DERIVED_OPENID_ACCOUNT, before: null, after: { status: 'active' }, createdAt: '2020-01-01', sourceProtocol: core.SELF_REG_SCHEMA, registrationRoundId: ROUND_ID });
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' });
+    store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), projectId: null, actorUserId: DERIVED_OPENID_ACCOUNT, actorRole: '本人普通账号', action: 'registerIdentity', subjectUserId: DERIVED_OPENID_ACCOUNT, before: null, after: { status: 'active' }, createdAt: '2020-01-01T00:00:00.000Z', sourceProtocol: core.SELF_REG_SCHEMA, registrationRoundId: ROUND_ID });
     const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
     if (r.outcome !== 'ALREADY_ACTIVE') {
@@ -376,10 +292,10 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
     assert.equal(r.outcome, 'ALREADY_ACTIVE');
     assert.equal(counters.creates, 0);
   }
-  // (4) 用户存在但审计绑定冲突 → 停止零写
+  // (4) 用户存在（有效主体）但审计绑定冲突 → 停止零写
   {
     const { dbFactory, counters, store } = makeSyntheticDb();
-    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: 't', updatedAt: 't' });
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' });
     store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), action: 'other-action', subjectUserId: DERIVED_OPENID_ACCOUNT });
     const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
     const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
@@ -417,6 +333,35 @@ test('PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 
     assert.equal(r.outcome, 'REJECTED_NO_WRITE');
     assert.equal(r.code, 'PIC_USER_CONFLICT');
     assert.equal(c2.creates, 0);
+  }
+  // (8) R3 反例：审计内容篡改（actorRole 非'本人普通账号'/after.status 非 active/createdAt 非法时间）→ PIC_AUDIT_CONFLICT
+  {
+    const baseAudit = { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), projectId: null, actorUserId: DERIVED_OPENID_ACCOUNT, actorRole: '本人普通账号', action: 'registerIdentity', subjectUserId: DERIVED_OPENID_ACCOUNT, before: null, after: { status: 'active' }, createdAt: '2020-01-01T00:00:00.000Z', sourceProtocol: core.SELF_REG_SCHEMA, registrationRoundId: ROUND_ID };
+    const tampered = [
+      { name: 'actorRole 非本人普通账号', patch: { actorRole: 'synthetic-admin' } },
+      { name: 'after.status 非 active', patch: { after: { status: 'disabled' } } },
+      { name: 'createdAt 非法时间', patch: { createdAt: 'not-a-time' } }
+    ];
+    for (const t of tampered) {
+      const { dbFactory, counters, store } = makeSyntheticDb();
+      store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' });
+      store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { ...baseAudit, ...t.patch });
+      const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+      const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
+      assert.equal(r.outcome, 'REJECTED_NO_WRITE', t.name);
+      assert.equal(r.code, 'PIC_AUDIT_CONFLICT', t.name);
+      assert.equal(counters.creates, 0, t.name + '：零写');
+    }
+  }
+  // (9) R3 反例：合法历史登记轮次的审计 → ALREADY_ACTIVE（不因换轮误判/补写）
+  {
+    const { dbFactory, counters, store } = makeSyntheticDb();
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' });
+    store.set('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT), { _id: auditIdOf(DERIVED_OPENID_ACCOUNT), projectId: null, actorUserId: DERIVED_OPENID_ACCOUNT, actorRole: '本人普通账号', action: 'registerIdentity', subjectUserId: DERIVED_OPENID_ACCOUNT, before: null, after: { status: 'active' }, createdAt: '2020-01-01T00:00:00.000Z', sourceProtocol: core.SELF_REG_SCHEMA, registrationRoundId: 'synthetic-historical-round' });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
+    assert.equal(r.outcome, 'ALREADY_ACTIVE', '历史合法登记轮次视为既有有效');
+    assert.equal(counters.creates, 0, '零新增');
   }
 });
 
@@ -479,6 +424,25 @@ test('PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不�
     assert.equal(counters.creates, 2);
     assert.ok(store.has('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT));
     assert.ok(store.has('schtest_v1_audit_events:' + auditIdOf(DERIVED_OPENID_ACCOUNT)));
+  }
+  // (4) R3：事务 get 返回缺 data 的畸形响应 → 不得当作不存在进入新增（零写拒绝）
+  {
+    const { dbFactory, counters } = makeSyntheticDb({ malformedTxGet: true });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
+    assert.equal(r.outcome, 'REJECTED_NO_WRITE', '畸形快照不得当作不存在');
+    assert.equal(r.code, 'PIC_RECORD_MALFORMED');
+    assert.equal(counters.creates, 0, '畸形快照零写');
+  }
+  // (5) R3：回读用户丢失 createdAt/updatedAt → 投影有字段不等于记录有效 → 不得报 ALREADY_ACTIVE
+  {
+    const { dbFactory, counters, store } = makeSyntheticDb({ dropReadbackTimes: true });
+    store.set('schtest_v1_users:' + DERIVED_OPENID_ACCOUNT, { _id: DERIVED_OPENID_ACCOUNT, openid: RAW_OPENID, status: 'active', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' });
+    const checker = core.createSelfRegistrationChecker({ dbFactory, trusted: mkTrusted(RAW_OPENID), config: mkConfig(), now: () => Date.now() });
+    const r = await checker.handle({ action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE });
+    assert.equal(r.outcome, 'OUTCOME_UNKNOWN', '回读不完整不得报有效');
+    assert.equal(r.readBack.user, false, '回读事实为不完整');
+    assert.equal(counters.creates, 0, '零写');
   }
 });
 
@@ -655,41 +619,208 @@ test('PSR 生成链：App→Page→client→入口→核心→合成db；新协�
   assert.equal(page.data.registrationBuildId, JSON.parse(fs.readFileSync(path.join(dirA, 'manifest.json'), 'utf8')).registrationBuildId, '本机版本分栏');
 });
 
-test('PSR 真实 SDK 3.0.1 接口核验（R2，本地依赖，无云调用）：核心所用事务接口在真实 SDK 类上存在；冲突重试由 runTransaction(run, retryTimes) 内建；不使用 set 覆盖', () => {
-  const sdkPath = process.env.MEMBER_ACCESS_SDK_PATH;
-  if (!sdkPath || !fs.existsSync(sdkPath)) {
-    assert.ok(true, '本地 wx-server-sdk 依赖不可用：SDK 接口核验列为阻断（不安装不联网）');
-    return;
-  }
-  const crypto2 = require('node:crypto');
-  const sdkSha = crypto2.createHash('sha256').update(fs.readFileSync(path.join(sdkPath, 'index.js'))).digest('hex');
-  assert.equal(sdkSha, 'ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04', 'SDK index.js 摘要与复查记录一致');
-  const pkg = JSON.parse(fs.readFileSync(path.join(sdkPath, 'package.json'), 'utf8'));
-  assert.equal(pkg.version, '3.0.1', 'SDK 精确版本 3.0.1（本机依赖）');
-  // 类接口核验（源码观察级：读取真实类定义并检查方法存在；不打开真实事务/不联网）
-  // @cloudbase/database 可能在顶层 node_modules（提升）或 SDK 内嵌 node_modules——两处都试
-  const dbBase = [path.join(sdkPath, 'node_modules', '@cloudbase', 'database', 'dist', 'commonjs'),
-    path.join(sdkPath, '..', '@cloudbase', 'database', 'dist', 'commonjs')]
-    .find(p => fs.existsSync(p));
-  assert.ok(dbBase, '定位 @cloudbase/database 包（提升或内嵌）');
-  const txSrc = fs.readFileSync(path.join(dbBase, 'transaction', 'index.js'), 'utf8');
-  assert.ok(txSrc.includes('class Transaction'), 'Transaction 类定义存在');
-  assert.ok(/collection\(collName\)/.test(txSrc), 'Transaction.collection(collName) 存在（核心事务读/写入口）');
-  assert.ok(/async commit\(\)/.test(txSrc) && /async rollback\(/.test(txSrc), 'commit/rollback 存在');
-  assert.ok(!/async get\(/.test(txSrc.split('class Transaction')[1] || ''), 'Transaction 类无 get（核心不使用 transaction.get）');
-  // CollectionReference.add（原子新增入口）与 DocumentReference.get（事务读）
-  const colSrc = fs.readFileSync(path.join(dbBase, 'collection.js'), 'utf8');
-  assert.ok(/async add\(/.test(colSrc), 'CollectionReference.add 存在（核心原子新增使用）');
-  const docSrc = fs.readFileSync(path.join(dbBase, 'document.js'), 'utf8');
-  assert.ok(/async get\(/.test(docSrc) && /async create\(/.test(docSrc), 'DocumentReference.get/create 存在');
-  assert.ok(/async set\(/.test(docSrc), 'DocumentReference.set 存在（核心明确不使用——注释与代码均可证）');
-  // db.runTransaction(run, retryTimes)：重试参数由 SDK 内建（冲突重试/重试到期语义来源）
-  const idxSrc = fs.readFileSync(path.join(sdkPath, 'index.js'), 'utf8');
-  assert.ok(/runTransaction = \(run, retryTimes\)/.test(idxSrc), 'db.runTransaction(run, retryTimes) 重试参数内建');
-  // 核心源码只使用 transaction.collection().doc().get() 与 .add({data})；不出现 transaction.get/transaction.create/set(
-  const coreSrc = fs.readFileSync(path.join(REPO_ROOT, 'miniapp', 'scripts', 'lib', 'participant-self-registration.cjs'), 'utf8');
-  assert.ok(/transaction\.collection\(/.test(coreSrc), '核心使用 transaction.collection()');
-  assert.ok(!/transaction\.get\(/.test(coreSrc) && !/transaction\.create\(/.test(coreSrc), '核心不使用旧 transaction.get/create（R2 复查不兼容点）');
-  assert.ok(/\.doc\([^)]*\)\.get\(\)/.test(coreSrc), '核心事务读使用 doc().get()');
-  assert.ok(!/\.set\(/.test(coreSrc.replace(/\/\/[^\n]*set[^\n]*/g, '').replace(/dataset/g, '')), '核心不使用 set 覆盖（注释除外）');
+
+const fixture = require('./helpers/psr-repair-fixtures.cjs');
+const request = () => ({action:'registerSelf',registrationRoundId:ROUND_ID,passphrase:SYNTHETIC_PASSPHRASE});
+const handleDb = (d,config={}) => core.createSelfRegistrationChecker({dbFactory:d.dbFactory,
+  trusted:mkTrusted(RAW_OPENID),config:mkConfig(config),now:()=>Date.now()}).handle(request());
+const uid=DERIVED_OPENID_ACCOUNT, aid=auditIdOf(uid);
+const userRow=()=>({_id:uid,openid:RAW_OPENID,status:'active',createdAt:'2026-01-01T00:00:00.000Z',updatedAt:'2026-01-01T00:00:00.000Z'});
+const auditRow=()=>({_id:aid,projectId:null,actorUserId:uid,actorRole:'本人普通账号',
+  action:'registerIdentity',subjectUserId:uid,before:null,after:{status:'active'},createdAt:'2026-01-01T00:00:00.000Z',
+  sourceProtocol:core.SELF_REG_SCHEMA,registrationRoundId:'synthetic-historical-round'});
+for(const [label,patch] of [
+  ['无限窗口',{windowStartsAtMs:-Infinity}],['空窗口',{windowStartsAtMs:null}],
+  ['非数字窗口',{windowExpiresAtMs:'99999'}],['超过30分钟',{windowStartsAtMs:1,windowExpiresAtMs:1800002}],
+  ['合成标记非布尔',{synthetic:'false'}]
+]) test('R1 无效配置零工厂零写：'+label,async()=>{
+  const d=makeSyntheticDb();const r=await handleDb(d,patch);
+  assert.equal(r.outcome,'REJECTED_NO_WRITE');assert.equal(d.counters.database,0);assert.equal(d.counters.creates,0);
 });
+for(const [label,value] of [['缺data',{}],['多条',{data:[{},{}]}],['空数组',{data:[]}],
+  ['原始值',{data:false}],['undefined',{data:undefined}]]) test('R3 事务畸形不是不存在：'+label,async()=>{
+  const d=makeSyntheticDb({txShape:()=>value}),r=await handleDb(d);
+  assert.equal(r.code,'PIC_RECORD_MALFORMED');assert.equal(r.writeAttempted,false);assert.equal(d.store.size,0);
+});
+for(const [label,patch,audit] of [
+  ['审计角色',{actorRole:'synthetic-admin'},true],['审计after',{after:{status:'disabled'}},true],
+  ['审计after额外字段',{after:{status:'active',admin:true}},true],['审计时间',{createdAt:'not-a-time'},true],
+  ['审计时间类型',{createdAt:123},true],['用户缺时间',{createdAt:undefined},false],
+  ['用户更新时间逆序',{updatedAt:'2025-01-01T00:00:00.000Z'},false]
+]) test('R3 事务与回读统一拒绝记录：'+label,async()=>{
+  const d=makeSyntheticDb();d.store.set('schtest_v1_users:'+uid,{...userRow(),...(!audit?patch:{})});
+  d.store.set('schtest_v1_audit_events:'+aid,{...auditRow(),...(audit?patch:{})});
+  const r=await handleDb(d);assert.equal(r.outcome,'REJECTED_NO_WRITE');assert.equal(d.counters.creates,0);
+  const read=makeSyntheticDb({readShape:doc=>({data:[{...doc,...(doc._id===(audit?aid:uid)?patch:{})}]})});
+  read.store.set('schtest_v1_users:'+uid,userRow());read.store.set('schtest_v1_audit_events:'+aid,auditRow());
+  const rr=await handleDb(read);assert.equal(rr.outcome,'OUTCOME_UNKNOWN');assert.equal(read.counters.creates,0);
+});
+for(const [label,value] of [['缺data',{}],['多条',{data:[{},{}]}],['原始值',{data:123}]]){
+  test('R3 回读畸形不报有效：'+label,async()=>{const d=makeSyntheticDb({readShape:()=>value});
+    const r=await handleDb(d);assert.equal(r.outcome,'OUTCOME_UNKNOWN');assert.equal(r.commitConfirmed,true);});
+}
+test('R2 实际生成入口直连真实SDK：不存在/失败/两条新增/第二写失败/冲突重试/到期/参数移除',async()=>{
+  const {runSdkEntry}=require('./helpers/psr-sdk-fixture.cjs');
+  const close=makeCloseSourceDir(),out=path.join(OUT_ROOT,'participant-self-registration-sdk-'+RUN_ID);
+  const planFile=mkPlan(close),p=JSON.parse(fs.readFileSync(planFile));
+  packer.build(planFile,out);
+  const entry=path.join(out,'server/scheduleSandbox/index.js');
+  const event={picRequest:{schema:core.REQUEST_PROTOCOL,action:'registerSelf',registrationRoundId:ROUND_ID,passphrase:SYNTHETIC_PASSPHRASE}};
+  const opts={now:Date.parse(p.windowStartsAtIso)+1000,expires:Date.parse(p.windowExpiresAtIso)};
+  const run=o=>runSdkEntry(entry,event,SYNTHETIC_ACCOUNT_OPENID,{...opts,...o});
+  const missing=await run({unfixed:true});assert.equal(missing.result.code,'PIC_TRANSACTION_FAILED');
+  assert.equal(missing.factory,1);assert.equal(missing.inserts,0);
+  assert.deepEqual(missing.actions,['database.startTransaction','database.getDocument','database.abortTransaction']);
+  const good=await run({});assert.equal(good.result.outcome,'CREATED_AND_VERIFIED');
+  assert.equal(good.inserts,2);assert.equal(good.stored,2);assert.equal(good.commits,1);
+  const failure=await run({failRead:true});assert.equal(failure.result.writeAttempted,false);assert.equal(failure.stored,0);
+  const second=await run({failSecond:true});assert.equal(second.result.outcome,'OUTCOME_UNKNOWN');
+  assert.equal(second.result.writeAttempted,true);assert.equal(second.stored,0);assert.ok(second.actions.includes('database.abortTransaction'));
+  const retry=await run({commitConflict:true});assert.equal(retry.result.outcome,'CREATED_AND_VERIFIED');
+  assert.equal(retry.starts,2);assert.equal(retry.inserts,4);assert.equal(retry.stored,2);
+  const expired=await run({expireOnRead:true});assert.equal(expired.result.outcome,'OUTCOME_UNKNOWN');
+  assert.equal(expired.result.commitConfirmed,true);assert.equal(expired.stored,2);
+  const retryExpired=await run({commitConflict:true,expireAfterConflict:true});assert.equal(retryExpired.result.outcome,'OUTCOME_UNKNOWN');
+  assert.equal(retryExpired.stored,0);assert.equal(retryExpired.inserts,2);
+});
+test('R4 实际CLI源摘要与含空格路径传递；双输入一致、交付、服务端时间必需',async()=>{
+  const h=fixture.createPrivateHarness(),code='1',account=SYNTHETIC_ACCOUNT;
+  const source=h.save(code,account),callbacks={},logs=[],errors=[];
+  const proc={argv:['node','private store.cjs','protect','--repo-root',ROOT,'--participant-code',code,
+    '--check-round-id',source.payload.checkRoundId,'--source-digest',source.payload.readonlySourceDigest,
+    '--server-time-iso',source.payload.serverTimeIso,'--delivery-confirmed','true',
+    '--check-window-starts-at-iso',source.payload.checkWindowStartsAtIso,
+    '--check-window-expires-at-iso',source.payload.checkWindowExpiresAtIso,'--file-name','synthetic cli space.bin'],
+    stdin:{setEncoding(){},on(k,fn){callbacks[k]=fn;}}};
+  fixture.load(fixture.STORE,{'node:fs':h.fakeFs,'./participant-local-tools.cjs':h.tools},
+    {process:proc,console:{log:x=>logs.push(x),error:x=>errors.push(x)}},undefined,true);
+  callbacks.data(account+'\n');callbacks.end();
+  assert.equal(proc.exitCode,undefined,errors.join());assert.equal(logs.length,1);
+  const receipt=JSON.parse(logs[0]);assert.equal(receipt.accountTail,account.slice(-6));
+  assert.ok(h.mem.has(path.join(h.prefix,'synthetic cli space.bin')));
+  const saved=JSON.parse(Buffer.from(h.mem.get(path.join(h.prefix,'synthetic cli space.bin')).toString(),'hex').toString());
+  assert.equal(saved.readonlySourceDigest,source.payload.readonlySourceDigest);assert.equal(saved.checkRoundId,source.payload.checkRoundId);
+  assert.equal(JSON.stringify(receipt).includes(account),false);
+  assert.throws(()=>h.store.buildPrivatePayload({...source.payload,serverTimeIso:null,expectedTarget:h.store.FIXED_TARGET}));
+  assert.throws(()=>h.store.protectRecord({repoRoot:ROOT,fullAccount:account,fullAccountRepeat:SYNTHETIC_OTHER_ACCOUNT}));
+});
+test('R4 ACL最小主体/不确定失败闭合；无权限修改；Git/链接反例零写',()=>{
+  for(const mode of ['everyone','unknown','unparseable','error']){
+    const h=fixture.createPrivateHarness();h.state.acl=mode;
+    assert.throws(()=>h.store.validatePrivateTarget({repoRoot:ROOT,relativePath:h.store.PRIVATE_ROOT_REL+'/synthetic.bin'}));
+    assert.equal(h.mem.size,0);assert.equal(h.calls.includes('write'),false);
+  }
+  for(const key of ['tracked','ignored','gitError','identity']){
+    const h=fixture.createPrivateHarness();h.state[key]=!h.state[key];
+    assert.throws(()=>h.store.validatePrivateTarget({repoRoot:ROOT,relativePath:h.store.PRIVATE_ROOT_REL+'/synthetic.bin'}));
+  }
+  const h=fixture.createPrivateHarness();h.state.links.add(h.prefix);
+  assert.throws(()=>h.store.validatePrivateTarget({repoRoot:ROOT,relativePath:h.store.PRIVATE_ROOT_REL+'/synthetic.bin'}));
+});
+test('R4 私密录入错误/排他/部分写事实：全部合成FS，无实际DPAPI或真实输入',()=>{
+  const h=fixture.createPrivateHarness(),one=h.save('1',SYNTHETIC_ACCOUNT);
+  const args={repoRoot:ROOT,fileName:'synthetic-new.bin',...one.payload,
+    fullAccountRepeat:SYNTHETIC_ACCOUNT,expectedTarget:h.store.FIXED_TARGET};
+  const receipt=h.store.protectRecord(args);
+  assert.equal(receipt.doubleInputConsistent,true);
+  assert.equal(JSON.stringify(receipt).includes(SYNTHETIC_ACCOUNT),false);
+  assert.throws(()=>h.store.protectRecord(args),e=>e.code==='PSR_PRIVATE_EXISTS');
+  for(const patch of [{fullAccount:'u_short'},{fullAccountRepeat:SYNTHETIC_OTHER_ACCOUNT},
+    {deliveryConfirmed:false},{readonlySourceDigest:'bad'},{participantCode:'0'}]){
+    const before=h.mem.size;
+    assert.throws(()=>h.store.protectRecord({...args,...patch,fileName:'synthetic-bad.bin'}));
+    assert.equal(h.mem.size,before);
+  }
+  const fake=new Proxy(h.fakeFs,{get(target,k){if(k==='writeFileSync')return(p,b,o)=>{
+    target.writeFileSync(p,Buffer.from(b).subarray(0,12),o);throw Error('synthetic disk fault');};return target[k];}});
+  const store=fixture.load(fixture.STORE,{'node:fs':fake,'./participant-local-tools.cjs':h.tools});
+  assert.throws(()=>store.protectRecord({...args,fileName:'synthetic-partial.bin'}),
+    e=>e.code==='PSR_PRIVATE_WRITE_FAILED'&&e.partialWrite.bytesOnDisk===12);
+});
+async function realFixture(){
+  const h=fixture.createPrivateHarness(),one=h.save('1',SYNTHETIC_ACCOUNT),two=h.save('2',SYNTHETIC_OTHER_ACCOUNT);
+  const close=makeCloseSourceDir(),plan=mkPlan(close,{synthetic:false,syntheticAccount:undefined,
+    privateSource:{schema:packer.PRIVATE_SOURCE_SCHEMA,recordFile:one.name,records:[one.ref,two.ref]}});
+  return {h,one,two,plan,out:path.join(OUT_ROOT,'participant-self-registration-real-'+crypto.randomBytes(5).toString('hex'))};
+}
+test('R4/R5 合成私密源执行真实模式：内部消费两份来源、严格清单值重建/篡改拒绝',async()=>{
+  const f=await realFixture(),{h,plan,out}=f;
+  assert.throws(()=>h.packer.build(plan,out,{privateAccount:SYNTHETIC_ACCOUNT}),e=>e.code==='PSR_REAL_NOT_PERMITTED');
+  const built=await h.packer.buildReal(plan,out);assert.equal(built.manifest.privateSource.realSourceConsumed,true);
+  assert.equal(built.manifest.privateSource.records.length,2);
+  assert.equal((await h.packer.checkDirResolved(out)).ok,true);
+  const manifest=path.join(out,'manifest.json'),bytes=fs.readFileSync(manifest);
+  for(const mutate of [
+    m=>m.privateSource.mode='synthetic-fixture',m=>m.privateSource.syntheticFixtureLabel='synthetic',
+    m=>m.privateSource.realSourceConsumed=false,m=>delete m.privateSource.realSourceConsumed,
+    m=>m.privateSource.extra=true,m=>m.privateSource.recordFileSha256='f'.repeat(64),
+    m=>m.privateSource.records[1].readonlySourceDigest='f'.repeat(64)
+  ]){
+    const m=JSON.parse(bytes);mutate(m);fs.writeFileSync(manifest,JSON.stringify(m));
+    const r=await h.packer.checkDirResolved(out);assert.equal(r.ok,false);assert.ok(r.problems.some(x=>x.includes('privateSource')));
+  }
+  fs.writeFileSync(manifest,bytes);assert.equal((await h.packer.checkDirResolved(out)).ok,true);
+  assert.equal(fs.readFileSync(path.join(out,'frontend/config/cloud.js'),'utf8').includes(SYNTHETIC_ACCOUNT),false);
+  assert.ok(h.calls.includes('read:'+f.one.name)&&h.calls.includes('read:'+f.two.name));
+  assert.equal(h.calls.some(x=>x.startsWith('read:')&&!['read:'+f.one.name,'read:'+f.two.name].includes(x)),false);
+});
+test('R4 必要记录跨轮次跨摘要排重，任一不可解密及来源改标均阻断，输出零写',async()=>{
+  for(const mode of ['duplicate','unreadable','binding','badfields']){
+    const f=await realFixture(),{h,one,two,plan,out}=f;
+    const p=mode==='duplicate'?{...two.payload,fullAccount:one.payload.fullAccount}:
+      mode==='binding'?{...two.payload,checkRoundId:'synthetic-relabeled'}:
+      mode==='badfields'?{...two.payload,serverTimeIso:null}:two.payload;
+    const bytes=Buffer.from(Buffer.from(JSON.stringify(p)).toString('hex'));
+    h.mem.set(path.join(h.prefix,two.name),bytes);
+    if(mode==='unreadable')h.state.unreadable.add(bytes.toString());
+    await assert.rejects(()=>h.packer.buildReal(plan,out));assert.equal(fs.existsSync(out),false);
+  }
+});
+test('R4 明文候选忽略/跟踪/ACL/链接检查写前停止，不自动改权限',async()=>{
+  for(const key of ['tracked','ignored','gitError','acl','link']){
+    const f=await realFixture(),{h,plan,out}=f;
+    if(key==='acl')h.state.acl='everyone';else if(key==='link')h.state.links.add(out);else h.state[key]=!h.state[key];
+    await assert.rejects(()=>h.packer.buildReal(plan,out));assert.equal(fs.existsSync(out),false);
+    assert.equal(h.calls.includes('write'),false);
+  }
+});
+test('R6 公共接口始终阻断记账、catch及restore均不能旁路；专用能力拒绝任意命令与options',()=>{
+  guardPhase='probe';
+  const cp=require('node:child_process'),before=guardHits.length;
+  for(const method of ['spawnSync','spawn','exec','execSync','execFile','execFileSync','fork']){
+    assert.throws(()=>cp[method]('git',['ls-files'],{shell:true,env:{FAKE:'synthetic'}}));
+  }
+  guarded.restore();assert.throws(()=>cp.spawnSync('git',['ls-files'],{cwd:ROOT}));
+  assert.equal(guardHits.length-before,8);guardPhase='business';
+  let actual=0;
+  const local=fixture.load('miniapp/scripts/lib/participant-local-tools.cjs',{
+    'node:child_process':{spawnSync(exe,args,opts){actual++;assert.ok(path.isAbsolute(exe));
+      assert.equal(opts.shell,false);assert.ok(opts.timeout>0&&opts.maxBuffer>0);assert.equal(opts.cwd,ROOT);
+      return {status:0,stdout:'"synthetic\\current","'+fixture.sid+'"',stderr:''};},spawn(){throw Error('不应启动');}},
+    'node:fs':{statSync(){return {isFile:()=>true};}}
+  });
+  local.queryIdentity();assert.equal(actual,1);
+  assert.throws(()=>local.queryGit(ROOT,'add','synthetic'));assert.equal(actual,1);
+  assert.throws(()=>local.queryGit(ROOT,'ls-files','../escape'));assert.equal(actual,1);
+  assert.equal('spawnSync' in local,false);assert.equal('run' in local,false);
+});
+test('R6 专用能力结果不确定/超量/超时/错误必须拒绝，非公共分发',async()=>{
+  for(const response of [{status:0,stdout:'x',error:Error('timeout')},
+    {status:null,signal:'SIGTERM'},{status:0,stdout:'x'.repeat(128*1024+1)},
+    {status:0,stdout:'synthetic',stderr:'failure'},{status:3,stdout:''}]){
+    const local=fixture.load('miniapp/scripts/lib/participant-local-tools.cjs',{
+      'node:child_process':{spawnSync:()=>response},'node:fs':{statSync:()=>({isFile:()=>true})}});
+    assert.throws(()=>local.queryIdentity());
+  }
+  const {EventEmitter}=require('node:events');let killed=0;
+  const child=new EventEmitter();child.stderr=new EventEmitter();
+  child.stdin=new EventEmitter();child.stdin.end=()=>{};child.kill=()=>{killed++;};
+  const local=fixture.load('miniapp/scripts/lib/participant-local-tools.cjs',{
+    'node:child_process':{spawn:()=>child,spawnSync:()=>{throw Error('not expected');}},
+    'node:net':{connect:()=>Object.assign(new EventEmitter(),{destroy(){}})}
+  },{setTimeout:(fn,ms)=>setTimeout(fn,Math.min(ms,5))});
+  await assert.rejects(()=>local.unprotect('ab'.repeat(32)),e=>e.code==='PSR_LOCAL_TOOL_FAILED');
+  assert.equal(killed,1,'异步管道不阻塞计时器，超时子进程收尾');
+});
+test.after(()=>{const unexpected=guardHits.filter(h=>h.phase!=='probe');assert.deepEqual(unexpected,[],
+  '被catch的公共接口/网络尝试仍属意外，不能报通过');});

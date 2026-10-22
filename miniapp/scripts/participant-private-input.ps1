@@ -7,16 +7,17 @@
 
 param(
   [string]$ParticipantCode = '',
-  [string]$RoundId = '',
+  [string]$CheckRoundId = '',
   [string]$Tail = '',
   [string]$SourceDigest = '',
   [string]$RepoRoot = '',
   [string]$FileName = '',
-  [string]$CloseSourceDir = '',
-  [string]$WindowStartsAtIso = '',
-  [string]$WindowExpiresAtIso = '',
+  [string]$CheckWindowStartsAtIso = '',
+  [string]$CheckWindowExpiresAtIso = '',
   [string]$ServerTimeIso = '',
   [switch]$SelfTestCheck,
+  [switch]$SelfTestTransport,
+  [string]$SelfTestNodePath = '',
   [string]$SelfTestValue1 = '',
   [string]$SelfTestValue2 = ''
 )
@@ -33,6 +34,37 @@ function Get-Tail([string]$v) {
   return ''
 }
 
+# 同一参数构造函数供真实UI和离线合成传输自测使用。
+function Quote-Arg([string]$a) {
+  if ($a -eq '') { return '""' }
+  if ($a -notmatch '[\s"]') { return $a }
+  return '"' + ($a -replace '(\\*)"','$1$1\"' -replace '\\+$', '$&$&') + '"'
+}
+function Get-StoreArguments([string]$script) {
+  $result = @($script, 'protect', '--repo-root', $RepoRoot, '--participant-code', $ParticipantCode,
+    '--check-round-id', $CheckRoundId, '--source-digest', $SourceDigest, '--delivery-confirmed', 'true',
+    '--check-window-starts-at-iso', $CheckWindowStartsAtIso, '--check-window-expires-at-iso', $CheckWindowExpiresAtIso,
+    '--file-name', $FileName)
+  if ($ServerTimeIso) { $result += @('--server-time-iso', $ServerTimeIso) }
+  return $result
+}
+if ($SelfTestTransport) {
+  # 仅合成参数回显；不开窗口、不触DPAPI、不运行存储器、不写盘。
+  $fixture = @(Get-StoreArguments 'C:\synthetic package with spaces\participant-private-store.cjs')
+  $echoArgs = @('-e', 'process.stdout.write(JSON.stringify(process.argv.slice(1)))') + $fixture
+  $probe = New-Object System.Diagnostics.ProcessStartInfo
+  $probe.FileName = $SelfTestNodePath
+  $probe.Arguments = (($echoArgs | ForEach-Object { Quote-Arg $_ }) -join ' ')
+  $probe.UseShellExecute = $false
+  $probe.CreateNoWindow = $true
+  $probe.RedirectStandardOutput = $true
+  $child = [System.Diagnostics.Process]::Start($probe)
+  $text = $child.StandardOutput.ReadToEnd()
+  if (-not $child.WaitForExit(5000)) { $child.Kill(); exit 12 }
+  Write-Output $text
+  exit $child.ExitCode
+}
+
 # SelfTestCheck：仅校验逻辑（合成值；不打开窗口、不触 DPAPI、不写盘）
 if ($SelfTestCheck) {
   if (-not (Test-AccountFormat $SelfTestValue1)) { Write-Output 'SELFTEST:FORMAT_FAIL'; exit 2 }
@@ -41,7 +73,7 @@ if ($SelfTestCheck) {
   Write-Output 'SELFTEST:PASS'; exit 0
 }
 
-if (-not $ParticipantCode -or -not $RoundId -or -not $RepoRoot) {
+if (-not $ParticipantCode -or -not $CheckRoundId -or -not $SourceDigest -or -not $RepoRoot -or -not $ServerTimeIso) {
   Write-Error '缺少参与者/轮次/仓库根参数。'
   exit 10
 }
@@ -57,7 +89,7 @@ $form.MaximizeBox = $false
 $form.StartPosition = 'CenterScreen'
 
 $labelInfo = New-Object System.Windows.Forms.Label
-$labelInfo.Text = '请输入参与者 ' + $ParticipantCode + ' 的完整编号（两次一致）。来源轮次：' + $RoundId + '；尾号辅助核对：' + $Tail
+$labelInfo.Text = '请输入参与者 ' + $ParticipantCode + ' 的完整编号（两次一致）。来源轮次：' + $CheckRoundId + '；尾号辅助核对：' + $Tail
 $labelInfo.Location = New-Object System.Drawing.Point(12, 12)
 $labelInfo.Size = New-Object System.Drawing.Size(520, 40)
 $form.Controls.Add($labelInfo)
@@ -156,21 +188,13 @@ if ($form.Tag -ne 'OK') {
 $value = $box1.Text
 $box1.Clear(); $box2.Clear()
 $storeScript = Join-Path $PSScriptRoot 'lib\participant-private-store.cjs'
-$cliArgs = @($storeScript, 'protect',
-  '--repo-root', $RepoRoot,
-  '--participant-code', $ParticipantCode,
-  '--round-id', $RoundId,
-  '--source-digest', $SourceDigest,
-  '--close-source-dir', $CloseSourceDir,
-  '--delivery-confirmed', 'true',
-  '--window-starts-at-iso', $WindowStartsAtIso,
-  '--window-expires-at-iso', $WindowExpiresAtIso,
-  '--file-name', $FileName)
-if ($ServerTimeIso) { $cliArgs += @('--server-time-iso', $ServerTimeIso) }
+# R4：Windows 引号规则逐参数转义——含空格路径（RepoRoot/文件名）不再破坏参数边界
+$cliArgs = @(Get-StoreArguments $storeScript)
 $psi = New-Object System.Diagnostics.ProcessStartInfo
 $psi.FileName = 'node'
-$psi.Arguments = ($cliArgs -join ' ')
+$psi.Arguments = (($cliArgs | ForEach-Object { Quote-Arg $_ }) -join ' ')
 $psi.UseShellExecute = $false
+$psi.CreateNoWindow = $true
 $psi.RedirectStandardInput = $true
 $psi.RedirectStandardOutput = $true
 $psi.RedirectStandardError = $true

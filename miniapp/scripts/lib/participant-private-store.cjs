@@ -7,9 +7,10 @@
 // - 写前检查：Git 查询失败闭合、已跟踪、忽略命中、目录/祖先/目标文件非链接、
 //   ACL 主体白名单（当前用户身份/SID + SYSTEM/Administrators；其余主体任何授权拒绝）、
 //   路径边界；排他新建（wx），EEXIST 竞态归他属（不记自身 partialWrite）。
-// - 负载绑定（R4）：appId/envId 精确等于受审固定目标、roundId 格式、窗口时间为可解析
-//   ISO 且开始<截止、sourceDigest 必须等于对受控关闭来源目录重算的确定性摘要、
-//   交付确认必须为显式事实（CLI 不再写死）。
+// - 负载绑定（R4 二次返修）：appId/envId 精确等于受审固定目标、checkRoundId（只读核验
+//   轮次）格式、checkWindow 起止为可解析 ISO 且开始<截止、readonlySourceDigest 为只读
+//   核验来源摘要（64hex 格式核验；只读核验来源与登记计划分离，不绑定关闭包摘要）、
+//   交付确认必须为显式事实（UI 复选框收集）。
 // - 1/2 完整编号排重（R4）：同一参与者代码在不同记录文件中不得对应不同账号；
 //   同一账号不得同时出现在两个参与者代码下；0 号不存在。
 // - Windows CurrentUser DPAPI：加密经 powershell stdin/stdout（输出为密文，非敏感）；
@@ -20,11 +21,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-// 本模块的工具调用（git/icacls/whoami/powershell）一律经 cp.spawnSync 动态分发：
-// 证据适配层在运行期替换该属性以实现白名单分发与台账（R6）——此处不得解构捕获原始引用。
-const cp = require('node:child_process');
-const spawnSync = (...a) => cp.spawnSync(...a);
-const spawn = (...a) => cp.spawn(...a);
+const local = require('./participant-local-tools.cjs');
 
 const PRIVATE_ROOT_REL = 'artifacts/schedule-sandbox/.participant-private';
 const PAYLOAD_SCHEMA = 'participant-self-registration-private-payload/1';
@@ -33,8 +30,8 @@ const ACCOUNT_RE = /^u_[0-9a-f]{40}$/;
 const ROUND_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{3,63}$/;
 const PARTICIPANT_CODE_RE = /^[12]$/; // 0 号不存在：1/2 之外一律拒绝
 // DPAPI 固定脚本（字节级固定；适配层按 SHA-256 精确匹配放行，杜绝注释伪装，R6/R4）
-const DPAPI_PROTECT_SCRIPT = '$line = [Console]::In.ReadLine(); $sec = ConvertTo-SecureString -String $line -AsPlainText -Force; ConvertFrom-SecureString -SecureString $sec';
-const DPAPI_UNPROTECT_PIPE_SCRIPT = '$ErrorActionPreference="Stop"; $cipher = [Console]::In.ReadLine(); $pipeName = [Console]::In.ReadLine(); $sec = ConvertTo-SecureString -String $cipher; $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec); $plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto($b); [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b); $null = $plain | ConvertFrom-Json; $pipe = New-Object System.IO.Pipes.NamedPipeServerStream($pipeName, [System.IO.Pipes.PipeDirection]::Out); $pipe.WaitForConnection(); $w = New-Object System.IO.StreamWriter($pipe); $w.Write($plain); $w.Flush(); $pipe.Dispose();';
+const DPAPI_PROTECT_SCRIPT = local.PROTECT;
+const DPAPI_UNPROTECT_PIPE_SCRIPT = local.UNPROTECT;
 
 class PrivateStoreError extends Error {
   constructor(code, message) { super(message); this.code = code; }
@@ -46,61 +43,37 @@ const tailOf = v => (typeof v === 'string' && v.length >= 6 ? v.slice(-6) : '');
 const relOf = p => p.split(path.sep).join('/');
 
 function runGit(repoRoot, args) {
-  const r = spawnSync('git', args, { cwd: repoRoot, encoding: 'utf8', windowsHide: true });
+  const r = local.queryGit(repoRoot, args[0], args[2]);
   return { status: r.status, stdout: (r.stdout || '').trim(), stderr: (r.stderr || '').trim() };
 }
 
-/** 关闭来源目录确定性摘要（R4）：按相对路径排序，对每个普通文件取 sha256，规范串再取总哈希。 */
-function computeCloseSourceDigest(closeSourceDir) {
-  if (typeof closeSourceDir !== 'string' || !closeSourceDir) fail('PSR_PRIVATE_CONFIG', '缺少关闭来源目录。');
-  const abs = path.resolve(closeSourceDir);
-  let st = null;
-  try { st = fs.lstatSync(abs); } catch (_) { st = null; }
-  if (!st || st.isSymbolicLink() || !st.isDirectory()) fail('PSR_PRIVATE_SOURCE', '关闭来源目录缺失或为链接：' + closeSourceDir);
-  const files = [];
-  const walk = d => {
-    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-      const p = path.join(d, e.name);
-      if (e.isSymbolicLink()) fail('PSR_PRIVATE_SOURCE', '关闭来源含符号链接：' + relOf(path.relative(abs, p)));
-      if (e.isDirectory()) walk(p);
-      else if (e.isFile()) files.push({ rel: relOf(path.relative(abs, p)), sha: sha256Buffer(fs.readFileSync(p)) });
-    }
-  };
-  walk(abs);
-  if (files.length === 0) fail('PSR_PRIVATE_SOURCE', '关闭来源目录为空：' + closeSourceDir);
-  files.sort((a, b) => (a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0));
-  return sha256(files.map(f => f.rel + ':' + f.sha).join('\n'));
-}
-
-/** 当前进程身份（用户名/用户 SID/组 SID，缓存一次）；whoami 为只读本地查询。 */
+/**
+ * 当前进程最小主体集（R4 收紧）：仅当前用户（名称+SID）、SYSTEM、Administrators。
+ * 不再把当前令牌的全部组加入允许集合（Everyone/Users 等宽泛组可能是所属组）。
+ * 身份查询失败/不确定 → 返回 null（调用方失败闭合）。
+ */
 let principalCache = null;
 function getCurrentPrincipals() {
-  if (principalCache) return principalCache;
-  const names = new Set();
-  const sids = new Set(['S-1-5-18', 'S-1-5-32-544']); // SYSTEM / Administrators
+  if (principalCache !== null) return principalCache;
   try {
-    const u = spawnSync('whoami', ['/user', '/fo', 'csv', '/nh'], { encoding: 'utf8', windowsHide: true });
-    if (u.status === 0) {
-      const m = String(u.stdout || '').match(/"([^"]+)","(S-1-[\d-]+)"/);
-      if (m) { names.add(m[1].toLowerCase()); sids.add(m[2]); }
-    }
-    const g = spawnSync('whoami', ['/groups', '/fo', 'csv', '/nh'], { encoding: 'utf8', windowsHide: true });
-    if (g.status === 0) {
-      for (const line of String(g.stdout || '').split(/\r?\n/)) {
-        const m = line.match(/"([^"]*)","(S-1-[\d-]+)"/);
-        if (m) { names.add(m[1].toLowerCase()); sids.add(m[2]); }
-      }
-    }
-  } catch (_) { /* 查询失败时仅允许名称精确匹配的白名单（以实际行为为准） */ }
-  names.add('nt authority\\system');
-  names.add('builtin\\administrators');
-  principalCache = { names, sids };
-  return principalCache;
+    const u = local.queryIdentity();
+    if (u.status !== 0) { principalCache = null; return null; }
+    const m = String(u.stdout || '').trim().match(/^"([^"]+)","(S-1-5-21-[\d-]+)"$/);
+    if (!m) { principalCache = null; return null; } // 解析不确定 → 失败闭合
+    const names = new Set([m[1].toLowerCase(), 'nt authority\\system', 'builtin\\administrators']);
+    const sids = new Set([m[2], 'S-1-5-18', 'S-1-5-32-544']);
+    // 组查询仅用于确认当前用户 SID（不扩大允许集合）
+    principalCache = { names, sids };
+    return principalCache;
+  } catch (_) {
+    principalCache = null;
+    return null;
+  }
 }
 
 /**
- * ACL 纯解析器（R4）：icacls 输出中任何非允许主体（当前用户/其组 SID/SYSTEM/
- * Administrators 之外）的授权行都算违规；不依赖少数英文组名。
+ * ACL 纯解析器（R4 收紧）：只允许明确最小主体（当前用户/SYSTEM/Administrators/登录会话 SID）。
+ * 任何其他主体的授权行都算违规；无法解析的非空行一律计违规（解析不确定失败闭合）。
  * icacls 首行格式为「<目标路径> <主体>:(ACE)」——stripPathPrefix 时先剥离目标路径。
  */
 function findBroadAclGrants(icaclsOutput, principals, stripPathPrefix) {
@@ -111,49 +84,28 @@ function findBroadAclGrants(icaclsOutput, principals, stripPathPrefix) {
     if (!line) continue;
     if (i === 0 && stripPathPrefix && typeof stripPathPrefix === 'string' && line.toLowerCase().startsWith(stripPathPrefix.toLowerCase())) {
       line = line.slice(stripPathPrefix.length).trim();
+      if (!line) continue;
     }
-    const m = line.match(/^(.+?):((?:\([A-Za-z0-9 ]+\))+)$/);
-    if (!m) continue;
+    const m = line.match(/^(.+?):((?:\([A-Za-z0-9 ,]+\))+)$/);
+    if (!m) {
+      // icacls 已知非 ACE 行：末尾处理统计（中英文文案；GBK 环境下中文会乱码）。
+      // 结构识别：统计行不含 ACE 的 ":(" 标记且含计数数字——ACE 行必然含 ":("；
+      // 其余无 ":(" 且无数字的无法解析行 → 失败闭合。
+      if (/^Successfully processed \d+ files; Failed processing 0 files$/i.test(line) || /^已成功处理\s*\d+\s*个文件[;；]\s*处理\s*0\s*个文件时失败[。.]?$/.test(line)) continue;
+      offenders.push(line);
+      continue;
+    }
     const principal = m[1].trim();
     // 登录会话 SID（S-1-5-5-X-Y 或 NT AUTHORITY\LogonSessionId_* 名称形式）：进程令牌
     // 默认 DACL 自动项，会话内最小范围，放行
-    if (/^S-1-5-5-\d+-\d+$/i.test(principal) || /^NT AUTHORITY\\LogonSessionId_/i.test(principal)) continue;
     const key = principal.toLowerCase();
-    const namePart = key.includes('\\') ? key.split('\\').pop() : key;
     const isSid = /^S-1-[\d-]+$/i.test(principal);
-    const allowed = principals.names.has(key) || principals.names.has(namePart) || (isSid && principals.sids.has(principal));
+    const namePart = key.includes('\\') ? key.split('\\').pop() : key;
+    const allowed = principals.names.has(key) || (isSid && principals.sids.has(principal));
     if (!allowed) offenders.push(line);
   }
+  if (!lines.some(line => /:\(/.test(line))) offenders.push('缺少可解析权限记录');
   return offenders;
-}
-
-/** 当前用户名（icacls 收紧授权用；缓存）。 */
-let currentUserNameCache = null;
-function getCurrentUserName() {
-  if (currentUserNameCache) return currentUserNameCache;
-  try { currentUserNameCache = require('node:os').userInfo().username; } catch (_) { currentUserNameCache = null; }
-  return currentUserNameCache;
-}
-
-/**
- * 私密根 ACL 收紧（R4）：移除继承并仅授予当前用户与 SYSTEM。
- * 固定命令形状：icacls <root> /inheritance:r /grant:r <user>:F /grant:r SYSTEM:F
- * （由证据适配层按形状白名单放行；调用全记账披露）。
- */
-function hardenPrivateRootAcl(rootAbs, repoAbs, rootRel) {
-  const user = getCurrentUserName();
-  if (!user) fail('PSR_PRIVATE_ACL', '无法确定当前用户，无法收紧私密根 ACL。');
-  const cwd = repoAbs || path.dirname(rootAbs);
-  const rel = rootRel || rootAbs;
-  const r = spawnSync('icacls', [rel, '/inheritance:r', '/grant:r', user + ':F', '/grant:r', 'SYSTEM:F'], { encoding: 'utf8', cwd, windowsHide: true });
-  if (r.status !== 0) fail('PSR_PRIVATE_ACL', '私密根 ACL 收紧失败（icacls）：' + rel);
-  // 收紧后把当前用户身份缓存补全（icacls 显示名可能带域前缀）
-  try {
-    const principals = getCurrentPrincipals();
-    principals.names.add(String(user).toLowerCase());
-    const who = spawnSync('whoami', [], { encoding: 'utf8', windowsHide: true });
-    if (who.status === 0) principals.names.add(String(who.stdout || '').trim().toLowerCase());
-  } catch (_) {}
 }
 
 /** 链路检查：私密根及其仓库内祖先不得是符号链接/junction，且都必须是真实目录。 */
@@ -171,47 +123,39 @@ function assertNoLinks(repoRoot, privateRoot) {
   chain.reverse();
   for (const p of chain) {
     let st = null;
-    try { st = fs.lstatSync(p); } catch (e) { continue; } // 不存在的层由创建时失败
+    try { st = fs.lstatSync(p); } catch (e) { if (e.code === 'ENOENT') continue; fail('PSR_PRIVATE_PATH_BOUNDARY','无法核实路径'); }
     if (st.isSymbolicLink()) fail('PSR_PRIVATE_LINK', '私密路径含符号链接/junction，拒绝写入：' + p);
     if (!st.isDirectory()) fail('PSR_PRIVATE_PATH_BOUNDARY', '私密路径存在非目录占位：' + p);
   }
 }
 
-/** ACL 检查：目标（目录或已存在的密文文件）不得有非允许主体授权。
- *  违规时若目标位于固定私密根内，先一次性收紧（私密根与目标本体：仅当前用户+SYSTEM，
- *  移除继承），再复核；仍违规则拒绝。收紧命令为固定形状（证据适配层按形状白名单放行）。 */
-function assertPrivateAcl(target, repoRoot) {
+/**
+ * ACL 只读检查（R4 收紧）：目标（目录或已存在的密文文件）不得有非允许主体授权。
+ * - 检查函数绝不修改已有权限（收紧是一次性部署步骤，不由检查隐式执行）；
+ * - 身份查询/ACL 输出解析不确定 → 失败闭合；
+ * - aclReader 注入接缝（离线验证用；默认真实 icacls 固定形状只读查询）。
+ */
+function assertPrivateAcl(target, repoRoot, aclReader) {
   const targetAbs = path.resolve(target);
   // icacls 在中文 Windows 上输出 ANSI/GBK：绝对路径含中文会乱码——
   // 统一以 repoRoot 为 cwd 的相对路径调用（纯 ASCII），输出首行可稳定剥离。
   const repoAbs = repoRoot ? path.resolve(repoRoot) : path.dirname(targetAbs);
   const relOrAbs = relOf(path.relative(repoAbs, targetAbs));
-  const icaclsOpts = { encoding: 'utf8', cwd: repoAbs, windowsHide: true };
-  const read = () => spawnSync('icacls', [relOrAbs], icaclsOpts);
-  let r = read();
-  if (r.status !== 0) fail('PSR_PRIVATE_ACL', '无法读取私密路径 ACL（icacls 失败）：' + relOrAbs);
-  let offenders = findBroadAclGrants(r.stdout || '', getCurrentPrincipals(), relOrAbs);
-  if (offenders.length) {
-    const marker = PRIVATE_ROOT_REL.split('/').pop(); // .participant-private
-    const idx = targetAbs.toLowerCase().indexOf(marker.toLowerCase());
-    if (idx !== -1) {
-      const rootAbs = targetAbs.slice(0, idx + marker.length);
-      const rootRel = relOf(path.relative(repoAbs, rootAbs));
-      hardenPrivateRootAcl(rootAbs, repoAbs, rootRel);
-      let targetSt = null;
-      try { targetSt = fs.lstatSync(targetAbs); } catch (_) { targetSt = null; }
-      if (targetSt) hardenPrivateRootAcl(targetAbs, repoAbs, relOrAbs); // 文件本体同样收紧
-      r = read();
-      if (r.status !== 0) fail('PSR_PRIVATE_ACL', '无法读取私密路径 ACL（icacls 失败）：' + relOrAbs);
-      offenders = findBroadAclGrants(r.stdout || '', getCurrentPrincipals(), relOrAbs);
-    }
-  }
+  const read = aclReader || (() => {
+    const r = local.queryAcl(repoAbs, relOrAbs);
+    return { status: r.status, stdout: r.stdout || '' };
+  });
+  const r = read(relOrAbs);
+  if (!r || r.status !== 0) fail('PSR_PRIVATE_ACL', '无法读取私密路径 ACL（icacls 失败）：' + relOrAbs);
+  const principals = getCurrentPrincipals();
+  if (!principals) fail('PSR_PRIVATE_ACL', '当前进程身份查询不确定，失败闭合。');
+  const offenders = findBroadAclGrants(r.stdout || '', principals, relOrAbs);
   if (offenders.length) {
     fail('PSR_PRIVATE_ACL', '私密路径 ACL 存在非允许主体授权（' + offenders[0] + '），拒绝写入。');
   }
 }
 
-function validatePrivateTarget({ repoRoot, relativePath }) {
+function validatePrivateTarget({ repoRoot, relativePath, aclReader }) {
   if (typeof repoRoot !== 'string' || !repoRoot) fail('PSR_PRIVATE_CONFIG', '缺少仓库根。');
   if (typeof relativePath !== 'string' || !relativePath) fail('PSR_PRIVATE_CONFIG', '缺少私密相对路径。');
   const repoAbs = path.resolve(repoRoot);
@@ -237,55 +181,55 @@ function validatePrivateTarget({ repoRoot, relativePath }) {
   assertNoLinks(repoAbs, path.dirname(targetAbs));
   // 目标文件本体：已存在时不得是链接/目录（R4：不只查父目录）
   let targetSt = null;
-  try { targetSt = fs.lstatSync(targetAbs); } catch (_) { targetSt = null; }
+  try { targetSt = fs.lstatSync(targetAbs); } catch (e) { if(e.code!=='ENOENT') fail('PSR_PRIVATE_PATH_BOUNDARY','无法核实目标'); targetSt = null; }
   if (targetSt && targetSt.isSymbolicLink()) fail('PSR_PRIVATE_LINK', '私密目标文件为符号链接/junction：' + relFromRepo);
   if (targetSt && !targetSt.isFile()) fail('PSR_PRIVATE_PATH_BOUNDARY', '私密目标位置存在非文件占位：' + relFromRepo);
-  assertPrivateAcl(path.dirname(targetAbs), repoAbs);
-  if (targetSt && targetSt.isFile()) assertPrivateAcl(targetAbs, repoAbs);
+  assertPrivateAcl(path.dirname(targetAbs), repoAbs, aclReader);
+  if (targetSt && targetSt.isFile()) assertPrivateAcl(targetAbs, repoAbs, aclReader);
   return { repoAbs, targetAbs, relFromRepo, parentRel };
 }
 
 /**
- * 构造加密负载（R4：来源/目标/轮次时间/摘要/交付绑定全部核验）：
- * - appId/envId 必须精确等于 expectedTarget（受审固定目标）；
- * - roundId 格式合法；windowStartsAtIso/windowExpiresAtIso 必须为可解析 ISO 且开始<截止；
- * - sourceDigest 必须等于对 closeSourceDir 重算的确定性摘要；
- * - deliveryConfirmed 必须为显式 true（调用方收集的交付事实，不代写）；
- * - serverTimeIso 可为 null 或可解析 ISO。
+ * 构造加密负载（R4 收紧：只读核验来源与新登记计划分离）：
+ * - 绑定的是【只读核验会话】事实：checkRoundId（只读核验轮次）、checkWindow 起止、
+ *   readonlySourceDigest（只读核验来源摘要，64hex 格式核验）、deliveryConfirmed（显式交付事实）。
+ * - 不再绑定关闭包摘要（关闭包摘要不能证明编号交付来源），也不与新登记轮次做相等绑定
+ *   （登记计划轮次是另一事实；消费绑定=参与者代码+固定目标+交付确认+排重）。
+ * - appId/envId 必须精确等于 expectedTarget（受审固定目标）；serverTimeIso 必需且必须在只读核验窗口内。
+ * - 只读来源摘要由已关闭的只读核验会话记录，本存储不重算（其完整性由只读核验轮纪律保证），
+ *   如实披露；格式必须为 64 位小写十六进制。
  */
-function buildPrivatePayload({ participantCode, fullAccount, appId, envId, roundId, serverTimeIso, sourceDigest, deliveryConfirmed, closeSourceDir, expectedTarget, windowStartsAtIso, windowExpiresAtIso }) {
+function buildPrivatePayload({ participantCode, fullAccount, appId, envId, checkRoundId, serverTimeIso, readonlySourceDigest, deliveryConfirmed, expectedTarget, checkWindowStartsAtIso, checkWindowExpiresAtIso }) {
   if (typeof participantCode !== 'string' || !PARTICIPANT_CODE_RE.test(participantCode)) {
     fail('PSR_PRIVATE_INPUT', '参与者代码只能是 1 或 2（0 号不存在）。');
   }
   if (typeof fullAccount !== 'string' || !ACCOUNT_RE.test(fullAccount)) {
     fail('PSR_PRIVATE_INPUT', '完整编号须为 u_+40 位小写十六进制（不回显输入）。');
   }
-  if (typeof roundId !== 'string' || !ROUND_ID_RE.test(roundId)) fail('PSR_PRIVATE_INPUT', '来源轮次格式无效。');
+  if (typeof checkRoundId !== 'string' || !ROUND_ID_RE.test(checkRoundId)) fail('PSR_PRIVATE_INPUT', '只读核验轮次格式无效。');
   if (!isPlainTarget(expectedTarget) || appId !== expectedTarget.appId || envId !== expectedTarget.envId) {
     fail('PSR_PRIVATE_INPUT', '固定目标与受审目标不一致。');
   }
   const iso = v => typeof v === 'string' && v.length > 0 && !Number.isNaN(Date.parse(v));
-  if (!iso(windowStartsAtIso) || !iso(windowExpiresAtIso) || !(Date.parse(windowStartsAtIso) < Date.parse(windowExpiresAtIso))) {
-    fail('PSR_PRIVATE_INPUT', '窗口时间缺失或非法（须为可解析 ISO 且开始<截止）。');
+  if (!iso(checkWindowStartsAtIso) || !iso(checkWindowExpiresAtIso) || !(Date.parse(checkWindowStartsAtIso) < Date.parse(checkWindowExpiresAtIso))) {
+    fail('PSR_PRIVATE_INPUT', '只读核验窗口时间缺失或非法（须为可解析 ISO 且开始<截止）。');
   }
   if (deliveryConfirmed !== true) fail('PSR_PRIVATE_INPUT', '缺少交付确认事实（须为显式收集的 true）。');
-  if (serverTimeIso !== null && serverTimeIso !== undefined && !iso(serverTimeIso)) {
+  if (!iso(serverTimeIso) || Date.parse(serverTimeIso) < Date.parse(checkWindowStartsAtIso) || Date.parse(serverTimeIso) >= Date.parse(checkWindowExpiresAtIso)) {
     fail('PSR_PRIVATE_INPUT', '服务端时间存在但不是可解析 ISO。');
   }
-  if (typeof closeSourceDir !== 'string' || !closeSourceDir) fail('PSR_PRIVATE_INPUT', '缺少受控关闭来源目录。');
-  const recomputed = computeCloseSourceDigest(closeSourceDir);
-  if (typeof sourceDigest !== 'string' || sourceDigest !== recomputed) {
-    fail('PSR_PRIVATE_SOURCE', '来源摘要与受控关闭来源重算不一致（不核实来源不落盘）。');
+  if (typeof readonlySourceDigest !== 'string' || !/^[0-9a-f]{64}$/.test(readonlySourceDigest)) {
+    fail('PSR_PRIVATE_INPUT', '只读核验来源摘要须为 64 位小写十六进制（交付会话记录事实）。');
   }
   return {
     schema: PAYLOAD_SCHEMA,
     participantCode,
     fullAccount,
     appId, envId,
-    roundId,
-    windowStartsAtIso, windowExpiresAtIso,
+    checkRoundId,
+    checkWindowStartsAtIso, checkWindowExpiresAtIso,
     serverTimeIso: typeof serverTimeIso === 'string' ? serverTimeIso : null,
-    sourceDigest: recomputed,
+    readonlySourceDigest,
     deliveryConfirmed: true,
     inputTimeIso: new Date().toISOString(),
     ref: crypto.randomBytes(8).toString('hex')
@@ -297,64 +241,26 @@ function isPlainTarget(v) {
 
 /** CurrentUser DPAPI 加密：明文只经 stdin 传给 PowerShell；输出为密文（非敏感）。 */
 function dpapiProtect(plain) {
-  const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', DPAPI_PROTECT_SCRIPT], { input: plain, encoding: 'utf8', windowsHide: true });
-  if (r.status !== 0 || !(r.stdout || '').trim()) {
-    fail('PSR_PRIVATE_DPAPI', 'DPAPI 加密失败（不回显输入）。');
-  }
-  return r.stdout.trim();
+  try { return local.protect(plain); } catch (_) { fail('PSR_PRIVATE_DPAPI', 'DPAPI加密失败'); }
 }
-
-/**
- * CurrentUser DPAPI 解密（R4）：NamedPipe 传输——明文只在 PowerShell 进程内存与
- * 内核管道之间移动，不进 stdout/stderr/argv/env/磁盘；错误只回固定标记。
- */
-function dpapiUnprotectAsync(cipherHex) {
-  return new Promise((resolve, reject) => {
-    if (typeof cipherHex !== 'string' || !cipherHex.trim()) {
-      reject(new PrivateStoreError('PSR_PRIVATE_DPAPI', '密文为空。'));
-      return;
-    }
-    const pipeName = 'psr-dpapi-' + crypto.randomBytes(6).toString('hex');
-    const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', DPAPI_UNPROTECT_PIPE_SCRIPT], { stdio: ['pipe', 'ignore', 'pipe'], windowsHide: true });
-    child.stderr.on('data', () => {}); // 只吞掉（固定错误文案，不透出内容）
-    child.on('error', e => reject(new PrivateStoreError('PSR_PRIVATE_DPAPI', 'DPAPI 解密进程启动失败。')));
-    // stdin 两行：第一行=密文；第二行=管道名（管道名不进 argv，脚本字节固定可哈希）
-    child.stdin.write(cipherHex.trim() + '\n' + pipeName + '\n');
-    child.stdin.end();
-    const deadline = Date.now() + 10000;
-    const tryRead = () => {
-      let data = null;
-      try {
-        data = fs.readFileSync('\\\\.\\pipe\\' + pipeName);
-      } catch (e) {
-        if (Date.now() < deadline) { setTimeout(tryRead, 25); return; }
-        try { child.kill(); } catch (_) {}
-        reject(new PrivateStoreError('PSR_PRIVATE_DPAPI', 'DPAPI 解密失败（管道通道超时）。'));
-        return;
-      }
-      try {
-        const plain = data.toString('utf8');
-        const payload = JSON.parse(plain);
-        if (!payload || payload.schema !== PAYLOAD_SCHEMA) throw new Error('schema');
-        resolve(plain);
-      } catch (_) {
-        reject(new PrivateStoreError('PSR_PRIVATE_PAYLOAD', '私密负载 schema 不符或解密失败。'));
-      }
-    };
-    tryRead();
-  });
+async function dpapiUnprotectAsync(cipherHex) {
+  try {
+    const plain = await local.unprotect(cipherHex.trim());
+    if (JSON.parse(plain).schema !== PAYLOAD_SCHEMA) throw new Error('schema');
+    return plain;
+  } catch (_) { fail('PSR_PRIVATE_DPAPI', 'DPAPI解密失败'); }
 }
 
 /**
  * 完整录入管线：校验 → 构造绑定负载 → DPAPI 加密 → 排他新建（wx）→ 净化回执。
  * EEXIST 竞态归他属（PSR_PRIVATE_EXISTS，不记自身 partialWrite，R4）。
  */
-function protectRecord({ repoRoot, fileName, participantCode, fullAccount, fullAccountRepeat, appId, envId, roundId, serverTimeIso, sourceDigest, closeSourceDir, expectedTarget, windowStartsAtIso, windowExpiresAtIso, deliveryConfirmed }) {
+function protectRecord({ repoRoot, fileName, participantCode, fullAccount, fullAccountRepeat, appId, envId, checkRoundId, serverTimeIso, readonlySourceDigest, expectedTarget, checkWindowStartsAtIso, checkWindowExpiresAtIso, deliveryConfirmed, aclReader }) {
   if (typeof fullAccount !== 'string' || fullAccount !== fullAccountRepeat) {
     fail('PSR_PRIVATE_INPUT', '两次输入不一致（不回显输入）。');
   }
-  const { repoAbs, targetAbs, relFromRepo } = validatePrivateTarget({ repoRoot, relativePath: PRIVATE_ROOT_REL + '/' + (fileName || ('participant-' + participantCode + '-' + crypto.randomBytes(4).toString('hex') + '.bin')) });
-  const payload = buildPrivatePayload({ participantCode, fullAccount, appId, envId, roundId, serverTimeIso, sourceDigest, closeSourceDir, expectedTarget, windowStartsAtIso, windowExpiresAtIso, deliveryConfirmed });
+  const { repoAbs, targetAbs, relFromRepo } = validatePrivateTarget({ repoRoot, relativePath: PRIVATE_ROOT_REL + '/' + (fileName || ('participant-' + participantCode + '-' + crypto.randomBytes(4).toString('hex') + '.bin')), aclReader });
+  const payload = buildPrivatePayload({ participantCode, fullAccount, appId, envId, checkRoundId, serverTimeIso, readonlySourceDigest, expectedTarget, checkWindowStartsAtIso, checkWindowExpiresAtIso, deliveryConfirmed });
   const cipherHex = dpapiProtect(JSON.stringify(payload));
   const cipherBuf = Buffer.from(cipherHex, 'utf8');
   if (fs.existsSync(targetAbs)) fail('PSR_PRIVATE_EXISTS', '同名私密记录已存在，不覆盖（输入有误请新建版本）。');
@@ -376,7 +282,7 @@ function protectRecord({ repoRoot, fileName, participantCode, fullAccount, fullA
     schema: RECEIPT_SCHEMA,
     participantCode,
     accountTail: tailOf(fullAccount),
-    roundId,
+    checkRoundId: payload.checkRoundId,
     ref: payload.ref,
     cipherSha256: sha256Buffer(cipherBuf),
     doubleInputConsistent: true,
@@ -394,28 +300,49 @@ async function readRecordAsync({ repoRoot, relativePath }) {
   const plain = await dpapiUnprotectAsync(cipherHex);
   const payload = JSON.parse(plain);
   if (!payload || payload.schema !== PAYLOAD_SCHEMA) fail('PSR_PRIVATE_PAYLOAD', '私密负载 schema 不符。');
+  validatePayload(payload);
   return Object.freeze(payload);
+}
+
+function validatePayload(payload) {
+  const expected = ['schema','participantCode','fullAccount','appId','envId','checkRoundId',
+    'checkWindowStartsAtIso','checkWindowExpiresAtIso','serverTimeIso','readonlySourceDigest',
+    'deliveryConfirmed','inputTimeIso','ref'];
+  if (!payload || Object.keys(payload).sort().join(',') !== expected.sort().join(',') ||
+    payload.schema !== PAYLOAD_SCHEMA || !/^[0-9a-f]{16}$/.test(payload.ref || '') ||
+    !Number.isFinite(Date.parse(payload.inputTimeIso))) fail('PSR_PRIVATE_PAYLOAD', '私密记录字段不完整');
+  buildPrivatePayload({ ...payload, expectedTarget: { appId: 'wxfb4db1615ac15531', envId: 'cloud1-d8gcq5ag39d847723' } });
+  return payload;
+}
+
+// 明文候选输出只读预检：不存在的叶路径检查其最近已有祖先；已有整树逐项检查ACL。
+function assertPrivateOutput(repoRoot, outDir) {
+  const abs = path.resolve(outDir), rel = path.relative(path.resolve(repoRoot), abs);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) fail('PSR_PRIVATE_PATH_BOUNDARY', '输出越界');
+  const tracked = runGit(repoRoot, ['ls-files','--',relOf(rel)]);
+  const ignored = runGit(repoRoot, ['check-ignore','--',relOf(rel)]);
+  if (tracked.status !== 0 || tracked.stdout || ignored.status !== 0 || !ignored.stdout) fail('PSR_PRIVATE_TRACKED', '明文输出未忽略或已跟踪');
+  assertNoLinks(repoRoot, abs);
+  let ancestor = abs;
+  while (!fs.existsSync(ancestor)) ancestor = path.dirname(ancestor);
+  assertPrivateAcl(ancestor, repoRoot);
+  const walk = p => {
+    const st = fs.lstatSync(p);
+    if (st.isSymbolicLink() || (!st.isDirectory() && !st.isFile())) fail('PSR_PRIVATE_LINK', '候选存在链接或非普通条目');
+    assertPrivateAcl(p, repoRoot);
+    if (st.isDirectory()) for (const name of fs.readdirSync(p)) walk(path.join(p,name));
+  };
+  if (fs.existsSync(abs)) walk(abs);
 }
 
 /**
  * 枚举私密根内全部记录并解密（R4：1/2 排重的输入）。
  * 返回 [{ fileName, payload }]；排除非 .bin 文件。
  */
-async function readAllRecordsAsync({ repoRoot }) {
-  const rootAbs = path.resolve(path.resolve(repoRoot), PRIVATE_ROOT_REL);
-  const out = [];
-  let entries = [];
-  try { entries = fs.readdirSync(rootAbs, { withFileTypes: true }); } catch (e) { return out; }
-  for (const e of entries) {
-    if (!e.isFile() || !e.name.endsWith('.bin')) continue;
-    try {
-      const payload = await readRecordAsync({ repoRoot, relativePath: PRIVATE_ROOT_REL + '/' + e.name });
-      out.push({ fileName: e.name, payload });
-    } catch (_) { /* 不可读/不可解密的历史文件跳过（R4：仅可消费的记录参与绑定与排重） */ }
-  }
-  return out;
+async function readAllRecordsAsync({ repoRoot, recordFiles }) {
+  if (!Array.isArray(recordFiles) || recordFiles.length !== 2 || new Set(recordFiles).size !== 2 || !recordFiles.every(f => /^[A-Za-z0-9_-]+\.bin$/.test(f))) fail('PSR_PRIVATE_PAYLOAD', '必须明确指定本次1/2两份必要记录，禁止扫描历史根');
+  return Promise.all(recordFiles.map(async fileName => ({ fileName, payload: await readRecordAsync({ repoRoot, relativePath: PRIVATE_ROOT_REL + '/' + fileName }) })));
 }
-
 /**
  * 1/2 完整编号排重（R4）：同一参与者代码在不同记录文件中不得对应不同账号；
  * 同一账号不得同时挂在两个参与者代码下；0 号不存在（构造期已拒）。
@@ -456,7 +383,6 @@ module.exports = Object.freeze({
   assertPrivateAcl,
   findBroadAclGrants,
   getCurrentPrincipals,
-  computeCloseSourceDigest,
   buildPrivatePayload,
   dpapiProtect,
   dpapiUnprotectAsync,
@@ -464,12 +390,13 @@ module.exports = Object.freeze({
   readRecordAsync,
   readAllRecordsAsync,
   verifyParticipantDedup,
+  validatePayload, assertPrivateOutput,
   tailOf,
   FIXED_TARGET: Object.freeze({ appId: 'wxfb4db1615ac15531', envId: 'cloud1-d8gcq5ag39d847723' })
 });
 
 // CLI：protect（明文经 stdin；不进 argv/env）。供 participant-private-input.ps1 调用。
-// R4：交付确认必须显式传 --delivery-confirmed true；来源摘要对 --close-source-dir 重算核验。
+// R4：交付确认必须显式传 --delivery-confirmed true；来源摘要独立绑定只读核验事实，不复用关闭包摘要。
 if (require.main === module) {
   const args = process.argv.slice(2);
   const getArg = name => {
@@ -482,9 +409,8 @@ if (require.main === module) {
   } else {
     const repoRoot = getArg('repo-root');
     const participantCode = getArg('participant-code');
-    const roundId = getArg('round-id');
-    const sourceDigest = getArg('source-digest');
-    const closeSourceDir = getArg('close-source-dir');
+    const checkRoundId = getArg('check-round-id');
+    const readonlySourceDigest = getArg('source-digest');
     const deliveryConfirmed = getArg('delivery-confirmed') === 'true';
     const serverTimeIso = getArg('server-time-iso');
     const fileName = getArg('file-name');
@@ -493,15 +419,19 @@ if (require.main === module) {
     process.stdin.on('data', d => { plain += d; });
     process.stdin.on('end', () => {
       try {
+        // R4 修复：CLI 必须把全部来源事实传给 protectRecord（此前 sourceDigest 被漏传，
+        // 实际 UI→CLI 管线在 DPAPI 写入前即 PSR_PRIVATE_SOURCE 失败）。
         const receipt = protectRecord({
           repoRoot, participantCode,
           fullAccount: plain.replace(/\r?\n$/, ''),
           fullAccountRepeat: plain.replace(/\r?\n$/, ''),
           appId: 'wxfb4db1615ac15531', envId: 'cloud1-d8gcq5ag39d847723',
-          roundId, serverTimeIso: serverTimeIso === null ? null : (serverTimeIso || null),
-          closeSourceDir, expectedTarget: { appId: 'wxfb4db1615ac15531', envId: 'cloud1-d8gcq5ag39d847723' },
-          windowStartsAtIso: getArg('window-starts-at-iso') || undefined,
-          windowExpiresAtIso: getArg('window-expires-at-iso') || undefined,
+          checkRoundId,
+          readonlySourceDigest,
+          serverTimeIso: serverTimeIso === null ? null : (serverTimeIso || null),
+          expectedTarget: { appId: 'wxfb4db1615ac15531', envId: 'cloud1-d8gcq5ag39d847723' },
+          checkWindowStartsAtIso: getArg('check-window-starts-at-iso') || undefined,
+          checkWindowExpiresAtIso: getArg('check-window-expires-at-iso') || undefined,
           deliveryConfirmed, fileName
         });
         console.log(JSON.stringify(receipt, null, 2));

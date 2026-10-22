@@ -61,8 +61,14 @@ const OWN_ERROR_CODES = Object.freeze(new Set([
   'PIC_REQUEST_INVALID', 'PIC_ROUND_MISMATCH', 'PIC_PASSPHRASE_MISMATCH',
   'PIC_NOT_ALLOWED', 'PIC_CLOCK_INVALID', 'PIC_CLOCK_ERROR', 'PIC_WINDOW_EXPIRED', 'PIC_WINDOW_NOT_OPEN',
   'PIC_AUDIT_CONFLICT', 'PIC_USER_CONFLICT', 'PIC_DB_FACTORY_UNAVAILABLE', 'PIC_TRANSACTION_FAILED',
-  'PIC_OUTCOME_UNKNOWN'
+  'PIC_RECORD_MALFORMED', 'PIC_OUTCOME_UNKNOWN'
 ]));
+
+// R1：窗口最长时长上限（毫秒）。配置侧（打包器）约束更严；此处为核心失败闭合上限。
+const MAX_WINDOW_MS = 30 * 60 * 1000;
+// R1：固定集合（核心配置失败闭合——不依赖打包器约束）
+const FIXED_USERS_COLLECTION = 'schtest_v1_users';
+const FIXED_AUDIT_COLLECTION = 'schtest_v1_audit_events';
 
 const sha256 = s => crypto.createHash('sha256').update(String(s), 'utf8').digest('hex');
 const tailOf = v => (typeof v === 'string' && v.length >= 6 ? v.slice(-6) : '');
@@ -125,23 +131,66 @@ function createSelfRegistrationChecker({ dbFactory, trusted, config, now }) {
   // 错误码白名单净化（R3：SDK/传输原始错误码不外泄）
   const safeCode = e => (e && typeof e.code === 'string' && OWN_ERROR_CODES.has(e.code)) ? e.code : 'PIC_TRANSACTION_FAILED';
 
-  /** 事务内/回读统一取文档：兼容事务形状 {data:doc|null} 与非事务形状 {data:[doc]}。 */
-  const docOf = snap => {
-    if (!snap || !snap.data) return null;
+  const malformed = () => { const e = new Error('记录形状畸形（缺 data/多条/非对象），不能当作不存在'); e.code = 'PIC_RECORD_MALFORMED'; return e; };
+
+  /**
+   * R3：事务内读取（真实 SDK 事务形状 {data: 文档|null}）。
+   * 明确不存在仅接受 data===null；缺 data、data 为数组/原始值/多条均属畸形 → 抛错停止，
+   * 不得当作不存在进入新增分支。
+   */
+  const docOfTx = snap => {
+    if (!isPlainObject(snap) || !Object.prototype.hasOwnProperty.call(snap, 'data')) throw malformed();
     const d = snap.data;
-    return Array.isArray(d) ? (d[0] || null) : d;
+    if (d === null) return null;
+    if (isPlainObject(d)) return d;
+    throw malformed();
   };
 
-  /** 审计既有记录的结构与绑定校验（R3）：字段集/类型/主键/主体/动作/协议。 */
+  /**
+   * R3：回读读取（已确认的两种 SDK 形状）：
+   * - wx 包装非事务 get（含 field 投影）：{data: 文档|null}（throwOnNotFound:false 时未命中=data:null）；
+   * - @cloudbase/database 内层投影 get：{data: [文档...]}（空数组=明确不存在）。
+   * 多条、缺 data、元素非对象=畸形 → 抛错（回读失败按未知处理，不得当作不存在或有效）。
+   */
+  const docOfReadback = snap => {
+    if (!isPlainObject(snap) || !Object.prototype.hasOwnProperty.call(snap, 'data')) throw malformed();
+    const d = snap.data;
+    if (d === null) return null; // wx 包装形状：明确不存在
+    if (Array.isArray(d)) {
+      if (d.length === 0) return null; // 内层投影形状：明确不存在
+      if (d.length > 1) throw malformed();
+      if (d[0] === null || !isPlainObject(d[0])) throw malformed();
+      return d[0];
+    }
+    if (isPlainObject(d)) return d; // wx 包装形状：存在
+    throw malformed();
+  };
+
+  /** R3：合法 ISO 8601 时间字符串（可解析且有限；date-only 亦合法，垃圾串必然 NaN）。 */
+  const isIsoTime = v => typeof v === 'string' && Number.isFinite(Date.parse(v))
+    && new Date(Date.parse(v)).toISOString() === v;
+
+  /** R3：用户记录完整校验（事务内与回读统一）：字段集/类型/主键/主体/状态/时间。 */
+  function userWellFormed(user, derivedUserId, openid) {
+    return Boolean(user
+      && USER_REQUIRED_FIELDS.every(f => Object.prototype.hasOwnProperty.call(user, f))
+      && user._id === derivedUserId
+      && typeof user.openid === 'string' && user.openid === openid
+      && user.status === 'active'
+      && isIsoTime(user.createdAt) && isIsoTime(user.updatedAt)
+      && Date.parse(user.updatedAt) >= Date.parse(user.createdAt));
+  }
+
+  /** 审计既有记录的结构与绑定校验（R3）：字段集/类型/主键/主体/动作/协议/角色/时间/after 状态。 */
   function auditWellFormed(audit, auditId, derivedUserId) {
     return Boolean(audit && AUDIT_REQUIRED_FIELDS.every(f => Object.prototype.hasOwnProperty.call(audit, f))
       && audit._id === auditId
       && audit.projectId === null && audit.before === null
       && audit.action === 'registerIdentity'
       && audit.subjectUserId === derivedUserId && audit.actorUserId === derivedUserId
-      && typeof audit.actorRole === 'string' && audit.actorRole.length > 0
-      && typeof audit.createdAt === 'string' && audit.createdAt.length > 0
-      && isPlainObject(audit.after)
+      && audit.actorRole === '本人普通账号'
+      && isIsoTime(audit.createdAt)
+      && isPlainObject(audit.after) && Object.keys(audit.after).join(',') === 'status' && audit.after.status === 'active'
       && audit[SOURCE_PROTOCOL_FIELD] === SELF_REG_SCHEMA
       && typeof audit[REGISTRATION_ROUND_FIELD] === 'string'
       && ROUND_ID_RE.test(audit[REGISTRATION_ROUND_FIELD]));
@@ -166,6 +215,19 @@ function createSelfRegistrationChecker({ dbFactory, trusted, config, now }) {
     }
     if (typeof trusted.OPENID !== 'string' || trusted.OPENID.length === 0) return invalid('缺少可信微信身份');
     if (config.sourceProtocol !== SELF_REG_SCHEMA) return invalid('登记来源协议不符');
+    if (typeof config.synthetic !== 'boolean') return invalid('合成标记必须为布尔值');
+    // ── R1：核心配置失败闭合（工厂前；不依赖打包器约束，不依靠 NaN 比较结果）────
+    if (config.usersCollection !== FIXED_USERS_COLLECTION || config.auditCollection !== FIXED_AUDIT_COLLECTION) {
+      return invalid('固定集合配置不符');
+    }
+    if (!Number.isFinite(config.windowStartsAtMs) || !Number.isFinite(config.windowExpiresAtMs)) {
+      return invalid('窗口边界必须为有限数值');
+    }
+    if (!(config.windowStartsAtMs < config.windowExpiresAtMs)) return invalid('窗口起止顺序无效');
+    if (config.windowExpiresAtMs - config.windowStartsAtMs > MAX_WINDOW_MS) return invalid('窗口时长超过上限');
+    if (typeof config.allowedAccount !== 'string' || !ACCOUNT_RE.test(config.allowedAccount)) return invalid('允许账号配置格式无效');
+    if (typeof config.passphraseDigest !== 'string' || !/^[0-9a-f]{64}$/.test(config.passphraseDigest)) return invalid('口令摘要配置无效');
+    if (typeof config.registrationRoundId !== 'string' || !ROUND_ID_RE.test(config.registrationRoundId)) return invalid('登记轮次配置无效');
     // 时钟结构校验（合成/真实一律生效）；真实模式另查窗口开始/截止（R1：开始时间闭合）
     {
       const c = clockCheck('handle.start');
@@ -237,13 +299,12 @@ function createSelfRegistrationChecker({ dbFactory, trusted, config, now }) {
         const auditTx = transaction.collection(auditCollection);
         const userSnap = await usersTx.doc(derivedUserId).get();
         const auditSnap = await auditTx.doc(auditId).get();
-        const user = docOf(userSnap);
-        const audit = docOf(auditSnap);
+        // R3：明确不存在仅接受事务形状 data===null；缺 data/多条/非对象畸形 → 抛错停止（不进入新增）
+        const user = docOfTx(userSnap);
+        const audit = docOfTx(auditSnap);
         const nowIso = serverNowIso();
-        // 用户有效性：字段集/主键/可信 openid 主体绑定/状态（R3：openid 属他人即主体不符）
-        const userValid = Boolean(user && USER_REQUIRED_FIELDS.every(f => Object.prototype.hasOwnProperty.call(user, f))
-          && user._id === derivedUserId && user.openid === trusted.OPENID
-          && user.status === 'active');
+        // 用户有效性：字段集/类型/主键/可信 openid 主体绑定/状态/时间（R3：事务与回读统一）
+        const userValid = userWellFormed(user, derivedUserId, trusted.OPENID);
         if (userValid && !audit) {
           // 已有有效用户、本包审计不存在 → ALREADY_ACTIVE，零新增，不补审计
           // （回读要求：仅用户存在即可；审计本就不存在，readBack.audit=false 属实）
@@ -310,6 +371,7 @@ function createSelfRegistrationChecker({ dbFactory, trusted, config, now }) {
         PIC_WINDOW_NOT_OPEN: '窗口未开始，未写入',
         PIC_CLOCK_INVALID: '时钟无效，未写入',
         PIC_CLOCK_ERROR: '时钟异常，未写入',
+        PIC_RECORD_MALFORMED: '既有记录形状畸形（缺 data/多条/非对象），不能判定存在性，未写入',
         PIC_TRANSACTION_FAILED: '登记事务未开始写入'
       };
       return Object.assign(base, {
@@ -332,12 +394,11 @@ function createSelfRegistrationChecker({ dbFactory, trusted, config, now }) {
         Promise.resolve(usersCol.doc(derivedUserId).field(USER_READBACK_PROJECTION).get()),
         Promise.resolve(auditCol.doc(auditId).field(AUDIT_READBACK_PROJECTION).get())
       ]);
-      const user = docOf(userSnap);
-      const audit = docOf(auditSnap);
-      // 回读事实按冻结字段集/类型/主键/主体/动作/状态核验（R3）
-      base.readBack.user = Boolean(user && user._id === derivedUserId
-        && typeof user.openid === 'string' && user.openid === trusted.OPENID
-        && user.status === 'active');
+      // R3：回读形状严格化——空数组=明确不存在；多条/缺 data/非对象=畸形 → 抛错按未知
+      const user = docOfReadback(userSnap);
+      const audit = docOfReadback(auditSnap);
+      // 回读事实与事务内统一：完整字段集/类型/时间/主键/主体/状态（R3：投影有字段不等于记录有效）
+      base.readBack.user = userWellFormed(user, derivedUserId, trusted.OPENID);
       base.readBack.audit = auditWellFormed(audit, auditId, derivedUserId);
     } catch (e) {
       return Object.assign(base, {

@@ -3,8 +3,11 @@
 //
 // 任务：docs/CodeBuddy任务-指定本人登记与私密编号输入本地实现-20261021.md §2/§3/§6。
 // 结构沿用已审查的只读打包器（排他写/部分写事实/来源钉定/关闭映射/prepare 分离），不修改旧文件。
-// - 本轮仅支持 synthetic:true 计划（合成夹具账号，显式标注）；synthetic:false 一律拒绝
-//   （真实登记包需要已核准私密来源与执行批准，未放行）。
+// - synthetic:true 计划用显式标注的合成夹具账号（build/prepare 同步路径）。
+// - synthetic:false（真实模式）装配必须经异步 buildReal/prepareReal 入口：内部实际消费
+//   受控私密来源（consumePrivateSource），不接受调用者传入账号字符串（R4 收紧）；
+//   同步 build/prepare 遇到真实模式计划一律拒绝。真实编号录入与登记执行仍未放行，
+//   本地仅以合成来源验证消费链与装配路径。
 // - 完整允许账号只进入服务端入口配置（CONFIG_ALLOWED_ACCOUNT 锚点）与关闭映射的服务端文件，
 //   不进入前端/公开计划/manifest 清单/previewBuildId 输入；manifest 记录该披露边界。
 // - registrationBuildId 与只读包 previewBuildId 同法：固定排序规范 JSON 的 SHA-256，
@@ -76,9 +79,9 @@ const PINNED_WX_SERVER_SDK_VERSION = '3.0.1';
 
 /** 受审内容基线（本包自己的模板/核心；新增来源进入本表，不改旧包哈希）。 */
 const PINNED_SOURCES = Object.freeze({
-  'miniapp/scripts/lib/participant-self-registration.cjs': '74c006b0238ac5f482c069b40d027b643ff74cdddcf0cd4f8351327226a7c5df',
+  'miniapp/scripts/lib/participant-self-registration.cjs': 'bf02b17d57e7a820f82eecef30bdffbabd2004408dcdf2a77297303d427cb4d3',
   'miniapp/scripts/templates/participant-self-registration/project.config.json': '945df870609a93d410a729d218df2a0844185d3c0c631a9f99833494449327be',
-  'miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/index.js': '0bed614862e15331c7723ceb30fc4e2606491a6a66c3ee00d696ea937d3e721e',
+  'miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/index.js': '5f5ebb3d6c0e9b563619638ee88740468422f11849ee87177f8749973b27c1c7',
   'miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/package.json': 'f401be55ff4d656d5c86afb59e5f97c8714c6ca2f945293b7fc5984718297d21',
   'miniapp/scripts/templates/participant-self-registration/server/request-adapter.js': 'c256ee48b32547a0b12e02e3d75ae83235aa6a1328e1be0c48a10dfd7ee83ed5',
   'miniapp/scripts/templates/participant-self-registration/frontend/app.js': 'ae4099b3b67d7ab00ec8ed432aa5482495009e1676cda7403c4525a55ec33e41',
@@ -99,7 +102,6 @@ const ERR = Object.freeze({
   PLAN_PASSPHRASE_INVALID: 'PSR_PLAN_PASSPHRASE_INVALID',
   PLAN_TARGET_INVALID: 'PSR_PLAN_TARGET_INVALID',
   PLAN_ACCOUNT_INVALID: 'PSR_PLAN_ACCOUNT_INVALID',
-  REAL_NOT_PERMITTED: 'PSR_REAL_NOT_PERMITTED',
   REAL_NOT_PERMITTED: 'PSR_REAL_NOT_PERMITTED',
   SOURCE_MISSING: 'PSR_SOURCE_MISSING',
   SOURCE_DRIFT: 'PSR_SOURCE_DRIFT',
@@ -309,13 +311,27 @@ function readPlan(planPath) {
       fail(ERR.REAL_NOT_PERMITTED, '真实登记计划必须携带 privateSource（私密来源引用）。');
     }
     for (const k of Object.keys(ps)) {
-      if (!['schema', 'recordFile'].includes(k)) fail(ERR.PLAN_INVALID, 'privateSource 含未知字段：' + k);
+      if (!['schema', 'recordFile', 'records'].includes(k)) fail(ERR.PLAN_INVALID, 'privateSource 含未知字段：' + k);
     }
     if (ps.schema !== PRIVATE_SOURCE_SCHEMA) fail(ERR.PLAN_INVALID, 'privateSource.schema 必须是 ' + PRIVATE_SOURCE_SCHEMA + '。');
     if (typeof ps.recordFile !== 'string' || !/^[A-Za-z0-9._-]+\.bin$/.test(ps.recordFile)) {
       fail(ERR.PLAN_INVALID, 'privateSource.recordFile 必须是固定私密根内的 <名称>.bin。');
     }
-    privateSource = Object.freeze({ schema: ps.schema, recordFile: ps.recordFile });
+    if (!Array.isArray(ps.records) || ps.records.length !== 2 ||
+      ps.records.map(r => r.participantCode).sort().join(',') !== '1,2' ||
+      new Set(ps.records.map(r => r.recordFile)).size !== 2) fail(ERR.PLAN_INVALID, '必须明确指定本次1/2两份必要来源，不扫描历史根');
+    const keys = ['participantCode','recordFile','checkRoundId','checkWindowStartsAtIso','checkWindowExpiresAtIso','serverTimeIso','readonlySourceDigest','deliveryConfirmed'];
+    const records = ps.records.map(r => {
+      if (!r || Object.keys(r).sort().join(',') !== keys.slice().sort().join(',') ||
+        !/^[A-Za-z0-9_-]+\.bin$/.test(r.recordFile) || !ROUND_ID_RE.test(r.checkRoundId) ||
+        !SHA256_RE.test(r.readonlySourceDigest) || r.deliveryConfirmed !== true ||
+        !Number.isFinite(Date.parse(r.serverTimeIso)) ||
+        !(Date.parse(r.checkWindowStartsAtIso) <= Date.parse(r.serverTimeIso) &&
+          Date.parse(r.serverTimeIso) < Date.parse(r.checkWindowExpiresAtIso))) fail(ERR.PLAN_INVALID, '只读核验来源事实缺失或无效');
+      return Object.freeze({...r});
+    });
+    if (!records.some(r => r.recordFile === ps.recordFile && r.participantCode === raw.participantCode)) fail(ERR.PLAN_INVALID, '目标与必要来源不匹配');
+    privateSource = Object.freeze({ schema: ps.schema, recordFile: ps.recordFile, records: Object.freeze(records) });
   }
   if (raw.synthetic === true) {
     if (typeof raw.syntheticAccount !== 'string' || !ACCOUNT_RE.test(raw.syntheticAccount)) {
@@ -467,23 +483,59 @@ function computeArtifacts(plan, account) {
 
 /**
  * build/prepare 共用装配主体（窗口模式由公开入口固定选择）。
- * opts.privateAccount：真实模式（synthetic:false）必须由 consumePrivateSource 解析后注入；
+ * 同步入口只接受合成计划；真实模式由异步入口内部消费两份明确来源，不接受 privateAccount。
  * 合成模式使用计划内标注夹具账号。manifest 不含时间戳；prepare 与 build 同计划同源码逐字节一致。
  */
+/**
+ * R5：manifest.privateSource 按模式严格重建（字段集固定、值来自计划/实际文件/模式常量，
+ * 不信清单自报）：
+ * - synthetic:true → mode='synthetic-fixture'、realSourceConsumed=false、recordFile/哈希=null；
+ * - synthetic:false → mode='controlled-private-source'、realSourceConsumed=true（WeakSet内部消费事实）、
+ *   recordFile=计划引用、recordFileSha256=固定私密根内该记录密文文件的实际字节哈希
+ *   （文件缺失 → 失败闭合）。真实核对入口重新消费受控来源，普通checkDir拒绝真实模式。
+ */
+const consumedSources = new WeakSet();
+function privateSourceManifestFacts(plan, consumed) {
+  if (plan.synthetic === true) {
+    return {
+      schema: PRIVATE_SOURCE_SCHEMA,
+      mode: 'synthetic-fixture',
+      syntheticFixtureLabel: 'synthetic-fixture-not-real-number',
+      recordFile: null,
+      recordFileSha256: null,
+      realSourceConsumed: false,
+      participantCode: plan.participantCode,
+      records: [],
+      disclosure: '合成夹具账号仅用于本地验证；真实装配时完整允许账号会写入服务端候选配置并随函数上传至远端代码；不承诺只在内存。'
+    };
+  }
+  if (!plan.privateSource || typeof plan.privateSource.recordFile !== 'string') {
+    fail(ERR.REAL_NOT_PERMITTED, '真实模式计划缺少 privateSource.recordFile，无法重建消费事实。');
+  }
+  if (!consumed || !consumedSources.has(consumed)) fail(ERR.REAL_NOT_PERMITTED, '缺少本次实际消费事实');
+  return {
+    schema: PRIVATE_SOURCE_SCHEMA, mode: 'controlled-private-source', syntheticFixtureLabel: null,
+    recordFile: plan.privateSource.recordFile, recordFileSha256: consumed.recordFileSha256,
+    realSourceConsumed: true, participantCode: plan.participantCode, records: consumed.records,
+    disclosure: '实际消费本次1/2两份受控来源；完整允许账号会进入服务端候选文件及远端代码，不承诺只在内存。'
+  };
+}
+
 function buildInternal(planPath, outOverride, windowPhase, opts) {
   const options = opts || {};
   const plan = readPlan(planPath);
   windowClockCheck(plan, 'build.readPlan', windowPhase);
-  let account = null;
-  if (plan.synthetic === true) {
-    account = plan.syntheticAccount;
-  } else {
-    // R4：真实装配必须携带经私密来源解析的账号（不接受计划自报）
-    if (typeof options.privateAccount !== 'string' || !ACCOUNT_RE.test(options.privateAccount)) {
-      fail(ERR.REAL_NOT_PERMITTED, '真实装配必须先经 consumePrivateSource 解析私密来源并提供 privateAccount。');
-    }
-    account = options.privateAccount;
+  // R4 收紧：同步 build/prepare 仅支持合成模式；真实模式必须走异步 buildReal/prepareReal
+  // （内部实际消费受控私密来源，不接受调用者传入账号字符串）。
+  if (plan.synthetic !== true) {
+    fail(ERR.REAL_NOT_PERMITTED, '真实模式装配必须使用异步 buildReal/prepareReal 入口（内部消费受控私密来源）；同步 build/prepare 不接受 synthetic:false。');
   }
+  const account = plan.syntheticAccount;
+  const privateSourceFacts = privateSourceManifestFacts(plan, false);
+  return writeCandidate(plan, planPath, outOverride, windowPhase, account, privateSourceFacts, options);
+}
+
+function writeCandidate(plan, planPath, outOverride, windowPhase, account, privateSourceFacts, options) {
   const closeFiles = verifyCloseSource(plan.closeSourceDir);
   const artifacts = computeArtifacts(plan, account);
   const planBytes = fs.readFileSync(planPath);
@@ -495,6 +547,11 @@ function buildInternal(planPath, outOverride, windowPhase, opts) {
     fail(ERR.OUT_CONFLICT, '输出目录必须位于 ' + OUT_ROOT + ' 之下且以 ' + OUT_PREFIX + ' 为前缀。');
   }
   assertRealDirChain(outDir, 'build 输出');
+  // R4：真实候选明文输出（服务端入口含完整允许账号）——Git 忽略/未跟踪/链接/受限 ACL。
+  // aclReader 为只读注入接缝（离线验证用）；默认真实 icacls 固定形状只读查询。
+  if (plan.synthetic === false) {
+    require('./lib/participant-private-store.cjs').assertPrivateOutput(ROOT, outDir);
+  }
 
   const entries = [];
   for (const [rel, buf] of artifacts) entries.push({ rel, bytes: buf.length, sha256: sha256Buffer(buf) });
@@ -516,13 +573,7 @@ function buildInternal(planPath, outOverride, windowPhase, opts) {
     registrationBuildId: computeRegistrationBuildId(plan),
     // 私密来源绑定（披露边界）：完整允许账号只进入服务端入口配置与远端代码，
     // 不进入前端/公开计划/manifest 清单/previewBuildId 输入。
-    privateSource: {
-      schema: PRIVATE_SOURCE_SCHEMA,
-      mode: plan.synthetic ? 'synthetic-fixture' : 'real-private-source',
-      syntheticFixtureLabel: plan.synthetic ? 'synthetic-fixture-not-real-number' : null,
-      realSourceConsumed: false,
-      disclosure: '真实装配时完整允许账号会写入服务端候选配置并随函数上传至远端代码；不承诺只在内存。'
-    },
+    privateSource: privateSourceFacts,
     planFile: 'plan.json',
     planSha256: sha256Buffer(planBytes),
     planDigest: digest,
@@ -586,51 +637,70 @@ function build(planPath, outOverride, opts) { return buildInternal(planPath, out
 function prepare(planPath, outOverride, opts) { return buildInternal(planPath, outOverride, 'prepare', opts); }
 
 /**
+ * R4：真实模式异步装配入口——内部实际消费受控私密来源（绑定核验+1/2 排重+解密），
+ * 不接受调用者传入账号字符串。消费事实写入 manifest.privateSource（recordFile+密文哈希）。
+ * opts.aclReader：候选输出受限 ACL 检查的只读注入接缝（离线验证用；默认真实 icacls）。
+ */
+async function buildReal(planPath, outOverride, opts) {
+  const options = opts || {};
+  const plan = readPlan(planPath);
+  if (plan.synthetic !== false) fail(ERR.REAL_NOT_PERMITTED, 'buildReal 仅适用于真实模式计划（synthetic:false）。');
+  const consumed = await consumePrivateSource(planPath, { repoRoot: options.repoRoot });
+  const privateSourceFacts = privateSourceManifestFacts(plan, consumed);
+  return writeCandidate(plan, planPath, outOverride, 'execute', consumed.account, privateSourceFacts, options);
+}
+async function prepareReal(planPath, outOverride, opts) {
+  const options = opts || {};
+  const plan = readPlan(planPath);
+  if (plan.synthetic !== false) fail(ERR.REAL_NOT_PERMITTED, 'prepareReal 仅适用于真实模式计划（synthetic:false）。');
+  const consumed = await consumePrivateSource(planPath, { repoRoot: options.repoRoot });
+  const privateSourceFacts = privateSourceManifestFacts(plan, consumed);
+  return writeCandidate(plan, planPath, outOverride, 'prepare', consumed.account, privateSourceFacts, options);
+}
+
+/**
  * R4：受控来源→解密→绑定核验→账号解析（完整消费链；仅合成来源用于本轮本地验证）。
  * - 计划必须为 synthetic:false 且携带 privateSource；
- * - 枚举固定私密根全部记录并 1/2 排重；
- * - 逐项绑定核验：参与者代码/appId/envId/登记轮次/窗口起止/来源摘要（对 closeSourceDir
- *   重算）/交付确认；
+ * - 仅消费计划明确列出的1/2两份必要记录并排重，不枚举历史私密根；
+ * - 逐项绑定参与者、固定目标、只读核验轮次/窗口/服务端时间/来源摘要及交付确认；
+ *   只读来源与新登记轮次、关闭包分别保存，禁止借分组豁免冲突。
  * - 返回 { account }（仅内存使用；不写日志/证据）。
  */
-async function consumePrivateSource(planPath, { repoRoot } = {}) {
+async function consumePrivateSource(planPath) {
   const plan = readPlan(planPath);
-  if (plan.synthetic !== false || !plan.privateSource) {
-    fail(ERR.REAL_NOT_PERMITTED, 'consumePrivateSource 仅适用于真实模式计划（synthetic:false + privateSource）。');
-  }
+  if (plan.synthetic !== false || !plan.privateSource) fail(ERR.REAL_NOT_PERMITTED, '需要真实模式受控来源引用');
   const store = require('./lib/participant-private-store.cjs');
-  const records = await store.readAllRecordsAsync({ repoRoot: repoRoot || ROOT });
-  if (records.length === 0) fail(ERR.REAL_NOT_PERMITTED, '固定私密根内没有可消费的私密记录。');
-  const target = records.find(r => r.fileName === plan.privateSource.recordFile);
-  if (!target) fail(ERR.REAL_NOT_PERMITTED, '私密来源引用的记录文件不存在：' + plan.privateSource.recordFile);
-  // R4：1/2 排重——先核验目标记录绑定，再对同码/同账号执行排重（历史残留不阻断当前核验）
-  const p = target.payload;
-  const bindingFailures = [];
-  if (p.participantCode !== plan.participantCode) bindingFailures.push('参与者代码');
-  if (p.appId !== plan.appId || p.envId !== plan.envId) bindingFailures.push('固定目标');
-  if (p.roundId !== plan.registrationRoundId) bindingFailures.push('登记轮次');
-  if (p.windowStartsAtIso !== plan.windowStartsAtIso || p.windowExpiresAtIso !== plan.windowExpiresAtIso) bindingFailures.push('窗口起止');
-  if (p.sourceDigest !== store.computeCloseSourceDigest(plan.closeSourceDir)) bindingFailures.push('来源摘要');
-  if (p.deliveryConfirmed !== true) bindingFailures.push('交付确认');
-  if (bindingFailures.length) {
-    fail(ERR.REAL_NOT_PERMITTED, '私密来源绑定核验未通过：' + bindingFailures.join('/'));
+  const records = [];
+  for (const ref of plan.privateSource.records) {
+    const relativePath = store.PRIVATE_ROOT_REL + '/' + ref.recordFile;
+    let payload;
+    try { payload = await store.readRecordAsync({ repoRoot: ROOT, relativePath }); }
+    catch (_) { fail(ERR.REAL_NOT_PERMITTED, '本次必要来源不可读或不可解密'); }
+    store.validatePayload(payload);
+    for (const k of ['participantCode','checkRoundId','checkWindowStartsAtIso','checkWindowExpiresAtIso',
+      'serverTimeIso','readonlySourceDigest','deliveryConfirmed']) {
+      if (payload[k] !== ref[k]) fail(ERR.REAL_NOT_PERMITTED, '只读核验来源与计划绑定不符：' + k);
+    }
+    if (payload.appId !== plan.appId || payload.envId !== plan.envId) fail(ERR.REAL_NOT_PERMITTED, '来源目标不符');
+    const bytes = fs.readFileSync(path.join(ROOT, relativePath));
+    records.push({fileName:ref.recordFile,payload,sha256:sha256Buffer(bytes)});
   }
-  // R4：排重——仅对同来源（同 sourceDigest）的记录执行 1/2 排重
-  const sameSource = records.filter(r => r.payload.sourceDigest === p.sourceDigest);
-  const sameCode = sameSource.filter(r => r.payload.participantCode === p.participantCode);
-  const codeAccounts = new Set(sameCode.map(r => r.payload.fullAccount));
-  if (codeAccounts.size > 1) fail(ERR.REAL_NOT_PERMITTED, '同一参与者代码对应不同账号（跨记录排重）。');
-  const crossCode = sameSource.find(r => r.payload.fullAccount === p.fullAccount && r.payload.participantCode !== p.participantCode);
-  if (crossCode) fail(ERR.REAL_NOT_PERMITTED, '同一账号同时挂在多个参与者代码下。');
-  return { account: p.fullAccount, recordRef: p.ref, participantCode: p.participantCode };
+  store.verifyParticipantDedup(records);
+  const target = records.find(r => r.fileName === plan.privateSource.recordFile);
+  const consumed = Object.freeze({ account:target.payload.fullAccount, recordFileSha256:target.sha256,
+    records:records.map(r => ({...plan.privateSource.records.find(p=>p.recordFile===r.fileName),recordFileSha256:r.sha256})) });
+  consumedSources.add(consumed);
+  return consumed;
 }
 
 /**
  * check/检查已准备目录共用主体（与只读包同构；previewBuildId 换为 registrationBuildId，
  * 其来源依赖计算在受控重建出口内——漂移/缺失/读取异常返回结构化失败）。
  */
-function checkDirInternal(dir, windowPhase, account) {
+function checkDirInternal(dir, windowPhase, consumed, opts) {
+  const account = consumed && consumed.account;
   assertRealDirChain(dir, 'check 输入');
+  const options = opts || {};
   const problems = [];
   const bad = msg => problems.push(msg);
   let manifest = null;
@@ -666,12 +736,12 @@ function checkDirInternal(dir, windowPhase, account) {
     for (const k of MANIFEST_KEYS) {
       if (!Object.prototype.hasOwnProperty.call(manifest, k)) bad('manifest 缺少字段：' + k);
     }
-    // privateSource 字段集与合成/真实模式匹配
+    // privateSource 字段集与合成/真实模式匹配（R5：字段集固定）
     const ps = manifest.privateSource;
     if (!ps || typeof ps !== 'object' || Array.isArray(ps)) {
       bad('manifest.privateSource 缺失');
     } else {
-      const PS_KEYS = ['schema', 'mode', 'syntheticFixtureLabel', 'realSourceConsumed', 'disclosure'];
+      const PS_KEYS = ['schema', 'mode', 'syntheticFixtureLabel', 'recordFile', 'recordFileSha256', 'realSourceConsumed', 'participantCode', 'records', 'disclosure'];
       for (const k of Object.keys(ps)) if (!PS_KEYS.includes(k)) bad('manifest.privateSource 含未知字段：' + k);
       for (const k of PS_KEYS) if (!Object.prototype.hasOwnProperty.call(ps, k)) bad('manifest.privateSource 缺少字段：' + k);
     }
@@ -707,6 +777,14 @@ function checkDirInternal(dir, windowPhase, account) {
     requestProtocol: plan.requestProtocol,
     previewEvidenceSchema: PREVIEW_EVIDENCE_SCHEMA
   };
+  // R5：manifest.privateSource 按模式严格重建（值来自计划/私密根实际文件哈希/模式常量，
+  // 不信清单自报）。真实模式记录文件缺失或哈希不符 → 结构化失败。
+  try {
+    expectFields.privateSource = privateSourceManifestFacts(plan, consumed);
+  } catch (error) {
+    bad('私密来源消费事实重建失败[' + (error.code || 'PSR_ERROR') + ']：' + error.message);
+    return finish();
+  }
   // R2 模式：registrationBuildId 依赖受审来源，纳入受控重建出口（结构化失败不抛原始异常）
   try {
     expectFields.registrationBuildId = computeRegistrationBuildId(plan);
@@ -728,10 +806,16 @@ function checkDirInternal(dir, windowPhase, account) {
   }
   let expected;
   let closeFiles;
-  // R4：真实模式重建必须携带经私密来源解析的账号（缺失=调用方错误，结构化失败）
+  // R4：真实模式重建必须携带经私密来源解析的账号（缺失=调用方错误，结构化失败）；
+  // 并对候选输出执行 Git 忽略/未跟踪/链接/受限 ACL 安全检查（检查函数只读，aclReader 注入）。
   if (plan.synthetic === false && !account) {
     bad('真实模式核对必须先经 consumePrivateSource 解析私密来源账号（checkDirResolved）');
     return finish();
+  }
+  if (plan.synthetic === false) {
+    try { require('./lib/participant-private-store.cjs').assertPrivateOutput(ROOT, path.resolve(dir)); }
+    catch (error) { bad('候选输出安全检查失败[' + (error.code || 'PSR_ERROR') + ']'); }
+
   }
   try {
     expected = computeArtifacts(plan, plan.synthetic === true ? plan.syntheticAccount : account);
@@ -848,9 +932,9 @@ function checkPreparedDir(dir) { return checkDirInternal(dir, 'prepare', null); 
 async function checkDirResolved(dir, opts) {
   const planPath = path.join(path.resolve(dir), 'plan.json');
   const plan = readPlan(planPath);
-  if (plan.synthetic === true) return checkDirInternal(dir, 'execute', null);
-  const { account } = await consumePrivateSource(planPath, opts);
-  return checkDirInternal(dir, 'execute', account);
+  if (plan.synthetic === true) return checkDirInternal(dir, 'execute', null, opts);
+  const consumed = await consumePrivateSource(planPath);
+  return checkDirInternal(dir, 'execute', consumed, opts);
 }
 
 /** R4：真实模式准备核对（prepare 相位；executionReady 仍恒 false）。 */
@@ -858,8 +942,8 @@ async function checkPreparedDirResolved(dir, opts) {
   const planPath = path.join(path.resolve(dir), 'plan.json');
   const plan = readPlan(planPath);
   if (plan.synthetic === true) return checkDirInternal(dir, 'prepare', null);
-  const { account } = await consumePrivateSource(planPath, opts);
-  return checkDirInternal(dir, 'prepare', account);
+  const consumed = await consumePrivateSource(planPath);
+  return checkDirInternal(dir, 'prepare', consumed, opts);
 }
 
 function checkCloseDir(closePackageDir) {
@@ -912,6 +996,7 @@ module.exports = Object.freeze({
   PLAN_SCHEMA, MANIFEST_SCHEMA, REQUEST_PROTOCOL, PREVIEW_EVIDENCE_SCHEMA, PRIVATE_SOURCE_SCHEMA,
   FIXED_TARGET,
   build, prepare, checkDir, checkPreparedDir, checkCloseDir,
+  buildReal, prepareReal,
   checkDirResolved, checkPreparedDirResolved, consumePrivateSource,
   readPlan, planDigest, computeRegistrationBuildId
 });

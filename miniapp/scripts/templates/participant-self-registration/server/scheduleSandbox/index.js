@@ -53,7 +53,12 @@ exports.main = async (event) => {
   const checker = registrationCore.createSelfRegistrationChecker({
     // R1：数据库工厂后置——核心在全部准入通过后才调用 cloud.database()；
     // 非名单/错轮次/错口令等拒绝时零 database/collection/事务/写。
-    dbFactory: cloud.database ? () => cloud.database() : null,
+    // R2（2026-10-22 复查）：真实 wx-server-sdk 3.0.1 的 document.get 默认
+    // throwOnNotFound=true——事务内读取不存在的本人用户会抛错并中止事务，
+    // 导致"不存在→新增"路径必然 PIC_TRANSACTION_FAILED。显式传
+    // { throwOnNotFound: false } 使未命中返回 {data:null}（明确不存在形状），
+    // 与核心的事务形状判定一致；移除该参数的敏感性由测试以真实 SDK 转换证明。
+    dbFactory: cloud.database ? () => cloud.database({ throwOnNotFound: false }) : null,
     trusted: { appId: wxContext.APPID, envId: CONFIG_ENV_ID, OPENID: wxContext.OPENID },
     config: {
       registrationRoundId: CONFIG_REGISTRATION_ROUND_ID,

@@ -1,0 +1,444 @@
+{
+  "schema": "participant-registration-local-evidence/3",
+  "executor": "本地页面开发（接续CodeBuddy未提交成果）",
+  "baseline": "master a34a1c4",
+  "recordedAt": "2026-10-22T15:15:19.208Z",
+  "ok": true,
+  "exitCode": 0,
+  "observed": {
+    "probes": 2,
+    "parentUnexpected": 0,
+    "childUnexpectedTotal": 0,
+    "receiptFailures": 0
+  },
+  "tests": {
+    "tests": 35,
+    "pass": 35,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "exitCode": 0,
+    "rows": [
+      {
+        "passed": true,
+        "number": 1,
+        "name": "PSR 核心准入：非名单/缺身份/错App/错env/错轮次/错口令/窗口过期全部在数据库工厂之前拒绝（零工厂零事务零写）"
+      },
+      {
+        "passed": true,
+        "number": 2,
+        "name": "PSR 核心事务矩阵：新账号恰两条原子新增并回读；active 重复/审计一致零新增；disabled/缺字段/孤立审计/主体不符零写"
+      },
+      {
+        "passed": true,
+        "number": 3,
+        "name": "PSR 核心事务：第二写失败→OUTCOME_UNKNOWN（不误报零写不自动重试）；提交后超时/回读失败→OUTCOME_UNKNOWN；并发至多一组新增"
+      },
+      {
+        "passed": true,
+        "number": 4,
+        "name": "PSR 打包器：合成计划 build/prepare、真实计划拒绝、未知字段/账号格式/窗口写前拒绝"
+      },
+      {
+        "passed": true,
+        "number": 5,
+        "name": "PSR 打包器：checkDir/checkPreparedDir 结构化失败（模板漂移/缺失，R2 模式）；篡改/账号披露边界/独立关闭"
+      },
+      {
+        "passed": true,
+        "number": 6,
+        "name": "PSR 生成链：App→Page→client→入口→核心→合成db；新协议/轮次错配/非名单零工厂；页面提示/单击单发/口令清除"
+      },
+      {
+        "passed": true,
+        "number": 7,
+        "name": "R1 无效配置零工厂零写：无限窗口"
+      },
+      {
+        "passed": true,
+        "number": 8,
+        "name": "R1 无效配置零工厂零写：空窗口"
+      },
+      {
+        "passed": true,
+        "number": 9,
+        "name": "R1 无效配置零工厂零写：非数字窗口"
+      },
+      {
+        "passed": true,
+        "number": 10,
+        "name": "R1 无效配置零工厂零写：超过30分钟"
+      },
+      {
+        "passed": true,
+        "number": 11,
+        "name": "R1 无效配置零工厂零写：合成标记非布尔"
+      },
+      {
+        "passed": true,
+        "number": 12,
+        "name": "R3 事务畸形不是不存在：缺data"
+      },
+      {
+        "passed": true,
+        "number": 13,
+        "name": "R3 事务畸形不是不存在：多条"
+      },
+      {
+        "passed": true,
+        "number": 14,
+        "name": "R3 事务畸形不是不存在：空数组"
+      },
+      {
+        "passed": true,
+        "number": 15,
+        "name": "R3 事务畸形不是不存在：原始值"
+      },
+      {
+        "passed": true,
+        "number": 16,
+        "name": "R3 事务畸形不是不存在：undefined"
+      },
+      {
+        "passed": true,
+        "number": 17,
+        "name": "R3 事务与回读统一拒绝记录：审计角色"
+      },
+      {
+        "passed": true,
+        "number": 18,
+        "name": "R3 事务与回读统一拒绝记录：审计after"
+      },
+      {
+        "passed": true,
+        "number": 19,
+        "name": "R3 事务与回读统一拒绝记录：审计after额外字段"
+      },
+      {
+        "passed": true,
+        "number": 20,
+        "name": "R3 事务与回读统一拒绝记录：审计时间"
+      },
+      {
+        "passed": true,
+        "number": 21,
+        "name": "R3 事务与回读统一拒绝记录：审计时间类型"
+      },
+      {
+        "passed": true,
+        "number": 22,
+        "name": "R3 事务与回读统一拒绝记录：用户缺时间"
+      },
+      {
+        "passed": true,
+        "number": 23,
+        "name": "R3 事务与回读统一拒绝记录：用户更新时间逆序"
+      },
+      {
+        "passed": true,
+        "number": 24,
+        "name": "R3 回读畸形不报有效：缺data"
+      },
+      {
+        "passed": true,
+        "number": 25,
+        "name": "R3 回读畸形不报有效：多条"
+      },
+      {
+        "passed": true,
+        "number": 26,
+        "name": "R3 回读畸形不报有效：原始值"
+      },
+      {
+        "passed": true,
+        "number": 27,
+        "name": "R2 实际生成入口直连真实SDK：不存在/失败/两条新增/第二写失败/冲突重试/到期/参数移除"
+      },
+      {
+        "passed": true,
+        "number": 28,
+        "name": "R4 实际CLI源摘要与含空格路径传递；双输入一致、交付、服务端时间必需"
+      },
+      {
+        "passed": true,
+        "number": 29,
+        "name": "R4 ACL最小主体/不确定失败闭合；无权限修改；Git/链接反例零写"
+      },
+      {
+        "passed": true,
+        "number": 30,
+        "name": "R4 私密录入错误/排他/部分写事实：全部合成FS，无实际DPAPI或真实输入"
+      },
+      {
+        "passed": true,
+        "number": 31,
+        "name": "R4/R5 合成私密源执行真实模式：内部消费两份来源、严格清单值重建/篡改拒绝"
+      },
+      {
+        "passed": true,
+        "number": 32,
+        "name": "R4 必要记录跨轮次跨摘要排重，任一不可解密及来源改标均阻断，输出零写"
+      },
+      {
+        "passed": true,
+        "number": 33,
+        "name": "R4 明文候选忽略/跟踪/ACL/链接检查写前停止，不自动改权限"
+      },
+      {
+        "passed": true,
+        "number": 34,
+        "name": "R6 公共接口始终阻断记账、catch及restore均不能旁路；专用能力拒绝任意命令与options"
+      },
+      {
+        "passed": true,
+        "number": 35,
+        "name": "R6 专用能力结果不确定/超量/超时/错误必须拒绝，非公共分发"
+      }
+    ],
+    "tapSha256": "e45e12956a2e56c0cc095e62a84ddf95b1de60b9e98c518614cf237c6445ddfb",
+    "failures": [],
+    "stderr": ""
+  },
+  "sensitivity": [
+    {
+      "fault": "normal",
+      "passed": true,
+      "exitCode": 0,
+      "worker": {
+        "schema": "psr-v3-worker/1",
+        "fault": "normal",
+        "ok": true,
+        "exitCode": 0,
+        "probes": 2,
+        "unexpected": [],
+        "actualExternalToolExecutions": 0
+      },
+      "receiptValidation": {
+        "failures": [],
+        "childUnexpected": 0
+      }
+    },
+    {
+      "fault": "earlyRequire",
+      "passed": true,
+      "exitCode": 1,
+      "worker": {
+        "schema": "psr-v3-worker/1",
+        "fault": "earlyRequire",
+        "ok": false,
+        "exitCode": 1,
+        "probes": 2,
+        "unexpected": [
+          {
+            "phase": "business",
+            "api": "https.request"
+          }
+        ],
+        "actualExternalToolExecutions": 0
+      },
+      "receiptValidation": {
+        "failures": [],
+        "childUnexpected": 0
+      }
+    },
+    {
+      "fault": "publicGit",
+      "passed": true,
+      "exitCode": 1,
+      "worker": {
+        "schema": "psr-v3-worker/1",
+        "fault": "publicGit",
+        "ok": false,
+        "exitCode": 1,
+        "probes": 2,
+        "unexpected": [
+          {
+            "phase": "business",
+            "api": "cp.spawnSync"
+          }
+        ],
+        "actualExternalToolExecutions": 0
+      },
+      "receiptValidation": {
+        "failures": [],
+        "childUnexpected": 0
+      }
+    },
+    {
+      "fault": "publicSpawn",
+      "passed": true,
+      "exitCode": 1,
+      "worker": {
+        "schema": "psr-v3-worker/1",
+        "fault": "publicSpawn",
+        "ok": false,
+        "exitCode": 1,
+        "probes": 2,
+        "unexpected": [
+          {
+            "phase": "business",
+            "api": "cp.spawn"
+          }
+        ],
+        "actualExternalToolExecutions": 0
+      },
+      "receiptValidation": {
+        "failures": [],
+        "childUnexpected": 0
+      }
+    },
+    {
+      "fault": "publicExec",
+      "passed": true,
+      "exitCode": 1,
+      "worker": {
+        "schema": "psr-v3-worker/1",
+        "fault": "publicExec",
+        "ok": false,
+        "exitCode": 1,
+        "probes": 2,
+        "unexpected": [
+          {
+            "phase": "business",
+            "api": "cp.execFileSync"
+          }
+        ],
+        "actualExternalToolExecutions": 0
+      },
+      "receiptValidation": {
+        "failures": [],
+        "childUnexpected": 0
+      }
+    },
+    {
+      "fault": "afterRestore",
+      "passed": true,
+      "exitCode": 1,
+      "worker": {
+        "schema": "psr-v3-worker/1",
+        "fault": "afterRestore",
+        "ok": false,
+        "exitCode": 1,
+        "probes": 2,
+        "unexpected": [
+          {
+            "phase": "business",
+            "api": "cp.spawnSync"
+          }
+        ],
+        "actualExternalToolExecutions": 0
+      },
+      "receiptValidation": {
+        "failures": [],
+        "childUnexpected": 0
+      }
+    }
+  ],
+  "sourceFacts": [
+    {
+      "rel": "miniapp/scripts/lib/participant-self-registration.cjs",
+      "bytes": 27890,
+      "sha256": "bf02b17d57e7a820f82eecef30bdffbabd2004408dcdf2a77297303d427cb4d3"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-private-store.cjs",
+      "bytes": 25224,
+      "sha256": "e9ac99da28642f0c4b243bc3f9c80ce43dfa50090c8610bfbd4aa4a1cf13c115"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-local-tools.cjs",
+      "bytes": 5983,
+      "sha256": "472b9b5c601410c30c78ef361a59db067722ecb185bc730bb7ec8e56afb23011"
+    },
+    {
+      "rel": "miniapp/scripts/package-participant-self-registration.cjs",
+      "bytes": 59289,
+      "sha256": "2deaa9b6685db7378e06bb78db666551ba45d586f74e7051d65d5590dfe58d60"
+    },
+    {
+      "rel": "miniapp/scripts/participant-private-input.ps1",
+      "bytes": 8951,
+      "sha256": "ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357"
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/index.js",
+      "bytes": 3808,
+      "sha256": "5f5ebb3d6c0e9b563619638ee88740468422f11849ee87177f8749973b27c1c7"
+    },
+    {
+      "rel": "miniapp/tests/participant-self-registration.test.cjs",
+      "bytes": 61868,
+      "sha256": "d099fe47414b04d8adeabe875fe2a33380bb39b2fc828f5707a4c435fb76a58b"
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-guard-runner.cjs",
+      "bytes": 1662,
+      "sha256": "410cfaf76d9e4e8a5fba564f37b74293dc3642979a6c9a17dd05acc1fbfffd11"
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-repair-fixtures.cjs",
+      "bytes": 5100,
+      "sha256": "b3b4276885ef3fc896b3adbea1c86c74b523aa70093c834d376b9c98ee35404d"
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-sdk-fixture.cjs",
+      "bytes": 4131,
+      "sha256": "5bc246efd91259f0743428ace4d9b0deb3284a07e10b3c9ba0c41e92291a6bfe"
+    }
+  ],
+  "runtimeFacts": [
+    {
+      "rel": "wx-server-sdk/index.js",
+      "bytes": 320781,
+      "sha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04"
+    },
+    {
+      "rel": "@cloudbase/database/dist/commonjs/transaction/index.js",
+      "bytes": 3258,
+      "sha256": "0c3cd858872fb4ea4d9eac8755e2ad5b041df85bb00872c648f51b7c133d5e1f"
+    }
+  ],
+  "boundaries": {
+    "syntheticInputOnly": true,
+    "realSdkConversion": true,
+    "transportAndContextSynthetic": true,
+    "actualPlatformTransactionVerified": false,
+    "realPrivateRecordsRead": 0,
+    "aclMutations": 0,
+    "gitIndexMutations": 0,
+    "networkAttempts": 0,
+    "explicitProbes": 2,
+    "actualCloudCalls": 0,
+    "realRegistration": false,
+    "roleGrants": false,
+    "executionApproved": false
+  },
+  "unverified": [
+    {
+      "item": "实际PS1输入器参数传输自测",
+      "reason": "宿主脚本执行策略拒绝，退出1；未修改策略或改写法绕过。CLI源码在合成FS/DPAPI/ACL替身中验证。"
+    },
+    {
+      "item": "真实DPAPI管线、跨Windows账号、原生窗口人工体验",
+      "reason": "本轮只用合成私密记录；未触真实编号/认证缓存。"
+    },
+    {
+      "item": "IAM、平台事务/并发、登记、部署及P",
+      "reason": "未授权未执行。"
+    }
+  ],
+  "disclosure": "真实应用代码及真实SDK包装/事务/EJSON，传输与数据为合成；不等于平台提交/原子性证明。正常计数与敏感性独立，ok由实测父出口决定。",
+  "evidenceScriptSha256": "4ce2120c96a743340074abc20ae29250e6dbd5d467996f078959519bdcea622f",
+  "temporaryFiles": [
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\psr-v3-865ba1a5f68b-preload.cjs",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-9f91acc89a95f8bc.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-2e22aac48adaa99c.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-d13404cd4aaf4468.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-4b3890637473347e.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-ba8919216c4eaf9b.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-3bb4ff3367441a8f.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-psr-v3-865ba1a5f68b-a9a63b4c608f80fa.json",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\schedule-sandbox\\business-test\\cli-receipt-bootstrap-07afefcced016cf9.json.cjs"
+  ],
+  "next": "本地自测通过待Codex复查，真实录入及执行未放行；本节点无需转发CodeBuddy。"
+}
