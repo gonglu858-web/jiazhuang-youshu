@@ -1,0 +1,465 @@
+{
+  "schema": "codex-self-registration-rereview/1",
+  "reviewedCommit": "2c46eaf",
+  "basis": "b639d7c",
+  "ok": true,
+  "meaning": "Counterexamples and controls reproduced; NOT product acceptance",
+  "cases": 10,
+  "results": [
+    {
+      "name": "R1_positiveAndClosedBoundaries",
+      "positive": {
+        "result": {
+          "schema": "participant-self-registration-result/1",
+          "registrationRoundId": "synthetic-codex-rereview-round",
+          "userIdTail": "de9883",
+          "auditIdTail": "2468bc",
+          "writeAttempted": true,
+          "commitConfirmed": true,
+          "readBack": {
+            "user": true,
+            "audit": true
+          },
+          "outcome": "CREATED_AND_VERIFIED",
+          "code": null,
+          "created": true,
+          "message": "本人用户与登记审计已同事务新增并回读通过"
+        },
+        "calls": {
+          "factory": 1,
+          "collections": [
+            "schtest_v1_users",
+            "schtest_v1_audit_events",
+            "schtest_v1_users",
+            "schtest_v1_audit_events"
+          ],
+          "transactions": 1,
+          "creates": 2,
+          "projections": [
+            [
+              "_id",
+              "openid",
+              "status",
+              "createdAt",
+              "updatedAt"
+            ],
+            [
+              "_id",
+              "projectId",
+              "actorUserId",
+              "actorRole",
+              "action",
+              "subjectUserId",
+              "before",
+              "after",
+              "createdAt",
+              "sourceProtocol",
+              "registrationRoundId"
+            ]
+          ]
+        }
+      },
+      "early": {
+        "result": {
+          "schema": "participant-self-registration-result/1",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_WINDOW_NOT_OPEN",
+          "registrationRoundId": "synthetic-codex-rereview-round",
+          "userIdTail": null,
+          "writeAttempted": false,
+          "commitConfirmed": false,
+          "readBack": {
+            "user": false,
+            "audit": false
+          },
+          "message": "窗口时效检查未通过"
+        },
+        "calls": {
+          "factory": 0,
+          "collections": [],
+          "transactions": 0,
+          "creates": 0,
+          "projections": []
+        }
+      },
+      "wrong": {
+        "result": {
+          "schema": "participant-self-registration-result/1",
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_PASSPHRASE_MISMATCH",
+          "registrationRoundId": "synthetic-codex-rereview-round",
+          "userIdTail": "de9883",
+          "writeAttempted": false,
+          "commitConfirmed": false,
+          "readBack": {
+            "user": false,
+            "audit": false
+          },
+          "message": "口令校验未通过"
+        },
+        "calls": {
+          "factory": 0,
+          "collections": [],
+          "transactions": 0,
+          "creates": 0,
+          "projections": []
+        }
+      },
+      "late": {
+        "result": {
+          "schema": "participant-self-registration-result/1",
+          "registrationRoundId": "synthetic-codex-rereview-round",
+          "userIdTail": "de9883",
+          "auditIdTail": "2468bc",
+          "writeAttempted": true,
+          "commitConfirmed": true,
+          "readBack": {
+            "user": true,
+            "audit": true
+          },
+          "outcome": "OUTCOME_UNKNOWN",
+          "code": "PIC_OUTCOME_UNKNOWN",
+          "message": "回读后时钟复核未通过：提交状态待核实，不自动重试"
+        },
+        "calls": {
+          "factory": 1,
+          "collections": [
+            "schtest_v1_users",
+            "schtest_v1_audit_events",
+            "schtest_v1_users",
+            "schtest_v1_audit_events"
+          ],
+          "transactions": 1,
+          "creates": 2,
+          "projections": [
+            [
+              "_id",
+              "openid",
+              "status",
+              "createdAt",
+              "updatedAt"
+            ],
+            [
+              "_id",
+              "projectId",
+              "actorUserId",
+              "actorRole",
+              "action",
+              "subjectUserId",
+              "before",
+              "after",
+              "createdAt",
+              "sourceProtocol",
+              "registrationRoundId"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "R2_realSdkMissingRecordFails",
+      "missing": {
+        "result": {
+          "schema": "participant-self-registration-result/1",
+          "registrationRoundId": "synthetic-codex-rereview-round",
+          "userIdTail": "de9883",
+          "auditIdTail": "2468bc",
+          "writeAttempted": false,
+          "commitConfirmed": false,
+          "readBack": {
+            "user": false,
+            "audit": false
+          },
+          "outcome": "REJECTED_NO_WRITE",
+          "code": "PIC_TRANSACTION_FAILED",
+          "message": "登记事务未开始写入"
+        },
+        "actions": [
+          "database.startTransaction",
+          "database.getDocument",
+          "database.abortTransaction"
+        ]
+      },
+      "memoryFlagControl": {
+        "result": {
+          "schema": "participant-self-registration-result/1",
+          "registrationRoundId": "synthetic-codex-rereview-round",
+          "userIdTail": "de9883",
+          "auditIdTail": "2468bc",
+          "writeAttempted": true,
+          "commitConfirmed": true,
+          "readBack": {
+            "user": true,
+            "audit": true
+          },
+          "outcome": "CREATED_AND_VERIFIED",
+          "code": null,
+          "created": true,
+          "message": "本人用户与登记审计已同事务新增并回读通过"
+        },
+        "actions": [
+          "database.startTransaction",
+          "database.getDocument",
+          "database.getDocument",
+          "database.insertDocument",
+          "database.insertDocument",
+          "database.commitTransaction",
+          "database.getDocument",
+          "database.getDocument"
+        ]
+      },
+      "sdkSha256": "ccb1942887b0e659cf9052900ef1f96bd62290dc0b8b9152386b4fce9f80bc04",
+      "scope": "Entry constants injected in memory, actual adapter/core and real wx SDK/database/transaction/EJSON. Synthetic getWXContext, node-sdk init factory and transport only. No platform commit/concurrency claim."
+    },
+    {
+      "name": "R1_invalidWindowAndCollectionStillAccepted",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-rereview-round",
+        "userIdTail": "de9883",
+        "auditIdTail": "2468bc",
+        "writeAttempted": true,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "CREATED_AND_VERIFIED",
+        "code": null,
+        "created": true,
+        "message": "本人用户与登记审计已同事务新增并回读通过"
+      },
+      "calls": {
+        "factory": 1,
+        "collections": [
+          "synthetic-unapproved-users",
+          "schtest_v1_audit_events",
+          "synthetic-unapproved-users",
+          "schtest_v1_audit_events"
+        ],
+        "transactions": 1,
+        "creates": 2,
+        "projections": [
+          [
+            "_id",
+            "openid",
+            "status",
+            "createdAt",
+            "updatedAt"
+          ],
+          [
+            "_id",
+            "projectId",
+            "actorUserId",
+            "actorRole",
+            "action",
+            "subjectUserId",
+            "before",
+            "after",
+            "createdAt",
+            "sourceProtocol",
+            "registrationRoundId"
+          ]
+        ]
+      },
+      "scope": "Core injected config defense; approved packer currently constrains these fields"
+    },
+    {
+      "name": "R3_invalidAuditContentAccepted",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-rereview-round",
+        "userIdTail": "de9883",
+        "auditIdTail": "2468bc",
+        "writeAttempted": false,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "ALREADY_ACTIVE",
+        "code": null,
+        "message": "本人账号已有效存在，本包零新增（不伪造本包创建回执）"
+      },
+      "calls": {
+        "factory": 1,
+        "collections": [
+          "schtest_v1_users",
+          "schtest_v1_audit_events",
+          "schtest_v1_users",
+          "schtest_v1_audit_events"
+        ],
+        "transactions": 1,
+        "creates": 0,
+        "projections": [
+          [
+            "_id",
+            "openid",
+            "status",
+            "createdAt",
+            "updatedAt"
+          ],
+          [
+            "_id",
+            "projectId",
+            "actorUserId",
+            "actorRole",
+            "action",
+            "subjectUserId",
+            "before",
+            "after",
+            "createdAt",
+            "sourceProtocol",
+            "registrationRoundId"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "R3_missingReadbackTimeAccepted",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-rereview-round",
+        "userIdTail": "de9883",
+        "auditIdTail": "2468bc",
+        "writeAttempted": false,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "ALREADY_ACTIVE",
+        "code": null,
+        "message": "本人账号已有效存在，本包零新增（不伪造本包创建回执）"
+      },
+      "calls": {
+        "factory": 1,
+        "collections": [
+          "schtest_v1_users",
+          "schtest_v1_audit_events",
+          "schtest_v1_users",
+          "schtest_v1_audit_events"
+        ],
+        "transactions": 1,
+        "creates": 0,
+        "projections": [
+          [
+            "_id",
+            "openid",
+            "status",
+            "createdAt",
+            "updatedAt"
+          ],
+          [
+            "_id",
+            "projectId",
+            "actorUserId",
+            "actorRole",
+            "action",
+            "subjectUserId",
+            "before",
+            "after",
+            "createdAt",
+            "sourceProtocol",
+            "registrationRoundId"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "R3_malformedMissingSnapshotCreates",
+      "result": {
+        "schema": "participant-self-registration-result/1",
+        "registrationRoundId": "synthetic-codex-rereview-round",
+        "userIdTail": "de9883",
+        "auditIdTail": "2468bc",
+        "writeAttempted": true,
+        "commitConfirmed": true,
+        "readBack": {
+          "user": true,
+          "audit": true
+        },
+        "outcome": "CREATED_AND_VERIFIED",
+        "code": null,
+        "created": true,
+        "message": "本人用户与登记审计已同事务新增并回读通过"
+      },
+      "calls": {
+        "factory": 1,
+        "collections": [
+          "schtest_v1_users",
+          "schtest_v1_audit_events",
+          "schtest_v1_users",
+          "schtest_v1_audit_events"
+        ],
+        "transactions": 1,
+        "creates": 2,
+        "projections": [
+          [
+            "_id",
+            "openid",
+            "status",
+            "createdAt",
+            "updatedAt"
+          ],
+          [
+            "_id",
+            "projectId",
+            "actorUserId",
+            "actorRole",
+            "action",
+            "subjectUserId",
+            "before",
+            "after",
+            "createdAt",
+            "sourceProtocol",
+            "registrationRoundId"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "R4_cliDropsSourceDigest",
+      "code": "[PSR_PRIVATE_SOURCE] ",
+      "suppliedDigestValid": true,
+      "exitCode": 1,
+      "scope": "Exact CLI in VM, synthetic fs/process substitutes; no DPAPI/private write"
+    },
+    {
+      "name": "R4_sourceGroupingSkipsOtherParticipant",
+      "duplicatedAccountAcceptedAcrossSourceGroups": true,
+      "missingSourceTimeAccepted": true,
+      "sourceIsCloseDigestNotIdentityEvidence": true
+    },
+    {
+      "name": "R4_aclAllowsBroadTokenGroupAndIgnoresMalformedAce",
+      "tokenGroupEveryoneAllowed": true,
+      "unparsedAceSilentlyAccepted": true,
+      "actualAclChanged": false
+    },
+    {
+      "name": "R6_publicSpawnAllowsOptionsAndAclMutation",
+      "publicNativeSpyCalls": 3,
+      "unexpectedRecorded": 0,
+      "shellOptionPassed": true,
+      "aclMutationPassed": true,
+      "restoreStillAllowsPublicSpawnSync": true,
+      "realProcessesStarted": 0
+    }
+  ],
+  "guard": {
+    "probes": 2,
+    "unexpected": [],
+    "realProcessesStartedByEvidence": 0
+  },
+  "runtimeDigests": {
+    "core": "74c006b0238ac5f482c069b40d027b643ff74cdddcf0cd4f8351327226a7c5df",
+    "packer": "7f75cc96494f5282da722d9e1655e12f674f6e6dbd1d0cbc71ab39e3628aa443",
+    "store": "a4aa63a85f671ec682e04fa49bac4f897e11aee6b5e9c2f9eb9d8a4cc3240d19"
+  },
+  "limitations": [
+    "Synthetic filesystem/ACL/process tests do not change OS permissions or read private records",
+    "SDK transport and context synthetic; no platform writes, retries or concurrency verified",
+    "No real number input, credentials or cloud activity"
+  ]
+}
