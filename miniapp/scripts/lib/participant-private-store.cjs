@@ -293,15 +293,27 @@ function protectRecord({ repoRoot, fileName, participantCode, fullAccount, fullA
   });
 }
 
-/** 解密装配视图（async；NamedPipe 传输；仅内存使用）。 */
-async function readRecordAsync({ repoRoot, relativePath }) {
-  const { targetAbs } = validatePrivateTarget({ repoRoot, relativePath });
-  const cipherHex = fs.readFileSync(targetAbs, 'utf8');
-  const plain = await dpapiUnprotectAsync(cipherHex);
+/**
+ * S1：单次读取的可信消费快照——解密结果与其密文摘要来自同一份密文字节。
+ * 调用方必须用返回的 recordFileSha256 记账（manifest/消费事实），不得另行读取文件计算摘要，
+ * 否则会出现“后读摘要绑定旧账号”的不一致证明。
+ * 返回冻结对象 { payload, recordFileSha256, relativePath }，仅内存使用。
+ */
+async function readRecordSnapshotAsync({ repoRoot, relativePath, aclReader }) {
+  const { targetAbs, relFromRepo } = validatePrivateTarget({ repoRoot, relativePath, aclReader });
+  const cipherBuf = fs.readFileSync(targetAbs); // 唯一一次密文读取：摘要与解密共用此缓冲
+  const recordFileSha256 = sha256Buffer(cipherBuf);
+  const plain = await dpapiUnprotectAsync(cipherBuf.toString('utf8'));
   const payload = JSON.parse(plain);
   if (!payload || payload.schema !== PAYLOAD_SCHEMA) fail('PSR_PRIVATE_PAYLOAD', '私密负载 schema 不符。');
   validatePayload(payload);
-  return Object.freeze(payload);
+  return Object.freeze({ payload: Object.freeze(payload), recordFileSha256, relativePath: relFromRepo });
+}
+
+/** 解密装配视图（async；NamedPipe 传输；仅内存使用）。保留旧签名；摘要用 readRecordSnapshotAsync。 */
+async function readRecordAsync({ repoRoot, relativePath }) {
+  const snapshot = await readRecordSnapshotAsync({ repoRoot, relativePath });
+  return snapshot.payload;
 }
 
 function validatePayload(payload) {
@@ -341,7 +353,10 @@ function assertPrivateOutput(repoRoot, outDir) {
  */
 async function readAllRecordsAsync({ repoRoot, recordFiles }) {
   if (!Array.isArray(recordFiles) || recordFiles.length !== 2 || new Set(recordFiles).size !== 2 || !recordFiles.every(f => /^[A-Za-z0-9_-]+\.bin$/.test(f))) fail('PSR_PRIVATE_PAYLOAD', '必须明确指定本次1/2两份必要记录，禁止扫描历史根');
-  return Promise.all(recordFiles.map(async fileName => ({ fileName, payload: await readRecordAsync({ repoRoot, relativePath: PRIVATE_ROOT_REL + '/' + fileName }) })));
+  return Promise.all(recordFiles.map(async fileName => {
+    const snapshot = await readRecordSnapshotAsync({ repoRoot, relativePath: PRIVATE_ROOT_REL + '/' + fileName });
+    return { fileName, payload: snapshot.payload, recordFileSha256: snapshot.recordFileSha256 };
+  }));
 }
 /**
  * 1/2 完整编号排重（R4）：同一参与者代码在不同记录文件中不得对应不同账号；
@@ -387,6 +402,7 @@ module.exports = Object.freeze({
   dpapiProtect,
   dpapiUnprotectAsync,
   protectRecord,
+  readRecordSnapshotAsync,
   readRecordAsync,
   readAllRecordsAsync,
   verifyParticipantDedup,

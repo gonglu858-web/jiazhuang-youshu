@@ -12,6 +12,9 @@
 //   不进入前端/公开计划/manifest 清单/previewBuildId 输入；manifest 记录该披露边界。
 // - registrationBuildId 与只读包 previewBuildId 同法：固定排序规范 JSON 的 SHA-256，
 //   输入不含口令摘要/账号/synthetic 账号/私密引用/绝对路径/时间/随机数。
+// - S1/S2 来源快照返修（2026-10-22）：计划只读一次形成快照（字节+解析），贯穿来源选择/产物/
+//   plan.json/摘要；每份密文只读一次，解密结果与摘要同源。异步消费完成到写入前复核计划字节
+//   与两份必要来源摘要，任一变化即拒绝且零产物（不静默重读、不更新摘要使反例通过）。
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -105,6 +108,8 @@ const ERR = Object.freeze({
   REAL_NOT_PERMITTED: 'PSR_REAL_NOT_PERMITTED',
   SOURCE_MISSING: 'PSR_SOURCE_MISSING',
   SOURCE_DRIFT: 'PSR_SOURCE_DRIFT',
+  SOURCE_SNAPSHOT_CHANGED: 'PSR_SOURCE_SNAPSHOT_CHANGED',
+  PLAN_SNAPSHOT_CHANGED: 'PSR_PLAN_SNAPSHOT_CHANGED',
   TRANSFORM_ANCHOR_MISSING: 'PSR_TRANSFORM_ANCHOR_MISSING',
   TRANSFORM_ANCHOR_AMBIGUOUS: 'PSR_TRANSFORM_ANCHOR_AMBIGUOUS',
   OUT_CONFLICT: 'PSR_OUT_CONFLICT',
@@ -263,12 +268,30 @@ function planDigest(plan) {
   return sha256Buffer(Buffer.from(canonical));
 }
 
-function readPlan(planPath) {
+/**
+ * S2：计划单次读取快照（原始字节 + 解析结果 + 字节摘要）。
+ * 同一次装配/核对必须贯穿使用该快照——解析、来源选择、产物生成、plan.json 复制与摘要，
+ * 不得在异步等待后重读计划或改用新摘要。
+ */
+function readPlanSnapshot(planPath) {
   if (typeof planPath !== 'string' || !planPath) fail(ERR.PLAN_INVALID, '缺少计划文件路径。');
+  const abs = path.resolve(planPath);
+  let bytes;
+  try { bytes = fs.readFileSync(abs); } catch (error) {
+    fail(ERR.PLAN_INVALID, '计划文件无法读取：' + error.message);
+  }
   let raw;
-  try { raw = JSON.parse(fs.readFileSync(planPath, 'utf8')); } catch (error) {
+  try { raw = JSON.parse(bytes.toString('utf8')); } catch (error) {
     fail(ERR.PLAN_INVALID, '计划文件无法解析：' + error.message);
   }
+  return Object.freeze({ path: abs, bytes, sha256: sha256Buffer(bytes), plan: validatePlan(raw) });
+}
+
+function readPlan(planPath) {
+  return readPlanSnapshot(planPath).plan;
+}
+
+function validatePlan(raw) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) fail(ERR.PLAN_INVALID, '计划必须是 JSON 对象。');
   for (const k of Object.keys(raw)) {
     if (!PLAN_FIELDS.includes(k)) fail(ERR.PLAN_INVALID, '计划含未知字段：' + k);
@@ -523,7 +546,8 @@ function privateSourceManifestFacts(plan, consumed) {
 
 function buildInternal(planPath, outOverride, windowPhase, opts) {
   const options = opts || {};
-  const plan = readPlan(planPath);
+  const snapshot = readPlanSnapshot(planPath);
+  const plan = snapshot.plan;
   windowClockCheck(plan, 'build.readPlan', windowPhase);
   // R4 收紧：同步 build/prepare 仅支持合成模式；真实模式必须走异步 buildReal/prepareReal
   // （内部实际消费受控私密来源，不接受调用者传入账号字符串）。
@@ -532,13 +556,14 @@ function buildInternal(planPath, outOverride, windowPhase, opts) {
   }
   const account = plan.syntheticAccount;
   const privateSourceFacts = privateSourceManifestFacts(plan, false);
-  return writeCandidate(plan, planPath, outOverride, windowPhase, account, privateSourceFacts, options);
+  return writeCandidate(plan, snapshot, outOverride, windowPhase, account, privateSourceFacts, options);
 }
 
-function writeCandidate(plan, planPath, outOverride, windowPhase, account, privateSourceFacts, options) {
+function writeCandidate(plan, planSnapshot, outOverride, windowPhase, account, privateSourceFacts, options) {
   const closeFiles = verifyCloseSource(plan.closeSourceDir);
   const artifacts = computeArtifacts(plan, account);
-  const planBytes = fs.readFileSync(planPath);
+  // S2：plan.json 与摘要一律取受审计划快照（不重读磁盘后的另一版本）。
+  const planBytes = planSnapshot.bytes;
   const digest = planDigest(plan);
 
   const outDir = outOverride ? path.resolve(outOverride)
@@ -604,17 +629,22 @@ function writeCandidate(plan, planPath, outOverride, windowPhase, account, priva
   assertCloseMappingInvariants(new Map([...expected].filter(([k]) => k.startsWith('close/')).map(([k, v]) => [k.slice('close/'.length), v])));
 
   const io = [];
+  // S1/S2：异步消费后写前复核（计划字节与两份必要来源摘要）；任一变化 → 拒绝且零产物。
+  const recheck = typeof options.recheckBeforeWrite === 'function' ? options.recheckBeforeWrite : null;
   try {
     windowClockCheck(plan, 'build.precheck', windowPhase);
+    if (recheck) recheck('build.precheck');
     const reused = precheckOutDir(outDir, expected);
     for (const r of reused) io.push({ path: r.path, action: 'reused' });
     const reusedRels = new Set(reused.map(r => r.rel));
+    if (recheck) recheck('build.preWrite');
     for (const [rel, buf] of expected) {
       if (reusedRels.has(rel)) continue;
       windowClockCheck(plan, 'build.write:' + rel, windowPhase);
       writeExclusive(path.join(outDir, rel), buf, io, rel);
     }
     windowClockCheck(plan, 'build.final', windowPhase);
+    if (recheck) recheck('build.final');
     const result = { outDir, manifest, io };
     if (windowPhase === 'prepare') {
       result.phase = 'preparation';
@@ -637,60 +667,102 @@ function build(planPath, outOverride, opts) { return buildInternal(planPath, out
 function prepare(planPath, outOverride, opts) { return buildInternal(planPath, outOverride, 'prepare', opts); }
 
 /**
+ * S1/S2：异步消费完成到写入前的快照复核。
+ * - 计划：同一路径的字节必须仍等于受审快照（不得静默重读新计划或改用新摘要）；
+ * - 来源：两份必要密文必须仍等于各自“同一次读取”快照的摘要（不得用后读摘要绑定旧账号）。
+ * 任一变化 → 抛错拒绝，调用方在写入前失败即零产物；若已写由 writeCandidate 的 catch 如实附写事实。
+ */
+function assertSnapshotUnchanged(snapshot, consumed, at) {
+  let currentPlan = null;
+  try { currentPlan = fs.readFileSync(snapshot.path); } catch (_) { currentPlan = null; }
+  if (!currentPlan || sha256Buffer(currentPlan) !== snapshot.sha256) {
+    fail(ERR.PLAN_SNAPSHOT_CHANGED, '计划在异步消费期间已变化或不可读[' + at + ']：拒绝装配，不重读新计划、不更新摘要。');
+  }
+  for (const source of consumed.sources) {
+    let current = null;
+    try { current = fs.readFileSync(path.join(ROOT, source.relativePath)); } catch (_) { current = null; }
+    if (!current || sha256Buffer(current) !== source.recordFileSha256) {
+      fail(ERR.SOURCE_SNAPSHOT_CHANGED, '必要来源在异步消费期间已变化或不可读[' + at + ']：' + source.relativePath + '；拒绝装配，不以新摘要绑定旧账号。');
+    }
+  }
+}
+
+/**
  * R4：真实模式异步装配入口——内部实际消费受控私密来源（绑定核验+1/2 排重+解密），
- * 不接受调用者传入账号字符串。消费事实写入 manifest.privateSource（recordFile+密文哈希）。
+ * 不接受调用者传入账号字符串。消费事实写入 manifest.privateSource（recordFile+同次读取密文哈希）。
+ * S1/S2：计划与两份来源各只读一次形成快照；异步等待后写前复核，变化即拒绝且零产物。
  * opts.aclReader：候选输出受限 ACL 检查的只读注入接缝（离线验证用；默认真实 icacls）。
  */
 async function buildReal(planPath, outOverride, opts) {
   const options = opts || {};
-  const plan = readPlan(planPath);
+  const snapshot = readPlanSnapshot(planPath);
+  const plan = snapshot.plan;
   if (plan.synthetic !== false) fail(ERR.REAL_NOT_PERMITTED, 'buildReal 仅适用于真实模式计划（synthetic:false）。');
-  const consumed = await consumePrivateSource(planPath, { repoRoot: options.repoRoot });
+  const consumed = await consumePrivateSourceSnapshot(snapshot);
+  assertSnapshotUnchanged(snapshot, consumed, 'buildReal.consumed');
   const privateSourceFacts = privateSourceManifestFacts(plan, consumed);
-  return writeCandidate(plan, planPath, outOverride, 'execute', consumed.account, privateSourceFacts, options);
+  return writeCandidate(plan, snapshot, outOverride, 'execute', consumed.account, privateSourceFacts,
+    { ...options, recheckBeforeWrite: at => assertSnapshotUnchanged(snapshot, consumed, at) });
 }
 async function prepareReal(planPath, outOverride, opts) {
   const options = opts || {};
-  const plan = readPlan(planPath);
+  const snapshot = readPlanSnapshot(planPath);
+  const plan = snapshot.plan;
   if (plan.synthetic !== false) fail(ERR.REAL_NOT_PERMITTED, 'prepareReal 仅适用于真实模式计划（synthetic:false）。');
-  const consumed = await consumePrivateSource(planPath, { repoRoot: options.repoRoot });
+  const consumed = await consumePrivateSourceSnapshot(snapshot);
+  assertSnapshotUnchanged(snapshot, consumed, 'prepareReal.consumed');
   const privateSourceFacts = privateSourceManifestFacts(plan, consumed);
-  return writeCandidate(plan, planPath, outOverride, 'prepare', consumed.account, privateSourceFacts, options);
+  return writeCandidate(plan, snapshot, outOverride, 'prepare', consumed.account, privateSourceFacts,
+    { ...options, recheckBeforeWrite: at => assertSnapshotUnchanged(snapshot, consumed, at) });
 }
 
 /**
  * R4：受控来源→解密→绑定核验→账号解析（完整消费链；仅合成来源用于本轮本地验证）。
- * - 计划必须为 synthetic:false 且携带 privateSource；
+ * - 计划必须为 synthetic:false 且携带 privateSource（使用调用方的计划快照，不重读）；
  * - 仅消费计划明确列出的1/2两份必要记录并排重，不枚举历史私密根；
+ * - 每份密文只读一次：解密结果与该次读取的密文摘要同源记账（S1）；
  * - 逐项绑定参与者、固定目标、只读核验轮次/窗口/服务端时间/来源摘要及交付确认；
  *   只读来源与新登记轮次、关闭包分别保存，禁止借分组豁免冲突。
- * - 返回 { account }（仅内存使用；不写日志/证据）。
+ * - 返回 { account, records, sources }（仅内存使用；不写日志/证据）。
  */
-async function consumePrivateSource(planPath) {
-  const plan = readPlan(planPath);
+async function consumePrivateSourceSnapshot(snapshot) {
+  const plan = snapshot.plan;
   if (plan.synthetic !== false || !plan.privateSource) fail(ERR.REAL_NOT_PERMITTED, '需要真实模式受控来源引用');
   const store = require('./lib/participant-private-store.cjs');
   const records = [];
   for (const ref of plan.privateSource.records) {
     const relativePath = store.PRIVATE_ROOT_REL + '/' + ref.recordFile;
-    let payload;
-    try { payload = await store.readRecordAsync({ repoRoot: ROOT, relativePath }); }
+    let recordSnapshot;
+    try { recordSnapshot = await store.readRecordSnapshotAsync({ repoRoot: ROOT, relativePath }); }
     catch (_) { fail(ERR.REAL_NOT_PERMITTED, '本次必要来源不可读或不可解密'); }
+    const payload = recordSnapshot.payload;
     store.validatePayload(payload);
     for (const k of ['participantCode','checkRoundId','checkWindowStartsAtIso','checkWindowExpiresAtIso',
       'serverTimeIso','readonlySourceDigest','deliveryConfirmed']) {
       if (payload[k] !== ref[k]) fail(ERR.REAL_NOT_PERMITTED, '只读核验来源与计划绑定不符：' + k);
     }
     if (payload.appId !== plan.appId || payload.envId !== plan.envId) fail(ERR.REAL_NOT_PERMITTED, '来源目标不符');
-    const bytes = fs.readFileSync(path.join(ROOT, relativePath));
-    records.push({fileName:ref.recordFile,payload,sha256:sha256Buffer(bytes)});
+    records.push({ fileName: ref.recordFile, payload, relativePath: recordSnapshot.relativePath,
+      recordFileSha256: recordSnapshot.recordFileSha256 });
   }
   store.verifyParticipantDedup(records);
   const target = records.find(r => r.fileName === plan.privateSource.recordFile);
-  const consumed = Object.freeze({ account:target.payload.fullAccount, recordFileSha256:target.sha256,
-    records:records.map(r => ({...plan.privateSource.records.find(p=>p.recordFile===r.fileName),recordFileSha256:r.sha256})) });
+  if (!target) fail(ERR.REAL_NOT_PERMITTED, '目标记录不在本次必要来源中');
+  const consumed = Object.freeze({
+    account: target.payload.fullAccount,
+    recordFileSha256: target.recordFileSha256,
+    records: records.map(r => ({ ...plan.privateSource.records.find(p => p.recordFile === r.fileName),
+      recordFileSha256: r.recordFileSha256 })),
+    sources: Object.freeze(records.map(r => Object.freeze({
+      relativePath: r.relativePath, recordFileSha256: r.recordFileSha256 })))
+  });
   consumedSources.add(consumed);
   return consumed;
+}
+
+/** 保留既有导出签名：按路径读取计划快照后消费。 */
+async function consumePrivateSource(planPath) {
+  return consumePrivateSourceSnapshot(readPlanSnapshot(planPath));
 }
 
 /**
@@ -759,12 +831,17 @@ function checkDirInternal(dir, windowPhase, consumed, opts) {
   if (manifest.planFile !== undefined && manifest.planFile !== 'plan.json') bad('manifest.planFile 必须固定为 plan.json。');
   const planPath = path.join(dir, 'plan.json');
   if (!fs.existsSync(planPath)) { bad('缺少目录内计划 plan.json'); return finish(); }
-  const planBytes = fs.readFileSync(planPath);
-  if (manifest.planSha256 !== sha256Buffer(planBytes)) { bad('plan.json 与 manifest.planSha256 不一致'); return finish(); }
-  try { plan = readPlan(planPath); } catch (error) {
-    bad('计划校验失败[' + (error.code || 'PSR_ERROR') + ']：' + error.message);
-    return finish();
+  // S2：Resolved 检查由入口传入同一次读取的计划快照；同步检查在此读取一次，字节/解析同源。
+  let planSnapshot = options.planSnapshot || null;
+  if (!planSnapshot) {
+    try { planSnapshot = readPlanSnapshot(planPath); } catch (error) {
+      bad('计划校验失败[' + (error.code || 'PSR_ERROR') + ']：' + error.message);
+      return finish();
+    }
   }
+  const planBytes = planSnapshot.bytes;
+  if (manifest.planSha256 !== sha256Buffer(planBytes)) { bad('plan.json 与 manifest.planSha256 不一致'); return finish(); }
+  plan = planSnapshot.plan;
   clockCheck('check.start');
   if (clockStopped) return finish();
   if (planDigest(plan) !== manifest.planDigest) bad('planDigest 与目录内计划重算不一致');
@@ -928,22 +1005,29 @@ function checkDirInternal(dir, windowPhase, consumed, opts) {
 function checkDir(dir) { return checkDirInternal(dir, 'execute', null); }
 function checkPreparedDir(dir) { return checkDirInternal(dir, 'prepare', null); }
 
-/** R4：真实模式核对——先经 consumePrivateSource 解析账号再严格重建（execute 相位）。 */
+/**
+ * R4/S1/S2：真实模式核对——同一计划快照贯穿消费与重建（execute 相位）。
+ * 消费期间计划或必要来源发生变化 → 拒绝（不静默重读新计划/新来源）。
+ */
 async function checkDirResolved(dir, opts) {
+  const options = opts || {};
   const planPath = path.join(path.resolve(dir), 'plan.json');
-  const plan = readPlan(planPath);
-  if (plan.synthetic === true) return checkDirInternal(dir, 'execute', null, opts);
-  const consumed = await consumePrivateSource(planPath);
-  return checkDirInternal(dir, 'execute', consumed, opts);
+  const snapshot = readPlanSnapshot(planPath);
+  if (snapshot.plan.synthetic === true) return checkDirInternal(dir, 'execute', null, { ...options, planSnapshot: snapshot });
+  const consumed = await consumePrivateSourceSnapshot(snapshot);
+  assertSnapshotUnchanged(snapshot, consumed, 'check.execute');
+  return checkDirInternal(dir, 'execute', consumed, { ...options, planSnapshot: snapshot });
 }
 
-/** R4：真实模式准备核对（prepare 相位；executionReady 仍恒 false）。 */
+/** R4/S1/S2：真实模式准备核对（prepare 相位；executionReady 仍恒 false）。 */
 async function checkPreparedDirResolved(dir, opts) {
+  const options = opts || {};
   const planPath = path.join(path.resolve(dir), 'plan.json');
-  const plan = readPlan(planPath);
-  if (plan.synthetic === true) return checkDirInternal(dir, 'prepare', null);
-  const consumed = await consumePrivateSource(planPath);
-  return checkDirInternal(dir, 'prepare', consumed, opts);
+  const snapshot = readPlanSnapshot(planPath);
+  if (snapshot.plan.synthetic === true) return checkDirInternal(dir, 'prepare', null, { ...options, planSnapshot: snapshot });
+  const consumed = await consumePrivateSourceSnapshot(snapshot);
+  assertSnapshotUnchanged(snapshot, consumed, 'check.prepare');
+  return checkDirInternal(dir, 'prepare', consumed, { ...options, planSnapshot: snapshot });
 }
 
 function checkCloseDir(closePackageDir) {

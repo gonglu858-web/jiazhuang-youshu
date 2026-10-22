@@ -6,14 +6,18 @@ const fs = require('node:fs');
 const shared = require('./pic-guard-runner.cjs');
 const ROOT = path.resolve(__dirname, '../../..');
 const TEST = path.join(ROOT, 'miniapp/tests/participant-self-registration.test.cjs');
-const EVIDENCE = path.join(ROOT, 'docs/证据/CodeBuddy指定本人登记与私密输入本地实现v3-20261022.cjs');
+// 受控证据脚本：v3 保留可复跑；v4 为本轮 S1/S2 快照返修证据（同一固定参数契约）。
+const EVIDENCE_SCRIPTS = [
+  path.join(ROOT, 'docs/证据/CodeBuddy指定本人登记与私密输入本地实现v3-20261022.cjs'),
+  path.join(ROOT, 'docs/证据/CodeBuddy指定本人登记来源快照返修v4-20261022.cjs')
+];
 const FAULTS = ['earlyRequire','publicGit','publicSpawn','publicExec','afterRestore'];
 function installParentGuardsWithLocalTools(opts) {
-  const guard = shared.installParentGuards({...opts, allowedScripts:[TEST,EVIDENCE]});
+  const guard = shared.installParentGuards({...opts, allowedScripts:[TEST,...EVIDENCE_SCRIPTS]});
   function runVerified({scriptPath, args, guardPreload, receiptPath, group='normal'}) {
     const file = path.resolve(scriptPath);
     const good = (file === TEST && Array.isArray(args) && args.length === 0) ||
-      (file === EVIDENCE && Array.isArray(args) && args.length === 2 && args[0] === '--worker' &&
+      (EVIDENCE_SCRIPTS.includes(file) && Array.isArray(args) && args.length === 2 && args[0] === '--worker' &&
         ['normal',...FAULTS].includes(args[1]));
     if (!good) throw new Error('固定子进程参数不符');
     const base=path.join(ROOT,'artifacts/schedule-sandbox/business-test');

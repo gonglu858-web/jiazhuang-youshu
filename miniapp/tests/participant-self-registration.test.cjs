@@ -32,6 +32,8 @@ const PASSPHRASE_DIGEST = crypto.createHash('sha256').update(SYNTHETIC_PASSPHRAS
 const SYNTHETIC_ACCOUNT_OPENID = 'synthetic-self-reg-account-' + RUN_ID;
 const SYNTHETIC_ACCOUNT = core.deriveUserId(APPID, SYNTHETIC_ACCOUNT_OPENID);
 const SYNTHETIC_OTHER_ACCOUNT = 'u_' + crypto.createHash('sha256').update('synthetic-self-reg-other-' + RUN_ID).digest('hex').slice(0, 40);
+// S1 反例用的第三个合成账号（只在等待期替换内存密文时出现，绝不等同真实编号）。
+const SYNTHETIC_THIRD_ACCOUNT = 'u_' + crypto.createHash('sha256').update('synthetic-self-reg-third-' + RUN_ID).digest('hex').slice(0, 40);
 const ROUND_ID = 'synthetic-self-reg-' + RUN_ID;
 const CLOSE_SOURCE_SHA = 'af7fc0c690d5bd55d0f48e04fb05e2d9e1b79f299a73bfbb5ddeffdb5be24357';
 
@@ -782,6 +784,80 @@ test('R4 明文候选忽略/跟踪/ACL/链接检查写前停止，不自动改�
     if(key==='acl')h.state.acl='everyone';else if(key==='link')h.state.links.add(out);else h.state[key]=!h.state[key];
     await assert.rejects(()=>h.packer.buildReal(plan,out));assert.equal(fs.existsSync(out),false);
     assert.equal(h.calls.includes('write'),false);
+  }
+});
+// S1/S2：合成解密等待期接缝（只在本轮新测试使用；不触真实DPAPI/真实来源）。
+function changeDuringDecrypt(h,fn,expectedHex){
+  let fired=false;
+  h.state.onUnprotect=async hex=>{
+    if(fired)return;
+    if(expectedHex!==undefined&&hex!==expectedHex)return;
+    fired=true;await fn();
+  };
+  return()=>{h.state.onUnprotect=null;};
+}
+const cipherHexOf=payload=>Buffer.from(JSON.stringify(payload)).toString('hex');
+function setPrivateRecord(h,name,payload){
+  h.mem.set(path.join(h.prefix,name),Buffer.from(Buffer.from(JSON.stringify(payload)).toString('hex')));
+}
+test('S1/S2 单次读取快照正常对照：摘要与解密同源，buildReal/prepareReal及Resolved检查通过',async()=>{
+  const f=await realFixture(),{h,one,two,plan,out}=f;
+  const digestOne=fixture.sha(h.mem.get(path.join(h.prefix,one.name)));
+  const digestTwo=fixture.sha(h.mem.get(path.join(h.prefix,two.name)));
+  const built=await h.packer.buildReal(plan,out);
+  assert.equal(built.manifest.planSha256,fixture.sha(fs.readFileSync(plan)));
+  assert.equal(built.manifest.privateSource.recordFileSha256,digestOne);
+  assert.equal(built.manifest.privateSource.records.map(r=>r.recordFileSha256).sort().join(','),
+    [digestOne,digestTwo].sort().join(','));
+  const checked=await h.packer.checkDirResolved(out);assert.equal(checked.ok,true);
+  const out2=out+'-prepare',prepared=await h.packer.prepareReal(plan,out2);
+  assert.equal(prepared.manifest.privateSource.recordFileSha256,digestOne);
+  assert.equal(prepared.preparationValidated,true);assert.equal(prepared.executionReady,false);
+  const checked2=await h.packer.checkPreparedDirResolved(out2);
+  assert.equal(checked2.ok,true);assert.equal(checked2.preparationValidated,true);assert.equal(checked2.executionReady,false);
+});
+test('S1 消费期间来源变化：两入口均拒绝且零产物，不以新摘要绑定旧账号',async()=>{
+  for(const entry of ['buildReal','prepareReal'])for(const which of ['target','other']){
+    const f=await realFixture(),{h,one,two,plan,out}=f;
+    const record=which==='target'?one:two;
+    const stop=changeDuringDecrypt(h,()=>setPrivateRecord(h,record.name,{...record.payload,fullAccount:SYNTHETIC_THIRD_ACCOUNT}),cipherHexOf(record.payload));
+    try{
+      await assert.rejects(()=>h.packer[entry](plan,out),e=>e.code==='PSR_SOURCE_SNAPSHOT_CHANGED');
+      assert.equal(fs.existsSync(out),false,entry+'/'+which+' 不应产生任何产物');
+    }finally{stop();}
+  }
+});
+test('S2 消费期间计划变化：两入口拒绝且零产物，不静默采用新轮次或更新摘要',async()=>{
+  for(const entry of ['buildReal','prepareReal']){
+    const f=await realFixture(),{h,plan,out}=f;
+    const original=fs.readFileSync(plan),parsed=JSON.parse(original.toString('utf8'));
+    const stop=changeDuringDecrypt(h,()=>fs.writeFileSync(plan,JSON.stringify({...parsed,
+      registrationRoundId:'synthetic-shifted-'+RUN_ID},null,2)));
+    try{
+      await assert.rejects(()=>h.packer[entry](plan,out),e=>e.code==='PSR_PLAN_SNAPSHOT_CHANGED');
+      assert.equal(fs.existsSync(out),false,entry+' 计划变化不应产生任何产物');
+    }finally{stop();fs.writeFileSync(plan,original);}
+  }
+});
+test('S1/S2 Resolved检查同快照：消费期间来源或计划变化拒绝，恢复后正常对照通过',async()=>{
+  {
+    const f=await realFixture(),{h,one,plan,out}=f;
+    await h.packer.buildReal(plan,out);
+    const original=h.mem.get(path.join(h.prefix,one.name));
+    const stop=changeDuringDecrypt(h,()=>setPrivateRecord(h,one.name,{...one.payload,fullAccount:SYNTHETIC_THIRD_ACCOUNT}),cipherHexOf(one.payload));
+    try{await assert.rejects(()=>h.packer.checkDirResolved(out),e=>e.code==='PSR_SOURCE_SNAPSHOT_CHANGED');}
+    finally{stop();h.mem.set(path.join(h.prefix,one.name),original);}
+    assert.equal((await h.packer.checkDirResolved(out)).ok,true);
+  }
+  {
+    const f=await realFixture(),{h,plan,out}=f;
+    await h.packer.buildReal(plan,out);
+    const builtPlan=path.join(out,'plan.json'),original=fs.readFileSync(builtPlan),parsed=JSON.parse(original.toString('utf8'));
+    const stop=changeDuringDecrypt(h,()=>fs.writeFileSync(builtPlan,JSON.stringify({...parsed,
+      registrationRoundId:'synthetic-shifted-'+RUN_ID},null,2)));
+    try{await assert.rejects(()=>h.packer.checkDirResolved(out),e=>e.code==='PSR_PLAN_SNAPSHOT_CHANGED');}
+    finally{stop();fs.writeFileSync(builtPlan,original);}
+    assert.equal((await h.packer.checkDirResolved(out)).ok,true);
   }
 });
 test('R6 公共接口始终阻断记账、catch及restore均不能旁路；专用能力拒绝任意命令与options',()=>{

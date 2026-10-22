@@ -18,7 +18,7 @@ function load(rel, overrides={}, globals={}, source, asMain=false) {
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
 function createPrivateHarness() {
   const prefix=path.join(ROOT,'artifacts/schedule-sandbox/.participant-private');
-  const mem=new Map(), calls=[], state={tracked:false,ignored:true,gitError:false,acl:'minimal',identity:true,unreadable:new Set(),links:new Set()};
+  const mem=new Map(), calls=[], state={tracked:false,ignored:true,gitError:false,acl:'minimal',identity:true,unreadable:new Set(),links:new Set(),onUnprotect:null};
   const key=p=>path.resolve(String(p)), privatePath=p=>key(p)===prefix||key(p).startsWith(prefix+path.sep);
   const dirStat=()=>({isFile:()=>false,isDirectory:()=>true,isSymbolicLink:()=>false});
   const tools={
@@ -27,7 +27,9 @@ function createPrivateHarness() {
     queryAcl(repo,rel){calls.push('acl');return {status:state.acl==='error'?1:0,
       stdout:rel+' '+(state.acl==='minimal'?sid+':(F)':state.acl==='everyone'?'S-1-1-0:(F)':state.acl==='unknown'?'synthetic\\other:(R,W)':'unparseable42')+'\nSuccessfully processed 1 files; Failed processing 0 files',stderr:''};},
     protect(plain){calls.push('protect');return Buffer.from(plain).toString('hex');},
-    async unprotect(hex){calls.push('unprotect');if(state.unreadable.has(hex))throw Error('synthetic decrypt failure');return Buffer.from(hex,'hex').toString();},
+    // S1/S2：合成解密等待期接缝——供测试在 await 期间替换内存密文或磁盘计划。
+    async unprotect(hex){calls.push('unprotect');if(state.unreadable.has(hex))throw Error('synthetic decrypt failure');
+      if(typeof state.onUnprotect==='function')await state.onUnprotect(hex);return Buffer.from(hex,'hex').toString();},
     PROTECT:'synthetic-dpapi-protect',UNPROTECT:'synthetic-dpapi-pipe'
   };
   const fakeFs=new Proxy(fs,{get(target,k){

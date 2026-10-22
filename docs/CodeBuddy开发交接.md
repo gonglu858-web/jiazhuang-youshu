@@ -1,3 +1,12 @@
+## 2026-10-22 S1/S2来源快照返修交付：本地自测通过，待Codex复查
+
+- 接手 master e986728，依据 docs/Codex复查-指定登记接续返修921b07e-20261022.md §2–§3；仅改新登记打包器、私密存储快照接口、相关测试与v4新证据；核心/入口/适配器、旧只读/业务/P/E/X/管理员链、共享旧helper、关闭来源、冻结包、历史证据及Codex报告反例均未改。
+- S1：私密存储新增 readRecordSnapshotAsync——密文只读一次，解密结果与该次字节摘要同源；consumePrivateSourceSnapshot与manifest使用同一摘要，不再二次读文件计算。S2：readPlanSnapshot一次读取计划字节+解析，贯穿来源选择/产物生成/plan.json/planSha256/planDigest；异步等待后不重读计划。
+- 写前复核：buildReal/prepareReal在消费后、precheck后、首写前、写后各复核计划字节与两份来源摘要；变化分别抛 PSR_PLAN_SNAPSHOT_CHANGED / PSR_SOURCE_SNAPSHOT_CHANGED。未写入即零产物；已写时沿用既有io清单如实附 written/partialWrites。checkDirResolved/checkPreparedDirResolved共用同一计划快照并在消费后复核。
+- 实测：登记39/39（35旧+4新，0失败/跳过）；业务18/18；业务核心10/10。v4证据 ok=true，探针2/意外0/子意外0/回执失败0；normal exit0，5故障worker各exit1符合预期。Codex旧反例未改，也未用于本轮通过。
+- PS1 §3补验：宿主shell已带 Process=Bypass（继承，未改策略/未加参数），一次执行 exit0，20/20参数逐项匹配；PS1 sha256 ea3b35b5…，Node sha256 c5ff4c73…，PowerShell 5.1.26100.9711；回执JSON排他新建。成功只关闭PS1→Node参数边界，不宣称UI/真实DPAPI/ACL已验证，也不外推默认Restricted主机。
+- 临时文件：18个 v4 preload/回执/bootstrap 按JSON登记路径清理，剩余0；合成夹具与候选产物保留在忽略artifacts。v3脚本及两份JSON、历史证据保留；AGENTS.md既有修改不提交。
+- 下一步：交Codex复查S1/S2实现、测试与v4证据；真实编号录入、登记、部署及P未放行；1/2号核验不重做，P不开展，无凭据/认证缓存/云端操作。本地自测通过待Codex复查，真实录入及执行未放行。
 
 ## 2026-10-22 Codex独立复核921b07e：来源快照仍待定点收尾
 

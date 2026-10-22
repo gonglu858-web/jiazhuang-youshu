@@ -1,0 +1,95 @@
+{
+    "schema":  "psr-ps1-synthetic-transport-receipt/1",
+    "recordedAt":  "2026-10-22T23:50:57.5008301+08:00",
+    "executor":  "本地页面开发（S1/S2来源快照定点返修）",
+    "host":  {
+                 "os":  "win32",
+                 "powershell":  "5.1.26100.9711",
+                 "executionPolicyProcessScope":  "Bypass",
+                 "inheritedPolicyPreferenceEnv":  "Bypass",
+                 "policyChangedByThisRun":  false,
+                 "shell":  "CodeBuddy宿主PowerShell"
+             },
+    "script":  {
+                   "rel":  "miniapp\\scripts\\participant-private-input.ps1",
+                   "sha256":  "ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357",
+                   "hashMatched":  true,
+                   "fromCommit":  "921b07e",
+                   "bytes":  8951
+               },
+    "node":  {
+                 "path":  "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+                 "sha256":  "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+             },
+    "command":  "powershell.exe -NoProfile -NonInteractive -File miniapp\\scripts\\participant-private-input.ps1 -SelfTestTransport -SelfTestNodePath \"C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe\" -ParticipantCode 1 -CheckRoundId synthetic-readonly-transport -SourceDigest \u003c64a\u003e -RepoRoot \"C:\\synthetic repo with spaces\" -FileName \"synthetic record.bin\" -CheckWindowStartsAtIso 2030-01-01T00:00:00Z -CheckWindowExpiresAtIso 2030-01-01T00:10:00Z -ServerTimeIso 2030-01-01T00:05:00Z",
+    "counts":  {
+                   "expected":  20,
+                   "actual":  20
+               },
+    "positionalMatch":  true,
+    "mismatchIndexes":  [
+
+                        ],
+    "exitCode":  0,
+    "rawOutputLength":  504,
+    "rawOutputSha256":  "42654e5489b866bbce4c8ad72aa7cbd884d011dfe7d56c6e600da6052a2cf2af",
+    "expected":  [
+                     "C:\\synthetic package with spaces\\participant-private-store.cjs",
+                     "protect",
+                     "--repo-root",
+                     "C:\\synthetic repo with spaces",
+                     "--participant-code",
+                     "1",
+                     "--check-round-id",
+                     "synthetic-readonly-transport",
+                     "--source-digest",
+                     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                     "--delivery-confirmed",
+                     "true",
+                     "--check-window-starts-at-iso",
+                     "2030-01-01T00:00:00Z",
+                     "--check-window-expires-at-iso",
+                     "2030-01-01T00:10:00Z",
+                     "--file-name",
+                     "synthetic record.bin",
+                     "--server-time-iso",
+                     "2030-01-01T00:05:00Z"
+                 ],
+    "actual":  [
+                   "C:\\synthetic package with spaces\\participant-private-store.cjs",
+                   "protect",
+                   "--repo-root",
+                   "C:\\synthetic repo with spaces",
+                   "--participant-code",
+                   "1",
+                   "--check-round-id",
+                   "synthetic-readonly-transport",
+                   "--source-digest",
+                   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                   "--delivery-confirmed",
+                   "true",
+                   "--check-window-starts-at-iso",
+                   "2030-01-01T00:00:00Z",
+                   "--check-window-expires-at-iso",
+                   "2030-01-01T00:10:00Z",
+                   "--file-name",
+                   "synthetic record.bin",
+                   "--server-time-iso",
+                   "2030-01-01T00:05:00Z"
+               ],
+    "boundaries":  {
+                       "syntheticParametersOnly":  true,
+                       "realAccountRead":  false,
+                       "dpapiInvoked":  false,
+                       "privateStoreRun":  false,
+                       "diskWriteBySelfTest":  false,
+                       "policyModified":  false,
+                       "uiVerified":  false
+                   },
+    "notes":  [
+                  "SelfTestTransport仅回显传给Node的参数，不触DPAPI/存储器/窗口/写盘。",
+                  "PS5.1中直接@($raw | ConvertFrom-Json)会得到1个包装元素；本轮改用先赋值再@()枚举，20项逐位比较。",
+                  "宿主shell的Process作用域已是Bypass（PSExecutionPolicyPreference继承），本轮未改任何作用域策略、未加-Bypass参数；不据此推断Restricted机器可运行。",
+                  "成功只关闭实际PS1→Node参数边界；不代表UI人工体验、真实DPAPI、跨账号解密或机器ACL已验证。"
+              ]
+}
