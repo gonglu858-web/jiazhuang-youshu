@@ -1,0 +1,43 @@
+{
+  "schema": "codex-private-local-preflight/1",
+  "runId": "synthetic-local-private-d298d3a51157",
+  "recordedAt": "2026-10-23T09:37:51.834Z",
+  "reviewedCommit": "fea22e0f3cf69bc853aa75b93d2ad05c9459590f",
+  "planBasis": "cbc889b",
+  "preflightStatus": "blocked",
+  "ok": false,
+  "fullLocalValidationPassed": false,
+  "sourceFacts": [],
+  "binaries": [],
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "processCalls": [],
+    "privateFilesRead": 0,
+    "privateFilesCreated": 0,
+    "temporaryFilesCreated": []
+  },
+  "phases": {
+    "A": "blocked",
+    "B": "not-run",
+    "C": "not-run",
+    "D": "not-run",
+    "E": "pass-no-temporary-files"
+  },
+  "targetRelativePath": "artifacts/schedule-sandbox/.participant-private/synthetic-local-private-d298d3a51157-ui.bin",
+  "boundaries": {
+    "existingPrivateRecordsRead": false,
+    "policyModified": false,
+    "aclModified": false,
+    "cloudOperations": false,
+    "syntheticOnly": true
+  },
+  "limitations": [
+    "This driver only performs phase A; a pass is not full validation or real-input approval.",
+    "No DPAPI, UI, cross-account or platform verification is performed by this driver."
+  ],
+  "failureCode": "FACTS_DRIFT",
+  "elapsedMs": 10,
+  "scriptSha256": "2dfca72b128f6b13b4f87d3a1ccf564f7e53c65997b7e0f5b89a01147e73a671",
+  "exitCode": 2
+}
