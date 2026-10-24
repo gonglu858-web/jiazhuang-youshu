@@ -1,0 +1,550 @@
+{
+  "schema": "wb-psr-native-encoding-contract-v5/1",
+  "reviewedCommit": "b102644",
+  "fixBaseline": "6f42d03",
+  "date": "2026-10-24",
+  "faultMode": null,
+  "results": [
+    {
+      "id": "S0_private_root_exists",
+      "passed": true,
+      "actual": {
+        "root": "artifacts/schedule-sandbox/.participant-private",
+        "exists": true
+      }
+    },
+    {
+      "id": "S1_contract_queries_identity_shape",
+      "passed": true,
+      "actual": {
+        "contract": {
+          "state": "established",
+          "basis": "tool_output_anchor",
+          "probe": "icacls <repoRoot>",
+          "channel": "icacls.pipe",
+          "highBytes": 32,
+          "utf8Decoded": false,
+          "utf8Anchor": false,
+          "gbCount": 1
+        },
+        "aclFacts": {
+          "bytes": 179,
+          "highBytes": 32,
+          "statsAnchor": true,
+          "sha256": "30b9d18c3c13e516316c09f8826f487d1d852bdd9a0981c0a73025a23af15a01"
+        },
+        "identityFacts": {
+          "bytes": 62,
+          "asciiOnly": true,
+          "csvShapeOk": true
+        },
+        "error": null,
+        "identityRead": true,
+        "aclRead": true
+      }
+    },
+    {
+      "id": "S2_unified_checks_and_contract_rejections",
+      "passed": true,
+      "actual": {
+        "rejected": 8,
+        "expected": 8,
+        "detail": [
+          {
+            "label": "whoami_status1_stderr",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "acl_timeout_error_signal",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "stdout_not_buffer",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "stdout_over_limit",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "unexpected_stderr_native",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "probe_command_failed",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "junk_anchor_probe",
+            "code": "PSR_NATIVE_CONTRACT_BLOCKED"
+          },
+          {
+            "label": "all_ascii_probe",
+            "code": "PSR_NATIVE_CONTRACT_BLOCKED"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S3_replacement_char_rejected",
+      "passed": true,
+      "actual": {
+        "uffdUtf8": true,
+        "uffdGb": true,
+        "normal": true
+      }
+    },
+    {
+      "id": "S4_synthetic_bidirectional_decode",
+      "passed": true,
+      "actual": {
+        "gbkRejectedByUtf8": true,
+        "gbkDecodedByGb": true,
+        "invalidRejected": true
+      }
+    },
+    {
+      "id": "S5_real_tools_to_store_chain",
+      "passed": true,
+      "actual": {
+        "positivePass": true,
+        "zeroWrite": true,
+        "probeOnce": true,
+        "uffdIdentityRejected": true,
+        "crossToolBlocked": true,
+        "note": "进程/FS 替身之外全真实代码；身份 ASCII 同源白名单；probeOnce 取实际调用记录"
+      }
+    },
+    {
+      "id": "S6_async_unprotect",
+      "passed": true,
+      "actual": {
+        "spawnParamsOk": true,
+        "pipeOk": true,
+        "initFailureCleaned": true,
+        "stderrRejected": true,
+        "note": "合成进程/管道替身；未执行真实 PowerShell 模块加载（如实披露）"
+      }
+    },
+    {
+      "id": "S7_guard_accounting_process_facts",
+      "passed": true,
+      "actual": {
+        "guardHits": {
+          "probe": 3,
+          "sensitivity": 1,
+          "unexpected": 0,
+          "total": 4,
+          "detail": [
+            {
+              "phase": "probe",
+              "api": "https.request"
+            },
+            {
+              "phase": "probe",
+              "api": "cp.execSync"
+            },
+            {
+              "phase": "probe",
+              "api": "dns.promises.lookup"
+            },
+            {
+              "phase": "sensitivity",
+              "api": "https.request"
+            }
+          ]
+        },
+        "processFacts": {
+          "fromActualAttempts": true,
+          "total": 4,
+          "spawnFailed": 0,
+          "byProgram": {
+            "icacls.exe": 2,
+            "whoami.exe": 1,
+            "git.exe": 1
+          },
+          "attemptSnapshot": [
+            "icacls.exe",
+            "icacls.exe",
+            "whoami.exe",
+            "git.exe"
+          ],
+          "semantics": "attempted/completed/spawnFailed/status 分列；命令状态码语义由调用方判定（git check-ignore status1=未忽略，合法）"
+        },
+        "gitCheckIgnore": {
+          "status": 0,
+          "ignoredHit": true
+        }
+      }
+    },
+    {
+      "id": "S8_protection_dual_baseline",
+      "passed": true,
+      "actual": {
+        "s8Error": null,
+        "headChanges": [],
+        "worktreeChanges": [
+          "AGENTS.md",
+          "docs/CodeBuddy开发交接.md",
+          "docs/当前状态.md",
+          "docs/进展与待办.md",
+          "miniapp/scripts/lib/participant-local-tools.cjs",
+          "miniapp/scripts/lib/participant-native-exec.cjs",
+          "miniapp/tests/participant-self-registration.test.cjs"
+        ],
+        "changedAll": [
+          "AGENTS.md",
+          "docs/CodeBuddy开发交接.md",
+          "docs/当前状态.md",
+          "docs/进展与待办.md",
+          "miniapp/scripts/lib/participant-local-tools.cjs",
+          "miniapp/scripts/lib/participant-native-exec.cjs",
+          "miniapp/tests/participant-self-registration.test.cjs",
+          "docs/证据/CodeBuddy本地编码模块兼容返修v5-20261024.cjs",
+          "docs/证据/CodeBuddy本地编码模块兼容返修v5-20261024.json",
+          "miniapp/scripts/lib/participant-dpapi-scripts.cjs"
+        ],
+        "outsideAllowed": [],
+        "protectedViolations": [],
+        "agentsSha": "9ef30b4c10f7dd1b",
+        "agentsOk": true,
+        "baselines": {
+          "head": "6f42d03..HEAD",
+          "worktree": "6f42d03..worktree"
+        },
+        "note": "不限定 pathspec 的完整改动路径集合逐项应用允许集；未跟踪逐项核对（不整体豁免）；AGENTS.md 按字节摘要单列；diff/porcelain 输出统一 quotepath 解码（非 ASCII 路径引号包裹还原）；中间提交 901e0d5（AGENTS.md 规则）已在接手基线内，不扩大产品允许集"
+      }
+    },
+    {
+      "id": "S9_fault_exit_proofs",
+      "passed": true,
+      "actual": {
+        "scenarios": [
+          {
+            "mode": "normal",
+            "fault": null,
+            "expectOk": true,
+            "got": {
+              "ok": true,
+              "exit": 0,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": []
+            },
+            "passed": true
+          },
+          {
+            "mode": "identityFail",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S1_contract_queries_identity_shape",
+                  "why": "{\"contract\":{\"state\":\"established\",\"basis\":\"tool_output_anchor\",\"probe\":\"icacls <repoRoot>\",\"channel\":\"icacls.pipe\",\"highBytes\":32,\"utf8Decoded\":false,\"utf8Anchor\":false,\"gbCount\":1},\"aclFacts\":{\"byte"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "identityNotCsv",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S1_contract_queries_identity_shape",
+                  "why": "{\"contract\":{\"state\":\"established\",\"basis\":\"tool_output_anchor\",\"probe\":\"icacls <repoRoot>\",\"channel\":\"icacls.pipe\",\"highBytes\":32,\"utf8Decoded\":false,\"utf8Anchor\":false,\"gbCount\":1},\"aclFacts\":{\"byte"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "junkAnchor",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 5,
+              "vmHits": 4,
+              "liveAttempts": 5,
+              "failedResults": [
+                {
+                  "id": "S1_contract_queries_identity_shape",
+                  "why": "{\"contract\":null,\"aclFacts\":null,\"identityFacts\":null,\"error\":{\"code\":\"PSR_NATIVE_CONTRACT_BLOCKED\",\"sanitized\":true},\"identityRead\":false,\"aclRead\":false}"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "crossTool",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S1_contract_queries_identity_shape",
+                  "why": "{\"contract\":{\"state\":\"established\",\"basis\":\"tool_output_anchor\",\"probe\":\"icacls <repoRoot>\",\"channel\":\"icacls.pipe\",\"highBytes\":32,\"utf8Decoded\":false,\"utf8Anchor\":false,\"gbCount\":1},\"aclFacts\":{\"byte"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "preRequireInject",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 5,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S7_guard_accounting_process_facts",
+                  "why": "{\"guardHits\":{\"probe\":3,\"sensitivity\":1,\"unexpected\":1,\"total\":5,\"detail\":[{\"phase\":\"pre-require\",\"api\":\"https.request\"},{\"phase\":\"probe\",\"api\":\"https.request\"},{\"phase\":\"probe\",\"api\":\"cp.execSync\"},{"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "doneInject",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 5,
+              "liveAttempts": 7,
+              "failedResults": []
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "lateHit",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 5,
+              "liveAttempts": 7,
+              "failedResults": []
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "lateGitHit",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 5,
+              "liveAttempts": 7,
+              "failedResults": []
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "s9Fail",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S9_fault_exit_proofs",
+                  "why": "{\"note\":\"VM 子场景不重入 S9（--vm-child）\"}"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "attemptCountUnder",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S10_runtime_facts_consistency",
+                  "why": "{\"identityRead\":true,\"aclRead\":true,\"snapshotTotal\":4,\"reportedTotal\":3,\"liveAttempts\":7,\"countOk\":false,\"prefixOk\":true,\"growthOk\":true,\"note\":\"数量（报告=快照长度）与前缀（快照为最终 attempts 前缀）分别校验；attemptCountUnder"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "attemptProgramTamper",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S10_runtime_facts_consistency",
+                  "why": "{\"identityRead\":true,\"aclRead\":true,\"snapshotTotal\":4,\"reportedTotal\":4,\"liveAttempts\":7,\"countOk\":true,\"prefixOk\":false,\"growthOk\":true,\"note\":\"数量（报告=快照长度）与前缀（快照为最终 attempts 前缀）分别校验；attemptCountUnder"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "runtimeDigestHit",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 5,
+              "liveAttempts": 7,
+              "failedResults": []
+            },
+            "passed": true
+          },
+          {
+            "mode": "protectionCommittedHistory",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S8_protection_dual_baseline",
+                  "why": "{\"s8Error\":null,\"headChanges\":[\"docs/证据/Codex编码兼容545d038复核-20261024.json\"],\"worktreeChanges\":[\"miniapp/scripts/lib/participant-native-exec.cjs\",\"miniapp/scripts/lib/participant-local-tools.cjs\",\"minia"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "protectionUncommittedHistory",
+            "fault": null,
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S8_protection_dual_baseline",
+                  "why": "{\"s8Error\":null,\"headChanges\":[],\"worktreeChanges\":[\"miniapp/scripts/lib/participant-native-exec.cjs\",\"miniapp/scripts/lib/participant-local-tools.cjs\",\"miniapp/scripts/lib/participant-dpapi-scripts.c"
+                }
+              ]
+            },
+            "passed": true
+          },
+          {
+            "mode": "normal",
+            "fault": "protectionUntrackedIllegal",
+            "expectOk": false,
+            "got": {
+              "ok": false,
+              "exit": 1,
+              "spawnCalls": 7,
+              "vmHits": 4,
+              "liveAttempts": 7,
+              "failedResults": [
+                {
+                  "id": "S8_protection_dual_baseline",
+                  "why": "{\"s8Error\":null,\"headChanges\":[],\"worktreeChanges\":[\"miniapp/scripts/lib/participant-native-exec.cjs\",\"miniapp/scripts/lib/participant-local-tools.cjs\",\"miniapp/scripts/lib/participant-dpapi-scripts.c"
+                }
+              ]
+            },
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "S10_runtime_facts_consistency",
+      "passed": true,
+      "actual": {
+        "identityRead": true,
+        "aclRead": true,
+        "snapshotTotal": 4,
+        "reportedTotal": 4,
+        "liveAttempts": 7,
+        "countOk": true,
+        "prefixOk": true,
+        "growthOk": true,
+        "note": "数量（报告=快照长度）与前缀（快照为最终 attempts 前缀）分别校验；attemptCountUnder 仅篡数量→countOk 失败，attemptProgramTamper 仅篡程序名→prefixOk 失败"
+      }
+    }
+  ],
+  "ok": true,
+  "onlyReadFacts": {
+    "identityRead": true,
+    "identityInMemoryOnly": true,
+    "aclRead": true,
+    "aclInMemoryOnly": true,
+    "dpapiRun": false,
+    "ps1UiRun": false,
+    "aclModified": false,
+    "directoriesListed": false
+  },
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-native-exec.cjs": "a25fc0bc9479155489b0e86b8f9c7a65c5d68e61c88bb10a5bcf2d3f659b694e",
+    "miniapp/scripts/lib/participant-local-tools.cjs": "56daf9f675c7c7fbcd92f81aba4cdd6237626b19ff6b07a78421eb9ff811ae26",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+    "miniapp/scripts/lib/participant-dpapi-scripts.cjs": "1f334d8d6b92c4f7e93b64c217fbb1cd2f3d5177f0a4728051ec87895eaa474f"
+  },
+  "guardAccounting": {
+    "probeHits": 3,
+    "sensitivityHits": 1,
+    "unexpectedHits": 0,
+    "totalHits": 4,
+    "note": "父守卫全程有效；VM 子场景独立记账（不混入父意外）；判定快照晚于全部核验步骤（含摘要读取）"
+  },
+  "unverified": [
+    "真实 DPAPI 加解密、PS1 输入窗口（策略 Restricted）未运行；S6/S9 为合成进程/管道替身，非真实模块加载或 DPAPI 验证",
+    "whoami 非 ASCII 编码未独立证明（保守 blocked 规则）",
+    "本机预检是否恢复由 Codex 复查决定；真实私密输入、登记、1/2 号、云端未放行"
+  ]
+}

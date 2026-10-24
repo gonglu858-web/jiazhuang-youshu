@@ -1354,8 +1354,9 @@ test('E6 异步UNPROTECT：实际spawn固定参数、管道成功返回、初始
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
-// B1：native-exec 能力层边界（Codex 复查接续 f211469 §2）——加载真实能力层源码，
-// 仅替换最底层 OS 边界（child_process/net）；非法请求零边界调用，合法行为保持。
+// B1：native-exec 能力层边界（Codex 复查接续 f211469 §2；剩余返修接续 b102644 复查 §2）——
+// 加载真实能力层源码，仅替换最底层 OS 边界（child_process/net）；按程序固定完整参数
+// 语法/脚本，拒绝“已批准程序＋未批准操作”，非法请求零边界调用，同用途合法对照保持。
 // ════════════════════════════════════════════════════════════════════════════════
 
 test('B1 native-exec 能力层：合法请求构造固定边界；非法请求零 OS 边界调用', () => {
@@ -1364,6 +1365,7 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
   const { createRequire } = require('node:module');
   const ROOT2 = path2.resolve(__dirname, '../..');
   const file = path2.join(ROOT2, 'miniapp/scripts/lib/participant-native-exec.cjs');
+  const dpapiScripts = require(path2.join(ROOT2, 'miniapp/scripts/lib/participant-dpapi-scripts.cjs'));
   // 最底层 OS 边界替身（记录每次到达边界的调用；可控返回）
   const boundaryCalls = [];
   const makeOsStub = (syncResult) => ({
@@ -1390,12 +1392,12 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
   // (1) 合法同步请求：能力层构造固定 opts（shell=false/windowsHide=true/cwd=仓库根/时限/限额/净化env）
   boundaryCalls.length = 0;
   const cap = loadCapability(makeOsStub(okResult));
-  const r = cap.runProgram({ program: 'icacls', args: ['C:\\Windows'], cwd: ROOT2 });
+  const r = cap.runProgram({ program: 'icacls', args: ['.'], cwd: ROOT2 });
   assert.equal(r.status, 0);
   assert.equal(boundaryCalls.length, 1, '合法请求恰一次边界调用');
   const call = boundaryCalls[0];
   assert.equal(call.exe, 'C:\\Windows\\System32\\icacls.exe', '白名单程序');
-  assert.deepEqual([...call.args], ['C:\\Windows']);
+  assert.deepEqual([...call.args], ['.'], 'icacls 仓库根探针固定形式');
   assert.equal(call.opts.shell, false, 'shell 固定 false');
   assert.equal(call.opts.windowsHide, true);
   assert.equal(call.opts.cwd, ROOT2, 'cwd 固定仓库根');
@@ -1421,13 +1423,45 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
     ['Git 选项注入', () => cap.gitReadonly({ operation: 'diff', paths: ['-x'] })],
     ['Git commitish 形状', () => cap.gitReadonly({ operation: 'diff', commitish: 'x;rm' })],
     ['异步用途越界', () => cap.spawnProgram({ purpose: 'synthetic', script: 'x' })],
-    ['异步脚本无 PSHOME 初始化', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: 'synthetic script' })]
+    ['异步脚本无 PSHOME 初始化', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: 'synthetic script' })],
+    // B1 返修（b102644 复查 §2）：“已批准程序＋未批准操作”与脚本子串锚定反例
+    ['已批准程序＋任意 PowerShell 命令', () => cap.runProgram({ program: 'powershell', args: ['-NoProfile', '-NonInteractive', '-Command', 'Write-Output synthetic-unapproved'] })],
+    ['已批准程序＋PowerShell 参数前缀不符', () => cap.runProgram({ program: 'powershell', args: ['-NoProfile', '-Command', dpapiScripts.PROTECT] })],
+    ['已批准程序＋PowerShell 脚本尾部追加语句', () => cap.runProgram({ program: 'powershell', args: ['-NoProfile', '-NonInteractive', '-Command', dpapiScripts.UNPROTECT + ' Write-Output synthetic-unapproved'] })],
+    ['已批准程序＋Git 写操作', () => cap.runProgram({ program: 'git', args: ['config', '--local', 'synthetic.probe', 'true'] })],
+    ['已批准程序＋Git 查询缺固定分隔', () => cap.runProgram({ program: 'git', args: ['check-ignore', 'artifacts/synthetic'] })],
+    ['已批准程序＋Git 查询目标越界', () => cap.runProgram({ program: 'git', args: ['check-ignore', '--', '..\\outside'] })],
+    ['已批准程序＋icacls 授权操作', () => cap.runProgram({ program: 'icacls', args: ['synthetic-target', '/grant', 'Everyone:F'] })],
+    ['已批准程序＋icacls 越界路径', () => cap.runProgram({ program: 'icacls', args: ['C:\\Windows\\System32'] })],
+    ['whoami 非固定向量', () => cap.runProgram({ program: 'whoami', args: ['/groups'] })],
+    ['异步脚本注释锚定＋额外语句', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: '# Import-Module -Name (Join-Path $PSHOME\nWrite-Output synthetic-unapproved' })],
+    ['异步脚本受审脚本追加语句', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT + ' Write-Output synthetic-unapproved' })]
   ];
   for (const [label, req] of badRequests) {
     boundaryCalls.length = 0;
     assert.throws(req, e => e.code === 'PSR_NATIVE_EXEC_BOUNDARY', label + ' 必须边界拒绝');
     assert.equal(boundaryCalls.length, 0, label + ' 零 OS 边界调用');
   }
+  // (2b) B1：同用途合法对照——完整参数/目标均到达边界且形状正确（含等值绝对路径程序形）
+  boundaryCalls.length = 0;
+  const w = cap.runProgram({ program: 'whoami', args: ['/user', '/fo', 'csv', '/nh'] });
+  assert.equal(w.status, 0);
+  assert.deepEqual([...boundaryCalls[0].args], ['/user', '/fo', 'csv', '/nh'], 'whoami 固定身份查询向量');
+  const w2 = cap.runProgram({ program: 'C:\\Windows\\System32\\whoami.exe', args: ['/user', '/fo', 'csv', '/nh'] });
+  assert.equal(w2.status, 0);
+  assert.equal(boundaryCalls[1].exe, 'C:\\Windows\\System32\\whoami.exe', '等值绝对路径同一白名单常量');
+  const a = cap.runProgram({ program: 'icacls', args: ['artifacts/schedule-sandbox/.participant-private'] });
+  assert.equal(a.status, 0);
+  assert.deepEqual([...boundaryCalls[2].args], ['artifacts/schedule-sandbox/.participant-private'], 'icacls 约定范围内单一只读目标');
+  const gq = cap.runProgram({ program: 'git', args: ['check-ignore', '--', 'artifacts/schedule-sandbox/.participant-private'] });
+  assert.equal(gq.status, 0);
+  assert.deepEqual([...boundaryCalls[3].args], ['check-ignore', '--', 'artifacts/schedule-sandbox/.participant-private'], 'Git 同步查询固定形式');
+  const lf = cap.runProgram({ program: 'git', args: ['ls-files', '--', 'miniapp/scripts/lib'] });
+  assert.equal(lf.status, 0);
+  assert.deepEqual([...boundaryCalls[4].args], ['ls-files', '--', 'miniapp/scripts/lib'], 'Git ls-files 固定形式');
+  const ps = cap.runProgram({ program: 'powershell', args: ['-NoProfile', '-NonInteractive', '-Command', dpapiScripts.PROTECT], input: 'synthetic\n' });
+  assert.equal(ps.status, 0);
+  assert.deepEqual([...boundaryCalls[5].args], ['-NoProfile', '-NonInteractive', '-Command', dpapiScripts.PROTECT], 'PowerShell 固定参数前缀＋受审 PROTECT 完整脚本');
   // (3) 合法 Git 只读 / 异步 / 管道能力：边界构造保持
   boundaryCalls.length = 0;
   const g = cap.gitReadonly({ operation: 'diff', commitish: 'HEAD', paths: ['miniapp/scripts'] });
@@ -1435,19 +1469,69 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
   assert.equal(boundaryCalls.length, 1);
   assert.equal(boundaryCalls[0].exe, 'C:\\Program Files\\Git\\cmd\\git.exe', 'Git 固定程序');
   assert.deepEqual([...boundaryCalls[0].args], ['diff', '--name-only', 'HEAD', '--', 'miniapp/scripts'], '固定前缀+commitish+pathspec');
-  const sp = cap.spawnProgram({ purpose: 'dpapi-unprotect', script: 'Import-Module -Name (Join-Path $PSHOME "Modules\\x")' });
+  const sp = cap.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT });
   assert.equal(typeof sp.child, 'object');
   assert.equal(boundaryCalls.length, 2);
   assert.deepEqual([...boundaryCalls[1].args.slice(0, 3)], ['-NoProfile', '-NonInteractive', '-Command']);
+  assert.equal(boundaryCalls[1].args[3], dpapiScripts.UNPROTECT, '异步命令串 = 受审 UNPROTECT 完整脚本（逐字节）');
   const sock = cap.connectNamedPipe({ purpose: 'dpapi-unprotect', name: 'psr-dpapi-' + 'b'.repeat(32) });
   assert.equal(sock.__socket, true);
   assert.equal(boundaryCalls[2].target, '\\\\.\\pipe\\psr-dpapi-' + 'b'.repeat(32), '命名管道目标边界内构造');
-  // (4) 异步完成回填不重复计数
+  // (4) 异步完成回填不重复计数（仅对应异步启动尝试）
   const attBefore = cap.attempts().length;
-  cap.completeAsync(2, { code: 0, signal: null });
+  cap.completeAsync(sp.attemptId, { code: 0, signal: null });
   assert.equal(cap.attempts().length, attBefore, 'completeAsync 不新增进程计数');
-  assert.equal(cap.attempts().find(a => a.id === 2).completed, true);
-  // (5) 导出仅固定用途能力，无原始引用暴露
+  assert.equal(cap.attempts().find(a => a.id === sp.attemptId).completed, true);
+  // (5) B2 异步记账：同步抛错如实记失败；error/close 次序与重复回填不抹除事实；不同步记录
+  {
+    const throwStub = makeOsStub(okResult);
+    throwStub.spawn = () => { throw new Error('synthetic sync spawn failure'); };
+    const capThrow = loadCapability(throwStub);
+    assert.throws(() => capThrow.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT }),
+      e => e.message === 'synthetic sync spawn failure');
+    assert.deepEqual({ ...capThrow.attempts()[0], id: 0 },
+      { id: 0, kind: 'spawnProgram', program: 'powershell.exe', attempted: true, completed: true, spawnFailed: true, status: null },
+      '异步启动同步抛错如实记失败（不是未完成）');
+    const connStub = makeOsStub(okResult);
+    connStub.connect = () => { throw new Error('synthetic connect failure'); };
+    const capConn = loadCapability(connStub);
+    assert.throws(() => capConn.connectNamedPipe({ purpose: 'dpapi-unprotect', name: 'psr-dpapi-' + 'c'.repeat(32) }),
+      e => e.message === 'synthetic connect failure');
+    assert.deepEqual({ ...capConn.attempts()[0], id: 0 },
+      { id: 0, kind: 'connect', program: 'named-pipe', attempted: true, completed: true, spawnFailed: true, status: null },
+      '连接同步抛错如实记失败');
+  }
+  {
+    const capAsync = loadCapability(makeOsStub(okResult));
+    // error 先于 close(0)：失败事实不可抹除
+    const s1 = capAsync.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT });
+    capAsync.completeAsync(s1.attemptId, { error: new Error('synthetic failure') });
+    capAsync.completeAsync(s1.attemptId, { code: 0, signal: null });
+    let rec = capAsync.attempts().find(x => x.id === s1.attemptId);
+    assert.deepEqual({ completed: rec.completed, spawnFailed: rec.spawnFailed, status: rec.status },
+      { completed: true, spawnFailed: true, status: null }, 'error 后 close(0) 不抹除失败事实');
+    // close(0) 先于 error：错误事实仍然记录
+    const s2 = capAsync.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT });
+    capAsync.completeAsync(s2.attemptId, { code: 0, signal: null });
+    capAsync.completeAsync(s2.attemptId, { error: new Error('synthetic late failure') });
+    rec = capAsync.attempts().find(x => x.id === s2.attemptId);
+    assert.deepEqual({ completed: rec.completed, spawnFailed: rec.spawnFailed, status: rec.status },
+      { completed: true, spawnFailed: true, status: null }, 'close(0) 后 error 仍记录失败');
+    // 重复成功回填：幂等
+    const s3 = capAsync.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT });
+    capAsync.completeAsync(s3.attemptId, { code: 0, signal: null });
+    capAsync.completeAsync(s3.attemptId, { code: 0, signal: null });
+    rec = capAsync.attempts().find(x => x.id === s3.attemptId);
+    assert.deepEqual({ completed: rec.completed, spawnFailed: rec.spawnFailed, status: rec.status },
+      { completed: true, spawnFailed: false, status: 0 }, '重复成功回填幂等');
+    // 不同步记录：对 runProgram 尝试回填无效
+    capAsync.runProgram({ program: 'whoami', args: ['/user', '/fo', 'csv', '/nh'] });
+    const syncId = capAsync.attempts().length;
+    capAsync.completeAsync(syncId, { error: new Error('synthetic not-async') });
+    rec = capAsync.attempts().find(x => x.id === syncId);
+    assert.equal(rec.spawnFailed, false, 'completeAsync 不修改同步记录');
+  }
+  // (6) 导出仅固定用途能力，无原始引用暴露
   for (const key of Object.keys(cap)) {
     assert.ok(['ERROR_CODE', 'runProgram', 'spawnProgram', 'connectNamedPipe', 'completeAsync', 'gitReadonly', 'attempts'].includes(key),
       '导出键不在固定能力集：' + key);

@@ -16,15 +16,10 @@ const EXES = Object.freeze({ git: 'C:\\Program Files\\Git\\cmd\\git.exe',
   whoami: 'C:\\Windows\\System32\\whoami.exe', icacls: 'C:\\Windows\\System32\\icacls.exe',
   powershell: 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' });
 const LIMIT = 128 * 1024, TIMEOUT = 10000;
-// C2：固定 Windows PowerShell 程序的 $PSHOME 内置系统模块显式初始化（失败即停止）。
-// PROTECT/UNPROTECT 实际所需 cmdlet：ConvertTo/ConvertFrom-SecureString（Security 模块）、
-// ConvertFrom-Json（Utility 模块）。按 -Name 固定 $PSHOME 路径加载，不遍历模块、
-// 不按 PATH/可覆盖模块名选择、不改 PSModulePath、失败无回退（ErrorAction=Stop）。
-const PSHOME_MODULE_INIT = '$ErrorActionPreference = "Stop"; ' +
-  'Import-Module -Name (Join-Path $PSHOME "Modules\\Microsoft.PowerShell.Security") -ErrorAction Stop; ' +
-  'Import-Module -Name (Join-Path $PSHOME "Modules\\Microsoft.PowerShell.Utility") -ErrorAction Stop; ';
-const PROTECT = PSHOME_MODULE_INIT + '$line = [Console]::In.ReadLine(); $sec = ConvertTo-SecureString -String $line -AsPlainText -Force; ConvertFrom-SecureString -SecureString $sec';
-const UNPROTECT = PSHOME_MODULE_INIT + '$ErrorActionPreference="Stop"; $cipher = [Console]::In.ReadLine(); $pipeName = [Console]::In.ReadLine(); $sec = ConvertTo-SecureString -String $cipher; $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec); $plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto($b); [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b); $null = $plain | ConvertFrom-Json; $pipe = New-Object System.IO.Pipes.NamedPipeServerStream($pipeName, [System.IO.Pipes.PipeDirection]::Out); $pipe.WaitForConnection(); $w = New-Object System.IO.StreamWriter($pipe); $w.Write($plain); $w.Flush(); $pipe.Dispose();';
+// C2/B1：受审固定 PowerShell 脚本唯一来源（participant-dpapi-scripts.cjs；字节与返修前
+// 本文件内定义一致）。native-exec 能力层按逐字节相等校验传入脚本，本模块从此处取用——
+// 不复制两份独立脚本，不形成循环依赖。模块初始化/加解密/清理语义不变。
+const { PSHOME_MODULE_INIT, PROTECT, UNPROTECT } = require('./participant-dpapi-scripts.cjs');
 function fail() { const e = new Error('本地工具未完成或结果不确定'); e.code = 'PSR_LOCAL_TOOL_FAILED'; throw e; }
 // R3：解码不确定与命令失败以固定无敏感文本原因区分（不含原始身份/ACL/stderr）。
 function failDecode() { const e = new Error('本地工具输出解码不确定'); e.code = 'PSR_NATIVE_DECODE_UNCERTAIN'; throw e; }
