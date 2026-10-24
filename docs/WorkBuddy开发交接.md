@@ -1,3 +1,12 @@
+## 2026-10-24 本地编码与模块兼容返修完成（仅本地合成验证，待Codex复查；真实私密输入及执行未放行）
+
+- 依据 docs/Codex方案-本地编码与模块兼容返修-20261024.md（方案 3d8d515），接手 master 3d8d515。仅改 miniapp/scripts/lib/participant-local-tools.cjs、新增 miniapp/scripts/lib/participant-native-decoder.cjs、本包测试（E1–E4 追加与替身 Buffer 化）、新证据 .cjs/.json 与状态/两份顶部记录；核心只读模块、PS1 输入窗口、业务及旧只读/P/E/X/管理员链、共享 pic-guard-runner、打包器装配与快照、关闭来源、冻结包、全部历史脚本/JSON 零改动。AGENTS.md 既有修改保留且未提交。
+- C0 编码契约（固定只读取证，docs/证据/CodeBuddy本地编码模块兼容返修-20261024.json S1–S3）：一条固定的 PowerShell 代码页查询（OEM=936/ANSI=936）；whoami 当前输出仅 ASCII（不能独立判定）；icacls 对已约定私密根的 ACL 输出按 UTF-8 严格解码失败（28 个替换字符）、按 GB18030 严格解码成功且中文统计行语义锚定——契约成立：原生命令管道输出 = OEM CP 936（GB18030 兼容），严格解码用 TextDecoder("gb18030",{fatal:true})。原始身份/ACL 仅驻内存（S5 固定只读命令计数 3：代码页 1 + whoami 1 + icacls 1）。
+- C1 字节级严格解码：新增 participant-native-decoder.cjs（仅 decodeNative/decodeAscii/decodeUtf8Strict 三个固定入口，fatal 严格拒绝非法/不完整序列/替换字符，不透传任意编码）；participant-local-tools 的 spawnSync 移除 encoding 返回原始 Buffer，字节限额在解码前，git→ASCII、whoami/icacls→GB18030、受控 PS stdout→UTF-8 严格分通道解码；解码不确定与命令失败分开记录，对外仍为固定错误。ACL 行原样交给既有解析器：中英文统计行完整锚定、失败数 0、未知主体/宽泛组/未知行/畸形行仍拒绝，不放宽主体集合。
+- C2 固定系统模块：PROTECT/UNPROTECT 命令前缀显式 Import-Module -Name (Join-Path $PSHOME "Modules\Microsoft.PowerShell.Security"/"…Utility") -ErrorAction Stop（初始化先于任何明文读取/加解密，失败即停止无回退，不遍历模块、不改 PSModulePath）；加密算法、密文格式、CurrentUser 范围、stdin/命名管道传输契约、超时/清理行为不变。PS1 输入窗口仅静态依赖记录，未修改。
+- 合成验收（E1–E6）：E1 严格解码器合成字节正反例（UTF-8/GB18030 互证、非法序列/孤立前导/高位字节/非 Buffer 拒绝、fatal 不产生替换字符）；E2/E3 真实 local-tools + 进程 Buffer 替身接线（GB18030 ACL 与中文身份解码、中文主体同源一致、store 正例通过、未知主体/宽泛组/失败数非 0/未知行夹合法行/畸形行/空 ACL 全部拒绝且分类明确、固定参数与零写入核对）；E4 PROTECT/UNPROTECT 实际生成参数含 PSHOME 初始化且先于 SecureString/JSON、失败即停止无回退（仅一次调用）；E5 既有 R6 公共接口阻断/超时/超限/异步收尾与快照/排重/Git/链接回归全部保持；E6 静态保护核对与运行时摘要见证据 S6。
+- 实测：participant-self-registration.test.cjs **42/42**（39 基线 + E1/E2E3/E4 三组新增）、business-test-package.test.cjs **18/18** 无回归、C0+S6 证据 ok:true。运行时摘要：local-tools fb40a712e416a813e69e2503d44cfb4016a38c6bad9e7bea92e0d9f37647b630，decoder 958ca82f9bb50d4b6567d5122b871c118cf011f6ce0cac9ac8eba05b1ced84f3，证据脚本 ecd8fd83fa06e7544c2e2994f8817be2dc7c5f75745949a0d900cb015bb4624f。git diff --check 通过。
+- 未验证项与阻断：真实 DPAPI 加解密、PS1 输入窗口（执行策略 Restricted）、真实私密输入与登记仍未运行——本机合成预检是否恢复须 Codex 复查后按原方案分阶段执行；GB18030 契约仅对本机当前代码页 936 成立，其他机器须重新取证。未读真实编号或既有密文、未运行真实 DPAPI/UI、未改权限/策略/系统环境、未联网安装、未操作云端。1/2 号不重试，P 不开展。
 ## 2026-10-16 I1 手机结果已核对：请求字段拒绝，待本地定点调查
 
 - 用户截图显示本轮UNKNOWN/PIC_REQUEST_INVALID/readAttempted=false，无尾号与服务端时间，不能判断1号登记状态。截图来源摘录已存，不复制原图进入Git。

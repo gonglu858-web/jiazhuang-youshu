@@ -872,7 +872,9 @@ test('R6 公共接口始终阻断记账、catch及restore均不能旁路；专�
   const local=fixture.load('miniapp/scripts/lib/participant-local-tools.cjs',{
     'node:child_process':{spawnSync(exe,args,opts){actual++;assert.ok(path.isAbsolute(exe));
       assert.equal(opts.shell,false);assert.ok(opts.timeout>0&&opts.maxBuffer>0);assert.equal(opts.cwd,ROOT);
-      return {status:0,stdout:'"synthetic\\current","'+fixture.sid+'"',stderr:''};},spawn(){throw Error('不应启动');}},
+      // E3：进程 Buffer 替身——真实 spawnSync 无 encoding 时返回原始 Buffer，
+      // local-tools 按通道严格解码（此处 ASCII 内容，native 通道解码等价）。
+      return {status:0,stdout:Buffer.from('"synthetic\\current","'+fixture.sid+'"','utf8'),stderr:Buffer.alloc(0)};},spawn(){throw Error('不应启动');}},
     'node:fs':{statSync(){return {isFile:()=>true};}}
   });
   local.queryIdentity();assert.equal(actual,1);
@@ -900,3 +902,149 @@ test('R6 专用能力结果不确定/超量/超时/错误必须拒绝，非公�
 });
 test.after(()=>{const unexpected=guardHits.filter(h=>h.phase!=='probe');assert.deepEqual(unexpected,[],
   '被catch的公共接口/网络尝试仍属意外，不能报通过');});
+
+// ════════════════════════════════════════════════════════════════════════════
+// E1–E4：本地编码与模块兼容返修（Codex 方案 20261024 §4；C0 契约见
+// docs/证据/CodeBuddy本地编码模块兼容返修-20261024.json S1–S3——OEM CP 936/GB18030）
+// ════════════════════════════════════════════════════════════════════════════
+
+const nativeDecoder = require(ROOT + '/miniapp/scripts/lib/participant-native-decoder.cjs');
+const localTools = require(ROOT + '/miniapp/scripts/lib/participant-local-tools.cjs');
+const localToolsExes = { whoami: 'C:\\Windows\\System32\\whoami.exe',
+  icacls: 'C:\\Windows\\System32\\icacls.exe' };
+
+test('E1 严格解码器：UTF-8/GB18030 合成字节互证；非法序列/孤立前导/高位字节拒绝；非 Buffer 拒绝', () => {
+  const gbk = Buffer.from([0xD2, 0xD1, 0xB3, 0xC9, 0xB9, 0xA6]); // '已成功' 的 GBK/GB18030 字节
+  const utf8 = Buffer.from('已成功', 'utf8');
+  // (1) 各通道合法字节
+  assert.equal(nativeDecoder.decodeUtf8Strict(utf8), '已成功');
+  assert.equal(nativeDecoder.decodeNative(gbk), '已成功');
+  assert.equal(nativeDecoder.decodeAscii(Buffer.from('Successfully processed 1 files')), 'Successfully processed 1 files');
+  // (2) 互证：GBK 字节被 UTF-8 严格拒绝
+  assert.throws(() => nativeDecoder.decodeUtf8Strict(gbk), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  // (3) 非法/不完整序列拒绝
+  assert.throws(() => nativeDecoder.decodeNative(Buffer.from([0xD2])), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  assert.throws(() => nativeDecoder.decodeNative(Buffer.from([0x81, 0x40, 0xFF])), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  assert.throws(() => nativeDecoder.decodeUtf8Strict(Buffer.from([0xE4, 0xB8])), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  // (4) fatal 模式绝不产生替换字符：U+FFFD 的 UTF-8 字节（EF BF BD）不是合法
+  //     GB18030 序列，严格解码直接拒绝而非替换为 U+FFFD
+  assert.throws(() => nativeDecoder.decodeNative(Buffer.from([0xEF, 0xBF, 0xBD])),
+    e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  // (5) ASCII 通道：高位字节拒绝
+  assert.throws(() => nativeDecoder.decodeAscii(gbk), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  // (6) 非 Buffer 拒绝
+  for (const fn of [nativeDecoder.decodeNative, nativeDecoder.decodeAscii, nativeDecoder.decodeUtf8Strict]) {
+    assert.throws(() => fn('string'), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+    assert.throws(() => fn(undefined), e => e.code === 'PSR_NATIVE_DECODE_FAILED');
+  }
+});
+
+test('E2/E3 接线：真实 local-tools + GB18030 Buffer 替身→ACL 解析正反例；中文主体一致；固定参数核对', () => {
+  // 固定文案的 GBK/GB18030 字节表（仅本测试所需字符；Node 无 GB18030 编码器，仅有严格解码器）
+  const GBK_MAP = { '已': [0xD2, 0xD1], '成': [0xB3, 0xC9], '功': [0xB9, 0xA6], '处': [0xB4, 0xA6],
+    '理': [0xC0, 0xED], '个': [0xB8, 0xF6], '文': [0xCE, 0xC4], '件': [0xBC, 0xFE],
+    '时': [0xCA, 0xB1], '失': [0xCA, 0xA7], '败': [0xB0, 0xDC], '。': [0xA1, 0xA3], '；': [0xA3, 0xBB], '当': [0xB5, 0xB1],
+    '前': [0xC7, 0xB0], '用': [0xD3, 0xC3], '户': [0xBB, 0xA7], '名': [0xC3, 0xFB], '中': [0xD6, 0xD0] };
+  const gbEncode = text => { const out = []; for (const ch of text) { if (GBK_MAP[ch]) out.push(...GBK_MAP[ch]); else out.push(...Buffer.from(ch, 'utf8')); } return Buffer.from(out); };
+  const identityLine = '"synthetic\\当前用户中文名","' + fixture.sid + '"';
+  const aclLines = (principalLine) => [REPO_ROOT + '\\synthetic ' + principalLine,
+    '已成功处理 1 个文件；处理 0 个文件时失败。'];
+  const spawnCalls = [];
+  const makeSpawn = (aclText) => (exe, args, opts) => {
+    spawnCalls.push({ exe, args, opts });
+    assert.equal(opts.shell, false);
+    assert.ok(opts.timeout > 0 && opts.maxBuffer > 0);
+    assert.equal(opts.encoding, undefined, 'C1：encoding 移除，spawnSync 须返回原始 Buffer');
+    if (exe === localToolsExes.whoami) return { status: 0, stdout: gbEncode(identityLine), stderr: Buffer.alloc(0) };
+    if (exe === localToolsExes.icacls) return { status: 0, stdout: gbEncode(aclText), stderr: Buffer.alloc(0) };
+    throw new Error('意外程序：' + exe);
+  };
+  // (1) 接线：真实 local-tools 解码 GB18030 ACL → 中文统计行与中文主体名正确还原
+  const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
+    'node:child_process': { spawnSync: makeSpawn(aclLines('synthetic\\当前用户中文名:(F)').join('\n')), spawn() { throw new Error('不应启动'); } },
+    'node:fs': { statSync: () => ({ isFile: () => true }) }
+  });
+  const r = local.queryAcl(ROOT, 'synthetic');
+  assert.ok(r.stdout.includes('已成功处理 1 个文件；处理 0 个文件时失败。'), 'GB18030 严格解码还原中文统计行');
+  assert.ok(r.stdout.includes('synthetic\\当前用户中文名:(F)'), '中文主体名正确解码');
+  assert.equal(spawnCalls.length, 1);
+  assert.equal(spawnCalls[0].exe, localToolsExes.icacls);
+  // (2) 身份同源：中文用户名经 GB18030 解码与 ACL 主体同源一致，CSV 形状保持
+  const ident = local.queryIdentity();
+  assert.ok(ident.stdout.includes('当前用户中文名'), '中文用户名经 GB18030 解码一致');
+  assert.ok(/^"[^"]+","S-1-5-21-[\d-]+"$/.test(ident.stdout.trim()), 'CSV 形状保持');
+  // (3) store 层正例：中文统计行 + 合成中文主体（同源）→ validatePrivateTarget 通过
+  const h1 = fixture.createPrivateHarness();
+  // validatePrivateTarget 先查私密根目录本身（relOrAbs = 私密根相对路径，正斜杠）
+  const relTarget = h1.store.PRIVATE_ROOT_REL;
+  const goodAclText = relTarget + ' synthetic\\当前用户中文名:(F)\n已成功处理 1 个文件；处理 0 个文件时失败。';
+  h1.tools.queryAcl = () => ({ status: 0, stdout: goodAclText, stderr: '' });
+  h1.tools.queryIdentity = () => ({ status: 0, stdout: identityLine, stderr: '' });
+  assert.doesNotThrow(() => h1.store.validatePrivateTarget({ repoRoot: ROOT, relativePath: h1.store.PRIVATE_ROOT_REL + '/synthetic.bin' }));
+  // (4) store 层反例：未知主体/宽泛组/失败数非 0/未知行夹合法行/畸形行/空 ACL 全部拒绝
+  for (const [label, aclText] of [
+    ['未知主体', h1.store.PRIVATE_ROOT_REL + ' synthetic\\other:(R,W)\n已成功处理 1 个文件；处理 0 个文件时失败。'],
+    ['宽泛组', h1.store.PRIVATE_ROOT_REL + ' Everyone:(R)\n已成功处理 1 个文件；处理 0 个文件时失败。'],
+    ['失败数非 0', h1.store.PRIVATE_ROOT_REL + ' synthetic\\当前用户中文名:(F)\n已成功处理 1 个文件；处理 1 个文件时失败。'],
+    ['未知行夹合法行', h1.store.PRIVATE_ROOT_REL + ' synthetic\\当前用户中文名:(F)\n某行无法解析的内容\n已成功处理 1 个文件；处理 0 个文件时失败。'],
+    ['畸形行', h1.store.PRIVATE_ROOT_REL + ' ##corrupted##\n已成功处理 1 个文件；处理 0 个文件时失败。'],
+    ['空 ACL', '已成功处理 0 个文件；处理 0 个文件时失败。']
+  ]) {
+    const h = fixture.createPrivateHarness();
+    h.tools.queryAcl = () => ({ status: 0, stdout: aclText, stderr: '' });
+    h.tools.queryIdentity = () => ({ status: 0, stdout: identityLine, stderr: '' });
+    assert.throws(() => h.store.validatePrivateTarget({ repoRoot: ROOT, relativePath: h.store.PRIVATE_ROOT_REL + '/synthetic.bin' }),
+      e => e.code === 'PSR_PRIVATE_ACL', label + ' 必须拒绝');
+  }
+});
+
+test('E4 模块选择：PROTECT/UNPROTECT 含 PSHOME 固定初始化且先于 SecureString；初始化失败即停止无回退', () => {
+  const spawnCalls = [];
+  const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
+    'node:child_process': { spawnSync: (exe, args, opts) => {
+      spawnCalls.push({ exe, args, opts });
+      return { status: 0, stdout: Buffer.from('ab'.repeat(40), 'utf8'), stderr: Buffer.alloc(0) };
+    }, spawn() { throw new Error('不应启动'); } },
+    'node:fs': { statSync: () => ({ isFile: () => true }) }
+  });
+  const cipher = local.protect('synthetic-plain-text');
+  assert.equal(cipher, 'ab'.repeat(40));
+  assert.equal(spawnCalls.length, 1);
+  const call = spawnCalls[0];
+  assert.equal(call.exe, 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe');
+  // vm 跨 realm 数组不能直接 deepEqual（原型不同），用 JSON 结构比较
+  assert.equal(JSON.stringify(call.args.slice(0, 3)), JSON.stringify(['-NoProfile', '-NonInteractive', '-Command']));
+  const cmd = call.args[3];
+  const secIdx = cmd.indexOf('ConvertTo-SecureString');
+  assert.ok(cmd.includes('Microsoft.PowerShell.Security'), '显式 Security 模块');
+  assert.ok(cmd.includes('Microsoft.PowerShell.Utility'), '显式 Utility 模块');
+  assert.ok(cmd.includes('$PSHOME'), '按固定程序的 $PSHOME 构造');
+  const firstImport = cmd.indexOf('Import-Module');
+  assert.ok(firstImport > 0 && firstImport < secIdx, '模块初始化先于 ConvertTo-SecureString');
+  assert.ok(cmd.indexOf('ErrorActionPreference') < firstImport, 'Stop 偏好先行');
+  assert.ok(cmd.includes('-ErrorAction Stop'), '模块加载失败即停止');
+  assert.ok(cmd.includes('Join-Path $PSHOME'), '按 Join-Path $PSHOME 构造路径');
+  assert.equal(cmd.includes('ConvertFrom-Json'), false, 'PROTECT 无需 JSON cmdlet');
+  // (2) UNPROTECT 命令串同样含 PSHOME 初始化且先于 ConvertFrom-Json/SecureString
+  assert.ok(local.UNPROTECT.includes('Microsoft.PowerShell.Security'));
+  // UNPROTECT 密文恢复用 ConvertTo-SecureString（无 ConvertFrom-SecureString）；
+  // 两者的调用都必须在 Import-Module 之后（模块初始化先行）
+  assert.ok(local.UNPROTECT.includes('ConvertTo-SecureString'));
+  assert.ok(local.UNPROTECT.indexOf('ConvertTo-SecureString') > local.UNPROTECT.lastIndexOf('Import-Module'));
+  assert.ok(local.UNPROTECT.indexOf('ConvertFrom-Json') > local.UNPROTECT.lastIndexOf('Import-Module'));
+  assert.ok(local.UNPROTECT.includes('-ErrorAction Stop'));
+  assert.equal(local.UNPROTECT.split('Import-Module').length - 1, 2, '只加载实际必需的两个模块');
+  // (3) 初始化失败：status 1 + stderr → protect 抛错，且只调用一次（无回退重试）
+  spawnCalls.length = 0;
+  const failing = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
+    'node:child_process': { spawnSync: (exe, args, opts) => {
+      spawnCalls.push({ exe, args });
+      return { status: 1, stdout: Buffer.alloc(0), stderr: Buffer.from('Import-Module synthetic failure', 'utf8') };
+    }, spawn() { throw new Error('不应启动'); } },
+    'node:fs': { statSync: () => ({ isFile: () => true }) }
+  });
+  assert.throws(() => failing.protect('synthetic-plain'), e => e.code === 'PSR_LOCAL_TOOL_FAILED');
+  assert.equal(spawnCalls.length, 1, '初始化失败必须停止，不得回退重试');
+  // (4) 模块初始化先于任何明文读取：命令串中 ReadLine 在最后一个 Import-Module 之后
+  assert.ok(local.PROTECT.indexOf('ReadLine') > local.PROTECT.lastIndexOf('Import-Module'));
+});

@@ -1,0 +1,129 @@
+{
+  "schema": "wb-psr-native-encoding-contract/1",
+  "reviewedBaseline": "3d8d515",
+  "date": "2026-10-24",
+  "contractTable": [
+    {
+      "command": "git.exe (check-ignore/ls-files)",
+      "outputChannel": "C 运行时输出；core.quotepath 下路径为 ASCII 转义",
+      "encoding": "ASCII（>=0x80 字节一律拒绝）",
+      "strictDecode": "字节级校验",
+      "rationale": "Git 协议路径经 quotepath 转义为纯 ASCII；非 ASCII 字节出现即形状异常"
+    },
+    {
+      "command": "whoami.exe /user /fo csv /nh",
+      "outputChannel": "原生命令管道输出",
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "strictDecode": "TextDecoder(\"gb18030\",{fatal:true})",
+      "rationale": "与 icacls 同为原生命令、同一 C 运行时输出通道；当前输出 ASCII 部分双编码等价，不单独作证明"
+    },
+    {
+      "command": "icacls.exe <路径>",
+      "outputChannel": "原生命令管道输出",
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "strictDecode": "TextDecoder(\"gb18030\",{fatal:true})",
+      "rationale": "UTF-8 严格解码失败（历史替换字符证据 + 本轮 S3 严格失败），GB18030 严格解码成功且中文统计行语义锚定"
+    },
+    {
+      "command": "powershell.exe PROTECT/UNPROTECT",
+      "outputChannel": "受控 PS 会话 stdout/命名管道",
+      "encoding": "stdout=ASCII hex 密文；管道=UTF-8 明文 JSON",
+      "strictDecode": "stdout 字节级校验 hex；管道 Buffer→UTF-8 严格解码",
+      "rationale": "ConvertFrom-SecureString 输出为 hex 字符串；管道明文由本包 Node 端 UTF-8 JSON 解析（现行契约不变）"
+    }
+  ],
+  "strictDecodeCapability": {
+    "runtime": "Node v22.22.2",
+    "decoders": [
+      "utf-8(fatal)",
+      "gb18030(fatal)"
+    ],
+    "verified": "合成字节双向验证：GBK 字节被 UTF-8 fatal 拒绝、被 GB18030 fatal 解码为语义中文；非法/不完整 GB18030 序列被拒绝（详见 results.S4 之外的本探针实现内建验证）"
+  },
+  "onlyReadFacts": {
+    "identityRead": true,
+    "identityInMemoryOnly": true,
+    "aclRead": true,
+    "aclTarget": "artifacts/schedule-sandbox/.participant-private",
+    "aclInMemoryOnly": true,
+    "dpapiRun": false,
+    "ps1UiRun": false,
+    "privateFileSaved": false,
+    "aclModified": false,
+    "directoriesListed": false
+  },
+  "unverified": [
+    "GB18030 契约仅对本机当前代码页 936 成立；其他机器代码页不同时不适用（每机须重新取证）",
+    "icacls 输出编码可能随 Windows 版本/区域设置变化；C1 实现按契约严格解码，任何不确定即拒绝",
+    "真实 DPAPI、PS1 UI、真实私密输入未运行（本轮禁止）"
+  ],
+  "guardAccounting": {
+    "note": "本探针为独立一次性脚本，不经 psr-guard-runner；固定只读命令计数见 S5"
+  },
+  "results": [
+    {
+      "id": "S1_system_codepage_query",
+      "passed": true,
+      "actual": {
+        "command": "powershell -NoProfile -NonInteractive -Command \"[Console]::OutputEncoding.CodePage; [Text.Encoding]::Default.CodePage\"",
+        "oemCodePage": 936,
+        "ansiCodePage": 936,
+        "meaning": "[Console]::OutputEncoding 为控制台输出编码（管道重定向下 C 运行时 printf 的默认目标代码页即 OEM CP）；[Text.Encoding]::Default 为 ANSI 代码页。两者是本机事实，不单独构成命令输出编码的证明——证明见 S3 的严格解码验证。"
+      }
+    },
+    {
+      "id": "S2_whoami_raw_bytes",
+      "passed": true,
+      "actual": {
+        "bytes": 62,
+        "sha256": "b224fb49fc4c04ac9240bff4e4f320e51268d3e01bdc1cfd6a03d5a210719ef4",
+        "highBytes": 0,
+        "replacementInUtf8Loose": 0,
+        "utf8StrictOk": true,
+        "gb18030StrictOk": true,
+        "asciiOnly": true,
+        "conclusion": "当前输出仅含 ASCII 字节，两种编码解码结果相同——whoami 单独不能区分代码页，编码判定由 icacls 中文输出承担。"
+      }
+    },
+    {
+      "id": "S3_icacls_strict_decode_verdict",
+      "passed": true,
+      "actual": {
+        "target": "artifacts/schedule-sandbox/.participant-private",
+        "bytes": 271,
+        "sha256": "c65789f4018d1fa667d5fa0b76f00f26eb23187629f051b9752fd1dc56c0e152",
+        "highBytes": 44,
+        "replacementInUtf8Loose": 28,
+        "utf8StrictOk": false,
+        "gb18030StrictOk": true,
+        "utf8StrictTailAnchor": false,
+        "gb18030TailAnchor": true,
+        "utf8LooseReplacementChars": 28,
+        "conclusion": "icacls 管道输出按 UTF-8 严格解码失败、按 GB18030 严格解码成功且中文统计行语义锚定——编码契约成立：原生命令输出 = OEM 代码页 936（GB18030 兼容），严格解码用 TextDecoder(\"gb18030\",{fatal:true})。"
+      }
+    },
+    {
+      "id": "S5_fixed_readonly_command_count",
+      "passed": true,
+      "actual": {
+        "systemCodepageQueries": 1,
+        "whoamiQueries": 1,
+        "icaclsQueries": 1,
+        "totalFixedReadonly": 3,
+        "note": "全部为固定参数只读查询；身份/ACL 原始输出仅驻内存，未写入任何文件"
+      }
+    },
+    {
+      "id": "S6_static_protection_and_runtime",
+      "passed": true,
+      "actual": {
+        "localToolsSha256": "fb40a712e416a813e69e2503d44cfb4016a38c6bad9e7bea92e0d9f37647b630",
+        "decoderSha256": "958ca82f9bb50d4b6567d5122b871c118cf011f6ce0cac9ac8eba05b1ced84f3",
+        "storeByteUnchanged": "fe5bc16a20ca9ee2116a72a483f726b78b5a5d55a40a635e9433e61855d83fbe",
+        "changedFiles": [],
+        "protectedZero": true
+      }
+    }
+  ],
+  "ok": true
+}
