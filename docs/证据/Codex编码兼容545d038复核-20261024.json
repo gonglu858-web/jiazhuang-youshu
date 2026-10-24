@@ -1,0 +1,279 @@
+{
+  "schema": "codex-local-compat-r1r3-review/1",
+  "reviewedCommit": "545d038",
+  "baseline": "d123828",
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-local-tools.cjs": "b00ba6994b9bd13133286ed6849adb07c221fdd4cbeed1f5e6d53eb5d054bb2e",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+    "docs/证据/CodeBuddy本地编码模块兼容返修v2-20261024.cjs": "e9d6f8120d3a79aaa566cf47d577139729d9a314d85513a6b5672f9cb52221f8"
+  },
+  "evidenceVm": [
+    {
+      "mode": "normal",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "s1Error": null,
+      "identityShape": true,
+      "guardHits": [
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 0,
+      "preGuardOuterHits": 0,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    },
+    {
+      "mode": "identityFailure",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "s1Error": {
+        "code": "PSR_LOCAL_TOOL_FAILED",
+        "fixedMessageOnly": true
+      },
+      "identityShape": null,
+      "guardHits": [
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 0,
+      "preGuardOuterHits": 0,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    },
+    {
+      "mode": "identityMalformed",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "s1Error": null,
+      "identityShape": false,
+      "guardHits": [
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 0,
+      "preGuardOuterHits": 0,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    },
+    {
+      "mode": "setupHit",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "s1Error": null,
+      "identityShape": true,
+      "guardHits": [
+        {
+          "phase": "setup",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 0,
+      "preGuardOuterHits": 0,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    },
+    {
+      "mode": "doneHit",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "s1Error": null,
+      "identityShape": true,
+      "guardHits": [
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        },
+        {
+          "phase": "done",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 0,
+      "preGuardOuterHits": 0,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    },
+    {
+      "mode": "preGuardHit",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "s1Error": null,
+      "identityShape": true,
+      "guardHits": [
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 0,
+      "preGuardOuterHits": 1,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    },
+    {
+      "mode": "businessHit",
+      "ok": false,
+      "exit": 1,
+      "s1Passed": true,
+      "s1Error": null,
+      "identityShape": true,
+      "guardHits": [
+        {
+          "phase": "probe",
+          "api": "https.request"
+        },
+        {
+          "phase": "probe",
+          "api": "cp.execSync"
+        },
+        {
+          "phase": "probe",
+          "api": "dns.promises.lookup"
+        },
+        {
+          "phase": "sensitivity",
+          "api": "https.request"
+        },
+        {
+          "phase": "business",
+          "api": "https.request"
+        }
+      ],
+      "reportedUnexpected": 1,
+      "preGuardOuterHits": 0,
+      "observedSyncCalls": 4,
+      "observedGitCalls": 3,
+      "observedTotal": 7,
+      "reportedTotal": 6
+    }
+  ],
+  "productChains": {
+    "cachedProbeThenDifferentEncoding": {
+      "accepted": true,
+      "contract": "established",
+      "queries": 3,
+      "writes": 0
+    },
+    "malformedProbeAccepted": true
+  },
+  "confirmedClosed": [
+    "utf8Ufffd",
+    "gbUfffd"
+  ],
+  "outerAccounting": {
+    "probes": 2,
+    "sensitivities": 1,
+    "unexpected": 0
+  },
+  "realOsQueries": 0,
+  "dpapi": 0,
+  "cloud": 0,
+  "ok": true,
+  "limitations": [
+    "全部OS/私密FS边界为合成替身，未执行原证据真实查询。",
+    "VM中实际使用既有守卫安装器及受审源码；业务期对照确实exit1，setup/done漏记反例仍exit0。",
+    "不同工具/缓存后编码变化为合成反例，不证明本机当前命令确实混用编码或已越权。",
+    "ok仅表示复核反例如预期复现，非产品验收通过。"
+  ]
+}
