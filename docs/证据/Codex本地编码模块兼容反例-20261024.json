@@ -1,0 +1,126 @@
+{
+  "schema": "codex-local-compat-review/1",
+  "reviewedCommit": "81bfac3",
+  "reviewedBaseline": "3d8d515",
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-local-tools.cjs": "fb40a712e416a813e69e2503d44cfb4016a38c6bad9e7bea92e0d9f37647b630",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "958ca82f9bb50d4b6567d5122b871c118cf011f6ce0cac9ac8eba05b1ced84f3",
+    "docs\\证据\\CodeBuddy本地编码模块兼容返修-20261024.cjs": "ecd8fd83fa06e7544c2e2994f8817be2dc7c5f75745949a0d900cb015bb4624f"
+  },
+  "evidenceVm": [
+    {
+      "mode": "normal",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "outerGuardHits": 0
+    },
+    {
+      "mode": "whoamiFailure",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "outerGuardHits": 0
+    },
+    {
+      "mode": "aclFailure",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "outerGuardHits": 0
+    },
+    {
+      "mode": "aclTimeout",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "outerGuardHits": 0
+    },
+    {
+      "mode": "codepage65001",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "OEM CP 65001（GB18030 兼容）",
+      "outerGuardHits": 0
+    },
+    {
+      "mode": "asciiContractUnknown",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "无法确认",
+      "outerGuardHits": 0
+    },
+    {
+      "mode": "caughtNetwork",
+      "ok": true,
+      "exit": 0,
+      "spawnCalls": 3,
+      "gitCalls": 1,
+      "observedOperations": 4,
+      "reportedFixedQueries": 3,
+      "encoding": "OEM CP 936（GB18030 兼容）",
+      "outerGuardHits": 1
+    }
+  ],
+  "actualLocalToolsStoreChains": [
+    {
+      "mode": "utf8Misdecoded",
+      "accepted": true,
+      "processStubCalls": 2,
+      "decodedIncorrectly": true,
+      "containsReplacement": false,
+      "writes": 0,
+      "protects": 0
+    },
+    {
+      "mode": "replacementCharacter",
+      "accepted": true,
+      "processStubCalls": 2,
+      "decodedIncorrectly": false,
+      "containsReplacement": true,
+      "writes": 0,
+      "protects": 0
+    }
+  ],
+  "utf8LiteralReplacementAccepted": true,
+  "accounting": {
+    "probes": 2,
+    "sensitivities": 1,
+    "unexpected": 0,
+    "total": 3,
+    "mockedQueries": 21,
+    "mockedGit": 7,
+    "realOsQueries": 0,
+    "dpapi": 0,
+    "cloud": 0
+  },
+  "limitations": [
+    "全部为合成字节/进程/FS替身，未重跑原证据的真实系统命令。",
+    "ok仅表示所列反例已复现，不代表产品或编码契约通过。"
+  ],
+  "ok": true
+}
