@@ -1,15 +1,16 @@
 'use strict';
 // 本包专用本地能力。公共 child_process 不参与分发；不提供命令/options 透传接口。
-// A2（Codex 复查接续 545d038）：原始进程/管道引用经 participant-native-exec 捕获层
-// 获取（该层在本包装载序列中最先执行）；本模块不直接触碰公共 cp/net 方法。
+// B1（Codex 复查接续 f211469 §2）：原始进程/管道引用只存于 participant-native-exec
+// 能力层闭包；本模块经其固定用途能力（runProgram/spawnProgram/connectNamedPipe）
+// 执行，不再传任意 exe/options——程序、参数、cwd、shell/stdio/env、超时/限额、
+// 管道目标均由能力边界验证/构造。
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 // C1：原生命令输出严格解码辅助（编码契约由本模块 verifyNativeEncodingContract 受控建立）
 const decoder = require('./participant-native-decoder.cjs');
-// A2：原始引用捕获层（spawnSync/spawn/connect；含实际调用记录）
+// B1：固定用途进程/管道能力层（装载序列最先执行；原始引用闭包封闭）
 const nativeExec = require('./participant-native-exec.cjs');
-const rawSync = nativeExec.spawnSync, rawSpawn = nativeExec.spawn, pipeConnect = nativeExec.connect;
 const REPO = path.resolve(__dirname, '../../..');
 const EXES = Object.freeze({ git: 'C:\\Program Files\\Git\\cmd\\git.exe',
   whoami: 'C:\\Windows\\System32\\whoami.exe', icacls: 'C:\\Windows\\System32\\icacls.exe',
@@ -48,10 +49,9 @@ function decodeChannel(buf, channel) {
 // 分别以固定原因分类，不含原始内容）。
 function sync(exe, args, input, outChannel, errChannel) {
   if (!fs.statSync(exe).isFile()) fail();
-  const env = { ...process.env }; delete env.NODE_OPTIONS;
-  // C1：encoding 移除——spawnSync 返回原始 Buffer；先按真实字节限额，再按通道严格解码。
-  const r = rawSync(exe, args, { cwd: REPO, input, windowsHide: true,
-    shell: false, env, timeout: TIMEOUT, maxBuffer: LIMIT });
+  // B1：经能力层 runProgram（程序白名单/参数/cwd/shell/env/超时/限额边界内构造）。
+  // C1：encoding 移除——返回原始 Buffer；先按真实字节限额，再按通道严格解码。
+  const r = nativeExec.runProgram({ program: exe, args, cwd: REPO, input, timeoutMs: TIMEOUT, maxBuffer: LIMIT });
   if (!r || r.error || r.signal || ![0, 1].includes(r.status) ||
     (r.stdout !== undefined && !Buffer.isBuffer(r.stdout)) ||
     (r.stderr !== undefined && !Buffer.isBuffer(r.stderr)) ||
@@ -184,15 +184,20 @@ function unprotect(cipher) {
     };
     const timer = setTimeout(() => finish(true), TIMEOUT);
     try {
-      child = rawSpawn(EXES.powershell, ['-NoProfile', '-NonInteractive', '-Command', UNPROTECT],
-        { cwd: REPO, windowsHide: true, shell: false, stdio: ['pipe', 'ignore', 'pipe'] });
-      child.on('error', () => finish(true));
-      child.on('close', (code, signal) => { if (code !== 0 || signal) finish(true); else { closed = true; maybeFinish(); } });
+      // B1：经能力层 spawnProgram（固定 purpose/脚本/stdio；attemptId 回填完成状态）
+      const spawned = nativeExec.spawnProgram({ purpose: 'dpapi-unprotect', script: UNPROTECT, cwd: REPO });
+      child = spawned.child;
+      child.on('error', err => { nativeExec.completeAsync(spawned.attemptId, { error: err }); finish(true); });
+      child.on('close', (code, signal) => {
+        nativeExec.completeAsync(spawned.attemptId, { code, signal });
+        if (code !== 0 || signal) finish(true); else { closed = true; maybeFinish(); }
+      });
       child.stderr.on('data', b => { stderr += b.length; finish(true); });
       child.stdin.on('error', () => finish(true)); child.stdin.end(cipher + '\n' + name + '\n');
       const connect = () => {
         if (settled) return;
-        socket = pipeConnect('\\\\.\\pipe\\' + name);
+        // B1：经能力层 connectNamedPipe（purpose/管道名格式边界内校验构造）
+        socket = nativeExec.connectNamedPipe({ purpose: 'dpapi-unprotect', name });
         socket.on('error', () => { socket.destroy(); if (!settled) retry = setTimeout(connect, 25); });
         socket.on('data', b => { size += b.length; if (size > LIMIT) finish(true); else chunks.push(b); });
         socket.on('end', () => {

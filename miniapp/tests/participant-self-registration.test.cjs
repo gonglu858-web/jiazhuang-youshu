@@ -194,6 +194,41 @@ function mkConfig(overrides) {
 const mkTrusted = openid => ({ appId: APPID, envId: ENV_ID, OPENID: openid });
 const auditIdOf = userId => core.deriveRegistrationAuditId(APPID, ENV_ID, userId);
 
+// B1：native-exec 能力层替身（新形状：runProgram/spawnProgram/connectNamedPipe/
+// gitReadonly/completeAsync/attempts；仅替换能力层之下的 OS 边界语义）。
+const makeNativeExecStub = (runImpl, spawnImpl) => { const rec = []; let seq = 0;
+  const base = p => String(p).split('\\').pop();
+  return Object.freeze({
+    runProgram({ program, args, cwd, timeoutMs, maxBuffer, input }) {
+      const id = ++seq;
+      rec.push({ id, kind: 'runProgram', program: base(program), attempted: true, completed: false, spawnFailed: false, status: null });
+      const to = timeoutMs === undefined ? 10000 : timeoutMs, mb = maxBuffer === undefined ? 128 * 1024 : maxBuffer;
+      const r = runImpl(program, args, { cwd: cwd === undefined ? ROOT : cwd, input, shell: false, windowsHide: true, timeout: to, maxBuffer: mb });
+      rec[id - 1].completed = true;
+      rec[id - 1].spawnFailed = !!(r && (r.error || r.signal));
+      rec[id - 1].status = r && r.status !== undefined ? r.status : null;
+      return r;
+    },
+    spawnProgram({ purpose, script, cwd }) {
+      const id = ++seq;
+      rec.push({ id, kind: 'spawnProgram', program: 'powershell.exe', attempted: true, completed: false, spawnFailed: false, status: null });
+      return { child: spawnImpl ? spawnImpl({ purpose, script, cwd }) : null, attemptId: id };
+    },
+    connectNamedPipe({ purpose, name }) {
+      rec.push({ id: ++seq, kind: 'connect', program: 'named-pipe', attempted: true, completed: true, spawnFailed: false, status: null });
+      return { __stubPipe: name };
+    },
+    completeAsync(attemptId, o) { const e = rec.find(x => x.id === attemptId); if (e) { e.completed = true; e.spawnFailed = !!(o && (o.error || o.signal)); e.status = o && o.code !== undefined ? o.code : null; } },
+    gitReadonly({ operation, commitish, paths }) {
+      const prefix = operation === 'diff' ? ['diff', '--name-only'] : operation === 'status' ? ['status', '--porcelain'] : [operation, '--'];
+      const args = [...prefix, ...(commitish ? [commitish] : []), ...(paths ? ['--', ...paths] : [])];
+      const r = runImpl('git', args, { cwd: undefined });
+      return r.stdout ? r.stdout.toString('utf8') : '';
+    },
+    attempts() { return rec.map(x => ({ ...x })); }
+  });
+};
+
 test('PSR 核心准入：非名单/缺身份/错App/错env/错轮次/错口令/窗口过期全部在数据库工厂之前拒绝（零工厂零事务零写）', async () => {
   const cases = [
     { name: '非名单账号', trusted: mkTrusted('synthetic-not-allowed-openid'), config: mkConfig(), request: { action: 'registerSelf', registrationRoundId: ROUND_ID, passphrase: SYNTHETIC_PASSPHRASE }, expectCode: 'PIC_NOT_ALLOWED' },
@@ -870,11 +905,7 @@ test('R6 公共接口始终阻断记账、catch及restore均不能旁路；专�
   assert.equal(guardHits.length-before,8);guardPhase='business';
   let actual=0;
   // A2：local-tools 原始引用经 native-exec 捕获层——替身须覆盖该层（而非 node:child_process）
-  const nativeExecStub=(spawnSyncImpl,spawnImpl)=>{const rec=[];return Object.freeze({
-    spawnSync(exe,args,opts){rec.push({kind:'spawnSync',program:String(exe).split('\\').pop()});return spawnSyncImpl(exe,args,opts);},
-    spawn(exe,args,opts){rec.push({kind:'spawn',program:String(exe).split('\\').pop()});return spawnImpl(exe,args,opts);},
-    connect(p){rec.push({kind:'connect',program:'named-pipe'});return require('node:net').connect(p);},
-    execFile(){throw Error('不应使用');},attempts(){return rec.slice();}});};
+  const nativeExecStub=makeNativeExecStub;
   const local=fixture.load('miniapp/scripts/lib/participant-local-tools.cjs',{
     './participant-native-exec.cjs':nativeExecStub((exe,args,opts)=>{actual++;assert.ok(path.isAbsolute(exe));
       assert.equal(opts.shell,false);assert.ok(opts.timeout>0&&opts.maxBuffer>0);assert.equal(opts.cwd,ROOT);
@@ -895,10 +926,7 @@ test('R6 公共接口始终阻断记账、catch及restore均不能旁路；专�
     assert.equal('spawnSync' in local,false);assert.equal('run' in local,false);
 });
 test('R6 专用能力结果不确定/超量/超时/错误必须拒绝，非公共分发',async()=>{
-  const nativeExecStub=spawnSyncImpl=>{const rec=[];return Object.freeze({
-    spawnSync(exe,args,opts){rec.push({program:String(exe).split('\\').pop()});return spawnSyncImpl(exe,args,opts);},
-    spawn(){throw Error('不应启动');},connect(){throw Error('不应连接');},
-    execFile(){throw Error('不应使用');},attempts(){return rec.slice();}});};
+  const nativeExecStub=makeNativeExecStub;
   for(const response of [{status:0,stdout:'x',error:Error('timeout')},
     {status:null,signal:'SIGTERM'},{status:0,stdout:'x'.repeat(128*1024+1)},
     {status:0,stdout:'synthetic',stderr:'failure'},{status:3,stdout:''}]){
@@ -911,8 +939,10 @@ test('R6 专用能力结果不确定/超量/超时/错误必须拒绝，非公�
   const child=new EventEmitter();child.stderr=new EventEmitter();
   child.stdin=new EventEmitter();child.stdin.end=()=>{};child.kill=()=>{killed++;};
   const local=fixture.load('miniapp/scripts/lib/participant-local-tools.cjs',{
-    './participant-native-exec.cjs':{spawn:()=>child,spawnSync(){throw Error('not expected');},
-      connect:()=>Object.assign(new EventEmitter(),{destroy(){}}),execFile(){throw Error('不应使用');},attempts(){return [];}},
+    './participant-native-exec.cjs':{runProgram(){throw Error('not expected');},
+      spawnProgram(){return {child,attemptId:1};},
+      connectNamedPipe(){return Object.assign(new EventEmitter(),{destroy(){}});},
+      completeAsync(){},gitReadonly(){throw Error('不应使用');},attempts(){return [];}},
     'node:net':{connect:()=>Object.assign(new EventEmitter(),{destroy(){}})}
   },{setTimeout:(fn,ms)=>setTimeout(fn,Math.min(ms,5))});
   await assert.rejects(()=>local.unprotect('ab'.repeat(32)),e=>e.code==='PSR_LOCAL_TOOL_FAILED');
@@ -981,10 +1011,7 @@ test('E2/E3 接线：真实 local-tools + GB18030 Buffer 替身→ACL 解析正�
     if (exe === localToolsExes.icacls) return { status: 0, stdout: gbEncode(aclText), stderr: Buffer.alloc(0) };
     throw new Error('意外程序：' + exe);
   };
-  const nativeExecStub = spawnSyncImpl => { const rec = []; return Object.freeze({
-    spawnSync(exe, args, opts) { rec.push({ kind: 'spawnSync', program: String(exe).split('\\').pop() }); return spawnSyncImpl(exe, args, opts); },
-    spawn() { throw new Error('不应启动'); }, connect() { throw new Error('不应连接'); },
-    execFile() { throw new Error('不应使用'); }, attempts() { return rec.slice(); } }); };
+  const nativeExecStub = makeNativeExecStub;
   // (1) 接线：真实 local-tools 解码 GB18030 ACL → 中文统计行与中文主体名正确还原
   const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
     './participant-native-exec.cjs': nativeExecStub(makeSpawn(aclLines('synthetic\\当前用户中文名:(F)').join('\n'))),
@@ -1056,12 +1083,8 @@ test('E2/E3 接线：真实 local-tools + GB18030 Buffer 替身→ACL 解析正�
 
 test('E4 模块选择：PROTECT/UNPROTECT 含 PSHOME 固定初始化且先于 SecureString；初始化失败即停止无回退', () => {
   const spawnCalls = [];
-  const nativeExecStub = spawnSyncImpl => Object.freeze({
-    spawnSync(exe, args, opts) { return spawnSyncImpl(exe, args, opts); },
-    spawn() { throw new Error('不应启动'); }, connect() { throw new Error('不应连接'); },
-    execFile() { throw new Error('不应使用'); }, attempts() { return []; } });
   const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-    './participant-native-exec.cjs': nativeExecStub((exe, args, opts) => {
+    './participant-native-exec.cjs': makeNativeExecStub((exe, args, opts) => {
       spawnCalls.push({ exe, args, opts });
       return { status: 0, stdout: Buffer.from('ab'.repeat(40), 'utf8'), stderr: Buffer.alloc(0) };
     }),
@@ -1097,11 +1120,10 @@ test('E4 模块选择：PROTECT/UNPROTECT 含 PSHOME 固定初始化且先于 Se
   // (3) 初始化失败：status 1 + stderr → protect 抛错，且只调用一次（无回退重试）
   spawnCalls.length = 0;
   const failing = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-    './participant-native-exec.cjs': { spawnSync: (exe, args, opts) => {
+    './participant-native-exec.cjs': makeNativeExecStub((exe, args, opts) => {
       spawnCalls.push({ exe, args });
       return { status: 1, stdout: Buffer.alloc(0), stderr: Buffer.from('Import-Module synthetic failure', 'utf8') };
-    }, spawn() { throw new Error('不应启动'); }, connect() { throw new Error('不应连接'); },
-      execFile() { throw new Error('不应使用'); }, attempts() { return []; } },
+    }),
     'node:fs': { statSync: () => ({ isFile: () => true }) }
   });
   assert.throws(() => failing.protect('synthetic-plain'), e => e.code === 'PSR_LOCAL_TOOL_FAILED');
@@ -1133,7 +1155,7 @@ test('R3 替换字符：合法编码 U+FFFD 双通道拒绝；正常中英文对
   assert.ok(nativeDecoder.decodeAscii(Buffer.from('Successfully processed 1 files')).length > 0);
   // (4) local-tools 链上解码不确定 → 固定分类 PSR_NATIVE_DECODE_UNCERTAIN（与命令失败区分）
   const uffdLocal = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-    './participant-native-exec.cjs': { spawnSync(exe, args, opts) {
+    './participant-native-exec.cjs': makeNativeExecStub((exe, args, opts) => {
       if (exe.endsWith('icacls.exe') && args[0] === '.') {
         // 契约探针：真实形状（独立完整统计行 + 高位字节）→ 放行契约
         return { status: 0, stderr: Buffer.alloc(0),
@@ -1151,8 +1173,7 @@ test('R3 替换字符：合法编码 U+FFFD 双通道拒绝；正常中英文对
             Buffer.from('","' + fixture.sid + '"', 'latin1')]) };
       }
       return { status: 0, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) };
-    }, spawn() { throw new Error('不应启动'); }, connect() { throw new Error('不应连接'); },
-      execFile() { throw new Error('不应使用'); }, attempts() { return []; } },
+    }),
     'node:fs': { statSync: () => ({ isFile: () => true }) }
   });
   assert.throws(() => uffdLocal.queryIdentity(), e => e.code === 'PSR_NATIVE_DECODE_UNCERTAIN',
@@ -1164,9 +1185,7 @@ test('R3 替换字符：合法编码 U+FFFD 双通道拒绝；正常中英文对
   }
   // (5) 命令失败分类保持不变：status 1 → PSR_LOCAL_TOOL_FAILED
   const failLocal = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-    './participant-native-exec.cjs': { spawnSync: () => ({ status: 1, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) }),
-      spawn() { throw new Error('不应启动'); }, connect() { throw new Error('不应连接'); },
-      execFile() { throw new Error('不应使用'); }, attempts() { return []; } },
+    './participant-native-exec.cjs': makeNativeExecStub(() => ({ status: 1, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) })),
     'node:fs': { statSync: () => ({ isFile: () => true }) }
   });
   assert.throws(() => failLocal.queryIdentity(), e => e.code === 'PSR_LOCAL_TOOL_FAILED');
@@ -1183,7 +1202,7 @@ test('E5 真实local-tools→store合成接线：GB18030 Buffer 替身全链通�
   const aclText2 = 'artifacts/schedule-sandbox/.participant-private synthetic\\current:(F)\n已成功处理 1 个文件；处理 0 个文件时失败。'; // 主体与 ASCII 身份同源（store 白名单）
   const spawnCalls2 = [];
   const makeRealLocal = (overrideSpawn) => fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-    './participant-native-exec.cjs': { spawnSync(exe, args, opts) {
+    './participant-native-exec.cjs': makeNativeExecStub((exe, args, opts) => {
       spawnCalls2.push({ exe, args });
       // 完整固定参数核对（每次调用）
       assert.equal(opts.shell, false);
@@ -1207,8 +1226,7 @@ test('E5 真实local-tools→store合成接线：GB18030 Buffer 替身全链通�
         return { status: 0, stderr: Buffer.alloc(0), stdout: Buffer.alloc(0) };
       }
       throw new Error('意外程序：' + exe);
-    }, spawn() { throw new Error('不应启动'); }, connect() { throw new Error('不应连接'); },
-      execFile() { throw new Error('不应使用'); }, attempts() { return []; } },
+    }),
     'node:fs': { statSync: () => ({ isFile: () => true }) }
   });
   const realLocal = makeRealLocal(null);
@@ -1275,14 +1293,15 @@ test('E6 异步UNPROTECT：实际spawn固定参数、管道成功返回、初始
     child.stderr = new EventEmitter();
     child.kill = () => { killed++; };
     const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-      './participant-native-exec.cjs': { spawn(exe, args, opts) {
-        spawnCalls.push({ exe, args, opts });
-        assert.equal(opts.shell, false); assert.ok(opts.windowsHide === true);
-        assert.equal(JSON.stringify(opts.stdio), JSON.stringify(['pipe', 'ignore', 'pipe']), 'stdio 固定');
-        queueMicrotask(() => { child.emit('spawn'); });
-        return child;
-      }, spawnSync() { throw new Error('不应同步启动'); },
-        connect(p) {
+      './participant-native-exec.cjs': { runProgram() { throw new Error('不应同步启动'); },
+        spawnProgram({ purpose, script, cwd }) {
+          spawnCalls.push({ purpose, script, cwd });
+          assert.ok(script.includes('Import-Module'), '能力层校验固定 PSHOME 初始化');
+          return { child, attemptId: 1 };
+        },
+        connectNamedPipe({ purpose, name }) {
+          assert.equal(purpose, 'dpapi-unprotect');
+          assert.ok(/^psr-dpapi-[0-9a-f]{32}$/.test(name), '管道名格式边界');
           const s = new EventEmitter(); s.destroy = () => {}; s.write = () => {};
           queueMicrotask(() => {
             s.emit('data', Buffer.from(JSON.stringify({ synthetic: 'plain-value' }), 'utf8'));
@@ -1290,15 +1309,16 @@ test('E6 异步UNPROTECT：实际spawn固定参数、管道成功返回、初始
             child.emit('close', 0, null);
           });
           return s;
-        }, execFile() { throw new Error('不应使用'); }, attempts() { return []; } }
+        },
+        completeAsync() {}, gitReadonly() { throw new Error('不应使用'); }, attempts() { return []; } }
     }, { setTimeout: (fn, ms) => setTimeout(fn, Math.min(ms, 50)) });
     const value = await local.unprotect('ab'.repeat(32));
     // unprotect 解析 JSON 仅作校验，resolve 的是管道原始字符串（vm 跨 realm 用 JSON 比较）
     assert.equal(value, JSON.stringify({ synthetic: 'plain-value' }));
     assert.equal(spawnCalls.length, 1);
-    assert.equal(spawnCalls[0].exe, PS_EXE);
-    assert.equal(JSON.stringify(spawnCalls[0].args.slice(0, 3)), JSON.stringify(['-NoProfile', '-NonInteractive', '-Command']));
-    assert.equal(spawnCalls[0].args[3], local.UNPROTECT, '命令串 = 受审 UNPROTECT 常量（含 PSHOME 初始化）');
+    assert.equal(spawnCalls[0].purpose, 'dpapi-unprotect', '固定用途');
+    assert.equal(spawnCalls[0].script, local.UNPROTECT, '命令串 = 受审 UNPROTECT 常量（含 PSHOME 初始化）');
+    assert.ok(spawnCalls[0].script.includes('$PSHOME'), '能力层校验 PSHOME 初始化');
     assert.equal(killed, 1, 'finish 统一收尾：resolve 前也 kill 子进程（防御性清理）');
   }
   // (2) 初始化失败：spawn error → 拒绝 + kill 收尾，仅一次 spawn
@@ -1309,10 +1329,10 @@ test('E6 异步UNPROTECT：实际spawn固定参数、管道成功返回、初始
     child.stderr = new EventEmitter();
     child.kill = () => { killed++; };
     const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-      './participant-native-exec.cjs': { spawn() { queueMicrotask(() => child.emit('error', new Error('synthetic init failure'))); return child; },
-        spawnSync() { throw new Error('不应同步启动'); },
-        connect() { return Object.assign(new EventEmitter(), { destroy() {}, write() {} }); },
-        execFile() { throw new Error('不应使用'); }, attempts() { return []; } }
+      './participant-native-exec.cjs': { runProgram() { throw new Error('不应同步启动'); },
+        spawnProgram() { queueMicrotask(() => child.emit('error', new Error('synthetic init failure'))); return { child, attemptId: 1 }; },
+        connectNamedPipe() { return Object.assign(new EventEmitter(), { destroy() {}, write() {} }); },
+        completeAsync() {}, gitReadonly() { throw new Error('不应使用'); }, attempts() { return []; } }
     }, { setTimeout: (fn, ms) => setTimeout(fn, Math.min(ms, 50)) });
     await assert.rejects(() => local.unprotect('ab'.repeat(32)), e => e.code === 'PSR_LOCAL_TOOL_FAILED');
     assert.equal(killed, 1, '初始化失败子进程收尾');
@@ -1324,11 +1344,115 @@ test('E6 异步UNPROTECT：实际spawn固定参数、管道成功返回、初始
     child.stderr = new EventEmitter();
     child.kill = () => {};
     const local = fixture.load('miniapp/scripts/lib/participant-local-tools.cjs', {
-      './participant-native-exec.cjs': { spawn() { queueMicrotask(() => child.stderr.emit('data', Buffer.from('synthetic failure', 'utf8'))); return child; },
-        spawnSync() { throw new Error('不应同步启动'); },
-        connect() { return Object.assign(new EventEmitter(), { destroy() {}, write() {} }); },
-        execFile() { throw new Error('不应使用'); }, attempts() { return []; } }
+      './participant-native-exec.cjs': { runProgram() { throw new Error('不应同步启动'); },
+        spawnProgram() { queueMicrotask(() => child.stderr.emit('data', Buffer.from('synthetic failure', 'utf8'))); return { child, attemptId: 1 }; },
+        connectNamedPipe() { return Object.assign(new EventEmitter(), { destroy() {}, write() {} }); },
+        completeAsync() {}, gitReadonly() { throw new Error('不应使用'); }, attempts() { return []; } }
     }, { setTimeout: (fn, ms) => setTimeout(fn, Math.min(ms, 50)) });
     await assert.rejects(() => local.unprotect('ab'.repeat(32)), e => e.code === 'PSR_LOCAL_TOOL_FAILED');
   }
+});
+
+// ════════════════════════════════════════════════════════════════════════════════
+// B1：native-exec 能力层边界（Codex 复查接续 f211469 §2）——加载真实能力层源码，
+// 仅替换最底层 OS 边界（child_process/net）；非法请求零边界调用，合法行为保持。
+// ════════════════════════════════════════════════════════════════════════════════
+
+test('B1 native-exec 能力层：合法请求构造固定边界；非法请求零 OS 边界调用', () => {
+  const path2 = require('node:path');
+  const vm = require('node:vm');
+  const { createRequire } = require('node:module');
+  const ROOT2 = path2.resolve(__dirname, '../..');
+  const file = path2.join(ROOT2, 'miniapp/scripts/lib/participant-native-exec.cjs');
+  // 最底层 OS 边界替身（记录每次到达边界的调用；可控返回）
+  const boundaryCalls = [];
+  const makeOsStub = (syncResult) => ({
+    spawnSync(exe, args, opts) { boundaryCalls.push({ api: 'spawnSync', exe, args, opts }); return syncResult; },
+    spawn(exe, args, opts) { boundaryCalls.push({ api: 'spawn', exe, args, opts }); return null; },
+    connect(target) { boundaryCalls.push({ api: 'connect', target }); return { __socket: true }; },
+    execFileSync(exe, args, opts) { boundaryCalls.push({ api: 'execFileSync', exe, args, opts }); return 'synthetic'; }
+  });
+  const loadCapability = (osStub) => {
+    const module_ = { exports: {} };
+    const req = createRequire(file);
+    const ctx = vm.createContext({
+      module: module_, exports: module_.exports,
+      require: name => name === 'node:child_process'
+        ? { spawnSync: osStub.spawnSync, spawn: osStub.spawn, execFileSync: osStub.execFileSync }
+        : name === 'node:net' ? { connect: osStub.connect }
+        : name === 'node:path' ? path2 : req(name),
+      __dirname: path2.dirname(file), __filename: file, process, Buffer, console
+    });
+    new vm.Script(fs.readFileSync(file, 'utf8'), { filename: file }).runInContext(ctx);
+    return module_.exports;
+  };
+  const okResult = { status: 0, stdout: Buffer.from('synthetic'), stderr: Buffer.alloc(0) };
+  // (1) 合法同步请求：能力层构造固定 opts（shell=false/windowsHide=true/cwd=仓库根/时限/限额/净化env）
+  boundaryCalls.length = 0;
+  const cap = loadCapability(makeOsStub(okResult));
+  const r = cap.runProgram({ program: 'icacls', args: ['C:\\Windows'], cwd: ROOT2 });
+  assert.equal(r.status, 0);
+  assert.equal(boundaryCalls.length, 1, '合法请求恰一次边界调用');
+  const call = boundaryCalls[0];
+  assert.equal(call.exe, 'C:\\Windows\\System32\\icacls.exe', '白名单程序');
+  assert.deepEqual([...call.args], ['C:\\Windows']);
+  assert.equal(call.opts.shell, false, 'shell 固定 false');
+  assert.equal(call.opts.windowsHide, true);
+  assert.equal(call.opts.cwd, ROOT2, 'cwd 固定仓库根');
+  assert.equal(call.opts.timeout, 10000, '时限固定上限内');
+  assert.equal(call.opts.maxBuffer, 128 * 1024, '限额固定上限内');
+  assert.equal(call.opts.env.NODE_OPTIONS, undefined, 'env 净化');
+  assert.deepEqual([...cap.attempts()].map(a => ({ ...a, id: 0 })),
+    [{ id: 0, kind: 'runProgram', program: 'icacls.exe', attempted: true, completed: true, spawnFailed: false, status: 0 }]);
+  // (2) 非法请求 → 边界拒绝且零 OS 边界调用
+  const badRequests = [
+    ['未批准程序', () => cap.runProgram({ program: 'synthetic-unapproved.exe', args: ['x'] })],
+    ['任意绝对路径程序', () => cap.runProgram({ program: 'C:\\Windows\\System32\\cmd.exe', args: ['x'] })],
+    ['参数含 NUL', () => cap.runProgram({ program: 'git', args: ['x\0y'] })],
+    ['参数非字符串数组', () => cap.runProgram({ program: 'git', args: 'x' })],
+    ['空参数数组', () => cap.runProgram({ program: 'git', args: [] })],
+    ['超时超上限', () => cap.runProgram({ program: 'git', args: ['x'], timeoutMs: 99999 })],
+    ['限额超上限', () => cap.runProgram({ program: 'git', args: ['x'], maxBuffer: 999999 })],
+    ['cwd 越界', () => cap.runProgram({ program: 'git', args: ['x'], cwd: 'C:\\Windows' })],
+    ['输入类型越界', () => cap.runProgram({ program: 'git', args: ['x'], input: 42 })],
+    ['管道用途越界', () => cap.connectNamedPipe({ purpose: 'synthetic', name: 'psr-dpapi-' + 'a'.repeat(32) })],
+    ['管道名格式越界', () => cap.connectNamedPipe({ purpose: 'dpapi-unprotect', name: 'synthetic-pipe' })],
+    ['Git 未知操作', () => cap.gitReadonly({ operation: 'clone', paths: ['x'] })],
+    ['Git 选项注入', () => cap.gitReadonly({ operation: 'diff', paths: ['-x'] })],
+    ['Git commitish 形状', () => cap.gitReadonly({ operation: 'diff', commitish: 'x;rm' })],
+    ['异步用途越界', () => cap.spawnProgram({ purpose: 'synthetic', script: 'x' })],
+    ['异步脚本无 PSHOME 初始化', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: 'synthetic script' })]
+  ];
+  for (const [label, req] of badRequests) {
+    boundaryCalls.length = 0;
+    assert.throws(req, e => e.code === 'PSR_NATIVE_EXEC_BOUNDARY', label + ' 必须边界拒绝');
+    assert.equal(boundaryCalls.length, 0, label + ' 零 OS 边界调用');
+  }
+  // (3) 合法 Git 只读 / 异步 / 管道能力：边界构造保持
+  boundaryCalls.length = 0;
+  const g = cap.gitReadonly({ operation: 'diff', commitish: 'HEAD', paths: ['miniapp/scripts'] });
+  assert.equal(g, 'synthetic');
+  assert.equal(boundaryCalls.length, 1);
+  assert.equal(boundaryCalls[0].exe, 'C:\\Program Files\\Git\\cmd\\git.exe', 'Git 固定程序');
+  assert.deepEqual([...boundaryCalls[0].args], ['diff', '--name-only', 'HEAD', '--', 'miniapp/scripts'], '固定前缀+commitish+pathspec');
+  const sp = cap.spawnProgram({ purpose: 'dpapi-unprotect', script: 'Import-Module -Name (Join-Path $PSHOME "Modules\\x")' });
+  assert.equal(typeof sp.child, 'object');
+  assert.equal(boundaryCalls.length, 2);
+  assert.deepEqual([...boundaryCalls[1].args.slice(0, 3)], ['-NoProfile', '-NonInteractive', '-Command']);
+  const sock = cap.connectNamedPipe({ purpose: 'dpapi-unprotect', name: 'psr-dpapi-' + 'b'.repeat(32) });
+  assert.equal(sock.__socket, true);
+  assert.equal(boundaryCalls[2].target, '\\\\.\\pipe\\psr-dpapi-' + 'b'.repeat(32), '命名管道目标边界内构造');
+  // (4) 异步完成回填不重复计数
+  const attBefore = cap.attempts().length;
+  cap.completeAsync(2, { code: 0, signal: null });
+  assert.equal(cap.attempts().length, attBefore, 'completeAsync 不新增进程计数');
+  assert.equal(cap.attempts().find(a => a.id === 2).completed, true);
+  // (5) 导出仅固定用途能力，无原始引用暴露
+  for (const key of Object.keys(cap)) {
+    assert.ok(['ERROR_CODE', 'runProgram', 'spawnProgram', 'connectNamedPipe', 'completeAsync', 'gitReadonly', 'attempts'].includes(key),
+      '导出键不在固定能力集：' + key);
+  }
+  assert.equal(typeof cap.rawSpawnSync, 'undefined');
+  assert.equal(typeof cap.rawConnect, 'undefined');
+  assert.equal(typeof cap.execFileSync, 'undefined');
 });
