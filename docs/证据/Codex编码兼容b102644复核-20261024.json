@@ -1,0 +1,196 @@
+{
+  "schema": "codex-native-compat-b102644-review/1",
+  "reviewedCommit": "b102644",
+  "basis": "acb6ecf",
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-local-tools.cjs": "cc1497ded6560ce4a4bb11b3fe6eee58cb70800f9539453f6de312dbcab376f3",
+    "miniapp/scripts/lib/participant-native-exec.cjs": "2457feb6f6858a2444754b23e238042c5f6862508baf3e9500af21c5c888f8a2",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+    "docs/证据/CodeBuddy本地编码模块兼容返修v4-20261024.cjs": "00a82ce35794b708d0019891420e9356aeff98dc3d0ac593f6cdfdf4ba30bbcc"
+  },
+  "boundary": {
+    "requests": [
+      {
+        "label": "arbitraryPowerShell",
+        "accepted": true,
+        "osStubCalls": 1
+      },
+      {
+        "label": "gitWriteOperation",
+        "accepted": true,
+        "osStubCalls": 1
+      },
+      {
+        "label": "aclMutation",
+        "accepted": true,
+        "osStubCalls": 1
+      },
+      {
+        "label": "asyncCommentAnchor",
+        "accepted": true,
+        "osStubCalls": 1
+      }
+    ],
+    "publicBlocked": true,
+    "synchronousSpawnFailureRecord": {
+      "id": 1,
+      "kind": "spawnProgram",
+      "program": "powershell.exe",
+      "attempted": true,
+      "completed": false,
+      "spawnFailed": false,
+      "status": null
+    },
+    "errorThenCloseZeroRecord": {
+      "id": 1,
+      "kind": "spawnProgram",
+      "program": "powershell.exe",
+      "attempted": true,
+      "completed": true,
+      "spawnFailed": false,
+      "status": 0
+    },
+    "realProcesses": 0
+  },
+  "evidenceVm": [
+    {
+      "mode": "normal",
+      "ok": true,
+      "exit": 0,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 4,
+      "reportedUnexpected": 0,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": []
+    },
+    {
+      "mode": "identityFail",
+      "ok": false,
+      "exit": 1,
+      "identityRead": false,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 4,
+      "reportedUnexpected": 0,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": [
+        "S1_contract_queries_identity_shape"
+      ]
+    },
+    {
+      "mode": "lateGitHit",
+      "ok": false,
+      "exit": 1,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 5,
+      "reportedUnexpected": 1,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": []
+    },
+    {
+      "mode": "committedHistoryChange",
+      "ok": true,
+      "exit": 0,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 4,
+      "reportedUnexpected": 0,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": []
+    },
+    {
+      "mode": "runtimeDigestHit",
+      "ok": true,
+      "exit": 0,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 5,
+      "reportedUnexpected": 0,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": []
+    },
+    {
+      "mode": "normalFull",
+      "ok": true,
+      "exit": 0,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 4,
+      "reportedUnexpected": 0,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 14,
+      "failedResults": []
+    },
+    {
+      "mode": "postS9Hit",
+      "ok": false,
+      "exit": 1,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 5,
+      "reportedUnexpected": 1,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": true,
+      "vmScenarioCount": 14,
+      "failedResults": []
+    },
+    {
+      "mode": "s9Mismatch",
+      "ok": false,
+      "exit": 1,
+      "identityRead": true,
+      "actualProcesses": 7,
+      "reportedFinalProcesses": 7,
+      "actualParentHits": 4,
+      "reportedUnexpected": 0,
+      "guardInstallations": 1,
+      "s8Passed": true,
+      "s9Passed": false,
+      "vmScenarioCount": 14,
+      "failedResults": [
+        "S9_fault_exit_proofs"
+      ]
+    }
+  ],
+  "outerGuard": {
+    "probes": 2,
+    "unexpected": 0
+  },
+  "realOsQueries": 0,
+  "dpapi": 0,
+  "cloud": 0,
+  "ok": true,
+  "limitations": [
+    "ok仅指独立对照符合预期，不是产品验收通过。",
+    "实际受审能力层/本地工具/证据源码，底层进程、管道及私密FS全为替身；没有真实执行写操作。",
+    "committedHistoryChange模拟未在PROTECTED中的已有Codex历史JSON被修改且工作区干净，未触真实历史文件。",
+    "s9Mismatch只在内存改变正常场景预期，实际S9比较失败，验证最终exit1；不改磁盘脚本。",
+    "runtimeDigestHit在受审明确运行步骤（摘要读取）触发被catch命中，父实际记录但较早guardAccounting快照漏计。"
+  ]
+}
