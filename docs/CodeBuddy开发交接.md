@@ -1,3 +1,12 @@
+## 2026-10-24 R1–R3定点返修完成（本地编码与模块兼容，待Codex复查；真实私密输入及执行未放行）
+
+- 依据 docs/Codex复查-本地编码模块兼容81bfac3-20261024.md §2–§3，接手 master d123828（受审实现 81bfac3），工作区起始仅 AGENTS.md 既有修改。仅改本包 local-tools/decoder、登记测试、v2 证据与状态记录；核心、模板、PS1、装配快照、旧业务/P/E/X/管理员链、共享 pic 守卫、关闭来源、冻结包、历史脚本/JSON 与 Codex 反例零改动。AGENTS.md 既有修改保留未提交。
+- R1：sync 统一核验全部固定命令（启动错误/超时信号/状态∈{0,1}/stdout与stderr Buffer类型/字节上限/native通道意外stderr）；新增 verifyNativeEncodingContract——产品调用前固定只读探针（icacls 仓库根）受控建立契约，判定依据=工具实际输出（GB18030 锚定+UTF-8 严格拒绝+高位字节可区分），不使用代码页推导；blocked（全ASCII不可区分/双解码歧义/仅UTF8锚定/探针命令失败）时 native 查询一律 PSR_NATIVE_CONTRACT_BLOCKED，保留 blocked、不猜编码、不改代码页、无回退。
+- R2：v2 证据（CodeBuddy本地编码模块兼容返修v2-20261024.cjs/.json，默认 stdout、--out wx 新建；旧脚本/JSON 不改写）：完整离线守卫在业务装载前安装（父Socket/dns.promises/公共进程/网络全覆盖），探针3（https/execSync/dns.promises）+敏感性1（业务期被catch网络尝试）实际记账分列、业务意外0；Git 固定受信路径计入总进程事实（固定能力4+保护核对2=6个子进程）；私密根缺失立即 blocked 不查询祖先；保护核对 git diff 81bfac3 -- <paths>（覆盖实际工作树含未提交）与 81bfac3..HEAD 双向核对，store 逐字节一致。
+- R3：decoder 解码后显式拒绝 U+FFFD（UTF-8 EF BF BD 与 GB18030 四字节 84 31 A4 37 双反例+正常中英文对照）；sync 解码不确定以固定净化原因单独分类 PSR_NATIVE_DECODE_UNCERTAIN（不含原身份/ACL/stderr），命令失败保持 PSR_LOCAL_TOOL_FAILED。
+- §3 收尾：E5 真实 local-tools→store 合成接线（正例+U+FFFD 身份/ACL 链上拒绝+零写零protect+契约探针恰一次）；E6 异步 UNPROTECT 实际 spawn 固定参数（stdio pipe/ignore/pipe、UNPROTECT 常量）、管道成功返回、初始化失败 kill 收尾、stderr 拒绝；S4 改为真实内建双向解码验证并链接测试 E1；「管道严格解码」表述更正为旧异步路径宽松解码（本轮仅修表述不扩修）；当前状态与 CodeBuddy 交接入口更新（旧 blob 完整后缀逐字节核对）。
+- 实测：participant-self-registration.test.cjs **45/45**（42 基线+R3/E5/E6）、business-test-package.test.cjs **18/18** 无回归、v2 证据 9/9 exit 0（守卫 3/1/0）。运行时摘要：local-tools b00ba6994b9bd13133286ed6849adb07c221fdd4cbeed1f5e6d53eb5d054bb2e，decoder 462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3，v2 证据 e9d6f8120d3a79aaa566cf47d577139729d9a314d85513a6b5672f9cb52221f8。git diff --check 通过。
+- 未验证项：真实 DPAPI/UI、真实 PowerShell 模块加载（S6 为合成替身）、本机合成预检是否恢复（由 Codex 复查决定）、GB18030 契约仅对本机当前环境成立。未读真实编号/既有密文、未运行真实 DPAPI/UI、未改权限/执行策略/系统环境、未联网安装、未操作云端；1/2号不重试，P不开展，不生成真实批准。
 ## 2026-10-24 Codex复查81bfac3：R1–R3待返修，真实输入未放行
 
 独立复跑登记42/42、业务18/18通过，但新纯内存反例确认：C0命令失败/超时、编码无法确认或不支持时仍ok=true/exit0；证据无实际意外守卫，注入被catch网络尝试由外层阻断后仍报绿；合法编码U+FFFD被decoder及完整local-tools→store合成链接受。详见 docs/Codex复查-本地编码模块兼容81bfac3-20261024.md 与新Codex反例脚本/JSON。认可Buffer字节限额、固定程序及模块导入源码顺序、主体集合未扩展；未称实际DPAPI或UI已验证。本轮7个证据VM场景、2条产品合成链，探针2/敏感性1/意外0，无真实OS查询/私密数据读取/DPAPI/UI/云操作。唯一下一步交CodeBuddy按报告§2–§3定点返修并另建v2证据，旧脚本JSON及Codex反例保护；本机预检暂不恢复。产品不改，1/2号不重做，P不开展，AGENTS.md既有修改保留排除。本文旧blob完整保留为后缀。

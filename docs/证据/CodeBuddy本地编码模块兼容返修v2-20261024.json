@@ -1,0 +1,240 @@
+{
+  "schema": "wb-psr-native-encoding-contract-v2/1",
+  "reviewedCommit": "81bfac3",
+  "reviewedBaseline": "3d8d515",
+  "fixBaseline": "d123828",
+  "date": "2026-10-24",
+  "results": [
+    {
+      "id": "S0_private_root_exists",
+      "passed": true,
+      "actual": {
+        "root": "artifacts/schedule-sandbox/.participant-private",
+        "exists": true
+      }
+    },
+    {
+      "id": "S1_native_encoding_contract_controlled",
+      "passed": true,
+      "actual": {
+        "contract": {
+          "state": "established",
+          "basis": "tool_output_anchor",
+          "probe": "icacls <repoRoot>",
+          "highBytes": 32
+        },
+        "aclFacts": {
+          "bytes": 179,
+          "highBytes": 32,
+          "gbAnchor": true,
+          "sha256": "30b9d18c3c13e516316c09f8826f487d1d852bdd9a0981c0a73025a23af15a01"
+        },
+        "identityFacts": {
+          "bytes": 62,
+          "asciiOnly": true,
+          "csvShapeOk": true
+        },
+        "s1Error": null,
+        "basis": "工具实际输出（icacls 对仓库根：GB18030 严格解码 + 统计行语义锚定 + UTF-8 严格拒绝的可区分签名）；不使用 Console/ANSI 代码页推导",
+        "controlledEntry": "local-tools verifyNativeEncodingContract 在每次产品 native 查询前强制（首次探针后缓存）"
+      }
+    },
+    {
+      "id": "S2_unified_command_result_checks",
+      "passed": true,
+      "actual": {
+        "rejected": 8,
+        "expected": 8,
+        "detail": [
+          {
+            "label": "whoami_status1_stderr",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "acl_timeout_error_signal",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "stdout_not_buffer",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "stderr_not_buffer",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "stdout_over_limit",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "unexpected_stderr_native",
+            "code": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "contract_probe_command_failed",
+            "code": "PSR_LOCAL_TOOL_FAILED",
+            "expectedCode": "PSR_LOCAL_TOOL_FAILED"
+          },
+          {
+            "label": "all_ascii_undecidable",
+            "code": "PSR_NATIVE_CONTRACT_BLOCKED",
+            "expectedCode": "PSR_NATIVE_CONTRACT_BLOCKED"
+          }
+        ],
+        "note": "启动错误/超时信号/状态/Buffer类型/字节上限/意外stderr 全部纳入统一拒绝；探针命令失败按命令失败分类；全 ASCII 输出 blocked（契约不可区分）"
+      }
+    },
+    {
+      "id": "S3_replacement_char_rejected",
+      "passed": true,
+      "actual": {
+        "rejectedUtf8Ufffd": true,
+        "rejectedGbUfffd": true,
+        "normalOk": true,
+        "invalidStillRejected": true
+      }
+    },
+    {
+      "id": "S4_synthetic_bidirectional_decode",
+      "passed": true,
+      "actual": {
+        "gbkRejectedByUtf8": true,
+        "gbkDecodedByGb": true,
+        "invalidGbRejected": true,
+        "loneLeadRejected": true,
+        "note": "与登记测试 E1（participant-self-registration.test.cjs）同源断言"
+      }
+    },
+    {
+      "id": "S5_real_tools_to_store_chain",
+      "passed": true,
+      "actual": {
+        "positivePass": true,
+        "zeroWrite": true,
+        "zeroProtect": true,
+        "probeOnce": true,
+        "uffdIdentityRejected": true,
+        "uffdAclRejected": true,
+        "note": "进程/FS 替身之外的链路（store→local-tools→解码→ACL 解析）全真实代码"
+      }
+    },
+    {
+      "id": "S6_async_unprotect",
+      "passed": true,
+      "actual": {
+        "spawnParamsOk": true,
+        "pipeValueOk": true,
+        "initFailureCleaned": true,
+        "stderrRejected": true,
+        "killOnFinish": true,
+        "note": "合成进程/管道替身；未执行真实 PowerShell 模块加载（操作系统模块故障未覆盖，如实披露）"
+      }
+    },
+    {
+      "id": "S7_guard_accounting_and_process_facts",
+      "passed": true,
+      "actual": {
+        "guardHits": {
+          "probe": 3,
+          "sensitivity": 1,
+          "businessUnexpected": 0,
+          "detail": [
+            {
+              "phase": "probe",
+              "api": "https.request"
+            },
+            {
+              "phase": "probe",
+              "api": "cp.execSync"
+            },
+            {
+              "phase": "probe",
+              "api": "dns.promises.lookup"
+            },
+            {
+              "phase": "sensitivity",
+              "api": "https.request"
+            }
+          ]
+        },
+        "fixedCapabilityInvocations": {
+          "contractProbe": 1,
+          "aclQuery": 1,
+          "identityQuery": 1,
+          "gitQuery": 1,
+          "total": 4
+        },
+        "protectionGit": {
+          "count": 2,
+          "fixedPath": "C:\\Program Files\\Git\\cmd\\git.exe",
+          "note": "保护核对专用（守卫安装前捕获引用；固定受信路径）"
+        },
+        "totalChildProcesses": 6,
+        "gitCheckIgnore": {
+          "status": 0,
+          "ignoredHit": true
+        },
+        "note": "总进程事实含 Git；业务期意外命中必须为 0；探针/敏感性为故意触发分列"
+      }
+    },
+    {
+      "id": "S8_protection_reviewed_commit_and_worktree",
+      "passed": true,
+      "actual": {
+        "worktreeDiffEmpty": true,
+        "committedDiffEmpty": true,
+        "worktreeDiff": "",
+        "headDiff": "",
+        "s8Error": null,
+        "storeByteIdenticalToReviewed": true,
+        "changedFilesSinceFixBaseline": [
+          "AGENTS.md",
+          "\"docs/CodeBuddy\\345\\274\\200\\345\\217\\221\\344\\272\\244\\346\\216\\245.md\"",
+          "\"docs/\\345\\275\\223\\345\\211\\215\\347\\212\\266\\346\\200\\201.md\"",
+          "\"docs/\\350\\277\\233\\345\\261\\225\\344\\270\\216\\345\\276\\205\\345\\212\\236.md\"",
+          "miniapp/scripts/lib/participant-local-tools.cjs",
+          "miniapp/scripts/lib/participant-native-decoder.cjs",
+          "miniapp/tests/participant-self-registration.test.cjs"
+        ],
+        "note": "git diff <commit> -- <paths> 覆盖受审提交到实际工作树（含未提交改动）；HEAD 范围单独核对"
+      }
+    }
+  ],
+  "ok": true,
+  "guardAccounting": {
+    "probeHits": 3,
+    "sensitivityHits": 1,
+    "businessUnexpected": 0,
+    "totalHits": 4,
+    "note": "探针/敏感性为故意触发并分列；实际计数决定 ok/exit"
+  },
+  "processFacts": {
+    "fixedCapabilityChildProcesses": 4,
+    "protectionGitProcesses": 2,
+    "totalChildProcesses": 6,
+    "fixedAbsolutePaths": true,
+    "note": "真实 OS 查询经 local-tools 固定能力（whoami/icacls/git 各固定路径）；原始身份/ACL 仅驻内存"
+  },
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-local-tools.cjs": "b00ba6994b9bd13133286ed6849adb07c221fdd4cbeed1f5e6d53eb5d054bb2e",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3"
+  },
+  "onlyReadFacts": {
+    "identityRead": true,
+    "identityInMemoryOnly": true,
+    "aclRead": true,
+    "aclInMemoryOnly": true,
+    "dpapiRun": false,
+    "ps1UiRun": false,
+    "privateFileSaved": false,
+    "aclModified": false,
+    "directoriesListed": false,
+    "realParticipantDataRead": false
+  },
+  "unverified": [
+    "真实 DPAPI 加解密、PS1 输入窗口（执行策略 Restricted）未运行——本机合成预检是否恢复须 Codex 复查后分阶段执行",
+    "S6 为合成进程/管道替身：真实 PowerShell 模块加载、真实 UNPROTECT 初始化故障未覆盖",
+    "GB18030 契约仅对本机当前环境成立（工具实际输出锚定）；其他机器须重新受控建立",
+    "真实私密输入、登记、1/2 号、云端操作未放行（本轮禁止）"
+  ]
+}
