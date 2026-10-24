@@ -1,0 +1,406 @@
+{
+  "schema": "codex-native-compat-f211469-review/1",
+  "reviewedCommit": "f211469",
+  "baseline": "e7dde01",
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-local-tools.cjs": "7996c481dff0a387a8c3d5d0b676ce89e6ac59f3b9c704393e49f4a0191dc1ed",
+    "miniapp/scripts/lib/participant-native-exec.cjs": "2fcf30b0a412e7dc3304405604bd07d9416ce4bd1ff2e9b295ff6b8cfcc19a61",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+    "docs/证据/CodeBuddy本地编码模块兼容返修v3-20261024.cjs": "456580c6345f2f621e764d51ee39ed047fab225250132db8b6186b286feab599"
+  },
+  "nativeBoundary": {
+    "publicBlocked": true,
+    "unapprovedBoundaryCalls": [
+      "spawnSync",
+      "spawn",
+      "execFileSync",
+      "connect"
+    ],
+    "status1ReportedFailed": false,
+    "asyncNotYetFailedReportedFailed": true,
+    "realProcesses": 0,
+    "realConnections": 0
+  },
+  "evidenceVm": [
+    {
+      "mode": "normal",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 4,
+      "latestGuardPhases": [
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity"
+      ],
+      "s8Passed": true,
+      "s9Passed": null,
+      "s9Scenarios": null
+    },
+    {
+      "mode": "identityFail",
+      "ok": false,
+      "exit": 1,
+      "s1Passed": false,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 4,
+      "latestGuardPhases": [
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity"
+      ],
+      "s8Passed": true,
+      "s9Passed": null,
+      "s9Scenarios": null
+    },
+    {
+      "mode": "identityNotCsv",
+      "ok": false,
+      "exit": 1,
+      "s1Passed": false,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 4,
+      "latestGuardPhases": [
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity"
+      ],
+      "s8Passed": true,
+      "s9Passed": null,
+      "s9Scenarios": null
+    },
+    {
+      "mode": "lateGitHit",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 5,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 5,
+      "latestGuardPhases": [
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity",
+        "done"
+      ],
+      "s8Passed": true,
+      "s9Passed": null,
+      "s9Scenarios": null
+    },
+    {
+      "mode": "committedHistoryChange",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 4,
+      "latestGuardPhases": [
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity"
+      ],
+      "s8Passed": true,
+      "s9Passed": null,
+      "s9Scenarios": null
+    },
+    {
+      "mode": "normalFull",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 5,
+      "latestGuardPhases": [
+        "pre-require",
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity"
+      ],
+      "s8Passed": true,
+      "s9Passed": true,
+      "s9Scenarios": [
+        {
+          "mode": "normal",
+          "passed": true,
+          "got": {
+            "ok": true,
+            "exit": 0,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "identityFail",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "identityNotCsv",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "junkAnchor",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 4
+          }
+        },
+        {
+          "mode": "crossTool",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "preRequireInject",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "doneInject",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        }
+      ]
+    },
+    {
+      "mode": "s9Mismatch",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 5,
+      "latestGuardPhases": [
+        "pre-require",
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity"
+      ],
+      "s8Passed": true,
+      "s9Passed": false,
+      "s9Scenarios": [
+        {
+          "mode": "normal",
+          "passed": false,
+          "got": {
+            "ok": true,
+            "exit": 0,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "identityFail",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "identityNotCsv",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "junkAnchor",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 4
+          }
+        },
+        {
+          "mode": "crossTool",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "preRequireInject",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "doneInject",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        }
+      ]
+    },
+    {
+      "mode": "postS9Hit",
+      "ok": true,
+      "exit": 0,
+      "s1Passed": true,
+      "identityReadFact": true,
+      "reportedProcessTotal": 4,
+      "observedParentProcesses": 7,
+      "parentActualGuardHits": 4,
+      "reportedUnexpected": 0,
+      "latestGuardHits": 6,
+      "latestGuardPhases": [
+        "pre-require",
+        "probe",
+        "probe",
+        "probe",
+        "sensitivity",
+        "done"
+      ],
+      "s8Passed": true,
+      "s9Passed": true,
+      "s9Scenarios": [
+        {
+          "mode": "normal",
+          "passed": true,
+          "got": {
+            "ok": true,
+            "exit": 0,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "identityFail",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "identityNotCsv",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "junkAnchor",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 4
+          }
+        },
+        {
+          "mode": "crossTool",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "preRequireInject",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        },
+        {
+          "mode": "doneInject",
+          "passed": true,
+          "got": {
+            "ok": false,
+            "exit": 1,
+            "spawnCalls": 8
+          }
+        }
+      ]
+    }
+  ],
+  "outerAccounting": {
+    "probes": 2,
+    "unexpected": 0
+  },
+  "realOsQueries": 0,
+  "realDpapi": 0,
+  "cloud": 0,
+  "ok": true,
+  "limitations": [
+    "ok表示独立反例与关闭对照符合预期，不表示受审实现通过。",
+    "实际native-exec/local-tools/证据源码在VM运行；进程、管道与私密FS全为替身。",
+    "s9Mismatch只在内存把正常场景的预期改为失败，真实S9比较得false后仍exit0；磁盘受审脚本未改。",
+    "committedHistoryChange模拟保护清单外历史文件已提交且工作树干净；未改写任何历史文件。",
+    "外层及证据使用实际守卫安装器；S9重复安装导致后续命中记到最后子场景的事实单列。"
+  ]
+}
