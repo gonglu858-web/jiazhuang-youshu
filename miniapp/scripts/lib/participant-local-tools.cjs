@@ -1,13 +1,15 @@
 'use strict';
 // 本包专用本地能力。公共 child_process 不参与分发；不提供命令/options 透传接口。
+// A2（Codex 复查接续 545d038）：原始进程/管道引用经 participant-native-exec 捕获层
+// 获取（该层在本包装载序列中最先执行）；本模块不直接触碰公共 cp/net 方法。
 const fs = require('node:fs');
 const path = require('node:path');
-const cp = require('node:child_process');
-const net = require('node:net');
 const crypto = require('node:crypto');
-// C1：原生命令输出严格解码辅助（编码契约见 docs/证据/CodeBuddy本地编码模块兼容返修-20261024.json S1–S3）
+// C1：原生命令输出严格解码辅助（编码契约由本模块 verifyNativeEncodingContract 受控建立）
 const decoder = require('./participant-native-decoder.cjs');
-const rawSync = cp.spawnSync, rawSpawn = cp.spawn, pipeConnect = net.connect;
+// A2：原始引用捕获层（spawnSync/spawn/connect；含实际调用记录）
+const nativeExec = require('./participant-native-exec.cjs');
+const rawSync = nativeExec.spawnSync, rawSpawn = nativeExec.spawn, pipeConnect = nativeExec.connect;
 const REPO = path.resolve(__dirname, '../../..');
 const EXES = Object.freeze({ git: 'C:\\Program Files\\Git\\cmd\\git.exe',
   whoami: 'C:\\Windows\\System32\\whoami.exe', icacls: 'C:\\Windows\\System32\\icacls.exe',
@@ -68,49 +70,77 @@ function sync(exe, args, input, outChannel, errChannel) {
   return { status: r.status, stdout: out, stderr: err,
     outRaw: r.stdout || Buffer.alloc(0), outHighBytes: r.stdout ? [...r.stdout].filter(b => b >= 0x80).length : 0 };
 }
-// ── R1：原生命令输出编码适用性受控检查（产品调用前强制；固定只读探针） ──
-// 契约依据 = 工具实际输出（icacls 对仓库根的统计行语义锚定 + 双编码可区分性），
-// 不使用 Console/ANSI 代码页推导（删除「同为原生命令故同一 C 运行时编码」的无证推导）。
-// established 前禁止一切 native 通道产品查询；blocked 不猜编码、不改代码页、无回退。
-const CONTRACT_ANCHOR_RE = /已成功处理\s*\d+\s*个文件[;；]\s*处理\s*0\s*个文件时失败|Successfully processed \d+ files; Failed processing 0 files/i;
-let nativeContractState = null; // null=未检查；{state:'established',...} | {state:'blocked',reason}
+// ── R1/A3：原生命令输出编码适用性受控检查（产品调用前强制；固定只读探针） ──
+// 契约依据 = 工具实际输出（icacls 对仓库根的**完整统计行**语义锚定 + 双编码可区分性），
+// 不使用 Console/ANSI 代码页推导。契约**按程序/输出通道限定**：icacls 探针只授权
+// icacls 管道输出；whoami 无独立非 ASCII 证据时保守要求 ASCII-only 输出（身份查询
+// 本身是唯一来源，查询后按实际字节判定；本机当前为 ASCII）。
+// blocked 不猜编码、不改代码页、无回退。
+// A3：统计行**完整行级锚定**（行首行尾+唯一+失败数 0+无矛盾统计行），拒绝前后垃圾。
+const STATS_LINE_RE = /^(?:已成功处理\s*(\d+)\s*个文件[;；]\s*处理\s*(\d+)\s*个文件时失败[。.]?|Successfully processed (\d+) files; Failed processing (\d+) files[.]?)$/gm;
+const STATS_LINE_LOOSE_RE = /(?:已成功处理\s*\d+\s*个文件[;；]\s*处理\s*\d+\s*个文件时失败|Successfully processed \d+ files; Failed processing \d+ files)/g;
+/** 完整统计行锚定：恰一条完整统计行、失败数 0、且无矛盾/垃圾统计变体。 */
+function anchorVerdict(text) {
+  const norm = String(text).replace(/\r\n/g, '\n'); // 原生命令 CRLF 行尾归一化（仅用于锚定判定）
+  const strict = [...norm.matchAll(STATS_LINE_RE)].map(m => ({
+    processed: Number(m[1] !== undefined ? m[1] : m[3]),
+    failed: Number(m[2] !== undefined ? m[2] : m[4])
+  }));
+  const loose = (norm.match(STATS_LINE_LOOSE_RE) || []).length;
+  return { count: strict.length, failedZero: strict.length === 1 && strict[0].failed === 0,
+    noContradiction: strict.length === loose, // 严格=宽松 ⇒ 无部分匹配垃圾/矛盾行
+    anchored: strict.length === 1 && strict[0].failed === 0 && strict.length === loose };
+}
+const nativeContractState = { icaclsPipe: null }; // null=未检查；{state,basis,probe,highBytes,utf8Decoded,utf8Anchor}
 function contractBlocked(reason) {
   const e = new Error('原生命令输出编码契约未建立（blocked）：' + reason);
   e.code = 'PSR_NATIVE_CONTRACT_BLOCKED';
   throw e;
 }
-function verifyNativeEncodingContract() {
-  if (nativeContractState) {
-    if (nativeContractState.state === 'established') return;
-    return contractBlocked(nativeContractState.reason);
+function verifyIcaclsPipeContract() {
+  const st = nativeContractState.icaclsPipe;
+  if (st) {
+    if (st.state === 'established') return;
+    return contractBlocked(st.reason);
   }
   let r = null;
   try { r = sync(EXES.icacls, ['.'], undefined, 'native', 'native'); }
   catch (e) {
-    nativeContractState = { state: 'blocked', reason: 'contract_probe_command_failed' };
+    nativeContractState.icaclsPipe = { state: 'blocked', reason: 'contract_probe_command_failed' };
     throw e;
   }
-  // 双编码可区分性判定（原始字节，仅内存）。探针命令失败（status≠0/无输出）按
-  // 命令失败分类（PSR_LOCAL_TOOL_FAILED）blocked，不进入编码判定。
+  // 探针命令失败（status≠0/无输出）按命令失败分类 blocked，不进入编码判定。
   if (r.status !== 0 || !r.stdout.trim()) {
-    nativeContractState = { state: 'blocked', reason: 'contract_probe_command_failed' };
+    nativeContractState.icaclsPipe = { state: 'blocked', reason: 'contract_probe_command_failed' };
     return fail();
   }
+  // 双编码可区分性判定（原始字节，仅内存；A3：utf8 解码成功与锚定分列）
   const highBytes = r.outHighBytes;
-  let utf8Anchor = false;
-  try { utf8Anchor = CONTRACT_ANCHOR_RE.test(decoder.decodeUtf8Strict(r.outRaw)); }
-  catch (_) { utf8Anchor = false; }
-  const gbAnchor = CONTRACT_ANCHOR_RE.test(r.stdout);
+  let utf8Decoded = false, utf8Anchor = false, utf8Text = null;
+  try {
+    utf8Text = decoder.decodeUtf8Strict(r.outRaw);
+    utf8Decoded = true;
+    utf8Anchor = anchorVerdict(utf8Text).anchored;
+  } catch (_) { utf8Decoded = false; }
+  const gb = anchorVerdict(r.stdout);
   if (highBytes === 0) {
-    nativeContractState = { state: 'blocked', reason: 'probe_output_all_ascii_undecidable' };
-  } else if (gbAnchor && !utf8Anchor) {
-    nativeContractState = { state: 'established', basis: 'tool_output_anchor',
-      probe: 'icacls <repoRoot>', highBytes };
+    nativeContractState.icaclsPipe = { state: 'blocked', reason: 'probe_output_all_ascii_undecidable' };
+  } else if (gb.anchored && !utf8Anchor) {
+    nativeContractState.icaclsPipe = { state: 'established', basis: 'tool_output_anchor',
+      probe: 'icacls <repoRoot>', channel: 'icacls.pipe', highBytes,
+      utf8Decoded, utf8Anchor, gbCount: gb.count };
   } else {
-    nativeContractState = { state: 'blocked',
-      reason: gbAnchor ? 'both_decodes_anchor_ambiguous' : (utf8Anchor ? 'utf8_only_contradicts_gb18030_contract' : 'no_semantic_anchor' ) };
+    nativeContractState.icaclsPipe = { state: 'blocked',
+      reason: gb.anchored ? 'both_decodes_anchor_ambiguous'
+        : (utf8Anchor ? 'utf8_only_contradicts_gb18030_contract' : 'no_complete_stats_line_anchor') };
   }
-  if (nativeContractState.state !== 'established') contractBlocked(nativeContractState.reason);
+  if (nativeContractState.icaclsPipe.state !== 'established') contractBlocked(nativeContractState.icaclsPipe.reason);
+}
+/** A3：whoami 通道独立保守规则——输出必须 ASCII-only（非 ASCII 未独立证明即 blocked）。 */
+function verifyWhoamiChannel(outHighBytes) {
+  if (outHighBytes !== 0) {
+    contractBlocked('whoami_non_ascii_not_independently_verified');
+  }
 }
 function queryGit(repo, operation, rel) {
   if (!['check-ignore', 'ls-files'].includes(operation)) fail();
@@ -122,14 +152,17 @@ function queryGit(repo, operation, rel) {
   return r;
 }
 function queryAcl(repo, rel) {
-  verifyNativeEncodingContract(); // R1：产品调用前的受控检查（首次固定只读探针，此后缓存）
+  verifyIcaclsPipeContract(); // R1/A3：icacls 管道通道契约（探针缓存；只授权 icacls）
   const r = sync(EXES.icacls, [scope(repo, rel)], undefined, 'native', 'native');
   if (r.status !== 0 || r.stderr.trim() || !r.stdout.trim()) fail(); return r;
 }
 function queryIdentity() {
-  verifyNativeEncodingContract(); // R1：同上（native 通道统一受契约约束）
+  // A3：whoami 通道不依赖 icacls 探针——身份输出必须 ASCII-only（本机当前事实），
+  // 非 ASCII 未独立证明即保守 blocked，不猜编码、不放宽权限。
   const r = sync(EXES.whoami, ['/user', '/fo', 'csv', '/nh'], undefined, 'native', 'native');
-  if (r.status !== 0 || r.stderr.trim() || !r.stdout.trim()) fail(); return r;
+  if (r.status !== 0 || r.stderr.trim() || !r.stdout.trim()) fail();
+  verifyWhoamiChannel(r.outHighBytes);
+  return r;
 }
 function protect(plain) {
   if (typeof plain !== 'string' || /[\r\n]/.test(plain) || Buffer.byteLength(plain) > LIMIT) fail();
@@ -170,10 +203,16 @@ function unprotect(cipher) {
     } catch (_) { finish(true); }
   });
 }
-// R1：契约状态快照（供证据/测试核对；不含原始身份/ACL 内容）
+// R1/A3：契约状态快照（按程序/通道限定；供证据/测试核对；不含原始身份/ACL 内容）
 function nativeEncodingContract() {
-  return nativeContractState === null ? { state: 'unchecked' } : Object.freeze({ ...nativeContractState });
+  return Object.freeze({
+    icaclsPipe: nativeContractState.icaclsPipe === null
+      ? { state: 'unchecked' } : Object.freeze({ ...nativeContractState.icaclsPipe }),
+    whoami: { rule: 'ascii_only_output_required', scope: 'whoami.pipe',
+      note: '身份输出非 ASCII 即 blocked（非 ASCII 编码未独立证明；不依赖 icacls 探针授权）' }
+  });
 }
 module.exports = Object.freeze({ queryGit, queryAcl, queryIdentity, protect, unprotect,
   PROTECT, UNPROTECT, TIMEOUT, LIMIT, PSHOME_MODULE_INIT, decoder, nativeEncodingContract,
+  anchorVerdict,
   ERROR_CODES: Object.freeze({ TOOL: 'PSR_LOCAL_TOOL_FAILED', DECODE_UNCERTAIN: 'PSR_NATIVE_DECODE_UNCERTAIN', CONTRACT_BLOCKED: 'PSR_NATIVE_CONTRACT_BLOCKED' }) });
