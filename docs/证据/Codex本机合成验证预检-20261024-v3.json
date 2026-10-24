@@ -1,0 +1,145 @@
+{
+  "schema": "codex-private-local-preflight/3",
+  "runId": "synthetic-local-private-126d8b44fd8b",
+  "recordedAt": "2026-10-24T04:37:08.727Z",
+  "reviewedCommit": "fea22e0f3cf69bc853aa75b93d2ad05c9459590f",
+  "planBasis": "cbc889b",
+  "continuationBasis": "d56eff4",
+  "securityModuleSelection": "explicit PSHOME built-in; no environment or policy mutation",
+  "preflightStatus": "blocked",
+  "ok": false,
+  "fullLocalValidationPassed": false,
+  "sourceFacts": [
+    {
+      "rel": "miniapp/scripts/lib/participant-self-registration.cjs",
+      "sha256": "bf02b17d57e7a820f82eecef30bdffbabd2004408dcdf2a77297303d427cb4d3",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-private-store.cjs",
+      "sha256": "fe5bc16a20ca9ee2116a72a483f726b78b5a5d55a40a635e9433e61855d83fbe",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-local-tools.cjs",
+      "sha256": "472b9b5c601410c30c78ef361a59db067722ecb185bc730bb7ec8e56afb23011",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/scripts/package-participant-self-registration.cjs",
+      "sha256": "618aeadc6b7dbf9622bbaa9ae64d49023c58ff35d6ca747c2db238714b195251",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/scripts/participant-private-input.ps1",
+      "sha256": "ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/scripts/templates/participant-self-registration/server/scheduleSandbox/index.js",
+      "sha256": "5f5ebb3d6c0e9b563619638ee88740468422f11849ee87177f8749973b27c1c7",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/tests/participant-self-registration.test.cjs",
+      "sha256": "a59b00e426b8db8ee60567795a836536d94162efafc0fbd2ce96d0b33be8dd19",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-guard-runner.cjs",
+      "sha256": "5be6903f4e34987098e831e07b59edd990e9a3e44ba891d56cbada19dedeeb63",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-repair-fixtures.cjs",
+      "sha256": "cefbb662f370a6e0728c18cef5c73e8786ebad00a305bafdab76bc80557502ee",
+      "matches": true
+    },
+    {
+      "rel": "miniapp/tests/helpers/psr-sdk-fixture.cjs",
+      "sha256": "5bc246efd91259f0743428ace4d9b0deb3284a07e10b3c9ba0c41e92291a6bfe",
+      "matches": true
+    }
+  ],
+  "binaries": [
+    {
+      "kind": "git",
+      "path": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+    },
+    {
+      "kind": "whoami",
+      "path": "C:\\Windows\\System32\\whoami.exe",
+      "sha256": "23240ef9f8b0a9a324110b1c2331de31dc1b0e08f5359cb707e51a939af56cd3"
+    },
+    {
+      "kind": "icacls",
+      "path": "C:\\Windows\\System32\\icacls.exe",
+      "sha256": "cb9e55d4c02f4e55100724d2da9a1267f49e196bd39fcdf36cec6ea6314fad2a"
+    },
+    {
+      "kind": "powershell",
+      "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "sha256": "60c9b29843624dd8af6b6a7b26147753be6aeef65098b9a503cc50850afe410f"
+    },
+    {
+      "kind": "node",
+      "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    }
+  ],
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "processCalls": [
+      {
+        "kind": "environment",
+        "pid": 12484,
+        "status": 0,
+        "signal": null,
+        "launchError": false,
+        "stdoutBytes": 713,
+        "stderrBytes": 0
+      }
+    ],
+    "privateFilesRead": 0,
+    "privateFilesCreated": 0,
+    "temporaryFilesCreated": []
+  },
+  "phases": {
+    "A": "blocked",
+    "B": "not-run",
+    "C": "not-run",
+    "D": "not-run",
+    "E": "pass-no-temporary-files"
+  },
+  "targetRelativePath": "artifacts/schedule-sandbox/.participant-private/synthetic-local-private-126d8b44fd8b-ui.bin",
+  "boundaries": {
+    "existingPrivateRecordsRead": false,
+    "policyModified": false,
+    "aclModified": false,
+    "cloudOperations": false,
+    "syntheticOnly": true
+  },
+  "limitations": [
+    "This driver only performs phase A; a pass is not full validation or real-input approval.",
+    "No DPAPI, UI, cross-account or platform verification is performed by this driver."
+  ],
+  "nodeVersion": "v22.16.0",
+  "targetAbsent": true,
+  "directoryChainNoLinks": true,
+  "environmentShape": {
+    "nodePathWasArray": true,
+    "nodeCandidateCount": 3,
+    "allNodesMatch": false,
+    "policiesArray": true,
+    "versionString": true
+  },
+  "failureCode": "ENVIRONMENT_PARSE_FAILED",
+  "acl": {
+    "classified": false
+  },
+  "elapsedMs": 459,
+  "scriptSha256": "9eacdf8ac624864bed4c1885a10f92b925b14edafa982c4246c545fd7accdfa3",
+  "exitCode": 2
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "codex-environment-query-diagnosis/1",
+  "basis": "d56eff4",
+  "recordedAt": "2026-10-23T09:48:53.454Z",
+  "observed": {
+    "probes": 2,
+    "unexpected": 0,
+    "processes": [
+      {
+        "kind": "original-readonly-query",
+        "pid": 47068,
+        "status": 1,
+        "signal": null,
+        "launchError": false,
+        "stdoutBytes": 0,
+        "stderrBytes": 648
+      }
+    ]
+  },
+  "privateRecordsRead": 0,
+  "privateFilesCreated": 0,
+  "policyModified": false,
+  "aclModified": false,
+  "cloudOperations": 0,
+  "temporaryFilesCreated": [],
+  "failureClasses": [],
+  "fixedLiteralMarkers": {
+    "stopAsCommand": false,
+    "programPathAsCommand": false,
+    "nodeCommandMissing": false,
+    "scriptPolicyMarker": false
+  },
+  "originalQueryFailed": true,
+  "diagnosticCompleted": true,
+  "preflightPassed": false,
+  "fullLocalValidationPassed": false,
+  "ok": true,
+  "scriptSha256": "45b3ae4cb0cd8f351deba07f56c0b93755bbd1a1eb94640e4861e2aab64e78fb",
+  "exitCode": 0
+}

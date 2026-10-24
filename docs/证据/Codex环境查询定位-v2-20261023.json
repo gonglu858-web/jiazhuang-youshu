@@ -1,0 +1,64 @@
+{
+  "schema": "codex-environment-query-diagnosis/2",
+  "basis": "d56eff4",
+  "recordedAt": "2026-10-23T09:51:10.315Z",
+  "observed": {
+    "probes": 2,
+    "unexpected": 0,
+    "processes": [
+      {
+        "kind": "original-readonly-query",
+        "pid": 42592,
+        "status": 1,
+        "signal": null,
+        "launchError": false,
+        "stdoutBytes": 0,
+        "stderrBytes": 542
+      }
+    ]
+  },
+  "privateRecordsRead": 0,
+  "privateFilesCreated": 0,
+  "policyModified": false,
+  "aclModified": false,
+  "cloudOperations": 0,
+  "temporaryFilesCreated": [],
+  "encodingFacts": [
+    {
+      "encoding": "utf-8",
+      "replacementCharacters": 53
+    },
+    {
+      "encoding": "utf-16le",
+      "replacementCharacters": 4
+    },
+    {
+      "encoding": "gb18030",
+      "replacementCharacters": 0
+    }
+  ],
+  "nulBytes": 0,
+  "fixedErrorWords": [
+    "Get-ExecutionPolicy",
+    "位置",
+    "无法"
+  ],
+  "errorIdentifiers": [
+    "ParentContainsErrorRecordException",
+    "FullyQualifiedError"
+  ],
+  "failureClasses": [],
+  "fixedLiteralMarkers": {
+    "stopAsCommand": false,
+    "programPathAsCommand": false,
+    "nodeCommandMissing": false,
+    "scriptPolicyMarker": false
+  },
+  "originalQueryFailed": true,
+  "diagnosticCompleted": true,
+  "preflightPassed": false,
+  "fullLocalValidationPassed": false,
+  "ok": true,
+  "scriptSha256": "ffcb9d992a55b5d4ddc0e56de3ccbe4facced247add149ba95af6025f48d2602",
+  "exitCode": 0
+}

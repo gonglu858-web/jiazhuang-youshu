@@ -1,0 +1,64 @@
+{
+  "schema": "codex-module-diagnosis/1",
+  "basis": "d56eff4",
+  "recordedAt": "2026-10-24T04:36:16.161Z",
+  "observed": {
+    "probes": 2,
+    "unexpected": 0,
+    "processes": [
+      {
+        "kind": "security-module-readonly-diagnosis",
+        "pid": 6600,
+        "status": 0,
+        "signal": null,
+        "launchError": false,
+        "stdoutBytes": 700,
+        "stderrBytes": 0
+      }
+    ]
+  },
+  "aclModified": false,
+  "policyModified": false,
+  "environmentModified": false,
+  "privateRecordsRead": 0,
+  "cloudOperations": 0,
+  "temporaryFiles": [],
+  "query": {
+    "powershellVersion": "5.1.26100.9711",
+    "languageMode": "FullLanguage",
+    "modules": [
+      {
+        "version": "7.0.0.0",
+        "minimumPowerShell": "3.0",
+        "underPSHome": false
+      },
+      {
+        "version": "3.0.0.0",
+        "minimumPowerShell": "5.1",
+        "underPSHome": true
+      }
+    ],
+    "modulePathFacts": {
+      "hasPSHome": true,
+      "hasPowerShell7": false
+    },
+    "moduleImported": false,
+    "errorId": "FormatXmlUpdateException,Microsoft.PowerShell.Commands.ImportModuleCommand",
+    "category": "InvalidOperation",
+    "exceptionType": "System.Management.Automation.RuntimeException",
+    "baseExceptionType": "System.Management.Automation.RuntimeException",
+    "failureMarkers": {
+      "requiresVersion": false,
+      "policy": false,
+      "assembly": false,
+      "formatData": false,
+      "accessDenied": false,
+      "missingFile": false,
+      "manifest": true
+    }
+  },
+  "ok": true,
+  "preflightPassed": false,
+  "scriptSha256": "4dc675f97aff9a2923c0a1e789dfe680ac29bcb95be88ad9b666b84035e4253a",
+  "exitCode": 0
+}

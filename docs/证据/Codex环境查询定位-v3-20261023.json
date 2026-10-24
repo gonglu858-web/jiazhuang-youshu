@@ -1,0 +1,62 @@
+{
+  "schema": "codex-environment-query-diagnosis/3",
+  "basis": "d56eff4",
+  "recordedAt": "2026-10-23T09:52:31.250Z",
+  "observed": {
+    "probes": 2,
+    "unexpected": 0,
+    "processes": [
+      {
+        "kind": "original-readonly-query",
+        "pid": 26396,
+        "status": 1,
+        "signal": null,
+        "launchError": false,
+        "stdoutBytes": 87,
+        "stderrBytes": 0
+      }
+    ]
+  },
+  "privateRecordsRead": 0,
+  "privateFilesCreated": 0,
+  "policyModified": false,
+  "aclModified": false,
+  "cloudOperations": 0,
+  "temporaryFilesCreated": [],
+  "structuredFailure": {
+    "errorId": "CouldNotAutoloadMatchingModule",
+    "column": 167,
+    "category": "ObjectNotFound"
+  },
+  "encodingFacts": [
+    {
+      "encoding": "utf-8",
+      "replacementCharacters": 0
+    },
+    {
+      "encoding": "utf-16le",
+      "replacementCharacters": 0
+    },
+    {
+      "encoding": "gb18030",
+      "replacementCharacters": 0
+    }
+  ],
+  "nulBytes": 0,
+  "fixedErrorWords": [],
+  "errorIdentifiers": [],
+  "failureClasses": [],
+  "fixedLiteralMarkers": {
+    "stopAsCommand": false,
+    "programPathAsCommand": false,
+    "nodeCommandMissing": false,
+    "scriptPolicyMarker": false
+  },
+  "originalQueryFailed": true,
+  "diagnosticCompleted": true,
+  "preflightPassed": false,
+  "fullLocalValidationPassed": false,
+  "ok": true,
+  "scriptSha256": "c402933e96476a32d36080e1a180313178e7455c5715a985ac835868728c868b",
+  "exitCode": 0
+}
