@@ -1413,10 +1413,10 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
     ['参数含 NUL', () => cap.runProgram({ program: 'git', args: ['x\0y'] })],
     ['参数非字符串数组', () => cap.runProgram({ program: 'git', args: 'x' })],
     ['空参数数组', () => cap.runProgram({ program: 'git', args: [] })],
-    ['超时超上限', () => cap.runProgram({ program: 'git', args: ['x'], timeoutMs: 99999 })],
-    ['限额超上限', () => cap.runProgram({ program: 'git', args: ['x'], maxBuffer: 999999 })],
-    ['cwd 越界', () => cap.runProgram({ program: 'git', args: ['x'], cwd: 'C:\\Windows' })],
-    ['输入类型越界', () => cap.runProgram({ program: 'git', args: ['x'], input: 42 })],
+    ['超时超上限', () => cap.runProgram({ program: 'git', args: ['check-ignore', '--', 'miniapp/scripts'], timeoutMs: 99999 }), '超时超出固定边界'],
+    ['限额超上限', () => cap.runProgram({ program: 'git', args: ['check-ignore', '--', 'miniapp/scripts'], maxBuffer: 999999 }), '输出限额超出固定边界'],
+    ['cwd 越界', () => cap.runProgram({ program: 'git', args: ['check-ignore', '--', 'miniapp/scripts'], cwd: 'C:\\Windows' }), 'cwd 不在固定仓库根边界内'],
+    ['输入类型越界', () => cap.runProgram({ program: 'whoami', args: ['/user', '/fo', 'csv', '/nh'], input: 42 }), '输入类型不在固定边界'],
     ['管道用途越界', () => cap.connectNamedPipe({ purpose: 'synthetic', name: 'psr-dpapi-' + 'a'.repeat(32) })],
     ['管道名格式越界', () => cap.connectNamedPipe({ purpose: 'dpapi-unprotect', name: 'synthetic-pipe' })],
     ['Git 未知操作', () => cap.gitReadonly({ operation: 'clone', paths: ['x'] })],
@@ -1437,9 +1437,11 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
     ['异步脚本注释锚定＋额外语句', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: '# Import-Module -Name (Join-Path $PSHOME\nWrite-Output synthetic-unapproved' })],
     ['异步脚本受审脚本追加语句', () => cap.spawnProgram({ purpose: 'dpapi-unprotect', script: dpapiScripts.UNPROTECT + ' Write-Output synthetic-unapproved' })]
   ];
-  for (const [label, req] of badRequests) {
+  for (const [label, req, reason] of badRequests) {
     boundaryCalls.length = 0;
-    assert.throws(req, e => e.code === 'PSR_NATIVE_EXEC_BOUNDARY', label + ' 必须边界拒绝');
+    assert.throws(req, e => e.code === 'PSR_NATIVE_EXEC_BOUNDARY' &&
+      (reason === undefined || e.message.includes(reason)),
+      label + ' 必须边界拒绝' + (reason ? '（具体原因：' + reason + '）' : ''));
     assert.equal(boundaryCalls.length, 0, label + ' 零 OS 边界调用');
   }
   // (2b) B1：同用途合法对照——完整参数/目标均到达边界且形状正确（含等值绝对路径程序形）
@@ -1462,6 +1464,46 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
   const ps = cap.runProgram({ program: 'powershell', args: ['-NoProfile', '-NonInteractive', '-Command', dpapiScripts.PROTECT], input: 'synthetic\n' });
   assert.equal(ps.status, 0);
   assert.deepEqual([...boundaryCalls[5].args], ['-NoProfile', '-NonInteractive', '-Command', dpapiScripts.PROTECT], 'PowerShell 固定参数前缀＋受审 PROTECT 完整脚本');
+  // (2c) B1（45ee875 复查 §2）：参数快照——校验与执行绑定同一份参数值，访问器二次读取不到边界
+  {
+    // 访问器二次读取：首次返回受审 PROTECT、二次返回未批准脚本 → 边界只消费快照中的受审脚本
+    let reads = 0;
+    const tricky = ['-NoProfile', '-NonInteractive', '-Command'];
+    Object.defineProperty(tricky, '3', { enumerable: true, configurable: true,
+      get() { reads++; return reads === 1 ? dpapiScripts.PROTECT : 'Write-Output synthetic-unapproved'; } });
+    boundaryCalls.length = 0;
+    const rt = cap.runProgram({ program: 'powershell', args: tricky, input: 'synthetic\n' });
+    assert.equal(rt.status, 0);
+    assert.equal(boundaryCalls.length, 1, '快照合法请求恰一次边界调用');
+    assert.equal(boundaryCalls[0].args[3], dpapiScripts.PROTECT, '边界消费的是快照中的受审 PROTECT，而非访问器二次读取的未批准脚本');
+    assert.equal(reads, 1, '访问器仅在快照时读取一次，之后不再访问原数组');
+    tricky[0] = 'mutated-after-call';
+    assert.equal(boundaryCalls[0].args[0], '-NoProfile', '原输入后续变化不影响已交付参数');
+    // 访问器首次即返回未批准脚本 → 快照校验拒绝，零边界调用
+    const evil = ['-NoProfile', '-NonInteractive', '-Command'];
+    Object.defineProperty(evil, '3', { enumerable: true, configurable: true,
+      get() { return 'Write-Output synthetic-unapproved'; } });
+    boundaryCalls.length = 0;
+    assert.throws(() => cap.runProgram({ program: 'powershell', args: evil }),
+      e => e.code === 'PSR_NATIVE_EXEC_BOUNDARY' && e.message.includes('PowerShell 脚本不是受审固定脚本'),
+      '访问器首次即未批准脚本必须按快照校验拒绝');
+    assert.equal(boundaryCalls.length, 0, '访问器首次即未批准：零 OS 边界调用');
+    // Git paths 同类快照：首次合法、二次选项注入 → git 只消费快照
+    let greads = 0;
+    const gpaths = ['miniapp/scripts'];
+    Object.defineProperty(gpaths, '1', { enumerable: true, configurable: true,
+      get() { greads++; return greads === 1 ? 'miniapp/scripts/lib' : '-x'; } });
+    boundaryCalls.length = 0;
+    const g2 = cap.gitReadonly({ operation: 'diff', commitish: 'HEAD', paths: gpaths });
+    assert.equal(g2, 'synthetic');
+    assert.deepEqual([...boundaryCalls[0].args], ['diff', '--name-only', 'HEAD', '--', 'miniapp/scripts', 'miniapp/scripts/lib'],
+      'Git paths 按快照构建，选项注入的二次读取值不到达边界');
+    assert.equal(greads, 1, 'Git paths 访问器仅快照时读取一次');
+    // 普通数组合法对照保持
+    boundaryCalls.length = 0;
+    cap.runProgram({ program: 'icacls', args: ['.'] });
+    assert.deepEqual([...boundaryCalls[0].args], ['.'], '普通数组合法对照保持');
+  }
   // (3) 合法 Git 只读 / 异步 / 管道能力：边界构造保持
   boundaryCalls.length = 0;
   const g = cap.gitReadonly({ operation: 'diff', commitish: 'HEAD', paths: ['miniapp/scripts'] });

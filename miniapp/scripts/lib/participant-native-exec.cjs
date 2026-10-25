@@ -12,6 +12,9 @@
 // PowerShell 仅固定参数前缀＋受审 PROTECT/UNPROTECT 完整脚本（逐字节相等，不接受
 // 任意 -Command/script，不凭 includes 子串判断）。spawnProgram 仅接受受审 UNPROTECT
 // 完整脚本。固定脚本唯一来源：participant-dpapi-scripts.cjs（与本模块无循环依赖）。
+// 参数快照契约（45ee875 复查 §2）：调用方参数先在边界内读成自有普通值数组（逐元素
+// 索引读取一次，不用可覆盖的 slice/map/every/迭代方法），校验与 spawn 都只消费该
+// 快照、不再访问原数组——校验与执行绑定同一份参数值，访问器二次读取到不了 OS 边界。
 // 附带实际调用记录（attempts）：区分「尝试 attempted / 完成 completed / spawn 级
 // 失败」；异步启动同步抛错如实记失败（completed=true/spawnFailed=true）；completeAsync
 // 仅回填异步启动尝试，既有错误事实不可抹除（error 与 close 次序、重复回填均保持事实）。
@@ -45,6 +48,7 @@ const WHOAMI_ARGS = Object.freeze(['/user', '/fo', 'csv', '/nh']); // 既有身�
 const PS_ARGS_PREFIX = Object.freeze(['-NoProfile', '-NonInteractive', '-Command']);
 const ICACLS_REPO_PROBE = '.';                                       // 仓库根探针（cwd 固定仓库根）
 const GIT_QUERY_OPS = Object.freeze(['check-ignore', 'ls-files']);   // 同步 Git 查询固定操作（复用只读表前缀）
+const MAX_ARGS = 64;                                                  // 参数个数固定上限（合法调用≤4；防超长快照）
 const LIMIT = 128 * 1024, TIMEOUT = 10000;
 const BOUNDARY_CODE = 'PSR_NATIVE_EXEC_BOUNDARY';
 
@@ -67,6 +71,20 @@ function recordAttempt(entry) {
 }
 function isCleanStringArray(v, { min = 0 } = {}) {
   return Array.isArray(v) && v.length >= min && v.every(x => typeof x === 'string' && x.length > 0 && !x.includes('\0'));
+}
+// B1（45ee875 复查 §2）：参数快照——在能力边界内先把调用方参数读成**自有的普通值数组**，
+// 之后全部校验与 spawn 都只消费该快照，不再访问原数组：校验与执行因此绑定同一份参数值。
+// 逐元素按索引读取一次（不调用可被覆盖的 slice/map/every/迭代方法，length 也只读一次），
+// 访问器属性仅在快照时触发一次——其二次读取值不可能到达 OS 边界。
+function snapshotValues(list, label) {
+  if (list === null || typeof list !== 'object') boundary(label + ' 不是数组');
+  const len = list.length;
+  if (typeof len !== 'number' || !Number.isSafeInteger(len) || len < 0 || len > MAX_ARGS) {
+    boundary(label + ' 长度不在固定边界');
+  }
+  const out = [];
+  for (let i = 0; i < len; i++) out.push(list[i]);
+  return out;
 }
 function sanitizedEnv() {
   const env = { ...process.env };
@@ -159,10 +177,13 @@ module.exports = Object.freeze({
    * 同步固定进程（local-tools 的 sync 唯一出口）。
    * 边界内构造：固定程序白名单、按程序固定完整参数语法、cwd=仓库根、shell=false、
    * windowsHide=true、默认 stdio、净化 env（删 NODE_OPTIONS）、超时/限额上限。
+   * B1（45ee875 复查 §2）：先在边界内形成自有普通参数值快照，再对快照完成全部校验；
+   * spawn 只消费同一份快照，之后不再访问原数组——校验与执行绑定同一份参数值。
    */
   runProgram({ program, args, cwd, timeoutMs, maxBuffer, input }) {
     const key = programKey(program);
-    checkPurposeArgs(key, args); // B1：先校验完整参数语法，再进入限额/cwd 等边界
+    const argSnapshot = snapshotValues(args, '参数'); // 先快照（不校验原数组、不用其可覆盖方法）
+    checkPurposeArgs(key, argSnapshot);                // 对快照做完整参数语法校验
     const exe = PROGRAMS[key];
     const limits = checkLimits(timeoutMs, maxBuffer);
     const opts = { cwd: checkCwd(cwd), input: checkInput(input), windowsHide: true,
@@ -170,7 +191,7 @@ module.exports = Object.freeze({
     const id = recordAttempt({ kind: 'runProgram', program: baseName(exe),
       attempted: true, completed: false, spawnFailed: false, status: null });
     let r, err;
-    try { r = rawRefs.spawnSync(exe, args, opts); } catch (e) { err = e; }
+    try { r = rawRefs.spawnSync(exe, argSnapshot, opts); } catch (e) { err = e; }
     const entry = attempts.find(a => a.id === id);
     entry.completed = true;
     entry.spawnFailed = !!(err || !r || r.error || r.signal);
@@ -234,6 +255,8 @@ module.exports = Object.freeze({
   /**
    * Git 固定只读能力（保护核对唯一出口）：固定程序 + 固定操作前缀；commitish
    * 形状校验；pathspec 拒绝选项注入（'-' 开头）与空值；超时/限额固定。
+   * B1（45ee875 复查 §2）：paths 同样先形成自有快照再校验，args 只从快照构建——
+   * 校验与执行绑定同一份参数值，访问器二次读取不能把选项注入交给 git。
    */
   gitReadonly({ operation, commitish, paths }) {
     const prefix = Object.hasOwn(GIT_READONLY_PREFIX, operation) ? GIT_READONLY_PREFIX[operation] : null;
@@ -241,11 +264,15 @@ module.exports = Object.freeze({
     if (commitish !== undefined && (typeof commitish !== 'string' || !GIT_COMMITISH_RE.test(commitish))) {
       boundary('Git commitish 形状不在固定边界');
     }
-    if (paths !== undefined && !isCleanStringArray(paths, { min: 1 })) boundary('Git paths 不是干净的字符串数组');
-    if (paths && paths.some(p => p.startsWith('-'))) boundary('Git paths 不允许选项注入');
+    let pathSnapshot = null;
+    if (paths !== undefined) {
+      pathSnapshot = snapshotValues(paths, 'Git paths'); // 先快照，再校验快照
+      if (!isCleanStringArray(pathSnapshot, { min: 1 })) boundary('Git paths 不是干净的字符串数组');
+      if (pathSnapshot.some(p => p.startsWith('-'))) boundary('Git paths 不允许选项注入');
+    }
     const args = [...prefix];
     if (commitish !== undefined) args.push(commitish);
-    if (paths !== undefined) args.push('--', ...paths);
+    if (pathSnapshot !== null) args.push('--', ...pathSnapshot); // 只消费快照
     const id = recordAttempt({ kind: 'gitReadonly', program: 'git.exe',
       attempted: true, completed: false, spawnFailed: false, status: null });
     let r, err;

@@ -1,3 +1,14 @@
+## 2026-10-25 B1 参数快照收尾完成（本地编码与模块兼容 v6 证据；本地自测通过待 Codex 复查，真实私密输入及执行未放行）
+
+- 依据 docs/Codex复查-编码兼容剩余B1B3返修45ee875-20261025.md §2–§3，接手 master 7c00355（受审实现 45ee875），工作区起始仅 AGENTS.md 既有修改（sha256 9ef30b4c…，保留排除）。仅改 native-exec 能力层参数快照、登记测试 B1 组、新命名 v6 证据及三份记录；local-tools、participant-dpapi-scripts.cjs、decoder/store、核心、模板、PS1、旧业务/P/E/X/管理员链、共享守卫/helpers、关闭来源、冻结包、v1–v5 及全部 Codex 报告反例零改动。B2/B3 及此前已关闭项沿用，不重做。
+- B1（参数快照，校验与执行绑定同一份值）：participant-native-exec.cjs 新增 snapshotValues——调用方参数先在能力边界内读成自有普通值数组（逐元素索引读取一次，不调用可被覆盖的 slice/map/every/迭代方法，length 只读一次，个数上限 64），再对该快照完成通用数组/字符串校验与按程序完整语法校验；runProgram 的 spawnSync 与 gitReadonly 构建 args 都只消费同一份快照，之后不再访问原数组。访问器属性仅在快照时触发一次，其二次读取的未批准值不可能到达 OS 边界；首次即返回未批准脚本则按快照校验拒绝（零边界调用）。原输入后续变化不影响已交付参数。
+- 测试整理（45ee875 复查 §2 同范围项）：超时/限额/cwd/input 四个反例原用 `git,args:['x']` 会被操作语法前置拒绝、不能证明各自目标校验；改用法参数（合法固定向量）＋仅被测字段无效，并断言具体失败原因（超时超出固定边界/输出限额超出固定边界/cwd 不在固定仓库根边界内/输入类型不在固定边界）与零边界调用。新增访问器快照用例：powershell 脚本访问器首次受审 PROTECT/二次未批准→边界只消费快照中的受审脚本且访问器仅读一次；首次即未批准→拒绝零调用；Git paths 访问器首次合法/二次选项注入→git 只消费快照；原输入后续变化不影响已交付参数；普通数组合法对照保持。
+- v6 证据：另建 docs/证据/CodeBuddy本地编码模块兼容返修v6-20261025.cjs/.json（v1–v5 与历史反例原字节保留）。新增 S11 参数快照检查（真实能力层源码＋最底层 child_process/net 替身，未执行真实命令）：访问器二次读取不到边界、首次即未批准按快照拒绝、Git paths 同类快照、合法对照、原输入后续变化不影响已交付参数五项全过；S0–S10 与 B2/B3 已认可语义原样沿用；VM 场景 16 个（normal exit0，15 类故障全部 ok=false/exit1）；JSON 收敛到自洽态（含自身路径，复跑字节一致）。
+- 实测：participant-self-registration.test.cjs **46/46**、business-test-package.test.cjs **18/18** 无回归、v6 证据 **12/12 exit 0**（守卫探针 3/敏感性 1/意外 0；VM 16/16）。运行时摘要：native-exec 12d77b1716590b663819763fd8078b436538b4d6c370ba0f389eaefcf289ec0f，测试 482f11e762394886d5a0cc1242a3a8bce75b0018d799e466dd3a6dea3b6c962a，v6 证据 4cefc8eaee8a6e52cc138dbffb1df01fb304eba557309d9fb263119abd30cfd9（JSON 92275ddef0f4ac3f32fc25a412260d267520e58193dee1607980af29489ca5c5）。git diff --check 通过。
+- 未验证项：真实 DPAPI 加解密、PS1 输入窗口（策略 Restricted）与真实 PowerShell 模块加载未运行；whoami 非 ASCII 编码未独立证明（保守 blocked）；本机预检是否恢复由 Codex 复查决定。未读真实编号/既有密文/凭据，未运行真实 DPAPI/UI，未改权限/策略/系统环境，未联网安装或操作云端；1/2号不重试，P不开展，不生成真实批准。
+
+## 2026-10-25 Codex复核45ee875：B2B3关闭，B1参数快照待返修
+
 ## 2026-10-25 Codex复核45ee875：B2/B3关闭，仅B1参数快照待返修
 
 - 依据与结论：[复核报告](Codex复查-编码兼容剩余B1B3返修45ee875-20261025.md)；B2摘要读取后最终守卫判定、异步错误事实，B3完整差异与中文路径核对均闭合。其它已关闭项沿用。
