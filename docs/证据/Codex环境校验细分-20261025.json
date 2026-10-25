@@ -1,0 +1,68 @@
+{
+  "schema": "codex-environment-diagnostic/1",
+  "basisCommit": "95097a7",
+  "recordedAt": "2026-10-25T03:21:22.517Z",
+  "scope": "one fixed environment query only; no identity/ACL/private directory/product actions",
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "attempts": [
+      {
+        "attempted": true,
+        "completed": true,
+        "status": 0,
+        "signal": false,
+        "launchError": false,
+        "stdoutBytes": 383,
+        "stderrBytes": 0,
+        "timeoutMs": 10000
+      }
+    ]
+  },
+  "diagnosisCompleted": true,
+  "environmentAccepted": false,
+  "fullPreflightPassed": false,
+  "phases": {
+    "identity": "not-run",
+    "acl": "not-run",
+    "DPAPI": "not-run",
+    "UI": "not-run"
+  },
+  "ok": false,
+  "querySha256": "ea2b88407edd8f0e32e700b14390c2ad36995e6a5ba6e073dd378d818e6f1350",
+  "basisScriptSha256": "629f1170ad0a2e2ea09f7059ed564488032439db0cdb6f4cee5cd96fb18f01f7",
+  "decoderSha256": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+  "actualNodeMatchesPin": true,
+  "powershellSha256": "60c9b29843624dd8af6b6a7b26147753be6aeef65098b9a503cc50850afe410f",
+  "diagnostic": {
+    "utf8Decoded": true,
+    "jsonParsed": true,
+    "checks": {
+      "rootKeys": true,
+      "schema": true,
+      "version": true,
+      "effectivePolicy": true,
+      "selectedNodeMatches": false,
+      "nodeCandidateCount": true,
+      "policiesArray": true,
+      "policyCount": true,
+      "uniqueScopes": true,
+      "policyRowKeys": true,
+      "scopeEnum": true,
+      "policyEnum": true,
+      "selectedNodeIsBoolean": true
+    },
+    "counts": {
+      "nodeCandidates": 4,
+      "policyRows": 5
+    },
+    "failureLabels": [
+      "NODE_FIRST_MATCH"
+    ],
+    "accepted": false
+  },
+  "failureCode": "ENVIRONMENT_PARSE_FAILED",
+  "scriptSha256": "87c8a06ccb03756866d51152d7aa283e575ddaca85323023213258681dc25aec",
+  "elapsedMs": 442,
+  "exitCode": 2
+}

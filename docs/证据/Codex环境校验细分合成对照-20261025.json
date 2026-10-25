@@ -1,0 +1,310 @@
+{
+  "schema": "codex-environment-diagnostic-synthetic/1",
+  "basisCommit": "95097a7",
+  "driverSha256": "87c8a06ccb03756866d51152d7aa283e575ddaca85323023213258681dc25aec",
+  "testSha256": "3b36e610115ba25766bb6c4afc8d5a323370d82d2abc1ba03a7b32f24a9866b0",
+  "exactPredicatePreserved": true,
+  "exactQueryPreserved": true,
+  "checks": 26,
+  "results": [
+    {
+      "name": "normal",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": 1,
+      "labels": [],
+      "unexpected": 0
+    },
+    {
+      "name": "utf8",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "UTF8_STRICT_FAILED"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "json",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "JSON_PARSE_FAILED"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "extra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "ROOT_KEYS"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "schema",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "SCHEMA"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "version",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "VERSION_FORMAT"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "effective",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "EFFECTIVE_POLICY_ENUM"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "nodeMismatch",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "NODE_FIRST_MATCH"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "nodeType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "NODE_FIRST_MATCH"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "countZero",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "NODE_COUNT"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "countLarge",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "NODE_COUNT"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "countType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "NODE_COUNT"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "policyShape",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "POLICIES_ARRAY",
+        "POLICY_COUNT",
+        "SCOPE_UNIQUENESS",
+        "POLICY_ROW_KEYS",
+        "SCOPE_ENUM",
+        "POLICY_ENUM"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "policyCount",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "POLICY_COUNT",
+        "SCOPE_UNIQUENESS"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "scopeDuplicate",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "SCOPE_UNIQUENESS"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "rowKeys",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "POLICY_ROW_KEYS"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "scopeEnum",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "SCOPE_ENUM"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "policyEnum",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "POLICY_ENUM"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "rowNull",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "SCOPE_UNIQUENESS",
+        "POLICY_ROW_KEYS",
+        "SCOPE_ENUM",
+        "POLICY_ENUM"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "rootNull",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [
+        "ROOT_KEYS",
+        "SCHEMA",
+        "VERSION_FORMAT",
+        "EFFECTIVE_POLICY_ENUM",
+        "NODE_FIRST_MATCH",
+        "NODE_COUNT",
+        "POLICIES_ARRAY",
+        "POLICY_COUNT",
+        "SCOPE_UNIQUENESS",
+        "POLICY_ROW_KEYS",
+        "SCOPE_ENUM",
+        "POLICY_ENUM"
+      ],
+      "unexpected": 0
+    },
+    {
+      "name": "numericVersionUnchanged",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": 1,
+      "labels": [],
+      "unexpected": 0
+    },
+    {
+      "name": "queryFailure",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [],
+      "unexpected": 0
+    },
+    {
+      "name": "queryTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 1,
+      "labels": [],
+      "unexpected": 0
+    },
+    {
+      "name": "earlyHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": 0,
+      "labels": [],
+      "unexpected": 1
+    },
+    {
+      "name": "digestHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": 1,
+      "labels": [],
+      "unexpected": 1
+    },
+    {
+      "name": "sourceDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": 0,
+      "labels": [],
+      "unexpected": 0
+    }
+  ],
+  "probes": 2,
+  "fallbackHits": 0,
+  "ok": true,
+  "limitations": [
+    "All process results are synthetic; no environment/identity/ACL/DPAPI/UI query.",
+    "Only static pinned source and binary files read."
+  ]
+}
