@@ -1,0 +1,109 @@
+{
+  "schema": "codex-param-snapshot-68d379e-review/1",
+  "reviewedCommit": "68d379e",
+  "basis": "7c00355",
+  "results": [
+    {
+      "name": "previous_accessor_counterexample",
+      "passed": true,
+      "facts": {
+        "reads": 1,
+        "independentArray": true,
+        "onlyApprovedScriptAtBoundary": true,
+        "retainedBoundaryReferenceUnaffected": true
+      }
+    },
+    {
+      "name": "first_value_unapproved",
+      "passed": true,
+      "facts": {
+        "reads": 1,
+        "boundaryCalls": 0
+      }
+    },
+    {
+      "name": "git_paths_snapshot",
+      "passed": true,
+      "facts": {
+        "reads": 1,
+        "mutationUnaffected": true,
+        "invalidFirstValueRejected": true
+      }
+    },
+    {
+      "name": "overridden_input_methods_unused",
+      "passed": true,
+      "facts": {
+        "methodCalls": 0
+      }
+    },
+    {
+      "name": "length_and_elements_sampled_once",
+      "passed": true,
+      "facts": {
+        "0": 1,
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "length": 1
+      }
+    },
+    {
+      "name": "bounded_and_invalid_values",
+      "passed": true,
+      "facts": {
+        "oversizedElementReads": 0,
+        "invalidCases": 5
+      }
+    },
+    {
+      "name": "four_limit_tests_reach_intended_reason",
+      "passed": true,
+      "facts": {
+        "distinctReasonsMatched": 4,
+        "boundaryCalls": 0
+      }
+    },
+    {
+      "name": "v6_S11_actual_function",
+      "passed": true,
+      "facts": {
+        "accessorSecondReadBlocked": true,
+        "accessorFirstReadEvilRejected": true,
+        "gitPathsAccessorBlocked": true,
+        "legalControl": true,
+        "originalMutationNoEffect": true
+      }
+    },
+    {
+      "name": "delivered_evidence_integrity",
+      "passed": true,
+      "facts": {
+        "hashesMatch": true,
+        "deliveredChecks": 12,
+        "deliveredVmScenarios": 16,
+        "fullCliNotRerun": true
+      }
+    }
+  ],
+  "error": null,
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-native-exec.cjs": "12d77b1716590b663819763fd8078b436538b4d6c370ba0f389eaefcf289ec0f",
+    "miniapp/scripts/lib/participant-dpapi-scripts.cjs": "1f334d8d6b92c4f7e93b64c217fbb1cd2f3d5177f0a4728051ec87895eaa474f",
+    "docs/证据/CodeBuddy本地编码模块兼容返修v6-20261025.cjs": "4cefc8eaee8a6e52cc138dbffb1df01fb304eba557309d9fb263119abd30cfd9"
+  },
+  "guard": {
+    "probes": 2,
+    "unexpected": 0,
+    "total": 2
+  },
+  "realOsQueries": 0,
+  "dpapi": 0,
+  "cloud": 0,
+  "limitations": [
+    "仅B1定点独立验证；B2/B3沿用，不重跑。",
+    "真实能力层源码，最底层OS替身；S11按原函数文本独立执行，未运行v6真实查询主流程。",
+    "交付JSON的12项/16场景是读取核对结果，不冒充本轮完整重跑；本轮独立9组对照。"
+  ],
+  "ok": true
+}
