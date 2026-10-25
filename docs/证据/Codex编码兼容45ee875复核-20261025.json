@@ -1,0 +1,107 @@
+{
+  "schema": "codex-native-compat-45ee875-review/1",
+  "reviewedCommit": "45ee875",
+  "basis": "6f42d03",
+  "runtimeDigests": {
+    "miniapp/scripts/lib/participant-local-tools.cjs": "56daf9f675c7c7fbcd92f81aba4cdd6237626b19ff6b07a78421eb9ff811ae26",
+    "miniapp/scripts/lib/participant-native-exec.cjs": "a25fc0bc9479155489b0e86b8f9c7a65c5d68e61c88bb10a5bcf2d3f659b694e",
+    "miniapp/scripts/lib/participant-native-decoder.cjs": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+    "miniapp/scripts/lib/participant-dpapi-scripts.cjs": "1f334d8d6b92c4f7e93b64c217fbb1cd2f3d5177f0a4728051ec87895eaa474f",
+    "docs/证据/CodeBuddy本地编码模块兼容返修v5-20261024.cjs": "aaad21ddb5b7b97a2998362c2b8847e9d246099dd581f6c1ee7bf0418af4a48d"
+  },
+  "boundary": {
+    "ordinaryInvalidRejected": 4,
+    "ordinaryValidAccepted": 4,
+    "mutableArgs": {
+      "accepted": true,
+      "getterReads": 2,
+      "boundaryScriptIsApproved": false,
+      "actualOsProcesses": 0
+    },
+    "syncThrowRecorded": true,
+    "errorThenCloseZeroPreserved": true
+  },
+  "evidenceVm": [
+    {
+      "mode": "normal",
+      "ok": true,
+      "exit": 0,
+      "actualProcesses": 7,
+      "unexpected": 0,
+      "s8Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": []
+    },
+    {
+      "mode": "runtimeDigestHit",
+      "ok": false,
+      "exit": 1,
+      "actualProcesses": 7,
+      "unexpected": 1,
+      "s8Passed": true,
+      "vmScenarioCount": 0,
+      "failedResults": []
+    },
+    {
+      "mode": "committedHistoryChange",
+      "ok": false,
+      "exit": 1,
+      "actualProcesses": 7,
+      "unexpected": 0,
+      "s8Passed": false,
+      "vmScenarioCount": 0,
+      "failedResults": [
+        "S8_protection_dual_baseline"
+      ]
+    },
+    {
+      "mode": "uncommittedHistoryChange",
+      "ok": false,
+      "exit": 1,
+      "actualProcesses": 7,
+      "unexpected": 0,
+      "s8Passed": false,
+      "vmScenarioCount": 0,
+      "failedResults": [
+        "S8_protection_dual_baseline"
+      ]
+    },
+    {
+      "mode": "untrackedIllegal",
+      "ok": false,
+      "exit": 1,
+      "actualProcesses": 7,
+      "unexpected": 0,
+      "s8Passed": false,
+      "vmScenarioCount": 0,
+      "failedResults": [
+        "S8_protection_dual_baseline"
+      ]
+    },
+    {
+      "mode": "normalFull",
+      "ok": true,
+      "exit": 0,
+      "actualProcesses": 7,
+      "unexpected": 0,
+      "s8Passed": true,
+      "vmScenarioCount": 16,
+      "failedResults": []
+    }
+  ],
+  "outerGuard": {
+    "probes": 2,
+    "unexpected": 0
+  },
+  "realOsQueries": 0,
+  "dpapi": 0,
+  "cloud": 0,
+  "ok": true,
+  "limitations": [
+    "ok表示独立对照符合预期，不表示产品验收通过。",
+    "真实受审源码；OS、管道和私密FS全部替身。未读取真实身份/ACL/编号/密文。",
+    "runtimeDigestHit由独立FS替身在真实摘要读取点注入被catch命中，没有启用受审脚本自带fault开关。",
+    "历史差异及未跟踪项只存在于合成Git响应；真实历史未修改。",
+    "可变参数反例仅记录边界实际收到的字符串，未执行任意PowerShell。"
+  ]
+}
