@@ -1,0 +1,115 @@
+{
+  "schema": "codex-local-preflight-restored/1",
+  "runId": "synthetic-local-private-26cb5caa8b45",
+  "recordedAt": "2026-10-25T03:14:42.789Z",
+  "reviewedCommit": "68d379e",
+  "planBasis": "02f867b",
+  "verificationKind": "real local read-only OS queries through restricted capabilities; no DPAPI or UI",
+  "phases": {
+    "A": "blocked",
+    "B": "not-run",
+    "C": "not-run",
+    "D": "not-run"
+  },
+  "fullLocalValidationPassed": false,
+  "sourceFacts": [
+    {
+      "rel": "miniapp/scripts/lib/participant-private-store.cjs",
+      "bytes": 26236,
+      "sha256": "fe5bc16a20ca9ee2116a72a483f726b78b5a5d55a40a635e9433e61855d83fbe"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-local-tools.cjs",
+      "bytes": 14032,
+      "sha256": "56daf9f675c7c7fbcd92f81aba4cdd6237626b19ff6b07a78421eb9ff811ae26"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-native-exec.cjs",
+      "bytes": 16761,
+      "sha256": "12d77b1716590b663819763fd8078b436538b4d6c370ba0f389eaefcf289ec0f"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-native-decoder.cjs",
+      "bytes": 3390,
+      "sha256": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-dpapi-scripts.cjs",
+      "bytes": 2646,
+      "sha256": "1f334d8d6b92c4f7e93b64c217fbb1cd2f3d5177f0a4728051ec87895eaa474f"
+    },
+    {
+      "rel": "miniapp/scripts/package-participant-self-registration.cjs",
+      "bytes": 64288,
+      "sha256": "618aeadc6b7dbf9622bbaa9ae64d49023c58ff35d6ca747c2db238714b195251"
+    },
+    {
+      "rel": "miniapp/scripts/participant-private-input.ps1",
+      "bytes": 8951,
+      "sha256": "ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357"
+    }
+  ],
+  "binaries": [
+    {
+      "kind": "git",
+      "sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+    },
+    {
+      "kind": "whoami",
+      "sha256": "23240ef9f8b0a9a324110b1c2331de31dc1b0e08f5359cb707e51a939af56cd3"
+    },
+    {
+      "kind": "icacls",
+      "sha256": "cb9e55d4c02f4e55100724d2da9a1267f49e196bd39fcdf36cec6ea6314fad2a"
+    },
+    {
+      "kind": "powershell",
+      "sha256": "60c9b29843624dd8af6b6a7b26147753be6aeef65098b9a503cc50850afe410f"
+    },
+    {
+      "kind": "node",
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    }
+  ],
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "processCalls": [
+      {
+        "kind": "environment",
+        "attempted": true,
+        "completed": true,
+        "status": 0,
+        "signal": false,
+        "launchError": false,
+        "stdoutBytes": 383,
+        "stderrBytes": 0,
+        "timeoutMs": 10000
+      }
+    ],
+    "privateReads": 0,
+    "privateWrites": 0
+  },
+  "ok": false,
+  "limitations": [
+    "A pass is not real-input approval or complete local validation.",
+    "No private record, credential, cloud, DPAPI or UI access."
+  ],
+  "targetInitiallyAbsent": true,
+  "failureCode": "ENVIRONMENT_PARSE_FAILED",
+  "failureStage": "A2-environment",
+  "encodingContract": {
+    "icaclsPipe": {
+      "state": "unchecked"
+    },
+    "whoami": {
+      "rule": "ascii_only_output_required",
+      "scope": "whoami.pipe",
+      "note": "身份输出非 ASCII 即 blocked（非 ASCII 编码未独立证明；不依赖 icacls 探针授权）"
+    }
+  },
+  "productAttempts": [],
+  "scriptSha256": "629f1170ad0a2e2ea09f7059ed564488032439db0cdb6f4cee5cd96fb18f01f7",
+  "elapsedMs": 650,
+  "exitCode": 2
+}

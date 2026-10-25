@@ -1,0 +1,160 @@
+{
+  "schema": "codex-local-preflight-A-synthetic/1",
+  "driverSha256": "629f1170ad0a2e2ea09f7059ed564488032439db0cdb6f4cee5cd96fb18f01f7",
+  "testSha256": "dd4292fdc22109b71021bb784ab1350df3c827437e0ab6a652bcca3a11436381",
+  "reviewedCommit": "68d379e",
+  "results": [
+    {
+      "mode": "normal",
+      "ok": true,
+      "exitCode": 0,
+      "processCalls": 6,
+      "unexpected": 0,
+      "failureCode": null,
+      "expectationMet": true
+    },
+    {
+      "mode": "sourceDrift",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 0,
+      "unexpected": 0,
+      "failureCode": "SOURCE_DRIFT",
+      "expectationMet": true
+    },
+    {
+      "mode": "rootMissing",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 0,
+      "unexpected": 0,
+      "failureCode": "ENOENT",
+      "expectationMet": true
+    },
+    {
+      "mode": "targetExists",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 0,
+      "unexpected": 0,
+      "failureCode": "TARGET_EXISTS",
+      "expectationMet": true
+    },
+    {
+      "mode": "environmentFailure",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 1,
+      "unexpected": 0,
+      "failureCode": "ENVIRONMENT_QUERY_FAILED",
+      "expectationMet": true
+    },
+    {
+      "mode": "environmentTimeout",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 1,
+      "unexpected": 0,
+      "failureCode": "LOCAL_PROCESS_FAILED",
+      "expectationMet": true
+    },
+    {
+      "mode": "environmentDecode",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 1,
+      "unexpected": 0,
+      "failureCode": "ENVIRONMENT_PARSE_FAILED",
+      "expectationMet": true
+    },
+    {
+      "mode": "identityFailure",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 2,
+      "unexpected": 0,
+      "failureCode": "IDENTITY_UNCERTAIN",
+      "expectationMet": true
+    },
+    {
+      "mode": "asciiContract",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 5,
+      "unexpected": 0,
+      "failureCode": "PSR_NATIVE_CONTRACT_BLOCKED",
+      "expectationMet": true
+    },
+    {
+      "mode": "aclRejected",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 6,
+      "unexpected": 0,
+      "failureCode": "PSR_PRIVATE_ACL",
+      "expectationMet": true
+    },
+    {
+      "mode": "aclDecode",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 6,
+      "unexpected": 0,
+      "failureCode": "PSR_NATIVE_DECODE_UNCERTAIN",
+      "expectationMet": true
+    },
+    {
+      "mode": "finalSourceDrift",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 6,
+      "unexpected": 0,
+      "failureCode": "SOURCE_DRIFT",
+      "expectationMet": true
+    },
+    {
+      "mode": "preRequireHit",
+      "ok": false,
+      "exitCode": 1,
+      "processCalls": 0,
+      "unexpected": 1,
+      "failureCode": "LOCAL_CAPABILITY_BLOCKED",
+      "expectationMet": true
+    },
+    {
+      "mode": "digestHit",
+      "ok": false,
+      "exitCode": 1,
+      "processCalls": 6,
+      "unexpected": 1,
+      "failureCode": "LOCAL_CAPABILITY_BLOCKED",
+      "expectationMet": true
+    },
+    {
+      "mode": "outputExists",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 0,
+      "unexpected": 0,
+      "failureCode": "OUTPUT_EXISTS",
+      "expectationMet": true
+    },
+    {
+      "mode": "outputInvalid",
+      "ok": false,
+      "exitCode": 2,
+      "processCalls": 0,
+      "unexpected": 0,
+      "failureCode": "OUTPUT_BOUNDARY",
+      "expectationMet": true
+    }
+  ],
+  "checks": 16,
+  "probes": 2,
+  "fallbackHits": 0,
+  "ok": true,
+  "limitations": [
+    "OS queries and path existence are synthetic; no actual preflight/DPAPI/UI.",
+    "Exact driver and actual pinned product sources execute unchanged."
+  ]
+}
