@@ -1,0 +1,811 @@
+{
+  "schema": "codex-temporary-policy-l1-offline/1",
+  "basisCommit": "e02b1a8",
+  "driverSha256": "679851d7891b0ac582e2b65e050034af552e58ef84277baac386190fe6705b27",
+  "testSha256": "2d0a4758a50a6d4cd7a9b05695cbf4cac4af4d94bc189565d8e264934b2850b6",
+  "checks": 61,
+  "results": [
+    {
+      "name": "normal",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null
+    },
+    {
+      "name": "defaultNoExecute",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": [],
+      "unexpected": 0,
+      "failure": null
+    },
+    {
+      "name": "normalOut",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null
+    },
+    {
+      "name": "badCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID"
+    },
+    {
+      "name": "policyCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID"
+    },
+    {
+      "name": "extraCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID"
+    },
+    {
+      "name": "badOut",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID"
+    },
+    {
+      "name": "outputExists",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "OUTPUT_EXISTS"
+    },
+    {
+      "name": "hostPath",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "HOST_PATH"
+    },
+    {
+      "name": "nodeDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT"
+    },
+    {
+      "name": "ps1Drift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT"
+    },
+    {
+      "name": "decoderDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT"
+    },
+    {
+      "name": "hostLink",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "PATH_INVALID"
+    },
+    {
+      "name": "baselinePolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED"
+    },
+    {
+      "name": "groupPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED"
+    },
+    {
+      "name": "version",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "META_VERSION"
+    },
+    {
+      "name": "metaExtra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "META_SHAPE"
+    },
+    {
+      "name": "scopes",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "META_SCOPES"
+    },
+    {
+      "name": "zoneReported",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_PRESENT_OR_UNCERTAIN"
+    },
+    {
+      "name": "zoneLocal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_PRESENT"
+    },
+    {
+      "name": "zoneError",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_UNCERTAIN"
+    },
+    {
+      "name": "temporaryPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED"
+    },
+    {
+      "name": "afterPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED"
+    },
+    {
+      "name": "beforeThrow",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_START_FAILED"
+    },
+    {
+      "name": "beforeError",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_START_FAILED"
+    },
+    {
+      "name": "beforeExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_EXIT"
+    },
+    {
+      "name": "beforeTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_TIMEOUT"
+    },
+    {
+      "name": "beforeNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_NOT_CLOSED"
+    },
+    {
+      "name": "temporaryTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_TIMEOUT"
+    },
+    {
+      "name": "temporaryNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_NOT_CLOSED"
+    },
+    {
+      "name": "sceneNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_NOT_CLOSED"
+    },
+    {
+      "name": "sceneSignal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_EXIT"
+    },
+    {
+      "name": "sceneExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_EXIT"
+    },
+    {
+      "name": "sceneStderr",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_STDERR"
+    },
+    {
+      "name": "sceneLimit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_LIMIT"
+    },
+    {
+      "name": "sceneBuffer",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_BUFFER"
+    },
+    {
+      "name": "sceneStream",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "STREAM_ERROR"
+    },
+    {
+      "name": "sceneJson",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_DECODE"
+    },
+    {
+      "name": "sceneUtf8",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_DECODE"
+    },
+    {
+      "name": "sceneReplacement",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_DECODE"
+    },
+    {
+      "name": "sceneWrong",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_SHAPE"
+    },
+    {
+      "name": "sceneMissing",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_ASSERTIONS"
+    },
+    {
+      "name": "sceneDuplicate",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_ASSERTIONS"
+    },
+    {
+      "name": "sceneType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_ASSERTIONS"
+    },
+    {
+      "name": "sceneFail",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_FAILED"
+    },
+    {
+      "name": "sceneContradiction",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_CONTRADICTION"
+    },
+    {
+      "name": "sceneCount",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTS"
+    },
+    {
+      "name": "sceneCounter",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS"
+    },
+    {
+      "name": "stageDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT"
+    },
+    {
+      "name": "preSceneZone",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_PRESENT"
+    },
+    {
+      "name": "lastSceneFail",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_FAILED"
+    },
+    {
+      "name": "initHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "businessHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "finalDigestHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": null
+    },
+    {
+      "name": "digestComputeHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": null
+    },
+    {
+      "name": "finalizationHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": null
+    },
+    {
+      "name": "publicSpawn",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "socketHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "dnsHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "fetchHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "outputRace",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": null,
+      "failure": "EVIDENCE_WRITE_FAILED"
+    }
+  ],
+  "fallbackHits": 0,
+  "actualOSProcesses": 0,
+  "actualNetwork": 0,
+  "ok": true,
+  "limitations": [
+    "Actual driver and decoder in VM; OS/FS boundaries and all PS output are synthetic.",
+    "Does not execute PowerShell, alter policy or prove seven real PS scenarios."
+  ]
+}
