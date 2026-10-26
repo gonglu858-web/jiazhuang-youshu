@@ -1,3 +1,16 @@
+## 2026-10-26 CodeBuddy：固定Node绑定S1–S3收尾（v3守卫证据finalOk；动态PS语义未验证）
+
+- 接手：master e9a3e75；待收尾 487a17d；依据 docs/Codex复查-固定Node返修487a17d-20261026.md §2–§3；R1生产启动链源码修正已认可不返工；68d379e及身份/权限/快照/编码认可项沿用；AGENTS.md既有修改（9ef30b4c…）排除提交。
+- S1（判定时点）：另建 docs/证据/CodeBuddy固定Node绑定返修v3-20261026.cjs/.json（默认stdout；--out wx独占创建；v1/v2 .cjs/.json 原字节保留并记录摘要核对）——全部文件读取（登记测试摘要、证据自身摘要；v1/v2保护读取在business）移到判定前统一完成，报告事实与最终ok/exit取同一最新实际计数；判定与finalOk冻结后无任何文件读取；新增 lateTestDigest/lateSelfDigest 实际读取点被catch反例（守卫意外命中必须意外≥1、finalOk=false、exit1）；不删摘要字段、不把意外改成探针。
+- S2（网络守卫补全）：在 v2 既有网络面外补 net.Socket.prototype.connect、dns.promises、global fetch（初始化即生效）；网络包装为完全替换不保留原始引用，任何入口记账后同步抛出——独立离线兜底=守卫抛出即拦截不触真实网络；新增 socketConnect/dnsPromises/fetchEntrance 三个fault反例（含被catch/拒绝处理者均记账为意外）；公共进程阻断、Git入账与已有四fault沿用不重写；不改共享受保护守卫、不扩大公共进程放行。
+- S3（合成断言）：PS1 N4 改用真实返回契约（Ok/ExitCode）与实际 StartCalls/Starts/HoldOpens/HoldCloses 计数（移除对 Invoke-SaveProtect 不存在的 Started 字段的断言）；N6 两层计数分述——交给Node启动22项（-e与代码2项+回显脚本收到20项=基础18+server-time-iso对）分别 -ceq 精确断言；登记静态检查同步改为有区分力版本（22/20双层存在+旧单层20断言移除检测+N4无Started检测）。明确声明：replaceDenied 为合成替身模拟拒绝标签，不是操作系统已拒绝替换的证据；N6 内存字符串等值不称为 argv 跨进程真实传输通过。
+- 口径：当前状态及本节中的“有效策略Restricted”明确为此前交付声明，本轮未查询当前策略值；不重试受阻-File、不改策略、不抽取正文到-Command、不换宿主绕过；不改旧NODE_FIRST_MATCH、不恢复A。
+- 实测：登记测试47/47（N0静态断言更新为有区分力版本，历史断言不删改）、业务包18/18；v3证据静态56/56、解析探针通过、守卫attempts=11/completed=11/failed=0（含9个fault子进程重入，fault子进程预期exit1计为completed）、探针6项全阻断、意外命中0 → finalOk=true exit0；fault出口证明9/9（initNetwork/businessPublicProcess/cleanupNetwork/lateTestDigest/lateSelfDigest/socketConnect/dnsPromises/fetchEntrance 全部 verdictOk=false/finalOk=false/exit1；lateAfterVerdict verdictOk=true/finalOk=true/hitsAfterFinalOk≥1/exit1）。PS1新运行时摘要 9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790（487a17d版 ddeb479a… 见历史不回写）；BOM+纯CRLF保持。
+- 阻断/未验证：动态PS语义（七合成场景、SelfTestTransport、UI前/启动前真实校验链）未验证；未读真实编号/密文/凭据；未运行真实UI/DPAPI/私密保存；未查询身份/ACL；未改PATH/权限/策略/系统环境；未联网；1/2号不重试，P不开展。
+- 过程披露：docs/当前状态.md 曾被外部句柄拒绝写入（仅写共享拒绝，与上轮登记测试文件同型）；按本轮规则先分析、不换名绕过，等待句柄释放后重试写入（结果见提交内容）。
+- 状态：本地收尾待Codex复核；动态PS语义未验证；真实私密输入及执行未放行。
+
+
 ## 2026-10-26 Codex复查487a17d：R1源码认可，S1–S3待收尾
 
 - 报告：`docs/Codex复查-固定Node返修487a17d-20261026.md`；独立证据：`docs/证据/Codex固定Node返修487a17d复查-20261026.cjs`及同名JSON。

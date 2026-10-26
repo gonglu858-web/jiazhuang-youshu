@@ -1653,7 +1653,11 @@ test('N0 固定Node绑定（static）：PS1 源码绑定与字节形态检查', 
   // (5b) R3 敏感检测：N6 两分支精确核对存在；旧错误分支断言已移除
   assert.ok(ps1.includes('$psi.Arguments -ceq $expectedSaveArgs'), 'N6 保存分支全量精确核对（实际存储脚本路径+protect+参数）');
   assert.ok(ps1.includes('$psi2.Arguments -ceq $expectedEchoArgs'), 'N6 回显分支独立精确核对');
-  assert.ok(ps1.includes('$expectedEchoArgv.Count -eq 20'), 'N6 回显分支20参数传输核对');
+  // 两层计数分述（有区分力）：交给Node启动22项 = -e与代码2项 + 回显脚本收到20项；旧的单层 Count -eq 20 断言已移除
+  assert.ok(ps1.includes('$expectedEchoArgv.Count -eq 22'), 'N6 启动层 argv 22 项断言存在');
+  assert.ok(ps1.includes('$expectedEchoRecvArgv.Count -eq 20'), 'N6 回显接收层 argv 20 项断言存在');
+  assert.ok(!ps1.includes('$expectedEchoArgv.Count -eq 20'), '旧错误计数断言（把22项误断为20）已移除');
+  assert.ok(!ps1.includes('$r3.Started'), 'N4 使用真实返回契约（Invoke-SaveProtect 无 Started 字段）');
   assert.ok(!ps1.includes("Add-Check 'fixture-space-path-quoted' ($psi.Arguments"), '旧错误分支断言（回显常量用于保存分支）已移除');
   // (6) 句柄：只读且拒绝写/删除共享（FileShare::Read），finally 释放
   assert.ok(ps1.includes('[System.IO.FileShare]::Read'), 'FileShare::Read（他人只读，拒绝写/删除共享）');

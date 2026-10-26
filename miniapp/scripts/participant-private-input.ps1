@@ -616,11 +616,13 @@ if ($SelfTestSynthetic) {
     Add-Check 'drift-readfail-rejected' ((-not $r2.Ok) -and $r2.Label -eq $LabelNodeReadFail)
     Add-Check 'drift-readfail-zero-start' ($script:Syn.StartCalls -eq 0 -and $script:Syn.Stdin.Count -eq 0)
     # R1：最后校验后的替换尝试——持有句柄拒绝写/删除共享，替换被拒，不重开不复核，
-    # 启动在锁定的已校验内容上进行（不宣称抵御所有同权限攻击或系统装载原子性）
+    # 启动在锁定的已校验内容上进行（不宣称抵御所有同权限攻击或系统装载原子性）。
+    # 注意：replaceDenied 为合成替身的模拟拒绝标签，不能作为操作系统已拒绝替换的证据。
     Reset-SyntheticCounters
     Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok-replace'; hold = 'ok'; start = 'ok' }
     $r3 = Invoke-SaveProtect $syntheticCode
-    Add-Check 'replace-attempt-denied-start-ok' ($r3.Started -and $r3.Ok)
+    # 用真实返回契约（Ok/Stdout/ExitCode/Label）与实际计数验证，不为迁就测试改变产品返回契约
+    Add-Check 'replace-attempt-denied-start-ok' ($r3.Ok -and $r3.ExitCode -eq 0 -and $script:Syn.StartCalls -eq 1 -and $script:Syn.Starts -eq 1 -and $script:Syn.HoldOpens -eq 1 -and $script:Syn.HoldCloses -eq 1)
     Add-Check 'replace-digest-still-in-hold-once' ($script:Syn.DigestHold.Count -eq 1 -and $script:Syn.DigestProbe.Count -eq 0)
     $seq = [string]::Join(',', $script:Syn.Seq)
     Add-Check 'replace-order-digest-attempt-denied-start-close' ($seq.IndexOf('digestHold') -lt $seq.IndexOf('replaceAttempt') -and $seq.IndexOf('replaceAttempt') -lt $seq.IndexOf('replaceDenied') -and $seq.IndexOf('replaceDenied') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
@@ -669,18 +671,21 @@ if ($SelfTestSynthetic) {
     }
     Add-Check 'env-no-full-code' (-not $envHit)
     Add-Check 'node-options-removed-from-child' ($null -eq $psi.EnvironmentVariables['NODE_OPTIONS'])
-    # 回显分支：独立验证（20 参数传输：base 18 + server-time-iso 对）
+    # 回显分支：独立验证（两层计数分述：交给 Node 启动的 22 项 = -e与代码2项 + 回显脚本收到的 20 项 = 基础18 + server-time-iso 对）。
+    # 注意：以下为内存字符串等值核对，不能称为 argv 跨进程真实传输已通过（动态仍 blocked）。
     Reset-SyntheticCounters
     Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'ok' }
     $ServerTimeIso = 'synthetic-2026-10-26T00:00:00Z'
     $fixtureScript = 'C:\synthetic package with spaces\participant-private-store.cjs'
     $expectedEchoArgv = @('-e', 'process.stdout.write(JSON.stringify(process.argv.slice(1)))') + @(Get-StoreArguments $fixtureScript)
+    $expectedEchoRecvArgv = @($expectedEchoArgv | Select-Object -Skip 2)
     $expectedEchoArgs = (($expectedEchoArgv | ForEach-Object { Quote-Arg $_ }) -join ' ')
     $r2 = Invoke-SelfTestEcho
     $psi2 = $script:Syn.LastPsi
     Add-Check 'echo-branch-started' ($r2.Ok)
     Add-Check 'echo-args-exact-full-compare' ($null -ne $psi2 -and ($psi2.Arguments -ceq $expectedEchoArgs))
-    Add-Check 'echo-argv-20-params' ($expectedEchoArgv.Count -eq 20)
+    Add-Check 'echo-launch-argv-22' ($expectedEchoArgv.Count -eq 22)
+    Add-Check 'echo-recv-argv-20' ($expectedEchoRecvArgv.Count -eq 20)
     Add-Check 'echo-space-path-quoted' ($expectedEchoArgs.Contains('"C:\synthetic package with spaces\participant-private-store.cjs"'))
     Add-Check 'echo-empty-value-quoted' ($expectedEchoArgs.Contains('""'))
     Add-Check 'echo-stdin-zero' ($script:Syn.Stdin.Count -eq 0)
