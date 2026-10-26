@@ -14,6 +14,9 @@
 #   显式携带即拒绝。
 # - UI 创建前检查一次；用户确认保存后、启动前再次检查。启动前以只读且拒绝写/删除
 #   共享的句柄完成复核，保持到 Process.Start 返回，finally 释放；异常即停止，不传 stdin。
+#   20261026 R1：启动前先获取拒绝写/删除共享的句柄，在同一持有期间计算并比较受审
+#   完整摘要，再启动，同一句柄 finally 释放；不得先算摘要关闭句柄、再另开未经复核
+#   的持有句柄（否则摘要来自旧内容、句柄锁住未校验新内容）。
 # - 失败净化标签（互不混淆，不回显路径/摘要差异/输入内容）：
 #   NODE_DECLARATION_INVALID / NODE_FILE_INVALID / NODE_FILE_READ_FAIL /
 #   NODE_DIGEST_MISMATCH / NODE_START_FAIL。
@@ -158,6 +161,17 @@ function Probe-FixedNodeDigest([string]$path) {
   }
   return (($hash | ForEach-Object { $_.ToString('x2') }) -join '')
 }
+function Probe-FixedNodeDigestFromHold($holdStream) {
+  # R1：在同一持有句柄上计算完整摘要；不关闭、不重开文件（与 Open-FixedNodeHold
+  # 同一持有期间）。访问异常抛出（调用方分类为读取失败）。
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    $hash = $sha.ComputeHash($holdStream)
+  } finally {
+    $sha.Dispose()
+  }
+  return (($hash | ForEach-Object { $_.ToString('x2') }) -join '')
+}
 function Open-FixedNodeHold([string]$path) {
   # 只读打开并拒绝写/删除共享的句柄；由调用方在 Process.Start 返回后 finally 释放。
   return [System.IO.File]::Open($path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::Read)
@@ -169,6 +183,7 @@ function Start-FixedNodeProcess([System.Diagnostics.ProcessStartInfo]$psi) {
 # ── 共用校验与受控启动链（实际保存与合成传输唯一入口；仅两个固定用途） ──
 $script:BoundaryProbeNodeFile = ${function:Probe-FixedNodeFile}
 $script:BoundaryProbeNodeDigest = ${function:Probe-FixedNodeDigest}
+$script:BoundaryProbeNodeDigestFromHold = ${function:Probe-FixedNodeDigestFromHold}
 $script:BoundaryOpenHold = ${function:Open-FixedNodeHold}
 $script:BoundaryStart = ${function:Start-FixedNodeProcess}
 
@@ -194,37 +209,56 @@ function Test-FixedNodeBinding {
   return @{ Ok = $true; NodePath = $FixedNodePath; Label = '' }
 }
 function Start-FixedNode([string]$Purpose, [string[]]$NodeArgv) {
-  # 受控启动：仅 'save-protect' 与 'selftest-echo' 两个固定用途；FileName 只能来自
-  # 校验后的固定路径；UseShellExecute=false、CreateNoWindow=true；仅从子进程环境
-  # 移除 NODE_OPTIONS，不修改系统环境。启动前再次校验并持只读句柄至 Start 返回。
+  # 受控启动（R1 顺序）：仅 'save-protect' 与 'selftest-echo' 两个固定用途。
+  # 先做元信息检查（存在/普通文件/路径链），然后获取拒绝写/删除共享的句柄，在
+  # 同一持有期间计算并比较受审完整摘要，摘要通过后才构造并启动；同一句柄由
+  # finally 释放。不得先计算摘要关闭句柄、再另开未经复核的持有句柄。
+  # FileName 只能来自校验后的固定路径；UseShellExecute=false、CreateNoWindow=true；
+  # 仅从子进程环境移除 NODE_OPTIONS，不修改系统环境。
   if ($Purpose -ne 'save-protect' -and $Purpose -ne 'selftest-echo') {
     return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelNodeStartFail }
   }
-  $binding = Test-FixedNodeBinding
-  if (-not $binding.Ok) {
-    return @{ Started = $false; Proc = $null; Psi = $null; Label = $binding.Label }
+  try {
+    $facts = & $script:BoundaryProbeNodeFile $FixedNodePath
+  } catch {
+    return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelNodeReadFail }
   }
-  $psi = New-Object System.Diagnostics.ProcessStartInfo
-  $psi.FileName = $binding.NodePath
-  $psi.Arguments = (($NodeArgv | ForEach-Object { Quote-Arg $_ }) -join ' ')
-  $psi.UseShellExecute = $false
-  $psi.CreateNoWindow = $true
-  if ($Purpose -eq 'save-protect') {
-    $psi.RedirectStandardInput = $true
-    $psi.RedirectStandardOutput = $true
-    $psi.RedirectStandardError = $true
-  } else {
-    $psi.RedirectStandardOutput = $true
+  if (-not $facts.Exists -or -not $facts.IsNormalFile -or -not $facts.ChainClean) {
+    return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelNodeFileInvalid }
   }
-  $null = $psi.EnvironmentVariables.Remove('NODE_OPTIONS')
   $handle = $null
   $proc = $null
   try {
     try {
-      $handle = & $script:BoundaryOpenHold $binding.NodePath
+      $handle = & $script:BoundaryOpenHold $FixedNodePath
     } catch {
       return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelNodeReadFail }
     }
+    try {
+      $digest = & $script:BoundaryProbeNodeDigestFromHold $handle
+    } catch {
+      return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelNodeReadFail }
+    }
+    if (-not $digest) {
+      return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelNodeReadFail }
+    }
+    if (-not [string]::Equals($digest, $FixedNodeSha256, [System.StringComparison]::OrdinalIgnoreCase)) {
+      return @{ Started = $false; Proc = $null; Psi = $null; Label = $LabelDigestMismatch }
+    }
+    # 摘要在同一持有期间校验通过；FileName 用同一固定路径，持有持续到 Start 返回
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $FixedNodePath
+    $psi.Arguments = (($NodeArgv | ForEach-Object { Quote-Arg $_ }) -join ' ')
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+    if ($Purpose -eq 'save-protect') {
+      $psi.RedirectStandardInput = $true
+      $psi.RedirectStandardOutput = $true
+      $psi.RedirectStandardError = $true
+    } else {
+      $psi.RedirectStandardOutput = $true
+    }
+    $null = $psi.EnvironmentVariables.Remove('NODE_OPTIONS')
     try {
       $proc = & $script:BoundaryStart $psi
     } catch {
@@ -343,47 +377,65 @@ if ($SelfTestSynthetic) {
 
   # ── 固定合成替身状态与安装器（行为规格固定在本文件内；外部只能选场景名） ──
   $script:Syn = @{
-    FileProbe = @(); DigestProbe = @(); Seq = @()
+    FileProbe = @(); DigestProbe = @(); DigestHold = @(); Seq = @()
     HoldOpens = 0; HoldCloses = 0; StartCalls = 0; Starts = 0
     Stdin = @(); StdinClosed = $false; LastPsi = $null
-    FileSpec = 'valid'; FileSpecAfter = $null; DigestSpec = 'ok'; DigestSpecAfter = $null
+    FileSpec = 'valid'; DigestSpec = 'ok'; DigestHoldSpec = 'ok'; HoldSpec = 'ok'
   }
   function Reset-SyntheticCounters {
-    $script:Syn.FileProbe = @(); $script:Syn.DigestProbe = @(); $script:Syn.Seq = @()
+    $script:Syn.FileProbe = @(); $script:Syn.DigestProbe = @(); $script:Syn.DigestHold = @(); $script:Syn.Seq = @()
     $script:Syn.HoldOpens = 0; $script:Syn.HoldCloses = 0; $script:Syn.StartCalls = 0; $script:Syn.Starts = 0
     $script:Syn.Stdin = @(); $script:Syn.StdinClosed = $false; $script:Syn.LastPsi = $null
   }
-  function Get-SyntheticFileFacts([string]$spec) {
-    switch ($spec) {
-      'valid' { return @{ Exists = $true; IsNormalFile = $true; ChainClean = $true } }
-      'missing' { return @{ Exists = $false; IsNormalFile = $false; ChainClean = $true } }
-      'directory' { return @{ Exists = $true; IsNormalFile = $false; ChainClean = $true } }
-      'reparseFile' { return @{ Exists = $true; IsNormalFile = $false; ChainClean = $true } }
-      'reparseChain' { return @{ Exists = $true; IsNormalFile = $true; ChainClean = $false } }
-      default { throw 'SYNTHETIC_FILE_SPEC' }
-    }
-  }
   function Install-SyntheticBoundaries([hashtable]$spec) {
-    $script:Syn.FileSpec = $spec.fileFacts
-    $script:Syn.FileSpecAfter = if ($spec.ContainsKey('fileFactsAfter')) { $spec.fileFactsAfter } else { $null }
-    $script:Syn.DigestSpec = $spec.digest
-    $script:Syn.DigestSpecAfter = if ($spec.ContainsKey('digestAfter')) { $spec.digestAfter } else { $null }
+    # 规格：fileFacts = valid|missing|directory|reparseFile|reparseChain|access；
+    #       digest = ok|wrong|throw（独立预检查用的摘要边界）；
+    #       digestHold = ok|ok-replace|wrong|throw（R1 持有期间摘要边界；ok-replace
+    #       模拟最后校验后、启动前的替换尝试，被持有句柄拒绝）；
+    #       hold = ok|throw（持有句柄打开）；start = ok|throw|null。
+    $script:Syn.FileSpec = if ($spec.ContainsKey('fileFacts')) { $spec.fileFacts } else { 'valid' }
+    $script:Syn.DigestSpec = if ($spec.ContainsKey('digest')) { $spec.digest } else { 'ok' }
+    $script:Syn.DigestHoldSpec = if ($spec.ContainsKey('digestHold')) { $spec.digestHold } else { 'ok' }
+    $script:Syn.HoldSpec = if ($spec.ContainsKey('hold')) { $spec.hold } else { 'ok' }
+    $script:Syn.StartBehavior = if ($spec.ContainsKey('start')) { $spec.start } else { 'ok' }
     $script:BoundaryProbeNodeFile = {
       param($p)
       $script:Syn.FileProbe += $p
       $script:Syn.Seq += 'probeFile'
-      $cur = $script:Syn.FileSpec
-      if ($script:Syn.FileSpecAfter -and $script:Syn.FileProbe.Count -gt 1) { $cur = $script:Syn.FileSpecAfter }
-      return Get-SyntheticFileFacts $cur
+      switch ($script:Syn.FileSpec) {
+        'valid' { return @{ Exists = $true; IsNormalFile = $true; ChainClean = $true } }
+        'missing' { return @{ Exists = $false; IsNormalFile = $false; ChainClean = $true } }
+        'directory' { return @{ Exists = $true; IsNormalFile = $false; ChainClean = $true } }
+        'reparseFile' { return @{ Exists = $true; IsNormalFile = $false; ChainClean = $true } }
+        'reparseChain' { return @{ Exists = $true; IsNormalFile = $true; ChainClean = $false } }
+        'access' { throw 'SYNTHETIC_ACCESS_DENIED' }
+        default { throw 'SYNTHETIC_FILE_SPEC' }
+      }
     }
     $script:BoundaryProbeNodeDigest = {
       param($p)
       $script:Syn.DigestProbe += $p
       $script:Syn.Seq += 'probeDigest'
-      $cur = $script:Syn.DigestSpec
-      if ($script:Syn.DigestSpecAfter -and $script:Syn.DigestProbe.Count -gt 1) { $cur = $script:Syn.DigestSpecAfter }
-      switch ($cur) {
+      switch ($script:Syn.DigestSpec) {
         'ok' { return $FixedNodeSha256 }
+        'wrong' { return ('0' * 64) }
+        'throw' { throw 'SYNTHETIC_READ_FAIL' }
+        default { throw 'SYNTHETIC_DIGEST_SPEC' }
+      }
+    }
+    $script:BoundaryProbeNodeDigestFromHold = {
+      param($holdStream)
+      # R1：摘要在同一持有期间计算（不重开文件）
+      $script:Syn.DigestHold += $holdStream
+      $script:Syn.Seq += 'digestHold'
+      switch ($script:Syn.DigestHoldSpec) {
+        'ok' { return $FixedNodeSha256 }
+        'ok-replace' {
+          # 模拟最后校验后、启动前的替换尝试：持有句柄拒绝写/删除共享，替换被拒
+          $script:Syn.Seq += 'replaceAttempt'
+          $script:Syn.Seq += 'replaceDenied'
+          return $FixedNodeSha256
+        }
         'wrong' { return ('0' * 64) }
         'throw' { throw 'SYNTHETIC_READ_FAIL' }
         default { throw 'SYNTHETIC_DIGEST_SPEC' }
@@ -391,6 +443,7 @@ if ($SelfTestSynthetic) {
     }
     $script:BoundaryOpenHold = {
       param($p)
+      if ($script:Syn.HoldSpec -eq 'throw') { throw 'SYNTHETIC_HOLD_FAIL' }
       $script:Syn.HoldOpens++
       $script:Syn.Seq += 'holdOpen'
       $hold = New-Object PSObject
@@ -421,8 +474,6 @@ if ($SelfTestSynthetic) {
       $proc | Add-Member -MemberType ScriptMethod -Name Kill -Value { return }
       return $proc
     }
-    # start 行为并入同一规格表（避免脚本块闭包捕获问题，全部经 $script:Syn 读取）
-    $script:Syn.StartBehavior = if ($spec.ContainsKey('start')) { $spec.start } else { 'ok' }
   }
 
   $script:SynChecks = New-Object System.Collections.Generic.List[object]
@@ -433,8 +484,8 @@ if ($SelfTestSynthetic) {
   $syntheticCode = 'u_0123456789abcdef0123456789abcdef01234567'
 
   if ($SelfTestScenario -eq 'N1_SAVE') {
-    # 实际保存分支：合法对照到达底层启动边界；FileName/开关/env/stdin 契约
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; start = 'ok' }
+    # 实际保存分支：合法对照到达底层启动边界；R1 顺序（持有→摘要→启动→释放）与计数
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'ok' }
     $r = Invoke-SaveProtect $syntheticCode
     Add-Check 'save-started' $r.Ok
     Add-Check 'start-count-1' ($script:Syn.StartCalls -eq 1)
@@ -450,16 +501,19 @@ if ($SelfTestSynthetic) {
     Add-Check 'argv-no-plain-value' (-not $psi.Arguments.Contains($syntheticCode))
     Add-Check 'stdin-exactly-value-newline' ([string]::Join('', $script:Syn.Stdin) -ceq ($syntheticCode + "`n"))
     Add-Check 'stdin-closed' $script:Syn.StdinClosed
-    Add-Check 'recheck-probed-once' ($script:Syn.FileProbe.Count -eq 1 -and $script:Syn.DigestProbe.Count -eq 1)
+    # R1：元信息探针一次；摘要在持有句柄上计算一次；不另开独立摘要句柄
+    Add-Check 'facts-probed-once' ($script:Syn.FileProbe.Count -eq 1)
+    Add-Check 'digest-in-hold-once' ($script:Syn.DigestHold.Count -eq 1)
+    Add-Check 'no-standalone-digest-in-start-path' ($script:Syn.DigestProbe.Count -eq 0)
     Add-Check 'hold-open-1-close-1' ($script:Syn.HoldOpens -eq 1 -and $script:Syn.HoldCloses -eq 1)
     $seq = [string]::Join(',', $script:Syn.Seq)
-    Add-Check 'order-open-start-close' ($seq.IndexOf('holdOpen') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
+    Add-Check 'r1-order-facts-hold-digest-start-close' ($seq.IndexOf('probeFile') -lt $seq.IndexOf('holdOpen') -and $seq.IndexOf('holdOpen') -lt $seq.IndexOf('digestHold') -and $seq.IndexOf('digestHold') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
     Add-Check 'no-fallback-second-start' ($script:Syn.StartCalls -eq 1)
   }
 
   if ($SelfTestScenario -eq 'N1_ECHO') {
-    # 合成传输分支：与实际保存分支共用同一固定程序选择与启动链
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; start = 'ok' }
+    # 合成传输分支：与实际保存分支共用同一固定程序选择、R1 校验顺序与启动链
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'ok' }
     $r = Invoke-SelfTestEcho
     Add-Check 'echo-ok' $r.Ok
     Add-Check 'start-count-1' ($script:Syn.StartCalls -eq 1)
@@ -473,7 +527,10 @@ if ($SelfTestSynthetic) {
     Add-Check 'argv-echo-fixed-entry' ($psi.Arguments.Contains('-e'))
     Add-Check 'argv-fixture-shared-constructor' ($psi.Arguments.Contains('participant-private-store.cjs'))
     Add-Check 'stdin-zero' ($script:Syn.Stdin.Count -eq 0)
+    Add-Check 'digest-in-hold-once' ($script:Syn.DigestHold.Count -eq 1 -and $script:Syn.DigestProbe.Count -eq 0)
     Add-Check 'hold-open-1-close-1' ($script:Syn.HoldOpens -eq 1 -and $script:Syn.HoldCloses -eq 1)
+    $seq = [string]::Join(',', $script:Syn.Seq)
+    Add-Check 'r1-order-hold-digest-start-close' ($seq.IndexOf('holdOpen') -lt $seq.IndexOf('digestHold') -and $seq.IndexOf('digestHold') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
     Add-Check 'no-fallback-second-start' ($script:Syn.StartCalls -eq 1)
   }
 
@@ -507,59 +564,81 @@ if ($SelfTestSynthetic) {
   }
 
   if ($SelfTestScenario -eq 'N3_FILE') {
-    # 文件边界分类：每例只改一个方面，其余合法；分别触发对应原因，零启动
+    # 启动路径逐类拒绝：每例只改一个方面，其余合法；分别触发对应原因，零启动零stdin。
+    # facts 失败在持有前拒绝（零句柄）；持有/摘要失败在持有期间拒绝（句柄开且关）。
     $cases = @(
-      @{ n = 'missing'; file = 'missing'; digest = 'ok'; expect = $LabelNodeFileInvalid },
-      @{ n = 'directory'; file = 'directory'; digest = 'ok'; expect = $LabelNodeFileInvalid },
-      @{ n = 'reparse-file'; file = 'reparseFile'; digest = 'ok'; expect = $LabelNodeFileInvalid },
-      @{ n = 'reparse-chain'; file = 'reparseChain'; digest = 'ok'; expect = $LabelNodeFileInvalid },
-      @{ n = 'read-fail'; file = 'access'; digest = 'ok'; expect = $LabelNodeReadFail },
-      @{ n = 'digest-mismatch'; file = 'valid'; digest = 'wrong'; expect = $LabelDigestMismatch },
-      @{ n = 'digest-read-fail'; file = 'valid'; digest = 'throw'; expect = $LabelNodeReadFail }
+      @{ n = 'missing'; file = 'missing'; digestHold = 'ok'; hold = 'ok'; expect = $LabelNodeFileInvalid; holdExpect = 0 },
+      @{ n = 'directory'; file = 'directory'; digestHold = 'ok'; hold = 'ok'; expect = $LabelNodeFileInvalid; holdExpect = 0 },
+      @{ n = 'reparse-file'; file = 'reparseFile'; digestHold = 'ok'; hold = 'ok'; expect = $LabelNodeFileInvalid; holdExpect = 0 },
+      @{ n = 'reparse-chain'; file = 'reparseChain'; digestHold = 'ok'; hold = 'ok'; expect = $LabelNodeFileInvalid; holdExpect = 0 },
+      @{ n = 'facts-read-fail'; file = 'access'; digestHold = 'ok'; hold = 'ok'; expect = $LabelNodeReadFail; holdExpect = 0 },
+      @{ n = 'hold-open-fail'; file = 'valid'; digestHold = 'ok'; hold = 'throw'; expect = $LabelNodeReadFail; holdExpect = 0 },
+      @{ n = 'digest-mismatch'; file = 'valid'; digestHold = 'wrong'; hold = 'ok'; expect = $LabelDigestMismatch; holdExpect = 1 },
+      @{ n = 'digest-read-fail'; file = 'valid'; digestHold = 'throw'; hold = 'ok'; expect = $LabelNodeReadFail; holdExpect = 1 }
     )
     foreach ($c in $cases) {
       Reset-SyntheticCounters
-      Install-SyntheticBoundaries @{ fileFacts = $c.file; digest = $c.digest; start = 'ok' }
-      $b = Test-FixedNodeBinding
-      Add-Check ('n3-' + $c.n + '-rejected') (-not $b.Ok)
-      Add-Check ('n3-' + $c.n + '-label-exact') ($b.Label -eq $c.expect)
-      Add-Check ('n3-' + $c.n + '-zero-start-stdin-hold') ($script:Syn.StartCalls -eq 0 -and $script:Syn.Stdin.Count -eq 0 -and $script:Syn.HoldOpens -eq 0)
+      Install-SyntheticBoundaries @{ fileFacts = $c.file; digestHold = $c.digestHold; hold = $c.hold; start = 'ok' }
+      $r = Start-FixedNode 'save-protect' @('synthetic-store-script.cjs', 'protect')
+      Add-Check ('n3-' + $c.n + '-rejected') ((-not $r.Started) -and $r.Label -eq $c.expect)
+      Add-Check ('n3-' + $c.n + '-label-exact') ($r.Label -eq $c.expect)
+      Add-Check ('n3-' + $c.n + '-zero-start-stdin') ($script:Syn.StartCalls -eq 0 -and $script:Syn.Stdin.Count -eq 0)
+      Add-Check ('n3-' + $c.n + '-hold-count') ($script:Syn.HoldOpens -eq $c.holdExpect -and $script:Syn.HoldCloses -eq $c.holdExpect)
     }
+    # 独立预检查（UI前/传输前用）的摘要分类保持：摘要不符/读取失败
+    Reset-SyntheticCounters
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'wrong' }
+    $b = Test-FixedNodeBinding
+    Add-Check 'n3-binding-digest-mismatch' ((-not $b.Ok) -and $b.Label -eq $LabelDigestMismatch)
+    Reset-SyntheticCounters
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'throw' }
+    $b2 = Test-FixedNodeBinding
+    Add-Check 'n3-binding-read-fail' ((-not $b2.Ok) -and $b2.Label -eq $LabelNodeReadFail)
   }
 
   if ($SelfTestScenario -eq 'N4_DRIFT') {
-    # UI 前检查合法，启动前复核漂移时拒绝：零启动、零 stdin、句柄未开
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; digestAfter = 'wrong'; start = 'ok' }
+    # UI 前独立检查合法（独立摘要 ok），启动路径持有期间摘要漂移 → 拒绝：零启动零stdin
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; digestHold = 'wrong'; hold = 'ok'; start = 'ok' }
     $first = Test-FixedNodeBinding
     Add-Check 'pre-check-ok' $first.Ok
     $r = Invoke-SaveProtect $syntheticCode
     Add-Check 'drift-digest-rejected' ((-not $r.Ok) -and $r.Label -eq $LabelDigestMismatch)
     Add-Check 'drift-zero-start' ($script:Syn.StartCalls -eq 0)
     Add-Check 'drift-zero-stdin' ($script:Syn.Stdin.Count -eq 0)
-    Add-Check 'drift-no-hold' ($script:Syn.HoldOpens -eq 0)
-    Add-Check 'digest-probed-twice' ($script:Syn.DigestProbe.Count -eq 2)
+    Add-Check 'drift-hold-opened-closed' ($script:Syn.HoldOpens -eq 1 -and $script:Syn.HoldCloses -eq 1)
+    Add-Check 'digest-probed-twice-distinct' ($script:Syn.DigestProbe.Count -eq 1 -and $script:Syn.DigestHold.Count -eq 1)
+    # 持有期间读取失败变体
     Reset-SyntheticCounters
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; digestAfter = 'throw'; start = 'ok' }
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; digestHold = 'throw'; hold = 'ok'; start = 'ok' }
     $first2 = Test-FixedNodeBinding
     Add-Check 'pre-check-ok-variant' $first2.Ok
     $r2 = Invoke-SaveProtect $syntheticCode
     Add-Check 'drift-readfail-rejected' ((-not $r2.Ok) -and $r2.Label -eq $LabelNodeReadFail)
     Add-Check 'drift-readfail-zero-start' ($script:Syn.StartCalls -eq 0 -and $script:Syn.Stdin.Count -eq 0)
+    # R1：最后校验后的替换尝试——持有句柄拒绝写/删除共享，替换被拒，不重开不复核，
+    # 启动在锁定的已校验内容上进行（不宣称抵御所有同权限攻击或系统装载原子性）
+    Reset-SyntheticCounters
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok-replace'; hold = 'ok'; start = 'ok' }
+    $r3 = Invoke-SaveProtect $syntheticCode
+    Add-Check 'replace-attempt-denied-start-ok' ($r3.Started -and $r3.Ok)
+    Add-Check 'replace-digest-still-in-hold-once' ($script:Syn.DigestHold.Count -eq 1 -and $script:Syn.DigestProbe.Count -eq 0)
+    $seq = [string]::Join(',', $script:Syn.Seq)
+    Add-Check 'replace-order-digest-attempt-denied-start-close' ($seq.IndexOf('digestHold') -lt $seq.IndexOf('replaceAttempt') -and $seq.IndexOf('replaceAttempt') -lt $seq.IndexOf('replaceDenied') -and $seq.IndexOf('replaceDenied') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
   }
 
   if ($SelfTestScenario -eq 'N5_STARTFAIL') {
-    # 启动异常：句柄关闭、无 stdin、无回退、固定失败路径（不输出输入内容）
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; start = 'throw' }
+    # 启动异常（持有期间摘要已通过后）：句柄关闭、无 stdin、无回退、固定失败路径
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'throw' }
     $r = Invoke-SaveProtect $syntheticCode
     Add-Check 'startfail-rejected' ((-not $r.Ok) -and $r.Label -eq $LabelNodeStartFail)
     Add-Check 'startfail-no-stdin' ($script:Syn.Stdin.Count -eq 0 -and (-not $script:Syn.StdinClosed))
     Add-Check 'startfail-no-fallback' ($script:Syn.StartCalls -eq 1)
     Add-Check 'startfail-hold-closed' ($script:Syn.HoldOpens -eq 1 -and $script:Syn.HoldCloses -eq 1)
     $seq = [string]::Join(',', $script:Syn.Seq)
-    Add-Check 'startfail-close-after-start-attempt' ($seq.IndexOf('holdOpen') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
+    Add-Check 'startfail-order-hold-digest-start-close' ($seq.IndexOf('holdOpen') -lt $seq.IndexOf('digestHold') -and $seq.IndexOf('digestHold') -lt $seq.IndexOf('start') -and $seq.IndexOf('start') -lt $seq.IndexOf('holdClose'))
     Add-Check 'startfail-output-no-secret' (-not $r.Stdout.Contains($syntheticCode))
     Reset-SyntheticCounters
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; start = 'null' }
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'null' }
     $r2 = Invoke-SaveProtect $syntheticCode
     Add-Check 'startnull-rejected' ((-not $r2.Ok) -and $r2.Label -eq $LabelNodeStartFail)
     Add-Check 'startnull-no-stdin' ($script:Syn.Stdin.Count -eq 0)
@@ -567,11 +646,21 @@ if ($SelfTestSynthetic) {
   }
 
   if ($SelfTestScenario -eq 'N6_TRANSPORT') {
-    # 完整编号只走 stdin，不进 argv/env；固定逻辑覆盖实际保存分支；转义契约保持
-    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digest = 'ok'; start = 'ok' }
+    # R3：两分支分别精确核对（全量 -ceq，不用 Contains 偶然命中）。
+    # 保存分支：实际存储脚本路径（真实共用构造）+ protect + 全部参数；
+    # 回显分支：空格/引号/空值转义与 20 参数传输（含 server-time-iso 对）。
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'ok' }
+    $expectedStore = Join-Path $PSScriptRoot 'lib\participant-private-store.cjs'
+    $expectedSaveArgv = @($expectedStore, 'protect', '--repo-root', $RepoRoot, '--participant-code', $ParticipantCode,
+      '--check-round-id', $CheckRoundId, '--source-digest', $SourceDigest, '--delivery-confirmed', 'true',
+      '--check-window-starts-at-iso', $CheckWindowStartsAtIso, '--check-window-expires-at-iso', $CheckWindowExpiresAtIso,
+      '--file-name', $FileName)
+    $expectedSaveArgs = (($expectedSaveArgv | ForEach-Object { Quote-Arg $_ }) -join ' ')
     $r = Invoke-SaveProtect $syntheticCode
-    Add-Check 'save-branch-uses-fixed-node' $r.Ok
+    Add-Check 'save-branch-started' ($r.Ok)
     $psi = $script:Syn.LastPsi
+    Add-Check 'save-args-exact-full-compare' ($null -ne $psi -and ($psi.Arguments -ceq $expectedSaveArgs))
+    Add-Check 'save-protect-op-position' ($expectedSaveArgv[1] -ceq 'protect' -and $expectedSaveArgv.Count -eq 18)
     Add-Check 'argv-no-full-code' (-not $psi.Arguments.Contains($syntheticCode))
     Add-Check 'stdin-has-full-code-once' ([string]::Join('', $script:Syn.Stdin) -ceq ($syntheticCode + "`n"))
     $envHit = $false
@@ -580,8 +669,24 @@ if ($SelfTestSynthetic) {
     }
     Add-Check 'env-no-full-code' (-not $envHit)
     Add-Check 'node-options-removed-from-child' ($null -eq $psi.EnvironmentVariables['NODE_OPTIONS'])
-    Add-Check 'fixture-space-path-quoted' ($psi.Arguments.Contains('"C:\synthetic package with spaces\participant-private-store.cjs"'))
-    Add-Check 'empty-arg-quoted' ($psi.Arguments.Contains('""'))
+    # 回显分支：独立验证（20 参数传输：base 18 + server-time-iso 对）
+    Reset-SyntheticCounters
+    Install-SyntheticBoundaries @{ fileFacts = 'valid'; digestHold = 'ok'; hold = 'ok'; start = 'ok' }
+    $ServerTimeIso = 'synthetic-2026-10-26T00:00:00Z'
+    $fixtureScript = 'C:\synthetic package with spaces\participant-private-store.cjs'
+    $expectedEchoArgv = @('-e', 'process.stdout.write(JSON.stringify(process.argv.slice(1)))') + @(Get-StoreArguments $fixtureScript)
+    $expectedEchoArgs = (($expectedEchoArgv | ForEach-Object { Quote-Arg $_ }) -join ' ')
+    $r2 = Invoke-SelfTestEcho
+    $psi2 = $script:Syn.LastPsi
+    Add-Check 'echo-branch-started' ($r2.Ok)
+    Add-Check 'echo-args-exact-full-compare' ($null -ne $psi2 -and ($psi2.Arguments -ceq $expectedEchoArgs))
+    Add-Check 'echo-argv-20-params' ($expectedEchoArgv.Count -eq 20)
+    Add-Check 'echo-space-path-quoted' ($expectedEchoArgs.Contains('"C:\synthetic package with spaces\participant-private-store.cjs"'))
+    Add-Check 'echo-empty-value-quoted' ($expectedEchoArgs.Contains('""'))
+    Add-Check 'echo-stdin-zero' ($script:Syn.Stdin.Count -eq 0)
+    Add-Check 'quote-arg-empty-contract' ((Quote-Arg '') -ceq '""')
+    Add-Check 'quote-arg-space-quote-contract' ((Quote-Arg 'a b"c') -ceq '"a b\"c"')
+    Add-Check 'quote-arg-trailing-backslash-contract' ((Quote-Arg 'a b\') -ceq '"a b\\"')
   }
 
   $failedChecks = @($script:SynChecks | Where-Object { -not $_.passed })
@@ -593,6 +698,7 @@ if ($SelfTestSynthetic) {
     counters = @{
       fileProbe = $script:Syn.FileProbe.Count
       digestProbe = $script:Syn.DigestProbe.Count
+      digestHold = $script:Syn.DigestHold.Count
       holdOpens = $script:Syn.HoldOpens
       holdCloses = $script:Syn.HoldCloses
       startCalls = $script:Syn.StartCalls
@@ -612,10 +718,11 @@ if (-not $ParticipantCode -or -not $CheckRoundId -or -not $SourceDigest -or -not
 }
 
 # UI 创建前检查一次：固定文件不合法/读取失败/摘要不符即停止，不弹出输入窗口
-$preBinding = Test-FixedNodeBinding
-if (-not $preBinding.Ok) {
-  Write-Output $preBinding.Label
-  exit (Get-NodeLabelExitCode $preBinding.Label)
+# （独立标记 $uiPreBinding；静态检查据此敏感检测本检查是否被单独删除）
+$uiPreBinding = Test-FixedNodeBinding
+if (-not $uiPreBinding.Ok) {
+  Write-Output $uiPreBinding.Label
+  exit (Get-NodeLabelExitCode $uiPreBinding.Label)
 }
 
 Add-Type -AssemblyName System.Windows.Forms

@@ -1,3 +1,18 @@
+## 2026-10-26 CodeBuddy：固定Node绑定R1–R3定点返修（静态+v2守卫证据通过；动态PS语义blocked）
+
+- 接手：master e918835；受审 1ca7c81；依据 docs/Codex复查-固定Node绑定1ca7c81-20261026.md §2–§4；68d379e及身份/权限/快照/编码认可项沿用不重做；AGENTS.md既有修改（9ef30b4c…）排除提交。
+- R1（同句柄持有→摘要→启动→释放）：miniapp/scripts/participant-private-input.ps1 Start-FixedNode 重构——先元信息检查（存在/普通文件/路径链reparse），再获取拒绝写/删除共享句柄（FileShare::Read），在同一持有期间经新边界 Probe-FixedNodeDigestFromHold（ComputeHash($holdStream)，不关闭不重开文件）计算并比较受审完整摘要，通过后才构造 ProcessStartInfo 并启动，同一句柄 finally 释放；移除先算摘要关句柄再另开未复核句柄的旧模式（Start-FixedNode 内不再调用 Test-FixedNodeBinding、不再使用独立摘要边界）。UI前检查保留（独立标记 $uiPreBinding 先于 Add-Type，静态可敏感检测其被单独删除）。
+- R3（N6两分支精确核对）：保存分支以真实共用构造（Get-StoreArguments+Quote-Arg）计算期望参数串，与实际 psi.Arguments 全量 -ceq 精确比对（实际存储脚本路径 Join-Path $PSScriptRoot 'lib\participant-private-store.cjs'、protect、18参数）；回显分支独立验证空格路径引号包裹、空值'""'转义、20参数传输（base 18 + server-time-iso 对，固定合成值）及 Quote-Arg 转义契约（空值/空格引号/尾反斜杠）；移除旧错误断言（回显常量误用于保存分支）。
+- R2（v2完整守卫证据）：另建 docs/证据/CodeBuddy固定Node绑定返修v2-20261026.cjs/.json（默认stdout；--out wx独占创建；v1 .cjs/.json 原样保留，摘要 d64be3f3…/f9110c96… 记录核对）——守卫在业务装载前安装，公共网络（http/https/net/tls/dgram/dns）与公共进程（child_process 全部导出）默认阻断且被 catch 者同样记账；仅私有受控 runner 按固定程序+完整参数放行（git rev-parse 基线、powershell -NoProfile -Command 语法解析探针、node 自重入 fault 模式），先校验完整参数并计数后执行（Git 计入实际总数，不只凭 exe 名称当探针）；探针（init/business/cleanup × 网络/公共进程 6 项全阻断）、预期策略阻断（沿用 v1 记录，本轮不在已阻断环境重复尝试）、命令失败（解析探针失败将使 ok=false）、业务意外分述；四个 fault 重入实测被 catch 的意外使真实最终 ok=false/exit1（initNetwork/businessPublicProcess/cleanupNetwork 判定前注入 verdictOk=false；lateAfterVerdict 判定后注入冻结判定 ok=true 但真实出口 1）；全部核验、摘要和保护读取完成后形成最终判定（判定后仅序列化输出）。
+- 合成场景同步 R1/R3：N1_SAVE/N1_ECHO 断言 facts→holdOpen→digestHold→start→holdClose 顺序与计数（持有摘要一次、无独立摘要、无二次启动）；N3_FILE 改为经 Start-FixedNode 启动路径逐类拒绝（missing/directory/reparseFile/reparseChain/facts-read-fail 在持有前拒绝零句柄；hold-open-fail/digest-mismatch/digest-read-fail 在持有期间拒绝，句柄开且关，全部零启动零stdin）；N4_DRIFT 覆盖预检查合法但持有期间摘要漂移/读取失败拒绝，及最后校验后替换尝试被持有句柄拒绝（replaceAttempt/replaceDenied 在 digestHold 与 start 之间，不重开不复核，不宣称抵御所有同权限攻击或系统装载原子性）；N5_STARTFAIL 启动抛错/返回null收尾（无stdin、无回退、句柄关闭）；N2_DECL 不变。
+- 静态检查敏感化（登记测试 N0 组更新，历史断言不删改）：真实UI前检查独立标记检测、R1 持有/摘要顺序检测（Start-FixedNode 内恰一次持有打开、无独立摘要边界、无预检查替代、持有→摘要→启动次序、持有摘要边界不重开文件）、R3 两分支精确核对存在性与旧错误断言移除检测。
+- 口径收尾：v1 实际携带 -ExecutionPolicy Default（非 Bypass 但非无覆盖参数的继承环境验证）如实记录为已披露事实；v2 固定 -File 命令不携带任何 -ExecutionPolicy 参数（自检含非注释行敏感检测，本检查字符串拼接构造避免自伤）；不在当前已阻断环境重复尝试，不改策略、不抽取正文到 -Command、不换宿主绕过。策略/七个合成场景/SelfTestTransport/UI/DPAPI 分述记录；SelfTestCheck exit0 不证明其他项。
+- 实测：登记测试 47/47（历史断言不删改+新增 R1/R3 敏感断言）、业务包 18/18；v2 证据静态 52/52 全过、PS1 语法解析探针通过、守卫 attempts=6/completed=6/failed=0（含 4 个 fault 子进程重入，fault 子进程预期 exit1 计为 completed）、探针 6 项全阻断、意外命中 0 → finalOk=true exit0；主流程复跑判定一致。PS1 新运行时摘要 ddeb479aac72b71a393abf32ef6c7c10e8541c883b7b0709a992d6c4cc72e84c（1ca7c81 版 3012b416… 见历史，不回写旧证据）；BOM+纯CRLF 保持。
+- 阻断/未验证：有效策略 Restricted——七合成场景、SelfTestTransport、UI前/启动前真实校验链未动态执行（blocked 单列；PS1 已内置合成入口待允许环境固定 -File 验证）。未读真实编号/密文/凭据；未运行真实 UI/DPAPI/私密保存；未查询身份/ACL；未改 PATH/权限/策略/系统环境；未联网安装或云端活动；1/2号不重试，P 不开展，A 预检不恢复。
+- 过程记录：登记测试文件一度被外部句柄拒绝写入（仅写锁、可改名），经旁路生成+换名替换完成，期间文件曾短暂缺失后从 git 恢复并重放替换，最终字节经 node --check 与测试复跑验证；本轮 6 个临时文件集中清理无残留。
+- 状态：本地返修完成待 Codex 复查；动态缺口单列；真实私密输入及执行未放行。
+
+
 ## 2026-10-26 Codex复查：固定Node绑定1ca7c81未通过，R1–R3待返修
 
 - 报告：`docs/Codex复查-固定Node绑定1ca7c81-20261026.md`；独立证据：`docs/证据/Codex固定Node绑定1ca7c81复查-20261026.cjs`及同名JSON。

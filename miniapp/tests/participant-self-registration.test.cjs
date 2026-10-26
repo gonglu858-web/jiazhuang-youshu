@@ -1615,12 +1615,13 @@ test('N0 固定Node绑定（static）：PS1 源码绑定与字节形态检查', 
   assert.ok(!/Download|Invoke-WebRequest|Start-BitsTransfer/i.test(ps1), '无自动下载');
   assert.ok(!/\$psi\.FileName\s*=\s*'node'/.test(ps1), 'FileName 不再取裸 node（PATH 首选）');
   assert.ok(!/FileName\s*=\s*\$SelfTestNodePath/.test(ps1), 'FileName 不来自调用方声明参数');
-  assert.ok(/FileName\s*=\s*\$binding\.NodePath/.test(ps1), 'FileName 唯一来源：校验后的固定路径结果');
+  assert.ok(/FileName\s*=\s*\$FixedNodePath/.test(ps1), 'FileName 唯一来源：持有期间摘要校验通过后的固定常量路径');
+  assert.ok(!/FileName\s*=\s*\$binding\.NodePath/.test(ps1), 'FileName 不再来自预检查绑定结果（R1 后预检查与启动解耦）');
   // (3) 共用受控启动链：仅两个固定用途；两分支同一入口
   assert.ok(ps1.includes("'save-protect'") && ps1.includes("'selftest-echo'"), '用途白名单');
   assert.ok(/Invoke-SaveProtect[\s\S]*?Start-FixedNode 'save-protect'/.test(ps1), '实际保存经共用启动链');
   assert.ok(/Invoke-SelfTestEcho[\s\S]*?Start-FixedNode 'selftest-echo'/.test(ps1), '合成传输经共用启动链');
-  assert.ok((ps1.match(/Start-FixedNode '/g) || []).length === 2, 'Start-FixedNode 仅两处调用（无任意命令出口）');
+  assert.ok((ps1.match(/Start-FixedNode '/g) || []).length === 3, 'Start-FixedNode 仅三处固定用途调用（两分支共用链 + N3 启动路径拒绝场景，无任意命令出口）');
   // (4) 启动开关契约：UseShellExecute=false、CreateNoWindow=true、仅子进程移除 NODE_OPTIONS
   assert.ok(ps1.includes('$psi.UseShellExecute = $false'), 'UseShellExecute=false');
   assert.ok(ps1.includes('$psi.CreateNoWindow = $true'), 'CreateNoWindow=true');
@@ -1628,13 +1629,32 @@ test('N0 固定Node绑定（static）：PS1 源码绑定与字节形态检查', 
   const noNodes = ps1Code.replace(/\$psi\.EnvironmentVariables\.Remove\('NODE_OPTIONS'\)/g, '')
     .replace(/\$psi\.EnvironmentVariables\['NODE_OPTIONS'\]/g, '');
   assert.ok(!noNodes.includes('NODE_OPTIONS'), 'NODE_OPTIONS 仅允许：子进程移除一处 + 场景只读检查（无其他写入/修改点）');
-  // (5) 校验时点：UI 创建前检查一次（先于 Add-Type）；启动前再次校验（Start-FixedNode 内）
-  assert.ok(ps1.indexOf('Test-FixedNodeBinding') !== -1, '存在共用校验函数');
-  const preCheck = ps1.indexOf('$preBinding = Test-FixedNodeBinding');
+  // (5) R1 校验时点与顺序：UI 创建前检查（独立标记 $uiPreBinding，防删除后误检）；
+  //     Start-FixedNode 内：先持有拒绝写/删除共享句柄，同一持有期间计算并比较摘要，再启动。
+  assert.ok(ps1.indexOf('Test-FixedNodeBinding') !== -1, '存在独立预检查函数');
+  const uiPre = ps1.indexOf('$uiPreBinding = Test-FixedNodeBinding');
+  const trPre = ps1.indexOf('$preBinding = Test-FixedNodeBinding');
   const addType = ps1.indexOf('Add-Type -AssemblyName System.Windows.Forms');
-  assert.ok(preCheck !== -1 && addType !== -1 && preCheck < addType, 'UI 创建前检查一次（先于 Add-Type）');
-  assert.ok(/function Start-FixedNode[\s\S]*?Test-FixedNodeBinding[\s\S]*?BoundaryOpenHold[\s\S]*?BoundaryStart/.test(ps1),
-    '启动前再次校验，句柄在 Start 之前打开');
+  assert.ok(uiPre !== -1 && addType !== -1 && uiPre < addType, '真实UI前检查存在且先于 Add-Type（独立标记）');
+  assert.ok(trPre !== -1 && trPre < uiPre, '合成传输预检查存在');
+  const sfnStart = ps1.indexOf('function Start-FixedNode(');
+  const sfnEnd = ps1.indexOf('function Invoke-SaveProtect(');
+  assert.ok(sfnStart !== -1 && sfnEnd > sfnStart, 'Start-FixedNode 函数边界可定位');
+  const sfn = ps1.slice(sfnStart, sfnEnd);
+  assert.ok((sfn.match(/BoundaryOpenHold/g) || []).length === 1, 'R1：Start-FixedNode 恰一次持有打开');
+  assert.ok(!/BoundaryProbeNodeDigest(?!FromHold)/.test(sfn), 'R1：Start-FixedNode 不再使用独立摘要边界（先算后另开的旧模式已移除）');
+  assert.ok(!sfn.includes('Test-FixedNodeBinding'), 'R1：Start-FixedNode 不调用预检查替代持有期间摘要');
+  assert.ok(sfn.indexOf('BoundaryOpenHold') < sfn.indexOf('BoundaryProbeNodeDigestFromHold') && sfn.indexOf('BoundaryProbeNodeDigestFromHold') < sfn.indexOf('BoundaryStart'),
+    'R1 顺序：持有 → 摘要 → 启动');
+  assert.ok(/function Probe-FixedNodeDigestFromHold[\s\S]*?ComputeHash\(\$holdStream\)/.test(ps1), '摘要在持有句柄上计算');
+  const pdhBody = ps1.slice(ps1.indexOf('function Probe-FixedNodeDigestFromHold'), ps1.indexOf('function Open-FixedNodeHold'));
+  assert.ok(!pdhBody.includes('[System.IO.File]::Open'), '持有摘要边界不重开文件');
+  assert.ok(/finally[\s\S]{0,120}?\$handle\.Dispose\(\)/.test(sfn), 'R1：同一句柄 finally 释放');
+  // (5b) R3 敏感检测：N6 两分支精确核对存在；旧错误分支断言已移除
+  assert.ok(ps1.includes('$psi.Arguments -ceq $expectedSaveArgs'), 'N6 保存分支全量精确核对（实际存储脚本路径+protect+参数）');
+  assert.ok(ps1.includes('$psi2.Arguments -ceq $expectedEchoArgs'), 'N6 回显分支独立精确核对');
+  assert.ok(ps1.includes('$expectedEchoArgv.Count -eq 20'), 'N6 回显分支20参数传输核对');
+  assert.ok(!ps1.includes("Add-Check 'fixture-space-path-quoted' ($psi.Arguments"), '旧错误分支断言（回显常量用于保存分支）已移除');
   // (6) 句柄：只读且拒绝写/删除共享（FileShare::Read），finally 释放
   assert.ok(ps1.includes('[System.IO.FileShare]::Read'), 'FileShare::Read（他人只读，拒绝写/删除共享）');
   assert.ok(/finally[\s\S]{0,120}?\$handle\.Dispose\(\)/.test(ps1), '句柄 finally 释放');
