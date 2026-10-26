@@ -1,0 +1,263 @@
+{
+  "schema": "wb-psr-fixed-node-binding-v1/1",
+  "date": "2026-10-26",
+  "baseline": "953f20e",
+  "reviewedBasis": "docs/Codex方案-私密输入入口固定Node返修-20261025.md §2/§4",
+  "ok": true,
+  "acceptanceLevel": "static-only",
+  "dynamicPowerShellSemantics": "blocked",
+  "fullAcceptanceClaimed": false,
+  "statusNote": "本地实现完成待 Codex 复查；动态缺口单列（执行策略 Restricted，-File 被拒）；真实私密输入及执行未放行",
+  "digests": {
+    "ps1AfterRepair": "3012b4164f8267c3c09061be801690ca703137b3ff69688c2eed02155c895f06",
+    "ps1BeforeRepairHead": "ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357",
+    "registrationTest": "66d5617f25d88fec59434a7a69ceaeb0c2e18d86bdb1c9ebe3a274a08a641277",
+    "evidenceScriptSelf": "d64be3f3f2d9a2f72f9a0a31d18ebfbe3872261097bd96ba31c63de975caa5df",
+    "fixedNodeConstant": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19",
+    "fixedNodeObserved": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+  },
+  "staticChecks": {
+    "total": 39,
+    "failed": 0,
+    "items": [
+      {
+        "name": "fixed-path-constant",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-digest-constant-full-64",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-path-defined-once",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-digest-defined-once",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-get-command",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-nodesha-param",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-download",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-not-bare-node",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-not-declared-param",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-from-validated-binding",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "purpose-whitelist",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "save-uses-shared-chain",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "echo-uses-shared-chain",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-arbitrary-launch-exit",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "useshellexecute-false",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "createnowindow-true",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "node-options-single-removal",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "pre-window-check-before-ui",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "recheck-before-start",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fileshare-read-deny-write-delete",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "hold-dispose-in-finally",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "dotnet-sha256-direct",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "digest-full-compare",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_declaration_invalid",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_file_invalid",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_file_read_fail",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_digest_mismatch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_start_fail",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "save-failed-contract",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "cancel-contract",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "plain-stdin-only",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "args-without-plain-value",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "selftest-scenario-whitelist",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "decl-absolute-required",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "decl-control-chars-rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "mode-misuse-rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "ps1-bom-preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "ps1-pure-crlf",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "observed-node-matches-constant",
+        "passed": true,
+        "detail": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+      }
+    ]
+  },
+  "parseCheck": {
+    "kind": "syntax-parse",
+    "probed": true,
+    "status": 0,
+    "output": "parse-ok",
+    "passed": true
+  },
+  "dynamicAttempt": {
+    "kind": "fixed -File dynamic attempt",
+    "probed": true,
+    "attempts": 1,
+    "status": 1,
+    "policyBlocked": true,
+    "blockedLabel": "blocked",
+    "outputHead": "无法加载文件 C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\miniapp\\scripts\\participant-private-input.ps1，因为在此系 统上禁止运行脚本。有关详细信息，请参阅 https:/go.microsoft.com/fwlink/?LinkID=135170 中的 about_Execution_Policies。 + CategoryInfo : SecurityError: (:) []，Pare",
+    "passed": true,
+    "note": "有效执行策略 Restricted（本会话 Get-ExecutionPolicy 实测）；动态 PS 语义未验证，单列缺口"
+  },
+  "guardAccounting": {
+    "attempts": 2,
+    "completed": 2,
+    "failed": 0,
+    "probed": 2,
+    "unexpected": [],
+    "events": [
+      {
+        "kind": "spawnSync",
+        "exe": "powershell.exe",
+        "args": 3
+      },
+      {
+        "kind": "spawnSync",
+        "exe": "powershell.exe",
+        "args": 10
+      }
+    ],
+    "note": "全部 spawn 显式登记为探针（解析检查 + 一次 -File 尝试）；意外命中含被 catch 者；实际计数决定 ok/exit"
+  },
+  "limitations": [
+    "动态 PowerShell 语义（SelfTestTransport 真实运行、SelfTestSynthetic 七场景、UI 前与启动前真实文件/摘要校验链）因执行策略 Restricted 未运行；PS1 已内置固定合成自测入口，待允许执行脚本的环境以固定 -File 验证",
+    "真实输入窗口、DPAPI、私密保存、身份/ACL 查询未运行；不读真实编号/既有密文/凭据",
+    "未改 PATH/权限/策略/系统环境；未联网；1/2号不重试，P 不开展，A 预检不恢复"
+  ]
+}

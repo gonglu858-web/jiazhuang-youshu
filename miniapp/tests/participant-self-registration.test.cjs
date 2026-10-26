@@ -1582,3 +1582,89 @@ test('B1 native-exec 能力层：合法请求构造固定边界；非法请求�
   assert.equal(typeof cap.rawConnect, 'undefined');
   assert.equal(typeof cap.execFileSync, 'undefined');
 });
+
+// ════════════════════════════════════════════════════════════════════════════════
+// N0：私密输入入口固定Node绑定（static；20261026 返修，方案 §2/§4）。
+// 本机有效执行策略为 Restricted（2026-10-26 实测一次 -File 尝试被拒，UnauthorizedAccess），
+// 动态 PowerShell 语义验证如实单列 blocked；本组仅为源码绑定静态检查，不冒充动态通过。
+// ════════════════════════════════════════════════════════════════════════════════
+
+test('N0 固定Node绑定（static）：PS1 源码绑定与字节形态检查', () => {
+  const ps1Path = path.join(ROOT, 'miniapp/scripts/participant-private-input.ps1');
+  const buf = fs.readFileSync(ps1Path);
+  const ps1 = buf.toString('utf8');
+  const ps1Code = ps1.split(/\r?\n/).filter(l => !l.trim().startsWith('#')).join('\n');
+  // (0) 字节形态保持：BOM + 纯 CRLF（与返修前一致；.gitattributes * -text 禁止转换）
+  assert.ok(buf[0] === 0xEF && buf[1] === 0xBB && buf[2] === 0xBF, 'PS1 保留 UTF-8 BOM');
+  let loneLf = 0;
+  for (let i = 0; i < buf.length; i++) if (buf[i] === 10 && (i === 0 || buf[i - 1] !== 13)) loneLf++;
+  assert.equal(loneLf, 0, 'PS1 无孤立 LF（纯 CRLF）');
+  const ps1Sha = crypto.createHash('sha256').update(buf).digest('hex');
+  console.log('  PS1 新运行时摘要（返修后）:', ps1Sha);
+  // (1) 受审常量：固定路径与摘要来自已审锚点/任务给定常量；预期摘要不得现算替代。
+  //     （此处断言的是源码内常量与受审值一致，不是从本机文件现算后当预期。）
+  const FIXED_NODE_PATH = 'C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe';
+  const FIXED_NODE_SHA = 'c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19';
+  assert.ok(ps1.includes("'" + FIXED_NODE_PATH + "'"), '固定路径常量与受审值一致');
+  assert.ok(ps1.includes("'" + FIXED_NODE_SHA + "'"), '固定摘要常量与受审值一致（64位完整值，不截短）');
+  assert.ok(ps1.split(FIXED_NODE_PATH).length === 2, '固定路径定义唯一');
+  assert.ok(ps1.split(FIXED_NODE_SHA).length === 2, '固定摘要定义唯一');
+  // (2) 不搜索 PATH、不回退、不自动下载、不接受调用方摘要
+  assert.ok(!ps1.includes('Get-Command'), '无 Get-Command PATH 搜索');
+  assert.ok(!/\bNodeSha\b/.test(ps1), '不接受调用方 NodeSha 参数');
+  assert.ok(!/Download|Invoke-WebRequest|Start-BitsTransfer/i.test(ps1), '无自动下载');
+  assert.ok(!/\$psi\.FileName\s*=\s*'node'/.test(ps1), 'FileName 不再取裸 node（PATH 首选）');
+  assert.ok(!/FileName\s*=\s*\$SelfTestNodePath/.test(ps1), 'FileName 不来自调用方声明参数');
+  assert.ok(/FileName\s*=\s*\$binding\.NodePath/.test(ps1), 'FileName 唯一来源：校验后的固定路径结果');
+  // (3) 共用受控启动链：仅两个固定用途；两分支同一入口
+  assert.ok(ps1.includes("'save-protect'") && ps1.includes("'selftest-echo'"), '用途白名单');
+  assert.ok(/Invoke-SaveProtect[\s\S]*?Start-FixedNode 'save-protect'/.test(ps1), '实际保存经共用启动链');
+  assert.ok(/Invoke-SelfTestEcho[\s\S]*?Start-FixedNode 'selftest-echo'/.test(ps1), '合成传输经共用启动链');
+  assert.ok((ps1.match(/Start-FixedNode '/g) || []).length === 2, 'Start-FixedNode 仅两处调用（无任意命令出口）');
+  // (4) 启动开关契约：UseShellExecute=false、CreateNoWindow=true、仅子进程移除 NODE_OPTIONS
+  assert.ok(ps1.includes('$psi.UseShellExecute = $false'), 'UseShellExecute=false');
+  assert.ok(ps1.includes('$psi.CreateNoWindow = $true'), 'CreateNoWindow=true');
+  assert.ok(ps1.includes("$psi.EnvironmentVariables.Remove('NODE_OPTIONS')"), '仅子进程环境移除 NODE_OPTIONS');
+  const noNodes = ps1Code.replace(/\$psi\.EnvironmentVariables\.Remove\('NODE_OPTIONS'\)/g, '')
+    .replace(/\$psi\.EnvironmentVariables\['NODE_OPTIONS'\]/g, '');
+  assert.ok(!noNodes.includes('NODE_OPTIONS'), 'NODE_OPTIONS 仅允许：子进程移除一处 + 场景只读检查（无其他写入/修改点）');
+  // (5) 校验时点：UI 创建前检查一次（先于 Add-Type）；启动前再次校验（Start-FixedNode 内）
+  assert.ok(ps1.indexOf('Test-FixedNodeBinding') !== -1, '存在共用校验函数');
+  const preCheck = ps1.indexOf('$preBinding = Test-FixedNodeBinding');
+  const addType = ps1.indexOf('Add-Type -AssemblyName System.Windows.Forms');
+  assert.ok(preCheck !== -1 && addType !== -1 && preCheck < addType, 'UI 创建前检查一次（先于 Add-Type）');
+  assert.ok(/function Start-FixedNode[\s\S]*?Test-FixedNodeBinding[\s\S]*?BoundaryOpenHold[\s\S]*?BoundaryStart/.test(ps1),
+    '启动前再次校验，句柄在 Start 之前打开');
+  // (6) 句柄：只读且拒绝写/删除共享（FileShare::Read），finally 释放
+  assert.ok(ps1.includes('[System.IO.FileShare]::Read'), 'FileShare::Read（他人只读，拒绝写/删除共享）');
+  assert.ok(/finally[\s\S]{0,120}?\$handle\.Dispose\(\)/.test(ps1), '句柄 finally 释放');
+  // (7) 摘要：已有 .NET SHA-256，不依赖 Get-FileHash 自动加载；完整64位比较
+  assert.ok(ps1.includes('[System.Security.Cryptography.SHA256]::Create()'), '.NET SHA-256 直接使用');
+  assert.ok(!ps1Code.includes('Get-FileHash'), '不使用 Get-FileHash（仅注释可提及）');
+  assert.ok(/OrdinalIgnoreCase\)\)\s*\{\s*\n\s*return @\{ Ok = \$false; NodePath = ''; Label = \$LabelDigestMismatch \}/.test(ps1.replace(/\r\n/g, '\n')), '摘要完整比较后拒绝');
+  // (8) 失败净化标签与固定文案：标签互不混淆；保存分支保持 SAVE_FAILED/exit6
+  for (const label of ['NODE_DECLARATION_INVALID', 'NODE_FILE_INVALID', 'NODE_FILE_READ_FAIL', 'NODE_DIGEST_MISMATCH', 'NODE_START_FAIL']) {
+    assert.ok(ps1.includes("'" + label + "'"), '净化标签：' + label);
+  }
+  assert.ok(ps1.includes("Write-Output 'SAVE_FAILED'") && /SAVE_FAILED'\s*\n\s*exit 6/.test(ps1.replace(/\r\n/g, '\n')), '保存失败固定文案与退出码保持');
+  assert.ok(ps1.includes("Write-Output 'CANCELLED'") && /CANCELLED'\s*\n\s*exit 5/.test(ps1.replace(/\r\n/g, '\n')), '取消路径保持');
+  // (9) 完整编号只走 stdin：Get-StoreArguments 不含输入值；PlainValue 仅写 StandardInput
+  assert.ok(!/Get-StoreArguments[\s\S]{0,600}?\$value/.test(ps1), '参数构造不含输入值');
+  assert.ok(/\$proc\.StandardInput\.Write\(\$PlainValue\)/.test(ps1), '明文仅写 stdin');
+  assert.ok(/function Invoke-SaveProtect[\s\S]*?StandardInput\.Write[\s\S]*?StandardInput\.Close/.test(ps1), 'stdin 写入并关闭契约保持');
+  // (10) 合成自测入口：仅固定场景名，不接受任意命令/路径/摘要参数
+  assert.ok(/\$fixedScenarios = @\('N1_SAVE', 'N1_ECHO', 'N2_DECL', 'N3_FILE', 'N4_DRIFT', 'N5_STARTFAIL', 'N6_TRANSPORT'\)/.test(ps1.replace(/\r\n/g, '\n')), '固定场景白名单');
+  assert.ok(ps1.includes("Write-Output 'SELFTEST_SCENARIO_UNKNOWN'"), '未知场景拒绝');
+  assert.ok(ps1.includes("Write-Output 'MODE_CONFLICT'"), '模式互斥拒绝');
+  assert.ok(/-notcontains \$SelfTestScenario/.test(ps1), '场景名固定校验');
+  // (11) SelfTestNodePath 一致性声明：显式空值/相对/其他程序/控制字符拒绝；真实模式显式携带拒绝
+  assert.ok(/function Resolve-SelfTestNodePath/.test(ps1), '声明解析函数存在');
+  assert.ok(ps1.includes("[System.IO.Path]::IsPathRooted"), '绝对路径要求');
+  assert.ok(ps1.includes('[\\x00-\\x1f\\x7f]'), '控制字符拒绝');
+  assert.ok(/Test-SelfTestNodePathModeUse[\s\S]{0,200}?exit 20/.test(ps1.replace(/\r\n/g, '\n')), '真实模式显式携带→NODE_DECLARATION_INVALID/exit20');
+  // (12) 既有契约保留：Quote-Arg / Get-StoreArguments / 双次输入 / 尾号 / 交付勾选
+  assert.ok(ps1.includes('function Quote-Arg') && ps1.includes('function Get-StoreArguments'), '参数转义与构造保留');
+  assert.ok(ps1.includes("$v1 -cne $v2") && ps1.includes('UseSystemPasswordChar'), '双次一致与遮挡保留');
+  assert.ok(ps1.includes('Get-Tail $v1') && ps1.includes('$checkDelivery.Checked'), '尾号核对与交付确认保留');
+  assert.ok(ps1.includes("delivery-confirmed", ), '交付确认入参保持');
+});

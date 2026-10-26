@@ -1,3 +1,20 @@
+## 2026-10-26 CodeBuddy：私密输入入口固定Node定点返修（静态通过；动态PS语义blocked）
+
+- 接手：master 953f20e；依据 docs/Codex方案-私密输入入口固定Node返修-20261025.md §2/§4；仅本地实现与合成自测；AGENTS.md既有修改（9ef30b4c…）排除提交。
+- 产品修改（唯一）：miniapp/scripts/participant-private-input.ps1（BOM+纯CRLF保持；新运行时摘要 3012b4164f8267c3c09061be801690ca703137b3ff69688c2eed02155c895f06；返修前 ea3b35b5f50857c90959520a21a0cbf4fde43a753107d6ae7d8afb92dba4a357 见历史，不回写旧证据）：
+  - 内部唯一固定Node定义：C:\Users\30591\.agent-reach\tools\node-v22.16.0-win-x64\node.exe + SHA-256 c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19（受审常量；预期摘要不从文件现算当作预期；不搜索PATH、不自动下载、不接受调用方摘要、不回退其他程序）。
+  - 实际保存与SelfTestTransport共用同一套校验与受控启动链：仅 save-protect / selftest-echo 两个固定用途；FileName只能来自校验后的固定路径（$binding.NodePath）；UseShellExecute=false、CreateNoWindow=true；仅子进程环境移除NODE_OPTIONS，不改系统环境。
+  - SelfTestNodePath保留参数名但仅作合成传输一致性声明（PSBoundParameters区分省略与显式；显式空值/相对/其他程序/控制字符/参数拼接拒绝；真实保存与SelfTestCheck显式携带→NODE_DECLARATION_INVALID/exit20；模式互斥→MODE_CONFLICT/exit19）。
+  - UI创建前检查一次（先于Add-Type，失败不弹窗）；保存启动前再次检查；启动前以只读且拒绝写/删除共享（FileShare::Read）句柄完成复核，保持到Process.Start返回，finally释放；异常即停止不传stdin。SHA-256用.NET SHA256.Create（不依赖Get-FileHash自动加载）；文件与必要路径链检查普通文件/reparse歧义（不查改ACL、不枚举安装目录）。
+  - 失败净化标签（互不混淆，不回显路径/摘要差异/输入内容）：NODE_DECLARATION_INVALID/NODE_FILE_INVALID/NODE_FILE_READ_FAIL/NODE_DIGEST_MISMATCH/NODE_START_FAIL（exit 20–24映射）；保存分支失败保持SAVE_FAILED/exit6、取消exit5；启动失败不回退、不重试。
+  - 新增SelfTestSynthetic固定合成自测入口：仅N1_SAVE/N1_ECHO/N2_DECL/N3_FILE/N4_DRIFT/N5_STARTFAIL/N6_TRANSPORT七场景；底层文件/进程边界固定合成替身（规格固定在PS1内，经$script:Syn读取，不用脚本块闭包捕获）；不接受任意命令/路径/摘要；不关真实模式校验；不打开窗口、不触DPAPI/存储器/私密目录。
+  - 保留契约：Quote-Arg/Get-StoreArguments、双次一致、尾号核对、交付勾选、取消、明文仅stdin、输出净化、完整编号不进argv/env。
+- 测试：登记测试47/47（原46项不删改+新增N0静态绑定组：受审常量与唯一性/FileName唯一来源/无PATH搜索回退下载/用途白名单且Start-FixedNode仅两处调用/启动开关与NODE_OPTIONS单点移除/UI前检查先于Add-Type/句柄finally释放/净化标签/编号仅stdin/字节形态BOM+纯CRLF）；业务包18/18。
+- 证据：docs/证据/CodeBuddy固定Node绑定返修-20261026.cjs/.json（默认stdout；--out wx独占创建）——静态39项全过（标明static）；PS1语法解析通过（Parser::ParseFile，探针1）；一次固定-File动态尝试被策略拒绝（exit1、UnauthorizedAccess、"在此系统上禁止运行脚本"），如实blocked，未重试、未绕过（探针2）；守卫attempts=2/completed=2/failed=0/probed=2/unexpected=0（意外命中含被catch者），实际计数决定ok=true；acceptanceLevel=static-only、fullAcceptanceClaimed=false；固定Node本机现值与受审常量一致（信息性交叉记录，预期仍以常量为准）。
+- 阻断/未验证：有效执行策略Restricted（Get-ExecutionPolicy实测）——SelfTestTransport真实运行、七场景合成自测、UI前/启动前真实文件与摘要校验链未动态验证；PS1已内置合成自测入口待允许环境固定-File验证。真实输入窗口/DPAPI/私密保存/身份ACL未运行；未读真实编号/密文/凭据；未改PATH/权限/策略/环境；未联网；1/2号不重试、P不开展、A预检不恢复。
+- 状态：本地实现完成待Codex复查；动态缺口单列；真实私密输入及执行未放行。
+
+
 ## 2026-10-25 Codex方案：私密输入入口固定Node，待用户确认
 
 - 方案：`docs/Codex方案-私密输入入口固定Node返修-20261025.md`；接手03f9248，本轮仅整理4份文档，未改产品、未查询环境或恢复预检。
