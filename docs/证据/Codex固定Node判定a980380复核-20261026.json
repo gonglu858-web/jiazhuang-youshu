@@ -1,0 +1,108 @@
+{
+  "schema": "codex-fixed-node-s1-acceptance/1",
+  "reviewedCommit": "a980380",
+  "baseline": "0da6af0",
+  "s1Accepted": true,
+  "realExecutionApproved": false,
+  "results": [
+    {
+      "name": "normal",
+      "ok": true,
+      "exitCode": 0,
+      "reportedExitCode": 0,
+      "actualUnexpected": 0,
+      "reportedUnexpected": 0,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": false,
+      "syntheticProcessCalls": 13
+    },
+    {
+      "name": "testRead",
+      "ok": false,
+      "exitCode": 1,
+      "reportedExitCode": 1,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": true,
+      "syntheticProcessCalls": 13
+    },
+    {
+      "name": "selfRead",
+      "ok": false,
+      "exitCode": 1,
+      "reportedExitCode": 1,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": true,
+      "syntheticProcessCalls": 13
+    },
+    {
+      "name": "latePsHash",
+      "ok": false,
+      "exitCode": 1,
+      "reportedExitCode": 1,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": true,
+      "syntheticProcessCalls": 13
+    },
+    {
+      "name": "lateHistoryHash",
+      "ok": false,
+      "exitCode": 1,
+      "reportedExitCode": 1,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": true,
+      "syntheticProcessCalls": 13
+    },
+    {
+      "name": "finalization",
+      "ok": false,
+      "exitCode": 1,
+      "reportedExitCode": 1,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": false,
+      "syntheticProcessCalls": 13
+    },
+    {
+      "name": "builtInLateAfterVerdict",
+      "ok": false,
+      "exitCode": 1,
+      "reportedExitCode": 1,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "independentFallbackHits": 0,
+      "actualBoundaryInjection": false,
+      "syntheticProcessCalls": 2
+    }
+  ],
+  "sourceFacts": {
+    "noReadsOrHashesAfterFinalVerdict": true,
+    "oneFinalBooleanFeedsReportAndExit": true
+  },
+  "digests": {
+    "source": "3b2d02d7298107a0a3167bfeccdf209c65809bef921354d58a5ad1d33a4530eb",
+    "ps1": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+    "self": "919496f2c0080b6353c1e65c027d5da07177bc6006bf8e2f6131f43ba74ebbd2"
+  },
+  "boundaries": {
+    "actualNetwork": 0,
+    "actualOSProcesses": 0,
+    "ps1Executed": false,
+    "privateDataRead": false,
+    "policyQueriedOrChanged": false
+  },
+  "limitations": [
+    "Actual v4 JavaScript and recursive child JavaScript; OS/FS/ASCII decoder are synthetic.",
+    "Four injections occur inside actual read/hash boundary substitutes, not only built-in pre-operation probes.",
+    "Finalization injection is immediately before latest guard snapshot. S2/S3 and product correctness are not re-audited.",
+    "Seven PowerShell scenarios, real argv transport, UI, DPAPI and OS file-lock behavior remain unverified."
+  ]
+}
