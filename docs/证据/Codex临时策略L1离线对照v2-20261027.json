@@ -1,0 +1,2433 @@
+{
+  "schema": "codex-temporary-policy-l1-offline/2",
+  "basisCommit": "12640ab",
+  "driverSha256": "b07ca49f2d93825335dd7003ea89233c5d1bdcd56412274eb2089aff8945f3f5",
+  "testSha256": "bc062ac44c15627d5b1a43afbb484b560a1c017762bcd3297e7af2ccf8f0f7b7",
+  "ps1Sha256": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+  "historicalN1Evidence": {
+    "sha256": "f80595480874f45522a87007e5db2e20fc073145ab453027194f3acbff84bac0",
+    "countersMatchModel": true,
+    "originalOverallOk": false,
+    "replayedCountersOnly": true
+  },
+  "counterModel": {
+    "sourceChecks": "Pinned PS1 two distinct Write calls, early return before writes, append-per-Write and final Reset/path anchors",
+    "modelFacts": {
+      "N1_SAVE": {
+        "finalEpoch": "save",
+        "resetBeforeFinal": false,
+        "events": [
+          "fileProbe",
+          "holdOpens",
+          "digestHold",
+          "startCalls",
+          "starts",
+          "holdCloses",
+          "stdinWrites",
+          "stdinWrites"
+        ],
+        "counters": {
+          "fileProbe": 1,
+          "digestProbe": 0,
+          "digestHold": 1,
+          "holdOpens": 1,
+          "holdCloses": 1,
+          "startCalls": 1,
+          "starts": 1,
+          "stdinWrites": 2
+        },
+        "valueAndNewlineExact": true
+      },
+      "N1_ECHO": {
+        "finalEpoch": "echo",
+        "resetBeforeFinal": false,
+        "events": [
+          "fileProbe",
+          "holdOpens",
+          "digestHold",
+          "startCalls",
+          "starts",
+          "holdCloses"
+        ],
+        "counters": {
+          "fileProbe": 1,
+          "digestProbe": 0,
+          "digestHold": 1,
+          "holdOpens": 1,
+          "holdCloses": 1,
+          "startCalls": 1,
+          "starts": 1,
+          "stdinWrites": 0
+        },
+        "valueAndNewlineExact": null
+      },
+      "N2_DECL": {
+        "finalEpoch": "declarations",
+        "resetBeforeFinal": false,
+        "events": [],
+        "counters": {
+          "fileProbe": 0,
+          "digestProbe": 0,
+          "digestHold": 0,
+          "holdOpens": 0,
+          "holdCloses": 0,
+          "startCalls": 0,
+          "starts": 0,
+          "stdinWrites": 0
+        },
+        "valueAndNewlineExact": null
+      },
+      "N3_FILE": {
+        "finalEpoch": "binding-read-fail",
+        "resetBeforeFinal": true,
+        "events": [
+          "fileProbe",
+          "digestProbe"
+        ],
+        "counters": {
+          "fileProbe": 1,
+          "digestProbe": 1,
+          "digestHold": 0,
+          "holdOpens": 0,
+          "holdCloses": 0,
+          "startCalls": 0,
+          "starts": 0,
+          "stdinWrites": 0
+        },
+        "valueAndNewlineExact": null
+      },
+      "N4_DRIFT": {
+        "finalEpoch": "save",
+        "resetBeforeFinal": true,
+        "events": [
+          "fileProbe",
+          "holdOpens",
+          "digestHold",
+          "startCalls",
+          "starts",
+          "holdCloses",
+          "stdinWrites",
+          "stdinWrites"
+        ],
+        "counters": {
+          "fileProbe": 1,
+          "digestProbe": 0,
+          "digestHold": 1,
+          "holdOpens": 1,
+          "holdCloses": 1,
+          "startCalls": 1,
+          "starts": 1,
+          "stdinWrites": 2
+        },
+        "valueAndNewlineExact": true
+      },
+      "N5_STARTFAIL": {
+        "finalEpoch": "start-null",
+        "resetBeforeFinal": true,
+        "events": [
+          "fileProbe",
+          "holdOpens",
+          "digestHold",
+          "startCalls",
+          "holdCloses"
+        ],
+        "counters": {
+          "fileProbe": 1,
+          "digestProbe": 0,
+          "digestHold": 1,
+          "holdOpens": 1,
+          "holdCloses": 1,
+          "startCalls": 1,
+          "starts": 0,
+          "stdinWrites": 0
+        },
+        "valueAndNewlineExact": null
+      },
+      "N6_TRANSPORT": {
+        "finalEpoch": "echo",
+        "resetBeforeFinal": true,
+        "events": [
+          "fileProbe",
+          "holdOpens",
+          "digestHold",
+          "startCalls",
+          "starts",
+          "holdCloses"
+        ],
+        "counters": {
+          "fileProbe": 1,
+          "digestProbe": 0,
+          "digestHold": 1,
+          "holdOpens": 1,
+          "holdCloses": 1,
+          "startCalls": 1,
+          "starts": 1,
+          "stdinWrites": 0
+        },
+        "valueAndNewlineExact": null
+      }
+    }
+  },
+  "checks": 131,
+  "results": [
+    {
+      "name": "normal",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "defaultNoExecute",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": [],
+      "unexpected": 0,
+      "failure": null,
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "normalOut",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "badCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "policyCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "extraCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "badOut",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "ARGUMENT_INVALID",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "outputExists",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "OUTPUT_EXISTS",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "hostPath",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "HOST_PATH",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "nodeDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "ps1Drift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "decoderDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "hostLink",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 0,
+      "failure": "PATH_INVALID",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "baselinePolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "groupPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "version",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "META_VERSION",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "metaExtra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "META_SHAPE",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "scopes",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "META_SCOPES",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "zoneReported",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_PRESENT_OR_UNCERTAIN",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "zoneLocal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_PRESENT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "zoneError",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_UNCERTAIN",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "temporaryPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "afterPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_CHANGED_OR_BLOCKED",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "beforeThrow",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_START_FAILED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "beforeError",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_START_FAILED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "beforeExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_EXIT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "beforeTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_TIMEOUT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "beforeNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_NOT_CLOSED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "temporaryTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_TIMEOUT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "temporaryNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_NOT_CLOSED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_NOT_CLOSED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneSignal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_EXIT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_EXIT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneStderr",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "PROCESS_STDERR",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneLimit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_LIMIT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneBuffer",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_BUFFER",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneStream",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "STREAM_ERROR",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneJson",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_DECODE",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneUtf8",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_DECODE",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneReplacement",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "OUTPUT_DECODE",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneWrong",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_SHAPE",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneMissing",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_ASSERTIONS",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneDuplicate",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_ASSERTIONS",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_ASSERTIONS",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneFail",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_FAILED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneContradiction",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_CONTRADICTION",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneCount",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTS",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "sceneCounter",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "stageDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "unexpected": 0,
+      "failure": "SOURCE_DRIFT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "preSceneZone",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "ZONE_PRESENT",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "lastSceneFail",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_FAILED",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "initHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "businessHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "finalDigestHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "digestComputeHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "finalizationHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "publicSpawn",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "socketHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "dnsHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "fetchHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 1,
+      "failure": "CAPABILITY_BLOCKED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "outputRace",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": null,
+      "failure": "EVIDENCE_WRITE_FAILED",
+      "n1Stdin": null,
+      "n4Stdin": null
+    },
+    {
+      "name": "historicalN1",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "policyKeyOrder",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "policyRowsReversed",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": null,
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "n1StdinOne",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 1,
+      "n4Stdin": null
+    },
+    {
+      "name": "n1StdinZero",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 0,
+      "n4Stdin": null
+    },
+    {
+      "name": "n1StdinThree",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 3,
+      "n4Stdin": null
+    },
+    {
+      "name": "n4StdinOne",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 1
+    },
+    {
+      "name": "n4StdinZero",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 0
+    },
+    {
+      "name": "n4StdinThree",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 3
+    },
+    {
+      "name": "saveContentFail",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_FAILED",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "n6ContentFail",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_FAILED",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "regressN1Expectation",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "regressN4Expectation",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "regressPolicyProjection",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "POLICY_COMPARISON",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N1_SAVE-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_SAVE-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 3,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N1_ECHO-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N2_DECL-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N3_FILE-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": null
+    },
+    {
+      "name": "counter-N4_DRIFT-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N4_DRIFT-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 3
+    },
+    {
+      "name": "counter-N5_STARTFAIL-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N5_STARTFAIL-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-fileProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-digestProbe",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-digestHold",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-holdOpens",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-holdCloses",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-startCalls",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-starts",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    },
+    {
+      "name": "counter-N6_TRANSPORT-stdinWrites",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "N1_SAVE",
+        "N1_ECHO",
+        "N2_DECL",
+        "N3_FILE",
+        "N4_DRIFT",
+        "N5_STARTFAIL",
+        "N6_TRANSPORT",
+        "after"
+      ],
+      "unexpected": 0,
+      "failure": "SCENE_COUNTERS",
+      "n1Stdin": 2,
+      "n4Stdin": 2
+    }
+  ],
+  "fallbackHits": 0,
+  "actualOSProcesses": 0,
+  "actualNetwork": 0,
+  "ok": true,
+  "limitations": [
+    "Actual driver and decoder in VM; OS/FS boundaries and PS output synthetic; only prior N1 counters replayed from real historical JSON.",
+    "Independent event model is source-backed reasoning, NOT a PowerShell interpreter or proof of six unexecuted scenarios.",
+    "Does not execute PowerShell, query/alter policy or prove seven real PS scenarios."
+  ]
+}
