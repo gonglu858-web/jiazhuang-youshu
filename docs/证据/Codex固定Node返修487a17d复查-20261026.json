@@ -1,0 +1,129 @@
+{
+  "schema": "codex-fixed-node-repair-review/1",
+  "reviewedCommit": "487a17d",
+  "baseline": "e918835",
+  "reproductionAssertionsPassed": true,
+  "fullAcceptance": false,
+  "kinds": [
+    "static PS1 source/dataflow review",
+    "actual v2 evidence JS with recursive child-JS VM reentry; all OS/FS boundaries synthetic"
+  ],
+  "digests": {
+    "ps1": "ddeb479aac72b71a393abf32ef6c7c10e8541c883b7b0709a992d6c4cc72e84c",
+    "reviewedEvidence": "f5bd8868a2ace7ae606bd7e20b112a7c5597ee05eeb4116fcad91ceecbfd412a",
+    "self": "e2a62d27c2a0c6e4c38d53d273e57ae4a6bfe03eb9d8b97a65bba273e38fa324"
+  },
+  "staticFacts": {
+    "r1HoldDigestStartSequenceCorrect": true,
+    "n4ReadsMissingStartedField": true,
+    "n6BaseArgCount": 18,
+    "serverTimePairCount": 2,
+    "nodeEvalPrefixCount": 2,
+    "n6ActualTotal": 22,
+    "n6AssertedTotal": 20
+  },
+  "results": [
+    {
+      "name": "normal",
+      "exitCode": 0,
+      "finalOk": true,
+      "actualUnexpected": 0,
+      "reportedUnexpected": 0,
+      "fallbackHits": [],
+      "lateInjected": false,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    },
+    {
+      "name": "coveredHttps",
+      "exitCode": 1,
+      "finalOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "fallbackHits": [],
+      "lateInjected": false,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    },
+    {
+      "name": "socket",
+      "exitCode": 0,
+      "finalOk": true,
+      "actualUnexpected": 0,
+      "reportedUnexpected": 0,
+      "fallbackHits": [
+        "Socket.prototype.connect"
+      ],
+      "lateInjected": false,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    },
+    {
+      "name": "dnsPromises",
+      "exitCode": 0,
+      "finalOk": true,
+      "actualUnexpected": 0,
+      "reportedUnexpected": 0,
+      "fallbackHits": [
+        "dns.promises.lookup"
+      ],
+      "lateInjected": false,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    },
+    {
+      "name": "fetch",
+      "exitCode": 0,
+      "finalOk": true,
+      "actualUnexpected": 0,
+      "reportedUnexpected": 0,
+      "fallbackHits": [
+        "fetch"
+      ],
+      "lateInjected": false,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    },
+    {
+      "name": "lateTestDigest",
+      "exitCode": 0,
+      "finalOk": true,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 0,
+      "fallbackHits": [],
+      "lateInjected": true,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    },
+    {
+      "name": "lateSelfDigest",
+      "exitCode": 0,
+      "finalOk": true,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 0,
+      "fallbackHits": [],
+      "lateInjected": true,
+      "staticPassed": 52,
+      "builtInFaultsPassed": 4,
+      "stubProcessCalls": 6
+    }
+  ],
+  "boundaries": {
+    "ps1Executed": false,
+    "actualChildProcesses": 0,
+    "actualNetwork": 0,
+    "policyQueriedOrChanged": false,
+    "privateDataRead": false
+  },
+  "limitations": [
+    "PS1 arithmetic/dataflow conclusions are static, not seven-scenario execution.",
+    "Socket/DNS/fetch fallback throws are synthetic and no real IO occurred.",
+    "Actual normal v2 rerun and regression totals are documented separately in review."
+  ]
+}
