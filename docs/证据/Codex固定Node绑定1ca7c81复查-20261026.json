@@ -1,0 +1,172 @@
+{
+  "schema": "codex-fixed-node-review/1",
+  "reviewedCommit": "1ca7c81",
+  "baseline": "953f20e",
+  "reproductionAssertionsPassed": true,
+  "productAccepted": false,
+  "kinds": [
+    "static PS1 source trace",
+    "actual evidence JavaScript in isolated VM with OS/FS stubs"
+  ],
+  "digests": {
+    "ps1": "3012b4164f8267c3c09061be801690ca703137b3ff69688c2eed02155c895f06",
+    "reviewedEvidence": "d64be3f3f2d9a2f72f9a0a31d18ebfbe3872261097bd96ba31c63de975caa5df",
+    "self": "8ba0ad7e6ab623153088a65f9ad260686e536d9b0041d863b231c9ba36c8b010"
+  },
+  "staticFindings": {
+    "hashHandleClosedBeforeSeparateHold": {
+      "hashCloseLine": 154,
+      "bindingCallLine": 203,
+      "holdOpenLine": 224,
+      "startLine": 229,
+      "noHashUnderHeldHandle": true
+    },
+    "n6ChecksEchoFixtureWhileCallingSave": {
+      "savePathFromPSScriptRoot": true,
+      "psScriptRootReassigned": false
+    }
+  },
+  "variants": [
+    {
+      "name": "normal",
+      "ok": true,
+      "exitCode": 0,
+      "reported": {
+        "attempts": 2,
+        "completed": 2,
+        "failed": 0,
+        "probed": 2,
+        "unexpected": [],
+        "events": [
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 3
+          },
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 10
+          }
+        ],
+        "note": "全部 spawn 显式登记为探针（解析检查 + 一次 -File 尝试）；意外命中含被 catch 者；实际计数决定 ok/exit"
+      },
+      "actualStubProcessCalls": 3,
+      "processPolicyArgument": [
+        "-ExecutionPolicy",
+        "Default"
+      ],
+      "offlineFallbackHits": []
+    },
+    {
+      "name": "caughtNetwork",
+      "ok": true,
+      "exitCode": 0,
+      "reported": {
+        "attempts": 2,
+        "completed": 2,
+        "failed": 0,
+        "probed": 2,
+        "unexpected": [],
+        "events": [
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 3
+          },
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 10
+          }
+        ],
+        "note": "全部 spawn 显式登记为探针（解析检查 + 一次 -File 尝试）；意外命中含被 catch 者；实际计数决定 ok/exit"
+      },
+      "actualStubProcessCalls": 3,
+      "processPolicyArgument": [
+        "-ExecutionPolicy",
+        "Default"
+      ],
+      "offlineFallbackHits": [
+        "https.request"
+      ]
+    },
+    {
+      "name": "caughtPublicProcess",
+      "ok": true,
+      "exitCode": 0,
+      "reported": {
+        "attempts": 2,
+        "completed": 2,
+        "failed": 0,
+        "probed": 2,
+        "unexpected": [],
+        "events": [
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 3
+          },
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 10
+          }
+        ],
+        "note": "全部 spawn 显式登记为探针（解析检查 + 一次 -File 尝试）；意外命中含被 catch 者；实际计数决定 ok/exit"
+      },
+      "actualStubProcessCalls": 3,
+      "processPolicyArgument": [
+        "-ExecutionPolicy",
+        "Default"
+      ],
+      "offlineFallbackHits": [
+        "public-execSync"
+      ]
+    },
+    {
+      "name": "lateNetworkAfterVerdict",
+      "ok": true,
+      "exitCode": 0,
+      "reported": {
+        "attempts": 2,
+        "completed": 2,
+        "failed": 0,
+        "probed": 2,
+        "unexpected": [],
+        "events": [
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 3
+          },
+          {
+            "kind": "spawnSync",
+            "exe": "powershell.exe",
+            "args": 10
+          }
+        ],
+        "note": "全部 spawn 显式登记为探针（解析检查 + 一次 -File 尝试）；意外命中含被 catch 者；实际计数决定 ok/exit"
+      },
+      "actualStubProcessCalls": 3,
+      "processPolicyArgument": [
+        "-ExecutionPolicy",
+        "Default"
+      ],
+      "offlineFallbackHits": [
+        "https.request"
+      ]
+    }
+  ],
+  "boundaries": {
+    "actualChildProcesses": 0,
+    "actualNetwork": 0,
+    "ps1Executed": false,
+    "policyQueriedOrChanged": false,
+    "privateDataRead": false
+  },
+  "limitations": [
+    "No PowerShell semantic execution; no file-race experiment.",
+    "VM raw child-process/decoder outcomes are synthetic; only evidence verdict sensitivity is exercised."
+  ]
+}
