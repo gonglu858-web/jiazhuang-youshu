@@ -1,0 +1,147 @@
+{
+  "schema": "codex-fixed-node-finalization-review/1",
+  "reviewedCommit": "feddd0a",
+  "baseline": "e9a3e75",
+  "reproductionAssertionsPassed": true,
+  "fullAcceptance": false,
+  "results": [
+    {
+      "name": "normal",
+      "exitCode": 0,
+      "finalOk": true,
+      "realExitOk": true,
+      "actualUnexpected": 0,
+      "reportedUnexpected": 0,
+      "hitsAfterFinalOk": 0,
+      "injected": false,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "testRead",
+      "exitCode": 1,
+      "finalOk": false,
+      "realExitOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "hitsAfterFinalOk": 1,
+      "injected": true,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "selfRead",
+      "exitCode": 1,
+      "finalOk": false,
+      "realExitOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "hitsAfterFinalOk": 1,
+      "injected": true,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "socket",
+      "exitCode": 1,
+      "finalOk": false,
+      "realExitOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "hitsAfterFinalOk": 1,
+      "injected": false,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "dnsPromises",
+      "exitCode": 1,
+      "finalOk": false,
+      "realExitOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "hitsAfterFinalOk": 1,
+      "injected": false,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "fetch",
+      "exitCode": 1,
+      "finalOk": false,
+      "realExitOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 1,
+      "hitsAfterFinalOk": 1,
+      "injected": false,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "latePsHash",
+      "exitCode": 0,
+      "finalOk": true,
+      "realExitOk": true,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 0,
+      "hitsAfterFinalOk": 0,
+      "injected": true,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "lateHistoryHash",
+      "exitCode": 0,
+      "finalOk": true,
+      "realExitOk": true,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 0,
+      "hitsAfterFinalOk": 0,
+      "injected": true,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 11
+    },
+    {
+      "name": "builtInLateAfterVerdict",
+      "exitCode": 1,
+      "finalOk": true,
+      "realExitOk": false,
+      "actualUnexpected": 1,
+      "reportedUnexpected": 0,
+      "hitsAfterFinalOk": 1,
+      "injected": false,
+      "independentFallbackHits": 0,
+      "staticPassed": 56,
+      "processCallsSynthetic": 2
+    }
+  ],
+  "staticFacts": {
+    "n4UsesOkExitCodeInsteadOfMissingStarted": true,
+    "n6Launch22Receive20": true,
+    "ps1NotExecuted": true
+  },
+  "digests": {
+    "source": "c7c4bf4cb07a7aeab23a4409a72377cd435bdea14baafff16a970e615bfcd478",
+    "ps1": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+    "self": "9269aab2cb17c7a904e5ff1c845a22176b7ef80fe928f5c3136ae6ff71daba12"
+  },
+  "boundaries": {
+    "realOSProcesses": 0,
+    "realNetwork": 0,
+    "privateDataRead": false,
+    "policyQueriedOrChanged": false
+  },
+  "limitations": [
+    "Actual v3 JS with synthetic FS/OS/ASCII decoder; child JS is recursively executed, not canned verdicts.",
+    "Hash injection delegates real SHA256 unchanged and adds one caught guard hit at actual update; no production source change.",
+    "S3 is static source verification, not PowerShell runtime, OS lock, DPAPI or argv transport validation."
+  ]
+}
