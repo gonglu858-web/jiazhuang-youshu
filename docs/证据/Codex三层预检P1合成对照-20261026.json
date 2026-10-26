@@ -1,0 +1,467 @@
+{
+  "schema": "codex-three-layer-p1-synthetic/1",
+  "basisCommit": "baefb4d",
+  "driverSha256": "b4e37abdf10e3e90d314eda4f0df901acfd9b2a6cd08b2eec6f14f668442fe16",
+  "testSha256": "da7219ea879a6bf3f284da941251d847f9828f35845cacfa37d42320072498ea",
+  "checks": 50,
+  "results": [
+    {
+      "name": "normal",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": null
+    },
+    {
+      "name": "firstMatchTrue",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": null
+    },
+    {
+      "name": "restricted",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "POLICY_RESTRICTED"
+    },
+    {
+      "name": "inheritedBypass",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": null
+    },
+    {
+      "name": "extra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_KEYS"
+    },
+    {
+      "name": "schema",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCHEMA"
+    },
+    {
+      "name": "numericVersion",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_VERSION"
+    },
+    {
+      "name": "versionLong",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_VERSION"
+    },
+    {
+      "name": "versionBad",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_VERSION"
+    },
+    {
+      "name": "policyBad",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_POLICY"
+    },
+    {
+      "name": "policyConflict",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_POLICY_CONFLICT"
+    },
+    {
+      "name": "firstMatchType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_NODE_MATCH_TYPE"
+    },
+    {
+      "name": "countZero",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_NODE_COUNT"
+    },
+    {
+      "name": "countLarge",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_NODE_COUNT"
+    },
+    {
+      "name": "countType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_NODE_COUNT"
+    },
+    {
+      "name": "scopesMissing",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_COUNT"
+    },
+    {
+      "name": "scopesObject",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_COUNT"
+    },
+    {
+      "name": "scopeDuplicate",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_DUPLICATE"
+    },
+    {
+      "name": "scopeUnknown",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_ROW"
+    },
+    {
+      "name": "scopePolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_ROW"
+    },
+    {
+      "name": "scopeExtra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_ROW"
+    },
+    {
+      "name": "scopeNull",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_SCOPE_ROW"
+    },
+    {
+      "name": "rootNull",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "META_KEYS"
+    },
+    {
+      "name": "utf8",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "UTF8_STRICT_FAILED"
+    },
+    {
+      "name": "replacement",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "UTF8_STRICT_FAILED"
+    },
+    {
+      "name": "json",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "JSON_PARSE_FAILED"
+    },
+    {
+      "name": "queryExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_FAILED"
+    },
+    {
+      "name": "querySignal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_FAILED"
+    },
+    {
+      "name": "queryTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_TIMEOUT"
+    },
+    {
+      "name": "queryStartThrow",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_START_FAILED"
+    },
+    {
+      "name": "queryBuffer",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_BUFFER_INVALID"
+    },
+    {
+      "name": "queryStderr",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_STDERR"
+    },
+    {
+      "name": "queryLimit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_OUTPUT_LIMIT"
+    },
+    {
+      "name": "queryEnobufs",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "QUERY_OUTPUT_LIMIT"
+    },
+    {
+      "name": "hostPath",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "HOST_PATH_MISMATCH"
+    },
+    {
+      "name": "hostDigest",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "HOST_DIGEST_MISMATCH"
+    },
+    {
+      "name": "sourceDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "SOURCE_DRIFT"
+    },
+    {
+      "name": "decoderDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "SOURCE_DRIFT"
+    },
+    {
+      "name": "toolLink",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "PATH_CHAIN_INVALID"
+    },
+    {
+      "name": "toolMissing",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "PREFLIGHT_UNCERTAIN"
+    },
+    {
+      "name": "outputExists",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "OUTPUT_EXISTS"
+    },
+    {
+      "name": "outputBoundary",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "OUTPUT_BOUNDARY"
+    },
+    {
+      "name": "earlyHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "selfDigestHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "psDigestHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "postSourceDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "FINAL_FACTS_UNCERTAIN"
+    },
+    {
+      "name": "finalizationHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "queryCalls": 1,
+      "writes": 0,
+      "error": "CAPABILITY_BLOCKED"
+    },
+    {
+      "name": "outputRace",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "queryCalls": 1,
+      "writes": 1,
+      "error": "EVIDENCE_WRITE_FAILED"
+    },
+    {
+      "name": "normalOut",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "queryCalls": 1,
+      "writes": 1,
+      "error": null
+    },
+    {
+      "name": "missingOut",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "queryCalls": 0,
+      "writes": 0,
+      "error": "ARGUMENT_INVALID"
+    }
+  ],
+  "fallbackHits": 0,
+  "ok": true,
+  "actualOSProcesses": 0,
+  "actualNetwork": 0,
+  "limitations": [
+    "Actual driver and pinned decoder; OS/FS boundaries synthetic, no real environment query.",
+    "Only P1 capabilities tested; no PS1 dynamic execution, launch-tree cleanup, identity/ACL, UI or DPAPI tests."
+  ]
+}

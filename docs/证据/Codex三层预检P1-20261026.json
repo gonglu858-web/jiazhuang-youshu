@@ -1,0 +1,111 @@
+{
+  "schema": "codex-three-layer-p1/1",
+  "basisCommit": "c224b0e",
+  "planCommit": "baefb4d",
+  "recordedAt": "2026-10-26T11:44:31.498Z",
+  "sourceFacts": [
+    {
+      "rel": "docs/证据/Codex本机合成预检恢复A-20261025.cjs",
+      "bytes": 13461,
+      "sha256": "629f1170ad0a2e2ea09f7059ed564488032439db0cdb6f4cee5cd96fb18f01f7"
+    },
+    {
+      "rel": "miniapp/scripts/lib/participant-native-decoder.cjs",
+      "bytes": 3390,
+      "sha256": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3"
+    },
+    {
+      "rel": "miniapp/scripts/participant-private-input.ps1",
+      "bytes": 46979,
+      "sha256": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790"
+    }
+  ],
+  "host": {
+    "execPathMatches": true,
+    "digestMatches": true,
+    "nodeSha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+  },
+  "fixedBinding": {
+    "sourcePinned": true,
+    "hostMatchesFixedDefinition": true,
+    "sourceSha256": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+    "dynamicVerified": false
+  },
+  "metadata": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "Restricted",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ],
+    "nodeCandidateCount": 4,
+    "selectedNodeMatches": false,
+    "firstMatchUsedAsApproval": false
+  },
+  "queryCompleted": true,
+  "metadataValidated": true,
+  "phases": {
+    "H": "pass",
+    "F": "pass",
+    "P1": "blocked",
+    "L1": "not-run",
+    "L2": "not-run",
+    "P4": "not-run",
+    "DPAPI": "not-run",
+    "UI": "not-run"
+  },
+  "dynamicReadiness": "blocked-policy",
+  "fullPreflightPassed": false,
+  "realInputApproved": false,
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "attempts": [
+      {
+        "attempted": true,
+        "completed": true,
+        "failed": false,
+        "status": 0,
+        "signal": false,
+        "launchError": false,
+        "stdoutBytes": 383,
+        "stderrBytes": 0,
+        "timeoutMs": 10000
+      }
+    ]
+  },
+  "failure": {
+    "stage": "environment",
+    "code": "POLICY_RESTRICTED"
+  },
+  "limitations": [
+    "P1 only; PATH-first-match is an observation, not proof of the fixed launch boundary.",
+    "Old NODE_FIRST_MATCH gate and failed records are unchanged; H/F do not pass L.",
+    "Parent Node guards are not an OS sandbox for PowerShell; only the pinned metadata command is permitted.",
+    "No policy changes, -File attempt, identity/ACL/private data access, UI, DPAPI or cloud operations."
+  ],
+  "querySha256": "ea2b88407edd8f0e32e700b14390c2ad36995e6a5ba6e073dd378d818e6f1350",
+  "powershellSha256Informational": "60c9b29843624dd8af6b6a7b26147753be6aeef65098b9a503cc50850afe410f",
+  "driverSha256": "b4e37abdf10e3e90d314eda4f0df901acfd9b2a6cd08b2eec6f14f668442fe16",
+  "elapsedMs": 669,
+  "ok": false,
+  "exitCode": 2
+}
