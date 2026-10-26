@@ -1,0 +1,574 @@
+{
+  "schema": "wb-psr-fixed-node-binding-v4/1",
+  "date": "2026-10-26",
+  "mode": "main",
+  "baseline": "0da6af0",
+  "reviewedBasis": "docs/Codex复查-固定Node收尾feddd0a-20261026.md §2–§3",
+  "guardInstalledBeforeBusinessLoad": true,
+  "ok": true,
+  "exitCode": 0,
+  "verdict": {
+    "ok": true,
+    "failedReasons": [],
+    "atHandoverBaseline": true,
+    "baselineNote": "HEAD 为接手基线 0da6af0",
+    "guardAccounting": {
+      "attempts": 13,
+      "completed": 13,
+      "failed": 0,
+      "expectedAttempts": 13,
+      "calls": [
+        {
+          "purpose": "baseline-readonly",
+          "program": "git",
+          "argsCount": 3
+        },
+        {
+          "purpose": "ps1-syntax-parse",
+          "program": "powershell.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:initNetwork",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:businessPublicProcess",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:cleanupNetwork",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:lateTestDigest",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:lateSelfDigest",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:latePs1Digest",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:lateV2JsonDigest",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:socketConnect",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:dnsPromises",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:fetchEntrance",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        },
+        {
+          "purpose": "self-fault-rerun:lateAfterVerdict",
+          "program": "C:\\Users\\30591\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+          "argsCount": 3
+        }
+      ],
+      "probeHits": [
+        {
+          "phase": "init",
+          "kind": "network",
+          "class": "probe"
+        },
+        {
+          "phase": "init",
+          "kind": "publicProcess",
+          "class": "probe"
+        },
+        {
+          "phase": "runtime",
+          "kind": "network",
+          "class": "probe"
+        },
+        {
+          "phase": "runtime",
+          "kind": "publicProcess",
+          "class": "probe"
+        },
+        {
+          "phase": "cleanup",
+          "kind": "network",
+          "class": "probe"
+        },
+        {
+          "phase": "cleanup",
+          "kind": "publicProcess",
+          "class": "probe"
+        }
+      ],
+      "unexpectedHits": [],
+      "probeChecks": [
+        {
+          "label": "init-network",
+          "kind": "network",
+          "phase": "init",
+          "passed": true
+        },
+        {
+          "label": "init-public-process",
+          "kind": "publicProcess",
+          "phase": "init",
+          "passed": true
+        },
+        {
+          "label": "business-network",
+          "kind": "network",
+          "phase": "runtime",
+          "passed": true
+        },
+        {
+          "label": "business-public-process",
+          "kind": "publicProcess",
+          "phase": "runtime",
+          "passed": true
+        },
+        {
+          "label": "cleanup-network",
+          "kind": "network",
+          "phase": "cleanup",
+          "passed": true
+        },
+        {
+          "label": "cleanup-public-process",
+          "kind": "publicProcess",
+          "phase": "cleanup",
+          "passed": true
+        }
+      ],
+      "note": "公共网络/进程默认阻断且业务装载前安装；被 catch / Promise 拒绝处理者同样记账；网络包装完全替换不保留原始引用（独立离线兜底=守卫抛出即拦截，不触真实网络）；Git 经受控 runner 计入实际总数（先校验完整参数并计数后执行）"
+    },
+    "categories": {
+      "probe": "敏感性探针 6 项（init/business/cleanup × 网络/公共进程）全部被阻断",
+      "expectedPolicyBlock": "沿用 v1 记录（fixed -File 被 Restricted 拒绝，exit1/UnauthorizedAccess）；本轮不在已阻断环境重复尝试，未携带任何 -ExecutionPolicy 参数",
+      "commandFailure": "无（解析探针通过）",
+      "businessUnexpected": "无（主流程）"
+    }
+  },
+  "digests": {
+    "ps1": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+    "ps1AtFeddd0a": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+    "registrationTest": "c15df7df2ff7ccca1d1e0ef62b807847eeaa6bae3390acbba44f0cb3fdb73d62",
+    "evidenceScriptSelf": "3b2d02d7298107a0a3167bfeccdf209c65809bef921354d58a5ad1d33a4530eb",
+    "v1CjsPreserved": "d64be3f3f2d9a2f72f9a0a31d18ebfbe3872261097bd96ba31c63de975caa5df",
+    "v1JsonPreserved": "f9110c965489ed32980411b8ed86bd595afb17da1133f7bb1b4b9fe622c92d17",
+    "v2CjsPreserved": "f5bd8868a2ace7ae606bd7e20b112a7c5597ee05eeb4116fcad91ceecbfd412a",
+    "v2JsonPreserved": "384a0737f1f384a972615377b0606be78a6aeacc170bf7aa6fe7b7b22a032da5",
+    "v3CjsPreserved": "c7c4bf4cb07a7aeab23a4409a72377cd435bdea14baafff16a970e615bfcd478",
+    "v3JsonPreserved": "ed608504ddb386bb4bdf4ee73e8061b01e99b1e9a3262e80e0854fa0765cd146",
+    "fixedNodeConstant": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19",
+    "fixedNodeObserved": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+  },
+  "staticChecks": {
+    "total": 57,
+    "failed": 0,
+    "items": [
+      {
+        "name": "fixed-path-constant",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-digest-constant-full-64",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-path-defined-once",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-digest-defined-once",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-get-command",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-nodesha-param",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-download",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-not-bare-node",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-not-declared-param",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-from-fixed-after-hold-digest",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "filename-not-from-precheck-binding",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "purpose-whitelist",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "save-uses-shared-chain",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "echo-uses-shared-chain",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "fixed-callsites-only",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "useshellexecute-false",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "createnowindow-true",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "node-options-single-removal",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "ui-precheck-distinct-marker",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "transport-precheck-present",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "hold-opened-once-in-start",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-standalone-digest-in-start",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "no-precheck-inside-start",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "r1-order-hold-digest-start",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "digest-computed-on-held-stream",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "held-digest-no-reopen",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "hold-dispose-in-finally",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "dotnet-sha256-direct",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "digest-full-compare",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_declaration_invalid",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_file_invalid",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_file_read_fail",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_digest_mismatch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "label-node_start_fail",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "save-failed-contract",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "cancel-contract",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "plain-stdin-only",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "args-without-plain-value",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "selftest-scenario-whitelist",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "decl-absolute-required",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "decl-control-chars-rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "mode-misuse-rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n6-save-exact-compare",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n6-echo-exact-compare",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n6-echo-launch-22",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n6-echo-recv-20",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n6-old-single-20-gone",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n4-real-return-contract",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "n6-old-wrong-assert-gone",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "ps1-bom-preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "ps1-pure-crlf",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "observed-node-matches-constant",
+        "passed": true,
+        "detail": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+      },
+      {
+        "name": "v4-no-executionpolicy-flag",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "v1-carried-fact-executionpolicy",
+        "passed": true,
+        "detail": "v1 原样保留；其-ExecutionPolicy Default 为已披露事实"
+      },
+      {
+        "name": "v1-policy-block-record-intact",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "v2-preserved-digest-known",
+        "passed": true,
+        "detail": "v2 .cjs 原字节未改"
+      },
+      {
+        "name": "v3-preserved-digest-known",
+        "passed": true,
+        "detail": "v3 .cjs 原字节未改"
+      }
+    ]
+  },
+  "parseCheck": {
+    "probed": true,
+    "status": 0,
+    "passed": true,
+    "output": "parse-ok"
+  },
+  "faultProofs": [
+    {
+      "mode": "initNetwork",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "businessPublicProcess",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "cleanupNetwork",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "lateTestDigest",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "lateSelfDigest",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "latePs1Digest",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "lateV2JsonDigest",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "socketConnect",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "dnsPromises",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "fetchEntrance",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    },
+    {
+      "mode": "lateAfterVerdict",
+      "exitStatus": 1,
+      "parsedOk": false,
+      "unexpectedRecorded": 1,
+      "passed": true
+    }
+  ],
+  "dynamicGaps": {
+    "executionPolicy": "Restricted 为此前交付声明（2026-10-26 会话曾实测）；本轮未查询当前策略值，不重试受阻 -File、不改策略、不抽取正文、不换宿主",
+    "fixedFileDynamicAttempt": "本轮未执行",
+    "selfTestSyntheticSevenScenarios": "未动态执行（blocked）；PS1 内置七场景待允许环境验证",
+    "selfTestTransportReal": "未动态执行（blocked）",
+    "uiAndDpapi": "真实输入窗口与 DPAPI 未运行",
+    "selfTestCheckNote": "SelfTestCheck exit0 不证明策略/场景/传输/UI/DPAPI 任一项通过"
+  },
+  "syntheticLimits": {
+    "n4ReplaceDenied": "合成替身模拟拒绝标签，不是操作系统已拒绝替换的证据",
+    "n6MemoryEquality": "N6 内存字符串等值不称为 argv 跨进程真实传输通过（动态仍 blocked）"
+  },
+  "limitations": [
+    "动态 PowerShell 语义全部未验证（静态检查不冒充动态通过）",
+    "不读真实编号/既有密文/凭据；不运行真实 UI/DPAPI/私密保存；不查询身份/ACL",
+    "未改 PATH/权限/策略/系统环境；未联网；1/2号不重试，P 不开展，A 预检不恢复"
+  ]
+}

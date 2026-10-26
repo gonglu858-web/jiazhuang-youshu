@@ -1,3 +1,16 @@
+## 2026-10-26 CodeBuddy：固定Node绑定S1证据判定收尾（v4唯一最终判定ok/exit同源；动态PS语义未验证）
+
+- 接手：master 0da6af0；受审 feddd0a；依据 docs/Codex复查-固定Node收尾feddd0a-20261026.md §2–§3；S2网络入口、S3源码断言、R1生产启动链及此前认可项已关闭不重做；PS1本轮未修改；AGENTS.md既有修改（9ef30b4c…）排除提交。
+- S1（唯一剩余）：另建 docs/证据/CodeBuddy固定Node绑定返修v4-20261026.cjs/.json（默认stdout；--out wx独占创建；v1/v2/v3 .cjs/.json 原字节保留并记录摘要核对：d64be3f3…/f9110c96…/f5bd8868…/384a0737…/c7c4bf4c…/ed608504…）——全部文件读取、全部摘要计算（含PS1摘要与历史v2 JSON摘要的实际计算点）、保护核对、fault核验及必要收尾数据构造完成后，才从最新实际守卫计数形成唯一最终结论：单一成功字段 ok 与退出码同源（exitCode 字段同值），不再叠加第二/第三个冻结成功标志（移除 v3 的 finalOk/realExitOk 双字段与 hitsAfterFinalOk 语义）；判定冻结后仅序列化输出与退出。
+- 新增实际摘要计算点反例：latePs1Digest（PS1 摘要 crypto.update 计算点）与 lateV2JsonDigest（历史 v2 JSON 摘要计算点）各注入一次被 catch 的 HTTPS 调用，真实 SHA-256 计算原样执行——必须意外≥1、ok=false、exit1；不删摘要、不把意外改探针、不只计算 wouldFail。
+- lateAfterVerdict 保留实际收尾覆盖，但落在唯一最终判定之前的 finalization 收尾阶段：命中即计入意外并使 ok=false/exit1，消除 v3 中 finalOk=true/exit1 的矛盾（消费者读成功字段与退出码不再相反）。
+- 保留：两处实际文件读取反例（lateTestDigest/lateSelfDigest）、三条网络入口反例（socketConnect/dnsPromises/fetchEntrance）、既有 fault（initNetwork/businessPublicProcess/cleanupNetwork）及正常对照；网络包装完全替换不保留原始引用，独立离线兜底=守卫抛出即拦截不触真实网络。
+- 实测：v4 静态 57/57（新增 v3 保留摘要核对；PS1 未改沿用全部 S3/R1 断言）、解析探针通过、守卫 attempts=13/completed=13/failed=0（含 11 个 fault 子进程重入，fault 子进程预期 exit1 计为 completed）、探针 6 项全阻断、意外命中 0 → ok=true exit0；fault 出口证明 11/11（全部 ok=false/exit1，含 latePs1Digest/lateV2JsonDigest/lateAfterVerdict）；主流程复跑判定一致。v2 JSON 实际 SHA 384a0737…与复核一致（上轮交付摘要中“374f…”确认为笔误）。本轮未改 PS1/登记/业务代码或测试，按复核口径未机械重跑 47/18。
+- 口径：当前状态及本节中“有效策略Restricted”明确为此前交付声明，本轮未查询当前策略值；不重试受阻-File、不改策略、不抽取正文到-Command、不换宿主绕过；不改旧NODE_FIRST_MATCH、不恢复A预检。replaceDenied 替身标签非系统锁验证；N6 内存等值非跨进程传输。
+- 过程披露：docs/当前状态.md 再次被 Write 工具备份机制与外部句柄拒绝写入（同前两轮同型）；沿用上轮已披露并获复核记录的 git 官方 index/checkout 工作树机制（hash-object -w → update-index --cacheinfo → checkout --）完成更新，未换名、未删除绕过；本轮 12 个临时文件集中清理无残留。
+- 状态：本地证据收尾待Codex复核；动态PS语义未验证；真实私密输入及执行未放行。
+
+
 ## 2026-10-26 Codex：feddd0a复核，S2/S3关闭，仅S1最终判定待返修
 
 - 受审feddd0a、基线e9a3e75；报告：[固定Node收尾复核](Codex复查-固定Node收尾feddd0a-20261026.md)。R1生产链及此前认可项沿用，不重做。
