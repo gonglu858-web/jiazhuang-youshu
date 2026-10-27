@@ -1,0 +1,128 @@
+{
+  "schema": "codex-l2-compile-runner-offline/1",
+  "checks": 28,
+  "results": [
+    {
+      "name": "normal fixed vector/options single start",
+      "passed": true
+    },
+    {
+      "name": "throw",
+      "passed": true
+    },
+    {
+      "name": "noPid",
+      "passed": true
+    },
+    {
+      "name": "nonzero",
+      "passed": true
+    },
+    {
+      "name": "signal",
+      "passed": true
+    },
+    {
+      "name": "error",
+      "passed": true
+    },
+    {
+      "name": "stdout",
+      "passed": true
+    },
+    {
+      "name": "stderr",
+      "passed": true
+    },
+    {
+      "name": "limit",
+      "passed": true
+    },
+    {
+      "name": "type",
+      "passed": true
+    },
+    {
+      "name": "streamError",
+      "passed": true
+    },
+    {
+      "name": "missing",
+      "passed": true
+    },
+    {
+      "name": "timeout",
+      "passed": true
+    },
+    {
+      "name": "noClose",
+      "passed": true
+    },
+    {
+      "name": "killThrows",
+      "passed": true
+    },
+    {
+      "name": "killFalse",
+      "passed": true
+    },
+    {
+      "name": "utf8",
+      "passed": true
+    },
+    {
+      "name": "synthetic managed AMD64 PE",
+      "passed": true
+    },
+    {
+      "name": "PE reject truncated",
+      "passed": true
+    },
+    {
+      "name": "PE reject DOS",
+      "passed": true
+    },
+    {
+      "name": "PE reject signature",
+      "passed": true
+    },
+    {
+      "name": "PE reject machine",
+      "passed": true
+    },
+    {
+      "name": "PE reject magic",
+      "passed": true
+    },
+    {
+      "name": "PE reject CLR missing",
+      "passed": true
+    },
+    {
+      "name": "PE reject RVA invalid",
+      "passed": true
+    },
+    {
+      "name": "PE reject native entry",
+      "passed": true
+    },
+    {
+      "name": "PE reject entry zero",
+      "passed": true
+    },
+    {
+      "name": "PE reject metadata",
+      "passed": true
+    }
+  ],
+  "digests": {
+    "runner": "cb540b58479f3063d22b6ac0584590fc34685d66268538909165d7e44b26d462",
+    "test": "de144ffcedc11e2aac4bd18907662c9f2a0ba14905545f5a6f0c0cf209e20748"
+  },
+  "unexpectedOS": 0,
+  "actualCompilerStarts": 0,
+  "helperExecuted": false,
+  "coverage": "actual runner and PE function bodies; synthetic OS events and PE bytes; main FS orchestration reviewed separately",
+  "ok": true,
+  "exitCode": 0
+}
