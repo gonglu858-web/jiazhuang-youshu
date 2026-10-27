@@ -1,0 +1,34 @@
+{
+  "schema": "codex-l2-compile-config/1",
+  "basisCommit": "5dc07f7",
+  "executionAuthorized": false,
+  "purpose": "compile-only-no-helper-execution",
+  "requiredRepoLocalExclude": "/artifacts/psr-l2/",
+  "host": {"path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe", "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"},
+  "cwd": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP",
+  "compiler": {"path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe", "bytes": 2569832, "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"},
+  "compilerConfig": {"path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config", "bytes": 182, "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"},
+  "references": [
+    {"path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll", "bytes": 5445432, "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"},
+    {"path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll", "bytes": 3545264, "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"}
+  ],
+  "source": {"path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2进程树辅助层-20261027.cs", "sha256": "31fafbe647ae044ff905823815e9c3a699a5840e7387aa4d9bcf8e39c5b551b6"},
+  "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\v1",
+  "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\v1\\psr-l2-helper.exe",
+  "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\v1\\tmp",
+  "args": [
+    "/nologo", "/noconfig", "/nostdlib+", "/target:exe", "/platform:x64", "/langversion:5", "/codepage:65001", "/utf8output", "/optimize+", "/debug-", "/warn:4", "/warnaserror+", "/errorreport:none", "/nowin32manifest", "/main:L2JobRunner",
+    "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+    "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+    "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\v1\\psr-l2-helper.exe",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2进程树辅助层-20261027.cs"
+  ],
+  "spawn": {"shell": false, "windowsHide": true, "stdio": ["ignore", "pipe", "pipe"], "timeoutMs": 30000, "reapMs": 2000, "maxCombinedOutputBytes": 131072, "maxDirectCompilerStarts": 1, "automaticRetry": false},
+  "childEnv": {
+    "SystemRoot": "C:\\Windows", "WINDIR": "C:\\Windows",
+    "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+    "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\v1\\tmp",
+    "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\v1\\tmp"
+  },
+  "postcheck": {"exitCode": 0, "signal": null, "stderrBytes": 0, "stdoutBytes": 0, "outputMachine": "AMD64", "outputMagic": "PE32+", "requiresClrHeader": true, "maxOutputFileBytes": 1048576, "tempDirectoryMustBeEmpty": true, "executeOutput": false, "unfreezeL2": false}
+}

@@ -1,0 +1,169 @@
+{
+  "schema": "codex-l2-compile-readonly/1",
+  "basisCommit": "5dc07f7",
+  "checks": 28,
+  "results": [
+    {
+      "name": "configuration bytes pinned",
+      "passed": true
+    },
+    {
+      "name": "fixed configuration contract",
+      "passed": true
+    },
+    {
+      "name": "fixed Node host",
+      "passed": true
+    },
+    {
+      "name": "source node.exe",
+      "passed": true
+    },
+    {
+      "name": "source csc.exe",
+      "passed": true
+    },
+    {
+      "name": "source csc.exe.config",
+      "passed": true
+    },
+    {
+      "name": "source mscorlib.dll",
+      "passed": true
+    },
+    {
+      "name": "source System.dll",
+      "passed": true
+    },
+    {
+      "name": "source CodexL2进程树辅助层-20261027.cs",
+      "passed": true
+    },
+    {
+      "name": "fresh output directory absent",
+      "passed": true
+    },
+    {
+      "name": "source strict UTF-8",
+      "passed": true
+    },
+    {
+      "name": "L2 gate remains closed",
+      "passed": true
+    },
+    {
+      "name": "reject scope",
+      "passed": true
+    },
+    {
+      "name": "reject compiler",
+      "passed": true
+    },
+    {
+      "name": "reject extra reference",
+      "passed": true
+    },
+    {
+      "name": "reject output escape",
+      "passed": true
+    },
+    {
+      "name": "reject response file",
+      "passed": true
+    },
+    {
+      "name": "reject implicit references",
+      "passed": true
+    },
+    {
+      "name": "reject default response",
+      "passed": true
+    },
+    {
+      "name": "reject wrong architecture",
+      "passed": true
+    },
+    {
+      "name": "reject wrong encoding",
+      "passed": true
+    },
+    {
+      "name": "reject shell",
+      "passed": true
+    },
+    {
+      "name": "reject retry",
+      "passed": true
+    },
+    {
+      "name": "reject timeout",
+      "passed": true
+    },
+    {
+      "name": "reject output limit",
+      "passed": true
+    },
+    {
+      "name": "reject environment injection",
+      "passed": true
+    },
+    {
+      "name": "reject automatic run",
+      "passed": true
+    },
+    {
+      "name": "reject unlock",
+      "passed": true
+    }
+  ],
+  "sourceFacts": [
+    {
+      "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+      "bytes": 85119640,
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+      "bytes": 2569832,
+      "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+      "bytes": 182,
+      "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+      "bytes": 5445432,
+      "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+      "bytes": 3545264,
+      "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2进程树辅助层-20261027.cs",
+      "bytes": 16291,
+      "sha256": "31fafbe647ae044ff905823815e9c3a699a5840e7387aa4d9bcf8e39c5b551b6"
+    }
+  ],
+  "digests": {
+    "configuration": "8da47fec7a91a4f48c14e69c34a22afab901203553be5498915f97beef6478e9",
+    "script": "9847b8b5162a587b5688ff037223977c34d9aa16e1ab5b576268084d8b80e842"
+  },
+  "guardUnexpected": 0,
+  "compilerStarted": false,
+  "helperStarted": false,
+  "outputCreated": false,
+  "actualTransport": false,
+  "scope": "filesystem-and-config-only",
+  "limitations": [
+    "C# not compiled; command options not dynamically accepted",
+    "OS process descendants not measured",
+    "Git ignore absence separately checked by fixed git check-ignore; repo-local exclusion pending",
+    "Framework runtime dependency closure not fully pinned"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
