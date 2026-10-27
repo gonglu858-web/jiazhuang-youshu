@@ -1,0 +1,398 @@
+{
+  "schema": "codex-temporary-policy-l1/2",
+  "basisCommit": "12640ab",
+  "recordedAt": "2026-10-27T04:28:53.959Z",
+  "before": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "Restricted",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ],
+    "zonePresent": false
+  },
+  "temporary": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "RemoteSigned",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "RemoteSigned"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ]
+  },
+  "after": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "Restricted",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ]
+  },
+  "hostAndSourceVerified": true,
+  "policyComparisonPassed": true,
+  "scenarios": {
+    "N1_SAVE": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 19,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 1,
+        "holdOpens": 1,
+        "holdCloses": 1,
+        "startCalls": 1,
+        "fileProbe": 1,
+        "digestProbe": 0,
+        "stdinWrites": 2,
+        "starts": 1
+      }
+    },
+    "N1_ECHO": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 15,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 1,
+        "holdOpens": 1,
+        "holdCloses": 1,
+        "startCalls": 1,
+        "fileProbe": 1,
+        "digestProbe": 0,
+        "stdinWrites": 0,
+        "starts": 1
+      }
+    },
+    "N2_DECL": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 15,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 0,
+        "holdOpens": 0,
+        "holdCloses": 0,
+        "startCalls": 0,
+        "fileProbe": 0,
+        "digestProbe": 0,
+        "stdinWrites": 0,
+        "starts": 0
+      }
+    },
+    "N3_FILE": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 34,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 0,
+        "holdOpens": 0,
+        "holdCloses": 0,
+        "startCalls": 0,
+        "fileProbe": 1,
+        "digestProbe": 1,
+        "stdinWrites": 0,
+        "starts": 0
+      }
+    },
+    "N4_DRIFT": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 12,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 1,
+        "holdOpens": 1,
+        "holdCloses": 1,
+        "startCalls": 1,
+        "fileProbe": 1,
+        "digestProbe": 0,
+        "stdinWrites": 2,
+        "starts": 1
+      }
+    },
+    "N5_STARTFAIL": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 9,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 1,
+        "holdOpens": 1,
+        "holdCloses": 1,
+        "startCalls": 1,
+        "fileProbe": 1,
+        "digestProbe": 0,
+        "stdinWrites": 0,
+        "starts": 0
+      }
+    },
+    "N6_TRANSPORT": {
+      "status": "passed",
+      "passed": true,
+      "checkTotal": 17,
+      "failedChecks": [],
+      "counters": {
+        "digestHold": 1,
+        "holdOpens": 1,
+        "holdCloses": 1,
+        "startCalls": 1,
+        "fileProbe": 1,
+        "digestProbe": 0,
+        "stdinWrites": 0,
+        "starts": 1
+      }
+    }
+  },
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "attempts": [
+      {
+        "kind": "before",
+        "attempted": true,
+        "pid": 13448,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 351,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "temporary",
+        "attempted": true,
+        "pid": 14948,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 336,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N1_SAVE",
+        "attempted": true,
+        "pid": 36156,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 1107,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N1_ECHO",
+        "attempted": true,
+        "pid": 10256,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 913,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N2_DECL",
+        "attempted": true,
+        "pid": 21848,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 939,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N3_FILE",
+        "attempted": true,
+        "pid": 27500,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 2032,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N4_DRIFT",
+        "attempted": true,
+        "pid": 15020,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 819,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N5_STARTFAIL",
+        "attempted": true,
+        "pid": 17088,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 648,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "N6_TRANSPORT",
+        "attempted": true,
+        "pid": 45128,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 1050,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      },
+      {
+        "kind": "after",
+        "attempted": true,
+        "pid": 3128,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 331,
+        "stderrBytes": 0,
+        "failed": false,
+        "killRequested": false,
+        "killAccepted": null,
+        "reason": null,
+        "timeoutMs": 10000
+      }
+    ]
+  },
+  "failure": null,
+  "cleanupFailure": null,
+  "fullPreflightPassed": false,
+  "realInputApproved": false,
+  "notRun": [
+    "L2",
+    "P4",
+    "UI",
+    "DPAPI",
+    "private-save",
+    "cloud"
+  ],
+  "limitations": [
+    "L1 executes real PowerShell semantics; file and Node launch boundaries inside the pinned PS1 are synthetic.",
+    "Parent JS guards are not an OS network sandbox. No real descendants are expected from the pinned synthetic branch.",
+    "RemoteSigned is per process, may be inherited by descendants; no persistent policy or parent environment writes.",
+    "Successful policy comparison proves queried policy values, not absence of all system changes."
+  ],
+  "digests": {
+    "node": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19",
+    "ps1": "9255adb762cd19801805ee19c04204dd8f8a3b384d8fc857ff36d44466db0790",
+    "decoder": "462976b3cf32999fb0079d6b0bbb4cf54cd35ab3d1068fb1052db36f4c05f7d3",
+    "powershellInformational": "60c9b29843624dd8af6b6a7b26147753be6aeef65098b9a503cc50850afe410f",
+    "metadata": "b4b164538eb30ead6ec9d71738a956f147a8f82d3f851b436cf41982e704aaec",
+    "metadataWithZone": "73c25f82cae4e3d734c5d9fb90a7ff679312502487f3dfba53253ee23c8b2d5e",
+    "driver": "b07ca49f2d93825335dd7003ea89233c5d1bdcd56412274eb2089aff8945f3f5"
+  },
+  "elapsedMs": 8832,
+  "executionRequested": true,
+  "allDirectProcessesClosed": true,
+  "ok": true,
+  "exitCode": 0
+}
