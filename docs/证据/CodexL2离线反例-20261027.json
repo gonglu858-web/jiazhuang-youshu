@@ -1,0 +1,1637 @@
+{
+  "schema": "codex-l2-offline/1",
+  "basisCommit": "1006a81",
+  "driverSha256": "541a3fba4d554b7ec877d556502a8e0786f35070ae887101613b40511ebe3032",
+  "nativeSourceSha256": "31fafbe647ae044ff905823815e9c3a699a5840e7387aa4d9bcf8e39c5b551b6",
+  "testSha256": "fa3c3cf2c0affd37322366334369dec4eaa4001027e45a1cf42253c1ff05fc30",
+  "planSha256": "d39a99fdb9013943a2f0bd12949d7fa2b4c2bf33148fbe4ec03cd30d5b372ae8",
+  "staticChecks": 28,
+  "staticResults": [
+    {
+      "name": "source hashes pinned",
+      "passed": true
+    },
+    {
+      "name": "disabled production gate",
+      "passed": true
+    },
+    {
+      "name": "native fixed file hash",
+      "passed": true
+    },
+    {
+      "name": "native fixed node hash",
+      "passed": true
+    },
+    {
+      "name": "native fixed modes only",
+      "passed": true
+    },
+    {
+      "name": "native no caller executable",
+      "passed": true
+    },
+    {
+      "name": "native create suspended",
+      "passed": true
+    },
+    {
+      "name": "native assign before resume",
+      "passed": true
+    },
+    {
+      "name": "native assign failure throws",
+      "passed": true
+    },
+    {
+      "name": "native resume exact previous suspend count",
+      "passed": true
+    },
+    {
+      "name": "native job not inherited",
+      "passed": true
+    },
+    {
+      "name": "native job limit checked",
+      "passed": true
+    },
+    {
+      "name": "native no breakaway flag",
+      "passed": true
+    },
+    {
+      "name": "native separate bounded readers",
+      "passed": true
+    },
+    {
+      "name": "native raw stderr rejected",
+      "passed": true
+    },
+    {
+      "name": "native kill owned job",
+      "passed": true
+    },
+    {
+      "name": "native assignment failure owns suspended handle",
+      "passed": true
+    },
+    {
+      "name": "native reap bounded",
+      "passed": true
+    },
+    {
+      "name": "native job emptiness queried",
+      "passed": true
+    },
+    {
+      "name": "native pipe parent write ends close",
+      "passed": true
+    },
+    {
+      "name": "native readers and handles part of cleanup",
+      "passed": true
+    },
+    {
+      "name": "native zero node options inheritance",
+      "passed": true
+    },
+    {
+      "name": "native two-process tree count",
+      "passed": true
+    },
+    {
+      "name": "native fixed selftest transport",
+      "passed": true
+    },
+    {
+      "name": "native no runtime compiler/UI/network",
+      "passed": true
+    },
+    {
+      "name": "native no environment write",
+      "passed": true
+    },
+    {
+      "name": "native no real store call",
+      "passed": true
+    },
+    {
+      "name": "parent kills helper without claiming tree clean",
+      "passed": true
+    }
+  ],
+  "checks": 104,
+  "results": [
+    {
+      "name": "normal",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": null,
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "default",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 2,
+      "calls": [],
+      "failure": null,
+      "unexpected": 0,
+      "vmReleaseSubstitution": false
+    },
+    {
+      "name": "productionGate",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "EXECUTION_NOT_FROZEN",
+      "unexpected": 0,
+      "vmReleaseSubstitution": false
+    },
+    {
+      "name": "normalOut",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": null,
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "badCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "ARGUMENT_INVALID",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "extraCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "ARGUMENT_INVALID",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "policyCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "ARGUMENT_INVALID",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "helperPathCli",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "ARGUMENT_INVALID",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "outputExists",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "OUTPUT_EXISTS",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "hostPath",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "HOST_PATH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "nodeDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "SOURCE_DRIFT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "scriptDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "SOURCE_DRIFT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "helperSourceDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "SOURCE_DRIFT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "helperHash",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "HELPER_HASH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "linkedHelper",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "SOURCE_PATH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "zone",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "ZONE_PRESENT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "zoneUnknown",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "ZONE_UNCERTAIN",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "policy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "failure": "POLICY",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "version",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "failure": "META_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "scopeDuplicate",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "failure": "META_SCOPES",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "metaExtra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "failure": "META_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "metadataOrder",
+      "expectationMet": true,
+      "ok": true,
+      "exitCode": 0,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": null,
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "temporaryPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "after"
+      ],
+      "failure": "POLICY",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "afterPolicy",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "POLICY",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalBadOutput",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "NORMAL_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "helperExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "receiptMissing",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "RECEIPT_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "receiptType",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "RECEIPT_TYPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "receiptContradiction",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "RECEIPT_CONTRADICTION",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "receiptCleanupFalse",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "CLEANUP_UNCONFIRMED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "receiptExtra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "RECEIPT_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "treeThree",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "JOB_FACTS",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "treeOne",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "JOB_FACTS",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "childStillActive",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "CLEANUP_UNCONFIRMED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "handlesOpen",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "CLEANUP_UNCONFIRMED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "readerOpen",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "CLEANUP_UNCONFIRMED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "pidZero",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "RECEIPT_CONTRADICTION",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "oversize",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "RECEIPT_LIMIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "stderrReceipt",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "JOB_FACTS",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "receiptBudget",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "JOB_BUDGET",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "base64Junk",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "RECEIPT_BASE64",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "timeoutUnexpectedNormal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "after"
+      ],
+      "failure": "TIMEOUT_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "timeoutNotKilled",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "after"
+      ],
+      "failure": "TIMEOUT_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "timeoutZeroExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "after"
+      ],
+      "failure": "TIMEOUT_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "timeoutWrongExit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "after"
+      ],
+      "failure": "TIMEOUT_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "timeoutTooEarly",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "after"
+      ],
+      "failure": "TIMEOUT_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "timeoutHasOutput",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "after"
+      ],
+      "failure": "TIMEOUT_SELFTEST",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "arrayShort",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "arrayExtra",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "arrayObject",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_SHAPE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "invalidJson",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_DECODE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "unicodeReplacement",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_DECODE",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "beforeThrow",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before"
+      ],
+      "failure": "PROCESS_START_FAILED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalThrow",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "PROCESS_START_FAILED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalTimeout",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "PROCESS_TIMEOUT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalNoClose",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "PROCESS_NOT_CLOSED",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalWireStderr",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "PROCESS_STDERR",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalWireLimit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "OUTPUT_LIMIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "normalSignal",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "PROCESS_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "stageDrift",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal"
+      ],
+      "failure": "SOURCE_DRIFT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "initHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "CAPABILITY_BLOCKED",
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "digestHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": null,
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "finalizationHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": null,
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "socketHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "CAPABILITY_BLOCKED",
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "dnsHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "CAPABILITY_BLOCKED",
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "fetchHit",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "CAPABILITY_BLOCKED",
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "publicSpawn",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [],
+      "failure": "CAPABILITY_BLOCKED",
+      "unexpected": 1,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "outputRace",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "EVIDENCE_WRITE_FAILED",
+      "unexpected": null,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-0",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-1",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-2",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-3",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-4",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-5",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-6",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-7",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-8",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-9",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-10",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-11",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-12",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-13",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-14",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-15",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-16",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-17",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-18",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "argv-19",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "timeout",
+        "transport",
+        "after"
+      ],
+      "failure": "ARGV_MISMATCH",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-JOB_CREATE",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-JOB_SET",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-JOB_LIMITS",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-PIPE",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-STDIN",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-CREATE",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-JOB_ASSIGN",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-HANDLE_CLOSE",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-RESUME",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-JOB_QUERY",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-WAIT",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-EXIT_CODE",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-READ",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-ROOT_EXIT",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-TREE_COUNT",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    },
+    {
+      "name": "native-HELPER_ERROR",
+      "expectationMet": true,
+      "ok": false,
+      "exitCode": 1,
+      "calls": [
+        "before",
+        "temporary",
+        "normal",
+        "after"
+      ],
+      "failure": "HELPER_EXIT",
+      "unexpected": 0,
+      "vmReleaseSubstitution": true
+    }
+  ],
+  "fallbackHits": 0,
+  "actualOSProcesses": 0,
+  "actualNetwork": 0,
+  "helperCompiled": false,
+  "helperExecuted": false,
+  "releaseFrozen": false,
+  "ok": true,
+  "limitations": [
+    "Driver runs in isolated VM with synthetic OS/filesystem/clock boundaries.",
+    "Only the release declaration is replaced in execution-path VM cases; production gate remains false/null and is separately tested.",
+    "C# source is checked statically, NOT parsed/compiled/executed; native failure receipts are simulated and do not prove Win32 control flow.",
+    "Windows Job behavior, nested jobs, process inheritance, compiler availability and real argv transport remain unverified."
+  ]
+}
