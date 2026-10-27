@@ -1,0 +1,73 @@
+{
+  "schema": "codex-l2-binary-review/1",
+  "basisCommit": "f1f3d41",
+  "checks": 8,
+  "results": [
+    {
+      "name": "binary fixed hash and size",
+      "passed": true
+    },
+    {
+      "name": "binary path no links",
+      "passed": true
+    },
+    {
+      "name": "compile receipt pinned and success",
+      "passed": true
+    },
+    {
+      "name": "compile inputs still match",
+      "passed": true
+    },
+    {
+      "name": "actual PE and CLI file structure",
+      "passed": true
+    },
+    {
+      "name": "entry MethodDef owner signature and body range",
+      "passed": true
+    },
+    {
+      "name": "entry token out of range rejected",
+      "passed": true
+    },
+    {
+      "name": "binary unchanged after inspection",
+      "passed": true
+    }
+  ],
+  "binarySha256": "d6381e2d009651289c692e60241a197f765d72d35e71f0443d6c01e8ca6ea77d",
+  "pe": {
+    "machine": "AMD64",
+    "optionalHeader": "PE32+",
+    "sections": 2,
+    "clrSize": 72,
+    "clrFlags": 1,
+    "managedEntryToken": 100663323,
+    "metadataSignature": "BSJB",
+    "methodBodyNotExecuted": true
+  },
+  "entry": {
+    "entryToken": "0x0600001b",
+    "methodDefCount": 37,
+    "owner": "L2JobRunner",
+    "name": "Main",
+    "isStatic": true,
+    "signature": "int Main(string[])",
+    "ilBytes": 123,
+    "ilSemanticsVerified": false
+  },
+  "scriptSha256": "eb4bf1e73ad81abc4e62e2dd08a6686351a1c03d8e7756d2c284bf4743c6a501",
+  "compileEvidenceSha256": "b521e3da9632fee4953930e508b691a11222c145958d7c39d5bba123b410e036",
+  "processesStarted": 0,
+  "assemblyLoaded": false,
+  "helperExecuted": false,
+  "guardUnexpected": 0,
+  "limitations": [
+    "PE/CLI metadata inspection only, not IL semantic verification",
+    "Job/handle cleanup and real transport not executed",
+    "This binds an existing compiled artifact; no deterministic rebuild claim"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
