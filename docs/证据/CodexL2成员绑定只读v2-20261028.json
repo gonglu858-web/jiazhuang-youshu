@@ -1,0 +1,35 @@
+{
+  "schema": "codex-l2-member-bound-readonly/2",
+  "outerCommandExit": 2,
+  "invocationMode": "no-arguments",
+  "observation": {
+    "schema": "codex-l2-member-bound-driver/2",
+    "basisCommit": "43256a2",
+    "executionRequested": false,
+    "preparationValidated": true,
+    "receipt": null,
+    "assessment": null,
+    "treeCleanupConfirmed": false,
+    "failure": null,
+    "l2Approved": false,
+    "transportRun": false,
+    "realInputApproved": false,
+    "inputsBefore": {
+      "config": "5b7075fc182bb87c64091b9b48153e29aaeab832aa27b3b5020a8f05a45c118c",
+      "helper": "a206558e7722cd7772d1e815eea1a3cdcd0641664dbff2e3dd4cc0f120838b53",
+      "driver": "d24940701486bbdc2f62915e079fb92f1495f714fb08656c0c44d67061959407"
+    },
+    "inputsFinal": {
+      "config": "5b7075fc182bb87c64091b9b48153e29aaeab832aa27b3b5020a8f05a45c118c",
+      "helper": "a206558e7722cd7772d1e815eea1a3cdcd0641664dbff2e3dd4cc0f120838b53",
+      "driver": "d24940701486bbdc2f62915e079fb92f1495f714fb08656c0c44d67061959407"
+    },
+    "observations": {
+      "probes": 2,
+      "unexpected": 0,
+      "attempts": []
+    },
+    "ok": false,
+    "exitCode": 2
+  }
+}
