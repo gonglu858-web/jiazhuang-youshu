@@ -1,0 +1,170 @@
+{
+  "schema": "codex-fixed-candidate-offline/1",
+  "basisCommit": "8667edf",
+  "checks": 37,
+  "results": [
+    {
+      "name": "default prepares but backend remains disabled",
+      "passed": true
+    },
+    {
+      "name": "no CLI execution or override 1",
+      "passed": true
+    },
+    {
+      "name": "no CLI execution or override 2",
+      "passed": true
+    },
+    {
+      "name": "no CLI execution or override 3",
+      "passed": true
+    },
+    {
+      "name": "no CLI execution or override 4",
+      "passed": true
+    },
+    {
+      "name": "no CLI execution or override 5",
+      "passed": true
+    },
+    {
+      "name": "synthetic positive never becomes authenticity or process proof",
+      "passed": true
+    },
+    {
+      "name": "synthetic negative status POLICY_REJECTED",
+      "passed": true
+    },
+    {
+      "name": "synthetic negative status UNDETERMINED",
+      "passed": true
+    },
+    {
+      "name": "reject missing hash",
+      "passed": true
+    },
+    {
+      "name": "reject wrong hash",
+      "passed": true
+    },
+    {
+      "name": "reject uppercase hash",
+      "passed": true
+    },
+    {
+      "name": "reject raw target",
+      "passed": true
+    },
+    {
+      "name": "reject secret extra",
+      "passed": true
+    },
+    {
+      "name": "reject real evidence claim",
+      "passed": true
+    },
+    {
+      "name": "reject size zero",
+      "passed": true
+    },
+    {
+      "name": "reject size over limit",
+      "passed": true
+    },
+    {
+      "name": "reject unsafe size",
+      "passed": true
+    },
+    {
+      "name": "reject reparse",
+      "passed": true
+    },
+    {
+      "name": "reject second file",
+      "passed": true
+    },
+    {
+      "name": "reject drift",
+      "passed": true
+    },
+    {
+      "name": "reject online",
+      "passed": true
+    },
+    {
+      "name": "reject path-only binding",
+      "passed": true
+    },
+    {
+      "name": "reject zero status rejection",
+      "passed": true
+    },
+    {
+      "name": "reject nonzero accepted",
+      "passed": true
+    },
+    {
+      "name": "reject unsigned status code",
+      "passed": true
+    },
+    {
+      "name": "reject signature text",
+      "passed": true
+    },
+    {
+      "name": "reject open file",
+      "passed": true
+    },
+    {
+      "name": "reject open trust",
+      "passed": true
+    },
+    {
+      "name": "reject wrong schema",
+      "passed": true
+    },
+    {
+      "name": "accessor not evaluated",
+      "passed": true
+    },
+    {
+      "name": "symbol rejected",
+      "passed": true
+    },
+    {
+      "name": "non-enumerable field rejected",
+      "passed": true
+    },
+    {
+      "name": "proxy exception sanitized",
+      "passed": true
+    },
+    {
+      "name": "custom prototype rejected",
+      "passed": true
+    },
+    {
+      "name": "projection independent after mutation",
+      "passed": true
+    },
+    {
+      "name": "driver imports no execution or file capability",
+      "passed": true
+    }
+  ],
+  "digests": {
+    "driver": "de72451b77528c9d900056f7fddf60b7cfb83b7fbe3301cf6e839f2437e9bc8a",
+    "test": "59288a5c05ed3fc8aac4f6cd147b12f315a37355590549cb7b680e0fc19fcfe3"
+  },
+  "unexpectedOS": 0,
+  "targetRead": false,
+  "nativeSignatureExecuted": false,
+  "backendImplemented": false,
+  "limitations": [
+    "Actual JS preparation/receipt contract only; OS backend not implemented or invoked",
+    "Synthetic status and same-handle fields are fixtures, not Windows API proof",
+    "Microsoft documentation reviewed separately; zero persistent cache mutation not established"
+  ],
+  "ok": true,
+  "exitCode": 0
+}

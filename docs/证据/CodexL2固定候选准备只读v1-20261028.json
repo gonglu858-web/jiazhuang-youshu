@@ -1,0 +1,16 @@
+{
+  "schema": "codex-fixed-candidate-preparation/1",
+  "target": "WINDOWS_CONHOST_FIXED_FILE",
+  "executionEnabled": false,
+  "targetOpened": false,
+  "signatureInvoked": false,
+  "childStarts": 0,
+  "networkCalls": 0,
+  "cacheWrites": 0,
+  "backendImplemented": false,
+  "executionApproved": false,
+  "l2Approved": false,
+  "preparationValidated": true,
+  "reason": "SIGNATURE_BACKEND_UNREVIEWED",
+  "exitCode": 2
+}
