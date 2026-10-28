@@ -1,0 +1,200 @@
+{
+  "schema": "codex-l2-frozen-driver/2",
+  "basisCommit": "f1f3d41",
+  "releaseFrozen": true,
+  "executionRequested": true,
+  "before": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "Restricted",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ]
+  },
+  "temporary": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "RemoteSigned",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "RemoteSigned"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ]
+  },
+  "after": {
+    "version": "5.1.26100.9711",
+    "effectivePolicy": "Restricted",
+    "policies": [
+      {
+        "scope": "MachinePolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "UserPolicy",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "Process",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "CurrentUser",
+        "policy": "Undefined"
+      },
+      {
+        "scope": "LocalMachine",
+        "policy": "Undefined"
+      }
+    ]
+  },
+  "jobs": {
+    "normal": {
+      "passed": false,
+      "outcome": "failed",
+      "reason": "TREE_COUNT",
+      "created": true,
+      "assigned": true,
+      "resumed": true,
+      "pid": 32508,
+      "rootExit": 0,
+      "totalProcesses": 4,
+      "activeProcesses": 0,
+      "cleanupConfirmed": true,
+      "killRequested": true,
+      "killAccepted": true,
+      "stdoutBytes": 9,
+      "stderrBytes": 0,
+      "elapsedMs": 511
+    },
+    "timeout": null,
+    "transport": null
+  },
+  "sourceVerified": true,
+  "policyComparisonPassed": true,
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "attempts": [
+      {
+        "kind": "before",
+        "attempted": true,
+        "pid": 29176,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 351,
+        "stderrBytes": 0,
+        "killRequested": false,
+        "killAccepted": null,
+        "failed": false,
+        "reason": null
+      },
+      {
+        "kind": "temporary",
+        "attempted": true,
+        "pid": 43616,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 336,
+        "stderrBytes": 0,
+        "killRequested": false,
+        "killAccepted": null,
+        "failed": false,
+        "reason": null
+      },
+      {
+        "kind": "normal",
+        "attempted": true,
+        "pid": 20840,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 1,
+        "signal": null,
+        "stdoutBytes": 401,
+        "stderrBytes": 0,
+        "killRequested": false,
+        "killAccepted": null,
+        "failed": false,
+        "reason": null
+      },
+      {
+        "kind": "after",
+        "attempted": true,
+        "pid": 22760,
+        "closed": true,
+        "spawnFailed": false,
+        "status": 0,
+        "signal": null,
+        "stdoutBytes": 331,
+        "stderrBytes": 0,
+        "killRequested": false,
+        "killAccepted": null,
+        "failed": false,
+        "reason": null
+      }
+    ]
+  },
+  "failure": {
+    "phase": "normal",
+    "code": "HELPER_EXIT"
+  },
+  "cleanupFailure": null,
+  "fullPreflightPassed": false,
+  "realInputApproved": false,
+  "digests": {
+    "driver": "4f3bc5b939889cb0a90aab9efb39f5f14aedb9c37f32fcf571c9b9b6c1af28c2",
+    "helperSource": "31fafbe647ae044ff905823815e9c3a699a5840e7387aa4d9bcf8e39c5b551b6",
+    "helperBinary": "d6381e2d009651289c692e60241a197f765d72d35e71f0443d6c01e8ca6ea77d",
+    "metadata": "d780efd0fbe1a837ac9e6d7632aafe7809bfbf28c71c04c869b8dbce301b7719",
+    "metadataZone": "249420d502c182e7241d7ec6fe6c6c03151ca5aece3556a3e15eac7962f5cc53"
+  },
+  "elapsedMs": 2715,
+  "processTreeCleanupConfirmed": true,
+  "allDirectProcessesClosed": true,
+  "notRun": [
+    "P4",
+    "UI",
+    "DPAPI",
+    "private-save",
+    "cloud"
+  ],
+  "ok": false,
+  "exitCode": 1
+}
