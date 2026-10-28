@@ -1,3 +1,7 @@
+## 2026-10-28 Codex：路径分类单次编译执行器v3准备审查完成
+
+接手master 8d98a02，新执行器仅更新固定绑定与报告版本，runner/守卫/PE检查保持。78项实际代码离线替身检查通过，OS兜底0；实际默认只读preparationValidated=true、compilerStarts=0。报告exitCode=2与外层PowerShell工具返回1分别留证，未独立采集LASTEXITCODE、未重复执行。未编译或运行helper；下一节点按固定配置仅编译一次，成功只检查产物、不运行，异常即停不重试。详见[编译执行器复核](Codex复核-L2路径分类编译执行器v3-20261028.md)。旧源码/配置/驱动/产物/证据未改，AGENTS排除，无临时文件。完整L2及真实输入未放行。本节点无需转发给CodeBuddy。
+
 ## 2026-10-28 Codex：L2固定路径分类本地准备完成
 
 接手master 3b26ea7。新观察器v3、辅助层schema /2、编译配置v3、未绑定产物驱动v4及离线反例完成；41项通过，默认只读preparationValidated=true/exit2、探针2/意外0/attempts=[]。仅源码和JS/ASCII模型核验，C#动态比较与Capture链未验证。候选conhost固定路径仍为假设，四成员仍失败，不扣除计数。未编译或运行helper，无临时文件，旧代码/产物/证据未改，AGENTS既有修改排除。下一节点准备固定单次编译执行器与离线反例并审查，之后仅编译一次且只检查产物。真实输入及完整L2未放行。详见[本轮复核](Codex复核-L2路径分类本地准备-20261028.md)。本节点无需转发给CodeBuddy。

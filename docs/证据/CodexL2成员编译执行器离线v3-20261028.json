@@ -1,0 +1,330 @@
+{
+  "schema": "codex-l2-member-compile-offline/3",
+  "checks": 78,
+  "results": [
+    {
+      "name": "normal fixed vector/options single start",
+      "passed": true
+    },
+    {
+      "name": "throw",
+      "passed": true
+    },
+    {
+      "name": "noPid",
+      "passed": true
+    },
+    {
+      "name": "nonzero",
+      "passed": true
+    },
+    {
+      "name": "signal",
+      "passed": true
+    },
+    {
+      "name": "error",
+      "passed": true
+    },
+    {
+      "name": "stdout",
+      "passed": true
+    },
+    {
+      "name": "stderr",
+      "passed": true
+    },
+    {
+      "name": "limit",
+      "passed": true
+    },
+    {
+      "name": "type",
+      "passed": true
+    },
+    {
+      "name": "streamError",
+      "passed": true
+    },
+    {
+      "name": "missing",
+      "passed": true
+    },
+    {
+      "name": "timeout",
+      "passed": true
+    },
+    {
+      "name": "noClose",
+      "passed": true
+    },
+    {
+      "name": "killThrows",
+      "passed": true
+    },
+    {
+      "name": "killFalse",
+      "passed": true
+    },
+    {
+      "name": "utf8",
+      "passed": true
+    },
+    {
+      "name": "synthetic managed AMD64 PE",
+      "passed": true
+    },
+    {
+      "name": "PE reject truncated",
+      "passed": true
+    },
+    {
+      "name": "PE reject DOS",
+      "passed": true
+    },
+    {
+      "name": "PE reject signature",
+      "passed": true
+    },
+    {
+      "name": "PE reject machine",
+      "passed": true
+    },
+    {
+      "name": "PE reject magic",
+      "passed": true
+    },
+    {
+      "name": "PE reject CLR missing",
+      "passed": true
+    },
+    {
+      "name": "PE reject RVA invalid",
+      "passed": true
+    },
+    {
+      "name": "PE reject native entry",
+      "passed": true
+    },
+    {
+      "name": "PE reject entry zero",
+      "passed": true
+    },
+    {
+      "name": "PE reject metadata",
+      "passed": true
+    },
+    {
+      "name": "main default readonly zero mutations",
+      "passed": true
+    },
+    {
+      "name": "main exact one compile / synthetic PE / no execution",
+      "passed": true
+    },
+    {
+      "name": "main reject invalidCli",
+      "passed": true
+    },
+    {
+      "name": "main reject helperCli",
+      "passed": true
+    },
+    {
+      "name": "main reject evidenceExists",
+      "passed": true
+    },
+    {
+      "name": "main reject configDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject nodeDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject secondSourceDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject sourceLink",
+      "passed": true
+    },
+    {
+      "name": "main reject hostMismatch",
+      "passed": true
+    },
+    {
+      "name": "main reject agentsDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject excludeMissing",
+      "passed": true
+    },
+    {
+      "name": "main reject outputExists",
+      "passed": true
+    },
+    {
+      "name": "main reject outputLink",
+      "passed": true
+    },
+    {
+      "name": "main reject parentMissing",
+      "passed": true
+    },
+    {
+      "name": "main reject mkdirRace",
+      "passed": true
+    },
+    {
+      "name": "main reject tmpFailure",
+      "passed": true
+    },
+    {
+      "name": "main reject beforeStartExtra",
+      "passed": true
+    },
+    {
+      "name": "main reject sourceBeforeStart",
+      "passed": true
+    },
+    {
+      "name": "main reject sourceAfterStart",
+      "passed": true
+    },
+    {
+      "name": "main reject configAfterStart",
+      "passed": true
+    },
+    {
+      "name": "main reject legacyAfterStart",
+      "passed": true
+    },
+    {
+      "name": "main reject startThrow",
+      "passed": true
+    },
+    {
+      "name": "main reject compilerError",
+      "passed": true
+    },
+    {
+      "name": "main reject stderr",
+      "passed": true
+    },
+    {
+      "name": "main reject outputOverflow",
+      "passed": true
+    },
+    {
+      "name": "main reject streamError",
+      "passed": true
+    },
+    {
+      "name": "main reject timeout",
+      "passed": true
+    },
+    {
+      "name": "main reject noClose",
+      "passed": true
+    },
+    {
+      "name": "main reject killFalse",
+      "passed": true
+    },
+    {
+      "name": "main reject noProduct",
+      "passed": true
+    },
+    {
+      "name": "main reject badPe",
+      "passed": true
+    },
+    {
+      "name": "main reject largeProduct",
+      "passed": true
+    },
+    {
+      "name": "main reject extraProduct",
+      "passed": true
+    },
+    {
+      "name": "main reject nonemptyTmp",
+      "passed": true
+    },
+    {
+      "name": "main reject productLink",
+      "passed": true
+    },
+    {
+      "name": "main caught guard earlyNetwork",
+      "passed": true
+    },
+    {
+      "name": "main caught guard postCompileHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard lateReadHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard lateHashHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard socketHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard dnsHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard fetchHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard processHit",
+      "passed": true
+    },
+    {
+      "name": "main evidence race cannot overwrite",
+      "passed": true
+    },
+    {
+      "name": "main final same-size product drift rejected",
+      "passed": true
+    },
+    {
+      "name": "draft/runtime inputs still pinned and output absent",
+      "passed": true
+    },
+    {
+      "name": "executor exact version and binding delta only",
+      "passed": true
+    },
+    {
+      "name": "fixed v3 config hash and new source identities",
+      "passed": true
+    },
+    {
+      "name": "historical actual compile receipt and product retained",
+      "passed": true
+    }
+  ],
+  "digests": {
+    "runner": "aaddd45d255bee0305399c0b672fc358094c5a832468e7df78e0748931cc5a7a",
+    "test": "6f09aa37592917f162fcbdebe2c53d22438fd0f4a46aab379cb15c719879318d",
+    "observer": "722d28e9e2f145d9bcf4e00fb82ee4837ec4b365d53bdd86b4472a6228fd9019",
+    "config": "739605e1cada171173921bfd3c5bffbcc5c82674b5a3ed1b656c21b9fbb17b25"
+  },
+  "unexpectedOS": 0,
+  "actualCompilerStarts": 0,
+  "helperExecuted": false,
+  "coverage": "Actual executor/runner/PE checks with memory FS and synthetic OS/PE; exact executor delta, pinned v3 config and historical artifact preservation; C# not compiled or executed",
+  "ok": true,
+  "exitCode": 0
+}
