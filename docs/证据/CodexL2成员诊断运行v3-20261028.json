@@ -1,0 +1,178 @@
+{
+  "schema": "codex-l2-member-bound-driver/3",
+  "basisCommit": "e478fc1",
+  "executionRequested": true,
+  "preparationValidated": false,
+  "receipt": {
+    "schema": "codex-l2-member-job/1",
+    "mode": "normal",
+    "outcome": "failed",
+    "reason": "TREE_COUNT",
+    "created": true,
+    "assigned": true,
+    "resumed": true,
+    "pid": 40836,
+    "rootExited": true,
+    "rootExit": 0,
+    "jobEmpty": true,
+    "totalProcesses": 4,
+    "activeProcesses": 0,
+    "killRequested": true,
+    "killAccepted": true,
+    "readersDone": true,
+    "handlesClosed": true,
+    "cleanupConfirmed": true,
+    "stdoutBytes": 9,
+    "stderrBytes": 0,
+    "stdoutBase64": "",
+    "elapsedMs": 592,
+    "accountingLayoutVerified": true,
+    "observation": {
+      "failure": "NONE",
+      "identityCoverage": true,
+      "parentEvidenceComplete": false,
+      "notificationCompletenessGuaranteed": false,
+      "stopped": true,
+      "handlesClosed": true,
+      "duplicateNew": false,
+      "finalTotal": 4,
+      "events": [
+        {
+          "kind": "NEW",
+          "pid": 40836
+        },
+        {
+          "kind": "NEW",
+          "pid": 22456
+        },
+        {
+          "kind": "NEW",
+          "pid": 19116
+        },
+        {
+          "kind": "NEW",
+          "pid": 33572
+        },
+        {
+          "kind": "EXIT",
+          "pid": 19116
+        },
+        {
+          "kind": "EXIT",
+          "pid": 33572
+        },
+        {
+          "kind": "EXIT",
+          "pid": 40836
+        },
+        {
+          "kind": "EXIT",
+          "pid": 22456
+        },
+        {
+          "kind": "ACTIVE_ZERO",
+          "pid": 0
+        }
+      ],
+      "members": [
+        {
+          "pid": 40836,
+          "creationTime": "134376504342294721",
+          "image": "FIXED_NODE",
+          "state": "CAPTURED",
+          "root": true,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        },
+        {
+          "pid": 22456,
+          "creationTime": "134376504344145446",
+          "image": "OTHER_IMAGE",
+          "state": "CAPTURED",
+          "root": false,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        },
+        {
+          "pid": 19116,
+          "creationTime": "134376504344776721",
+          "image": "FIXED_NODE",
+          "state": "CAPTURED",
+          "root": false,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        },
+        {
+          "pid": 33572,
+          "creationTime": "134376504344975541",
+          "image": "OTHER_IMAGE",
+          "state": "CAPTURED",
+          "root": false,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        }
+      ]
+    }
+  },
+  "assessment": {
+    "diagnosticCollected": true,
+    "identityCoverage": true,
+    "parentEvidenceComplete": false,
+    "originalNormalPassed": false,
+    "sourceChainComplete": false,
+    "l2Approved": false,
+    "transportRun": false,
+    "cleanupConfirmed": true
+  },
+  "treeCleanupConfirmed": true,
+  "failure": {
+    "code": "NORMAL_FAILED"
+  },
+  "l2Approved": false,
+  "transportRun": false,
+  "realInputApproved": false,
+  "inputsBefore": {
+    "config": "5b7075fc182bb87c64091b9b48153e29aaeab832aa27b3b5020a8f05a45c118c",
+    "helper": "a206558e7722cd7772d1e815eea1a3cdcd0641664dbff2e3dd4cc0f120838b53",
+    "driver": "fe9dbf8dff44ef982f62dbd3c28e560ca401ebb70f46339d736745dd62097421"
+  },
+  "inputsFinal": {
+    "config": "5b7075fc182bb87c64091b9b48153e29aaeab832aa27b3b5020a8f05a45c118c",
+    "helper": "a206558e7722cd7772d1e815eea1a3cdcd0641664dbff2e3dd4cc0f120838b53",
+    "driver": "fe9dbf8dff44ef982f62dbd3c28e560ca401ebb70f46339d736745dd62097421"
+  },
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "attempts": [
+      {
+        "attempted": true,
+        "spawnCallEntered": true,
+        "spawnReturned": true,
+        "creationState": "pid-observed",
+        "pid": 12084,
+        "closed": true,
+        "status": 1,
+        "signal": null,
+        "stdoutBytes": 1586,
+        "stderrBytes": 0,
+        "killRequested": false,
+        "killAccepted": null,
+        "unrefRequested": false,
+        "pipeDestroyRequests": 0,
+        "localReleaseError": false,
+        "failure": null
+      }
+    ]
+  },
+  "ok": false,
+  "exitCode": 1
+}

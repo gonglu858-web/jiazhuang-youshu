@@ -1,0 +1,11 @@
+{
+  "schema": "codex-l2-member-current-presence/1",
+  "startedAt": "2026-10-28T16:40:14.4378831+08:00",
+  "endedAt": "2026-10-28T16:40:14.4508780+08:00",
+  "queriedName": "psr-l2-member-diag",
+  "queryError": null,
+  "matches": [],
+  "noNamedHelperObserved": true,
+  "historicalJobCleanupConfirmed": false,
+  "processTerminated": false
+}
