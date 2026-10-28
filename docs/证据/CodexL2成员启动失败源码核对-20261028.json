@@ -1,0 +1,52 @@
+{
+  "schema": "codex-l2-member-start-source-analysis/1",
+  "basisCommit": "366cf72",
+  "sourceAnalysisPassed": true,
+  "executionResult": {
+    "ok": false,
+    "exitCode": 1,
+    "guardUnexpected": 1,
+    "attempts": 1,
+    "receiptAvailable": false,
+    "treeCleanupConfirmed": false
+  },
+  "digests": {
+    "node": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19",
+    "driver": "d24940701486bbdc2f62915e079fb92f1495f714fb08656c0c44d67061959407",
+    "executionResult": "0f9423ecec57af58bb3bab19c989d60dc8a9d75a05bba9e6133f437337cf7c0d",
+    "internalChildProcess": "4a8a847aaf6f63b482bb2d99cf27a6718db6ba1724d56bc02a77dd6d2aa601a6",
+    "publicChildProcess": "13200937fb41d61ddd22c71a0611e897d26a95b9354994b0c6e15a4994d75d47",
+    "script": "b634cd95ae1c9dd6850988e48596b14b28dcd6f2618a14c2eef525ffb416dc25"
+  },
+  "anchors": [
+    {
+      "line": 335,
+      "text": "return net.Socket({ handle: pipe, readable });"
+    },
+    {
+      "line": 395,
+      "text": "const err = this._handle.spawn(options);"
+    },
+    {
+      "line": 425,
+      "text": "this.pid = this._handle.pid;"
+    },
+    {
+      "line": 450,
+      "text": "stream.socket = createSocket(this.pid !== 0 ?"
+    },
+    {
+      "line": 753,
+      "text": "child.spawn(options);"
+    }
+  ],
+  "conclusion": "The guard replaces net.Socket, which Node uses for child stdio after the native spawn call. START_FAILED and null recorded pid do not prove no OS child was created.",
+  "limitations": [
+    "No original exception stack was retained: source-level causal analysis, not a complete dynamic trace.",
+    "No helper retry, process enumeration or cleanup operation.",
+    "spawnFailed is the runner catch classification, not evidence of zero native process creation.",
+    "Parent command completion does not confirm Job cleanup."
+  ],
+  "l2Approved": false,
+  "realInputApproved": false
+}
