@@ -1,0 +1,180 @@
+{
+  "schema": "codex-l2-member-compile-result/1",
+  "basisCommit": "769869b",
+  "executionRequested": true,
+  "preparationValidated": false,
+  "startedAt": "2026-10-28T04:26:42.778Z",
+  "compiler": {
+    "attempted": true,
+    "pid": 20140,
+    "closed": true,
+    "spawnFailed": false,
+    "exitCode": 1,
+    "signal": null,
+    "stdoutBytes": 339,
+    "stderrBytes": 0,
+    "killRequested": true,
+    "killAccepted": false,
+    "failure": "STDOUT_NONEMPTY",
+    "elapsedMs": 99,
+    "stdoutDiagnostics": [
+      "docs\\证据\\CodexL2成员观察器-20261028.cs(102,7): error CS0246: 未能找到类型或命名空间名称“HashSet”(是否缺少 using 指令或程序集引用?)",
+      "docs\\证据\\CodexL2成员观察器-20261028.cs(102,32): error CS0246: 未能找到类型或命名空间名称“HashSet”(是否缺少 using 指令或程序集引用?)"
+    ],
+    "stderrDiagnostics": []
+  },
+  "output": null,
+  "failure": {
+    "code": "COMPILER_FAILED"
+  },
+  "createdPaths": [
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v1",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v1\\tmp"
+  ],
+  "helperExecuted": false,
+  "powershellExecuted": false,
+  "l2Unlocked": false,
+  "descendantsMeasured": false,
+  "inputsBefore": [
+    {
+      "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+      "bytes": 85119640,
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+      "bytes": 2569832,
+      "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+      "bytes": 182,
+      "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+      "bytes": 5445432,
+      "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+      "bytes": 3545264,
+      "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断辅助层-20261028.cs",
+      "bytes": 16570,
+      "sha256": "e2ff7a33fd5f87778d832e756c3d445a2270d681d83d65fb7a2bcc1edb7e9aa8"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员观察器-20261028.cs",
+      "bytes": 9230,
+      "sha256": "982cf19868a78e7ace2450ccd98e347e8d376119c0ea8edfbc87d00216fbe6d9"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断本地接口定义-20261028.json",
+      "bytes": 3244,
+      "sha256": "a2e0c883a98c9466a4a1045cf9ab66bc1b01a903bf504694b5aba1a57e3a741e"
+    }
+  ],
+  "inputsAfter": [
+    {
+      "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+      "bytes": 85119640,
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+      "bytes": 2569832,
+      "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+      "bytes": 182,
+      "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+      "bytes": 5445432,
+      "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+      "bytes": 3545264,
+      "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断辅助层-20261028.cs",
+      "bytes": 16570,
+      "sha256": "e2ff7a33fd5f87778d832e756c3d445a2270d681d83d65fb7a2bcc1edb7e9aa8"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员观察器-20261028.cs",
+      "bytes": 9230,
+      "sha256": "982cf19868a78e7ace2450ccd98e347e8d376119c0ea8edfbc87d00216fbe6d9"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断本地接口定义-20261028.json",
+      "bytes": 3244,
+      "sha256": "a2e0c883a98c9466a4a1045cf9ab66bc1b01a903bf504694b5aba1a57e3a741e"
+    }
+  ],
+  "inventory": [
+    {
+      "rel": "tmp",
+      "directory": true,
+      "bytes": null
+    }
+  ],
+  "inputsFinal": [
+    {
+      "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+      "bytes": 85119640,
+      "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+      "bytes": 2569832,
+      "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+      "bytes": 182,
+      "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+      "bytes": 5445432,
+      "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+      "bytes": 3545264,
+      "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断辅助层-20261028.cs",
+      "bytes": 16570,
+      "sha256": "e2ff7a33fd5f87778d832e756c3d445a2270d681d83d65fb7a2bcc1edb7e9aa8"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员观察器-20261028.cs",
+      "bytes": 9230,
+      "sha256": "982cf19868a78e7ace2450ccd98e347e8d376119c0ea8edfbc87d00216fbe6d9"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断本地接口定义-20261028.json",
+      "bytes": 3244,
+      "sha256": "a2e0c883a98c9466a4a1045cf9ab66bc1b01a903bf504694b5aba1a57e3a741e"
+    }
+  ],
+  "digests": {
+    "config": "aa42d0ec2d1fc9641f50556edcf3fc81f5f3031525541481c51308cf21c7c70a",
+    "runner": "7fd5fe631885c509c9cc9d468e202b5cd91e57ce6d3f23aa52dd10ba61586293"
+  },
+  "finishedAt": "2026-10-28T04:26:43.322Z",
+  "guardUnexpected": 0,
+  "compilerStarts": 1,
+  "ok": false,
+  "exitCode": 1
+}
