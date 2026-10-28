@@ -1,0 +1,184 @@
+{
+  "schema": "codex-l2-member-bound-driver/5",
+  "basisCommit": "c537b8d",
+  "executionRequested": true,
+  "preparationValidated": false,
+  "receipt": {
+    "schema": "codex-l2-member-job/2",
+    "mode": "normal",
+    "outcome": "failed",
+    "reason": "TREE_COUNT",
+    "created": true,
+    "assigned": true,
+    "resumed": true,
+    "pid": 18480,
+    "rootExited": true,
+    "rootExit": 0,
+    "jobEmpty": true,
+    "totalProcesses": 4,
+    "activeProcesses": 0,
+    "killRequested": true,
+    "killAccepted": true,
+    "readersDone": true,
+    "handlesClosed": true,
+    "cleanupConfirmed": true,
+    "stdoutBytes": 9,
+    "stderrBytes": 0,
+    "stdoutBase64": "",
+    "elapsedMs": 649,
+    "accountingLayoutVerified": true,
+    "observation": {
+      "failure": "NONE",
+      "identityCoverage": true,
+      "parentEvidenceComplete": false,
+      "notificationCompletenessGuaranteed": false,
+      "stopped": true,
+      "handlesClosed": true,
+      "duplicateNew": false,
+      "finalTotal": 4,
+      "events": [
+        {
+          "kind": "NEW",
+          "pid": 18480
+        },
+        {
+          "kind": "NEW",
+          "pid": 43292
+        },
+        {
+          "kind": "NEW",
+          "pid": 37112
+        },
+        {
+          "kind": "NEW",
+          "pid": 18804
+        },
+        {
+          "kind": "EXIT",
+          "pid": 37112
+        },
+        {
+          "kind": "EXIT",
+          "pid": 18804
+        },
+        {
+          "kind": "EXIT",
+          "pid": 18480
+        },
+        {
+          "kind": "EXIT",
+          "pid": 43292
+        },
+        {
+          "kind": "ACTIVE_ZERO",
+          "pid": 0
+        }
+      ],
+      "members": [
+        {
+          "pid": 18480,
+          "creationTime": "134376717032964292",
+          "image": "FIXED_NODE",
+          "pathClass": "FIXED_NODE_PATH",
+          "state": "CAPTURED",
+          "root": true,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        },
+        {
+          "pid": 43292,
+          "creationTime": "134376717034479094",
+          "image": "OTHER_IMAGE",
+          "pathClass": "WINDOWS_CONHOST_PATH_CANDIDATE",
+          "state": "CAPTURED",
+          "root": false,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        },
+        {
+          "pid": 37112,
+          "creationTime": "134376717035439643",
+          "image": "FIXED_NODE",
+          "pathClass": "FIXED_NODE_PATH",
+          "state": "CAPTURED",
+          "root": false,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        },
+        {
+          "pid": 18804,
+          "creationTime": "134376717035676003",
+          "image": "OTHER_IMAGE",
+          "pathClass": "WINDOWS_CONHOST_PATH_CANDIDATE",
+          "state": "CAPTURED",
+          "root": false,
+          "parent": "UNKNOWN",
+          "newSeen": true,
+          "listed": true,
+          "exitSeen": true
+        }
+      ]
+    }
+  },
+  "assessment": {
+    "diagnosticCollected": true,
+    "identityCoverage": true,
+    "parentEvidenceComplete": false,
+    "originalNormalPassed": false,
+    "sourceChainComplete": false,
+    "l2Approved": false,
+    "transportRun": false,
+    "cleanupConfirmed": true
+  },
+  "treeCleanupConfirmed": true,
+  "failure": {
+    "code": "NORMAL_FAILED"
+  },
+  "l2Approved": false,
+  "transportRun": false,
+  "realInputApproved": false,
+  "inputsBefore": {
+    "config": "739605e1cada171173921bfd3c5bffbcc5c82674b5a3ed1b656c21b9fbb17b25",
+    "helper": "f9287194c037aeba592b5c5eccc23d98fd403fe59040248b4455993171134d96",
+    "artifactBound": true,
+    "driver": "da90314446680bd986054c532e9721f4b7560d1bc05a1a0dec71308681611354"
+  },
+  "inputsFinal": {
+    "config": "739605e1cada171173921bfd3c5bffbcc5c82674b5a3ed1b656c21b9fbb17b25",
+    "helper": "f9287194c037aeba592b5c5eccc23d98fd403fe59040248b4455993171134d96",
+    "artifactBound": true,
+    "driver": "da90314446680bd986054c532e9721f4b7560d1bc05a1a0dec71308681611354"
+  },
+  "observations": {
+    "probes": 2,
+    "unexpected": 0,
+    "attempts": [
+      {
+        "attempted": true,
+        "spawnCallEntered": true,
+        "spawnReturned": true,
+        "creationState": "pid-observed",
+        "pid": 36400,
+        "closed": true,
+        "status": 1,
+        "signal": null,
+        "stdoutBytes": 1736,
+        "stderrBytes": 0,
+        "killRequested": false,
+        "killAccepted": null,
+        "unrefRequested": false,
+        "pipeDestroyRequests": 0,
+        "localReleaseError": false,
+        "failure": null
+      }
+    ]
+  },
+  "ok": false,
+  "exitCode": 1
+}
