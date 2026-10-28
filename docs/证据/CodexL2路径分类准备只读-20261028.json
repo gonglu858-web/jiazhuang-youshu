@@ -1,0 +1,28 @@
+{
+  "schema": "codex-l2-member-bound-driver/4",
+  "basisCommit": "3b26ea7",
+  "executionRequested": false,
+  "preparationValidated": true,
+  "receipt": null,
+  "assessment": null,
+  "treeCleanupConfirmed": false,
+  "failure": null,
+  "l2Approved": false,
+  "transportRun": false,
+  "realInputApproved": false,
+  "inputsBefore": {
+    "config": "739605e1cada171173921bfd3c5bffbcc5c82674b5a3ed1b656c21b9fbb17b25",
+    "helper": null,
+    "artifactBound": false,
+    "driver": "54e92039f10574f06c5b0de5343556885372e409a193af1dd97de1c295b43a0b"
+  },
+  "inputsFinal": {
+    "config": "739605e1cada171173921bfd3c5bffbcc5c82674b5a3ed1b656c21b9fbb17b25",
+    "helper": null,
+    "artifactBound": false,
+    "driver": "54e92039f10574f06c5b0de5343556885372e409a193af1dd97de1c295b43a0b"
+  },
+  "observations": { "probes": 2, "unexpected": 0, "attempts": [] },
+  "ok": false,
+  "exitCode": 2
+}

@@ -1,0 +1,189 @@
+{
+  "schema": "codex-l2-path-class-preparation/1",
+  "basisCommit": "3b26ea7",
+  "checks": 41,
+  "results": [
+    {
+      "name": "real driver default only prepares unbound sources",
+      "passed": true
+    },
+    {
+      "name": "execution switch blocked without artifact before OS/write",
+      "passed": true
+    },
+    {
+      "name": "private runner independently unbound",
+      "passed": true
+    },
+    {
+      "name": "new source drift fails closed",
+      "passed": true
+    },
+    {
+      "name": "two Node receipt positive remains not L2 approval",
+      "passed": true
+    },
+    {
+      "name": "four including candidate still original failure",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects old schema",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects missing class",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects unknown label",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects raw path",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects extra field",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects Node candidate",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects other Node class",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects captured unknown class",
+      "passed": true
+    },
+    {
+      "name": "consumer rejects unknown candidate",
+      "passed": true
+    },
+    {
+      "name": "unknown remains unknown",
+      "passed": true
+    },
+    {
+      "name": "OTHER_PATH retained without approval",
+      "passed": true
+    },
+    {
+      "name": "Capture prerequisites unchanged before success",
+      "passed": true
+    },
+    {
+      "name": "observer polling identity and cleanup unchanged",
+      "passed": true
+    },
+    {
+      "name": "no new platform APIs",
+      "passed": true
+    },
+    {
+      "name": "same captured value one path conversion",
+      "passed": true
+    },
+    {
+      "name": "helper only schema changes, payload and count unchanged",
+      "passed": true
+    },
+    {
+      "name": "fixed C# classification source exact",
+      "passed": true
+    },
+    {
+      "name": "ASCII model candidate and case",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 24",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 25",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 26",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 27",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 28",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 29",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 30",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 31",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 32",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 33",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 34",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 35",
+      "passed": true
+    },
+    {
+      "name": "ASCII model rejects shape 36",
+      "passed": true
+    },
+    {
+      "name": "runner inherited exactly except unbound guard",
+      "passed": true
+    },
+    {
+      "name": "guard implementation unchanged",
+      "passed": true
+    },
+    {
+      "name": "config references and compiler unchanged",
+      "passed": true
+    },
+    {
+      "name": "full compiler config exact limited adaptation",
+      "passed": true
+    }
+  ],
+  "digests": {
+    "driver": "54e92039f10574f06c5b0de5343556885372e409a193af1dd97de1c295b43a0b",
+    "test": "84579970a1ae7a8e3d7d0949ee9e7713e2fb9a6e7f4bb7ecd8a4edfd79543ab3",
+    "observer": "722d28e9e2f145d9bcf4e00fb82ee4837ec4b365d53bdd86b4472a6228fd9019",
+    "helperSource": "0e67ee083cdcbe67773362ff62f4ee766e6cc083c4ed2a7f26e6eab696cba2ce",
+    "config": "739605e1cada171173921bfd3c5bffbcc5c82674b5a3ed1b656c21b9fbb17b25"
+  },
+  "actualHelperStarts": 0,
+  "actualCompilerStarts": 0,
+  "realOSFallbackHits": 0,
+  "csharpExecuted": false,
+  "limitations": [
+    "C# source checks and ASCII fixture model only; C# runtime comparison/Capture tests remain pending",
+    "Actual JS consumer and preparation driver executed in VM with fake OS capabilities and intercepted writes",
+    "No native Job, process query or new artifact execution"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
