@@ -1,0 +1,116 @@
+'use strict';
+// Independent real-OS fallback. This test never compiles/loads native code.
+let fallbackHits=0;function deny(){fallbackHits++;throw Error('REAL_OS_DENIED');}
+const cp=require('node:child_process');for(const k of Object.keys(cp))if(typeof cp[k]==='function')cp[k]=deny;
+for(const id of ['node:http','node:https','node:net','node:tls','node:dgram','node:dns']){const m=require(id);if(id==='node:net')m.Socket.prototype.connect=deny;if(id==='node:dns')for(const k of Object.keys(m.promises))if(typeof m.promises[k]==='function')m.promises[k]=deny;for(const k of Object.keys(m))if(typeof m[k]==='function')Object.defineProperty(m,k,{value:deny,configurable:true});}globalThis.fetch=deny;
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+
+const {EventEmitter}=require('node:events');
+const ROOT=path.resolve(__dirname,'../..'),DRIVER=path.join(__dirname,'CodexL2成员诊断驱动v5-20261028.cjs'),OUT=path.join(__dirname,'CodexL2成员绑定离线v4-20261028.json');
+const nativeText=process.binding('natives')['internal/child_process'];
+const nativeStart=nativeText.indexOf('ChildProcess.prototype.spawn = '),nativeEnd=nativeText.indexOf('\nfunction onErrorNT',nativeStart);
+const nativeFunction=nativeText.slice(nativeStart+'ChildProcess.prototype.spawn = '.length,nativeEnd).trim().replace(/;$/,'');
+const source=fs.readFileSync(DRIVER,'utf8'),config=JSON.parse(fs.readFileSync(path.join(__dirname,'CodexL2成员诊断编译草案v3-20261028.json'))),results=[];
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+function test(name,fn){try{fn();}catch(e){e.message=name+': '+e.message;throw e;}results.push({name,passed:true});}
+let api;
+async function full(mode){
+  const mods=new Map(),calls=[],events=[];let ctx,text='',saved=null,spawned=false,hit=false,socketCount=0;
+  const evidence=path.join(__dirname,'CodexL2成员诊断运行v5-20261028.json');
+  function inject(which){try{if(which==='socket')new (mods.get('node:net').Socket)().connect();else if(which==='socketPrototype')mods.get('node:net').Socket.prototype.connect();else if(which==='dns')mods.get('node:dns').promises.lookup();else if(which==='fetch')ctx.fetch();else if(which==='process')mods.get('node:child_process').execSync();else mods.get('node:https').request();}catch{}}
+  const fsm={lstatSync(p){const real=fs.lstatSync(p);return {isFile:()=>real.isFile(),isSymbolicLink:()=>mode==='link'&&p===config.outputFile||real.isSymbolicLink()};},existsSync(p){return p===evidence?mode==='existing':fs.existsSync(p);},readFileSync(p){
+    if(!hit&&((mode==='earlyHit'&&p===config.host.path)||(['lateHit','lateSocket'].includes(mode)&&spawned&&p===DRIVER)||(['socket','socketPrototype','dns','fetch','process'].includes(mode)&&p===DRIVER))){hit=true;inject(mode==='lateSocket'?'socket':mode);}
+    const b=fs.readFileSync(p);if(mode==='helperDrift'&&p===config.outputFile||mode==='postDrift'&&spawned&&p===config.outputFile||mode==='compileDrift'&&String(p).includes('单次编译v3')&&String(p).endsWith('.json')||mode==='configDrift'&&String(p).includes('编译草案'))return Buffer.concat([b,Buffer.from(' ')]);return b;
+  },writeFileSync(p,s,o){assert.equal(p,evidence);assert.equal(o.flag,'wx');if(mode==='writeRace')throw Error('race');saved=JSON.parse(s);},writeSync(fd,s){assert.equal(fd,1);text+=s;}};
+  function deliver(ch){queueMicrotask(()=>{if(['timeout','noClose','socketThrow','secondSocketThrow','socketThrowNoClose','legacyConstructorGuard','nativeFailure','nativeUnknownFailure','missingPid'].includes(mode)||ch.killed)return;if(mode==='error'){ch.emit('error',Error('x'));return;}if(mode==='stderr'){ch.stderr.emit('data',Buffer.from('x'));return;}if(mode==='stream'){ch.stdout.emit('error',Error('x'));return;}if(mode==='overflow'){ch.stdout.emit('data',Buffer.alloc(131073));return;}if(mode==='type'){ch.stdout.emit('data','bad');return;}
+      let r=receipt(mode==='four'?4:2);if(mode==='cleanup')r.cleanupConfirmed=false;if(mode==='unknown'){r.observation.identityCoverage=false;Object.assign(r.observation.members[1],{state:'UNAVAILABLE',image:'UNKNOWN',pathClass:'UNKNOWN',creationTime:null});}
+      let raw=Buffer.from(JSON.stringify(r));if(mode==='badWire')raw=Buffer.from([255]);if(mode==='badJson')raw=Buffer.from('{');if(mode==='empty')raw=Buffer.alloc(0);ch.stdout.emit('data',raw);ch.emit('close',mode==='four'?1:mode==='badExit'?3:mode==='exitMismatch'?1:0,mode==='signal'?'SIGTERM':null);
+    });
+  }
+  function RawChild(){if(mode==='constructorThrow')throw Error('constructor');const ch=new EventEmitter();ch._closesNeeded=1;
+    ch._handle={pid:mode==='missingPid'||mode==='nativeFailure'?undefined:808,close(){events.push('nativeHandleClose');},spawn(opts){
+      events.push('nativeSpawn');const record=Object.assign({},opts,{stdio:opts.stdio.map(x=>x.type)});calls.push(record);spawned=true;if(mode==='throw')throw Error('start');
+      if(mode==='legacyConstructorGuard')mods.get('node:net').Socket=()=>{throw Error('legacyGuard');};
+      if(mode==='nativeFailure')return -13;if(mode==='nativeUnknownFailure')return -999;
+      deliver(ch);return 0;
+    }};
+    ch.kill=()=>{events.push('kill');ch.killed=true;if(!['noClose','socketThrowNoClose'].includes(mode))queueMicrotask(()=>ch.emit('close',null,'SIGKILL'));return !['noClose','socketThrowNoClose'].includes(mode);};
+    ch.unref=()=>{events.push('unref');};
+    // Retained instance, but actual Node's pinned spawn function is executed below.
+    return ch;
+  }
+  function req(id){if(id==='node:fs')return fsm;if(id==='node:path')return path;if(id==='node:crypto')return {createHash(alg){const h=crypto.createHash(alg);return {update(b){if(mode==='hashHit'&&!hit&&Buffer.isBuffer(b)&&b.toString()===source){hit=true;inject();}h.update(b);return this;},digest:e=>h.digest(e)};}};if(!mods.has(id)){const denied=()=>{throw Error('unwrapped fake OS');};const m={spawn:denied,execSync:denied,request:denied,connect:denied};
+    if(id==='node:child_process'){RawChild.prototype.spawn=vm.runInContext('('+nativeFunction+')',ctx);m.ChildProcess=RawChild;}
+    if(id==='node:net'){m.Socket=function(options){events.push('pipeSocket');socketCount++;if(['socketThrow','socketThrowNoClose'].includes(mode)||mode==='secondSocketThrow'&&socketCount===2)throw Error('socket wrapping');assert.equal(options.readable,true);const socket=new EventEmitter();socket.destroy=()=>{events.push('destroyPipe');};return socket;};m.Socket.prototype.connect=denied;}
+    if(id==='node:dns')m.promises={lookup:denied};mods.set(id,m);}return mods.get(id);}
+  const module={exports:{}};req.main=module;let argv=mode==='default'?[]:['--execute-normal-once'];if(mode==='cli')argv=['--execute-normal-once','--helper','else'];
+  const proc={argv:[config.host.path,DRIVER,...argv],execPath:mode==='host'?'other':config.host.path,cwd:()=>ROOT,exitCode:undefined,binding:()=>({'internal/child_process':mode==='internalDrift'?nativeText+' ':nativeText}),nextTick:(fn,...args)=>queueMicrotask(()=>fn(...args))};
+  ctx=vm.createContext({require:req,module,process:proc,__dirname,__filename:DRIVER,Buffer,TextDecoder,setTimeout:(fn,ms)=>setTimeout(fn,Math.min(ms,10)),clearTimeout,
+    validateObject:x=>assert(x&&typeof x==='object'),validateOneOf:(x,n,allowed)=>assert(allowed.includes(x)),validateArray:x=>assert(Array.isArray(x)),validateString:x=>assert.equal(typeof x,'string'),
+    getValidStdio(v){assert.deepEqual(Array.from(v),['ignore','pipe','pipe']);return {stdio:v.map(type=>({type,handle:type==='pipe'?{close(){events.push('pipeClose');}}:null}))};},
+    ArrayPrototypePush:(a,...xs)=>a.push(...xs),UV_EACCES:-13,UV_EAGAIN:-11,UV_EMFILE:-24,UV_ENFILE:-23,UV_ENOENT:-2,
+    onErrorNT:(ch)=>ch.emit('error',Error('native failed')),onSpawnNT:ch=>ch.emit('spawn'),maybeClose:()=>{},ErrnoException:Error,
+    setupChannel:()=>{throw Error('IPC_FORBIDDEN');}});
+  // Original createSocket expression evaluated in the same realm as the driver.
+  vm.runInContext('function createSocket(pipe, readable) { return require("node:net").Socket({ handle: pipe, readable }); }',ctx);
+  if(mode==='pipeExtra')vm.runInContext('createSocket=(pipe,readable)=>require("node:net").Socket({handle:pipe,readable,extra:true})',ctx);
+  if(mode==='pipeAccessor')vm.runInContext('createSocket=(pipe,readable)=>require("node:net").Socket({get handle(){throw Error("GETTER_MUST_NOT_RUN");},readable})',ctx);
+  if(mode==='pipeNotReadable')vm.runInContext('createSocket=(pipe,readable)=>require("node:net").Socket({handle:pipe,readable:false})',ctx);
+  await vm.runInContext(source,ctx,{timeout:3000});if(mode==='second')await assert.rejects(vm.runInContext('runNormal()',ctx),e=>e.code==='RUNNER_SEQUENCE');return {api:module.exports,r:JSON.parse(text),exit:proc.exitCode,calls,saved,events,socketCount};
+}
+function member(pid,root){return {pid,creationTime:String(100000+pid),image:'FIXED_NODE',pathClass:'FIXED_NODE_PATH',state:'CAPTURED',root,parent:'UNKNOWN',newSeen:true,listed:true,exitSeen:true};}
+function receipt(n=2){const members=Array.from({length:n},(_,i)=>member(100+i,i===0));if(n===4)for(const m of members.slice(2)){m.image='OTHER_IMAGE';m.pathClass='WINDOWS_CONHOST_PATH_CANDIDATE';}return {schema:'codex-l2-member-job/2',mode:'normal',outcome:n===2?'completed':'failed',reason:n===2?'NONE':'TREE_COUNT',created:true,assigned:true,resumed:true,pid:100,rootExited:true,rootExit:0,jobEmpty:true,totalProcesses:n,activeProcesses:0,killRequested:n!==2,killAccepted:n!==2,readersDone:true,handlesClosed:true,cleanupConfirmed:true,stdoutBytes:9,stderrBytes:0,stdoutBase64:n===2?Buffer.from('L2_NORMAL').toString('base64'):'',elapsedMs:500,accountingLayoutVerified:true,observation:{failure:'NONE',identityCoverage:true,parentEvidenceComplete:false,notificationCompletenessGuaranteed:false,stopped:true,handlesClosed:true,duplicateNew:false,finalTotal:n,events:members.flatMap(m=>[{kind:'NEW',pid:m.pid},{kind:'EXIT',pid:m.pid}]),members}};}
+function reject(name,change,status=0){test('reject '+name,()=>{const r=receipt();change(r);assert.throws(()=>api.inspectReceipt(r,status));});}
+
+function pathClassMatrix(){
+  const variants=[['old schema',r=>r.schema='codex-l2-member-job/1'],['missing class',r=>delete r.observation.members[0].pathClass],['arbitrary class',r=>r.observation.members[0].pathClass='TRUSTED'],['secret path',r=>r.observation.members[0].pathClass='C:\\synthetic-secret\\conhost.exe'],['extra raw path',r=>r.observation.members[0].rawPath='synthetic-secret'],['Node candidate',r=>r.observation.members[0].pathClass='WINDOWS_CONHOST_PATH_CANDIDATE'],['other Node class',r=>r.observation.members[0].image='OTHER_IMAGE'],['captured unknown',r=>r.observation.members[0].pathClass='UNKNOWN'],['unknown candidate',r=>{r.observation.identityCoverage=false;Object.assign(r.observation.members[1],{image:'UNKNOWN',state:'UNAVAILABLE',creationTime:null,pathClass:'WINDOWS_CONHOST_PATH_CANDIDATE'});}]];
+  for(const [name,change]of variants)reject('path-class '+name,change);
+  test('four candidate receipt still failure, labels not approval',()=>{const r=receipt(4);assert.equal(r.observation.members.filter(m=>m.pathClass==='WINDOWS_CONHOST_PATH_CANDIDATE').length,2);const a=api.inspectReceipt(r,1);assert(!a.originalNormalPassed&&!a.l2Approved&&!a.sourceChainComplete);});
+  test('guard and runner exact preservation from v4',()=>{const prior=fs.readFileSync(path.join(__dirname,'CodexL2成员诊断驱动v4-20261028.cjs'),'utf8');for(const [a,b]of [['const state=','const fs=require'],['async function runNormal(){','async function main(){']])assert.equal(source.slice(source.indexOf(a),source.indexOf(b)),prior.slice(prior.indexOf(a),prior.indexOf(b)));});
+}
+// RECEIPT_TESTS
+function receiptMatrix(){
+  test('normal receipt does not approve L2 or parent chain',()=>{const r=api.inspectReceipt(receipt(),0);assert(r.originalNormalPassed&&r.identityCoverage&&r.diagnosticCollected);assert(!r.l2Approved&&!r.parentEvidenceComplete&&!r.sourceChainComplete&&!r.transportRun);});
+  test('four known members remain original failure',()=>{const r=api.inspectReceipt(receipt(4),1);assert(r.diagnosticCollected&&r.identityCoverage&&!r.originalNormalPassed&&!r.l2Approved);});
+  test('short-lived member unknown is preserved',()=>{const r=receipt(4);r.observation.identityCoverage=false;Object.assign(r.observation.members[3],{state:'EXIT_WITHOUT_IDENTITY',image:'UNKNOWN',pathClass:'UNKNOWN',creationTime:null});assert(!api.inspectReceipt(r,1).identityCoverage);});
+  test('missed members never coverage',()=>{const r=receipt(4);r.observation.identityCoverage=false;r.observation.members.pop();r.observation.events=r.observation.events.filter(e=>e.pid!==103);assert(!api.inspectReceipt(r,1).identityCoverage);});
+  test('other image not silently approved',()=>{const r=receipt(4);r.observation.members[3].image='OTHER_IMAGE';r.observation.members[3].pathClass='OTHER_PATH';const v=api.inspectReceipt(r,1);assert(!v.l2Approved&&!v.sourceChainComplete);});
+  test('unknown parent explicit even normal',()=>assert.equal(api.inspectReceipt(receipt(),0).parentEvidenceComplete,false));
+  const variants=[
+    ['wrong schema',r=>r.schema='old'],['wrong mode',r=>r.mode='transport'],['extra field',r=>r.secret='synthetic'],['missing total',r=>delete r.totalProcesses],['string count',r=>r.totalProcesses='2'],['negative pid',r=>r.pid=-1],['active over total',r=>r.activeProcesses=3],['empty contradiction',r=>r.jobEmpty=false],['resumed without assigned',r=>r.assigned=false],['kill accepted without request',r=>r.killAccepted=true],['oversized output',r=>r.stdoutBytes=131073],['over budget',r=>r.elapsedMs=7501],['cleanup lied',r=>r.cleanupConfirmed=false],['open pipe',r=>r.readersDone=false],['open handles',r=>r.handlesClosed=false],['layout missing',r=>r.accountingLayoutVerified=false],['wrong root exit',r=>r.rootExit=3],['base64 invalid',r=>r.stdoutBase64+='!'],['wrong output',r=>r.stdoutBase64=Buffer.from('BAD').toString('base64')],['stderr',r=>r.stderrBytes=1],
+    ['observation missing',r=>r.observation=null],['obs extra',r=>r.observation.path='synthetic'],['parent claim',r=>r.observation.parentEvidenceComplete=true],['event completeness claim',r=>r.observation.notificationCompletenessGuaranteed=true],['obs total mismatch',r=>r.observation.finalTotal=4],['member capacity',r=>r.observation.members=Array.from({length:17},(_,i)=>member(100+i,i===0))],['event capacity',r=>r.observation.events=Array(129).fill({kind:'NEW',pid:100})],['duplicate identity',r=>r.observation.members[1].pid=100],['arbitrary image path',r=>r.observation.members[1].image='C:\\synthetic-secret.exe'],['arbitrary state',r=>r.observation.members[1].state='trusted-system'],['invented parent',r=>r.observation.members[1].parent=100],['invalid time',r=>r.observation.members[1].creationTime='0'],['captured missing time',r=>r.observation.members[1].creationTime=null],['unknown with image',r=>r.observation.members[1].state='UNAVAILABLE'],['wrong root',r=>r.observation.members[1].root=true],['duplicate NEW lie',r=>r.observation.events.push({kind:'NEW',pid:100})],['event unknown pid',r=>r.observation.events.push({kind:'NEW',pid:999})],['event flags lie',r=>r.observation.members[1].newSeen=false],['obs not stopped',r=>r.observation.stopped=false],['obs handles open',r=>r.observation.handlesClosed=false],['obs failure',r=>r.observation.failure='OBS_QUEUE'],['coverage missing member',r=>{r.observation.members.pop();r.observation.events=r.observation.events.filter(e=>e.pid===100);}]
+  ];for(const [n,f]of variants)reject(n,f);
+  test('duplicated new fact prevents coverage but retained',()=>{const r=receipt(4);r.observation.events.push({kind:'NEW',pid:100});r.observation.duplicateNew=true;r.observation.identityCoverage=false;assert(!api.inspectReceipt(r,1).identityCoverage);});
+  test('reordered events are not invented parent evidence',()=>{const r=receipt();r.observation.events.reverse();assert(!api.inspectReceipt(r,0).parentEvidenceComplete);});
+  test('failed native exit cannot be exit0',()=>assert.throws(()=>api.inspectReceipt(receipt(4),0)));
+  test('completed cannot be exit1',()=>assert.throws(()=>api.inspectReceipt(receipt(),1)));
+  test('failed with no cause and clean receipt rejected',()=>{const r=receipt();r.outcome='failed';r.stdoutBase64='';assert.throws(()=>api.inspectReceipt(r,1));});
+  for(const raw of [Buffer.from([0xff]),Buffer.from('\ufffd'),Buffer.from('{'),Buffer.alloc(131073), 'not-buffer'])test('wire rejection '+results.length,()=>assert.throws(()=>api.parseReceipt(raw,0)));
+  test('strict wire valid receipt',()=>assert(api.parseReceipt(Buffer.from(JSON.stringify(receipt())),0).originalNormalPassed));
+
+}
+(async()=>{try{
+  assert(process.argv.length===2||process.argv.length===4&&process.argv[2]==='--out'&&path.resolve(process.argv[3])===OUT);if(process.argv.length===4)assert(!fs.existsSync(OUT));
+  const d=await full('default');api=d.api;test('default readonly bound artifact exit2',()=>{assert(d.r.preparationValidated);assert.equal(d.exit,2);assert.equal(d.calls.length,0);assert.equal(d.saved,null);});receiptMatrix();pathClassMatrix();
+  const old=fs.readFileSync(path.join(__dirname,'CodexL2成员诊断驱动v4-20261028.cjs'),'utf8');test('receipt validator exact reviewed path-class bytes retained',()=>assert.equal(source.slice(source.indexOf('function exact('),source.indexOf('function chain(')),old.slice(old.indexOf('function exact('),old.indexOf('function chain('))));
+  const good=await full('normal');test('pinned native spawn fixed vector and two local pipes',()=>{assert.equal(good.exit,0,JSON.stringify(good.r));assert(good.r.ok&&good.r.treeCleanupConfirmed);assert.equal(good.calls.length,1);assert.deepEqual(JSON.parse(JSON.stringify(good.calls[0])),{file:config.outputFile,args:[config.outputFile,'normal'],cwd:ROOT,detached:false,windowsHide:true,windowsVerbatimArguments:false,envPairs:['SystemRoot=C:\\Windows','WINDIR=C:\\Windows'],stdio:['ignore','pipe','pipe']});assert.equal(good.socketCount,2);assert.deepEqual(good.events.slice(0,3),['nativeSpawn','pipeSocket','pipeSocket']);assert.deepEqual(good.saved,good.r);assert(!good.r.l2Approved&&!good.r.transportRun&&!good.r.realInputApproved);assert.equal(good.r.observations.unexpected,0);});
+  for(const mode of ['cli','existing','host','link','helperDrift','compileDrift','configDrift','earlyHit','hashHit','socket','dns','fetch','process','throw','missingPid','error','stderr','stream','overflow','type','timeout','noClose','badWire','badJson','empty','badExit','exitMismatch','signal','cleanup','four','postDrift','lateHit','writeRace']){const t=await full(mode);test('whole driver rejection '+mode,()=>{assert.equal(t.exit,1);assert(!t.r.ok);assert(t.calls.length<=1);if(['cli','existing','host','link','helperDrift','compileDrift','configDrift','earlyHit','hashHit','socket','dns','fetch','process'].includes(mode))assert.equal(t.calls.length,0);if(['earlyHit','hashHit','socket','dns','fetch','process','lateHit'].includes(mode))assert.equal(t.r.observations.unexpected,1);if(mode==='four'){assert(t.r.assessment.diagnosticCollected);assert(!t.r.assessment.originalNormalPassed);assert.equal(t.r.failure.code,'NORMAL_FAILED');}if(['noClose','timeout','badWire','cleanup'].includes(mode))assert.equal(t.r.treeCleanupConfirmed,false);});}
+  const second=await full('second');test('same process second run rejected before OS',()=>{assert(second.r.ok);assert.equal(second.calls.length,1);});
+  for(const mode of ['pipeExtra','pipeAccessor','pipeNotReadable']){const t=await full(mode);test('pipe constructor envelope rejected '+mode,()=>{assert.equal(t.exit,1);assert.equal(t.r.observations.unexpected,1);assert.equal(t.socketCount,0);assert.equal(t.calls.length,1);assert(t.events.includes('kill'));assert(!t.r.treeCleanupConfirmed);});}
+  for(const mode of ['socketPrototype','lateSocket']){const t=await full(mode);test('socket gate closed outside private spawn '+mode,()=>{assert.equal(t.exit,1);assert.equal(t.r.observations.unexpected,1);assert.equal(t.calls.length,mode==='lateSocket'?1:0);});}
+  for(const mode of ['socketThrow','secondSocketThrow','socketThrowNoClose','legacyConstructorGuard','nativeFailure','nativeUnknownFailure','constructorThrow','internalDrift']){
+    const t=await full(mode);test('native setup boundary '+mode,()=>{
+      assert.equal(t.exit,1);assert(!t.r.ok);assert.equal(t.r.treeCleanupConfirmed,false);
+      if(['constructorThrow','internalDrift'].includes(mode))assert.equal(t.calls.length,0);
+      else {assert.equal(t.calls.length,1);assert(t.events.includes('kill'));assert(t.r.observations.attempts[0].spawnCallEntered);}
+      if(['socketThrow','secondSocketThrow','socketThrowNoClose','legacyConstructorGuard'].includes(mode)){
+        const a=t.r.observations.attempts[0];assert.equal(a.pid,808);assert.equal(a.creationState,'pid-observed');assert.equal(a.spawnReturned,false);assert.equal(Object.hasOwn(a,'spawnFailed'),false);assert.equal(a.killRequested,true);assert(t.events.indexOf('nativeSpawn')<t.events.indexOf('kill'));
+        assert(a.unrefRequested);assert.equal(a.localReleaseError,false);assert.equal(a.pipeDestroyRequests,mode==='secondSocketThrow'?1:0);
+        if(mode==='socketThrowNoClose'){assert.equal(a.closed,false);assert.equal(a.failure,'PROCESS_NOT_CLOSED');}else assert.equal(a.closed,true);
+      }
+      if(mode==='nativeFailure')assert.equal(t.r.observations.attempts[0].creationState,'unknown');
+    });
+  }
+  const unknown=await full('unknown');test('normal selftest does not invent identity coverage',()=>{assert(unknown.r.ok);assert.equal(unknown.r.assessment.identityCoverage,false);assert.equal(unknown.r.assessment.sourceChainComplete,false);});
+  const digests={driver:hash(fs.readFileSync(DRIVER)),test:hash(fs.readFileSync(__filename)),helper:hash(fs.readFileSync(config.outputFile)),nodeInternal:hash(nativeText)};const r={schema:'codex-l2-member-bound-offline/4',checks:results.length,results,digests,actualHelperStarts:0,nativeApiTested:false,pinnedNodeSpawnBodyEvaluated:true,realOSFallbackHits:fallbackHits,limitations:['Pinned Node ChildProcess.spawn JS body and createSocket shape evaluated with synthetic handles, events and Socket implementation; no actual OS spawn or native member execution','Reviewed schema /2 path-class validators retained; UNKNOWN remains UNKNOWN; C# classification/Capture not dynamically executed','Helper termination alone does not independently confirm Job cleanup without valid receipt'],ok:fallbackHits===0};r.exitCode=r.ok?0:1;const json=JSON.stringify(r,null,2)+'\n';if(process.argv.length===4)fs.writeFileSync(OUT,json,{flag:'wx'});fs.writeSync(1,JSON.stringify({ok:r.ok,checks:r.checks,fallbackHits})+'\n');process.exitCode=r.exitCode;
+}catch(e){fs.writeSync(1,JSON.stringify({ok:false,checks:results.length,error:e.message})+'\n');process.exitCode=1;}})();
