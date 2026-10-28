@@ -1,0 +1,454 @@
+{
+  "schema": "codex-l2-member-offline/1",
+  "basisCommit": "2627a0a",
+  "tests": 77,
+  "results": [
+    {
+      "name": "prepared CLI zero OS and exit2",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects --execute:",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects normal:",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects --out:elsewhere",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects --mode:transport",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects --helper:other",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects --pid:1",
+      "passed": true
+    },
+    {
+      "name": "CLI rejects --policy:RemoteSigned",
+      "passed": true
+    },
+    {
+      "name": "guard/drift configDrift",
+      "passed": true
+    },
+    {
+      "name": "guard/drift earlyHit",
+      "passed": true
+    },
+    {
+      "name": "guard/drift readHit",
+      "passed": true
+    },
+    {
+      "name": "normal receipt does not approve L2 or parent chain",
+      "passed": true
+    },
+    {
+      "name": "four known members remain original failure",
+      "passed": true
+    },
+    {
+      "name": "short-lived member unknown is preserved",
+      "passed": true
+    },
+    {
+      "name": "missed members never coverage",
+      "passed": true
+    },
+    {
+      "name": "other image not silently approved",
+      "passed": true
+    },
+    {
+      "name": "unknown parent explicit even normal",
+      "passed": true
+    },
+    {
+      "name": "reject wrong schema",
+      "passed": true
+    },
+    {
+      "name": "reject wrong mode",
+      "passed": true
+    },
+    {
+      "name": "reject extra field",
+      "passed": true
+    },
+    {
+      "name": "reject missing total",
+      "passed": true
+    },
+    {
+      "name": "reject string count",
+      "passed": true
+    },
+    {
+      "name": "reject negative pid",
+      "passed": true
+    },
+    {
+      "name": "reject active over total",
+      "passed": true
+    },
+    {
+      "name": "reject empty contradiction",
+      "passed": true
+    },
+    {
+      "name": "reject resumed without assigned",
+      "passed": true
+    },
+    {
+      "name": "reject kill accepted without request",
+      "passed": true
+    },
+    {
+      "name": "reject oversized output",
+      "passed": true
+    },
+    {
+      "name": "reject over budget",
+      "passed": true
+    },
+    {
+      "name": "reject cleanup lied",
+      "passed": true
+    },
+    {
+      "name": "reject open pipe",
+      "passed": true
+    },
+    {
+      "name": "reject open handles",
+      "passed": true
+    },
+    {
+      "name": "reject layout missing",
+      "passed": true
+    },
+    {
+      "name": "reject wrong root exit",
+      "passed": true
+    },
+    {
+      "name": "reject base64 invalid",
+      "passed": true
+    },
+    {
+      "name": "reject wrong output",
+      "passed": true
+    },
+    {
+      "name": "reject stderr",
+      "passed": true
+    },
+    {
+      "name": "reject observation missing",
+      "passed": true
+    },
+    {
+      "name": "reject obs extra",
+      "passed": true
+    },
+    {
+      "name": "reject parent claim",
+      "passed": true
+    },
+    {
+      "name": "reject event completeness claim",
+      "passed": true
+    },
+    {
+      "name": "reject obs total mismatch",
+      "passed": true
+    },
+    {
+      "name": "reject member capacity",
+      "passed": true
+    },
+    {
+      "name": "reject event capacity",
+      "passed": true
+    },
+    {
+      "name": "reject duplicate identity",
+      "passed": true
+    },
+    {
+      "name": "reject arbitrary image path",
+      "passed": true
+    },
+    {
+      "name": "reject arbitrary state",
+      "passed": true
+    },
+    {
+      "name": "reject invented parent",
+      "passed": true
+    },
+    {
+      "name": "reject invalid time",
+      "passed": true
+    },
+    {
+      "name": "reject captured missing time",
+      "passed": true
+    },
+    {
+      "name": "reject unknown with image",
+      "passed": true
+    },
+    {
+      "name": "reject wrong root",
+      "passed": true
+    },
+    {
+      "name": "reject duplicate NEW lie",
+      "passed": true
+    },
+    {
+      "name": "reject event unknown pid",
+      "passed": true
+    },
+    {
+      "name": "reject event flags lie",
+      "passed": true
+    },
+    {
+      "name": "reject obs not stopped",
+      "passed": true
+    },
+    {
+      "name": "reject obs handles open",
+      "passed": true
+    },
+    {
+      "name": "reject obs failure",
+      "passed": true
+    },
+    {
+      "name": "reject coverage missing member",
+      "passed": true
+    },
+    {
+      "name": "duplicated new fact prevents coverage but retained",
+      "passed": true
+    },
+    {
+      "name": "reordered events are not invented parent evidence",
+      "passed": true
+    },
+    {
+      "name": "failed native exit cannot be exit0",
+      "passed": true
+    },
+    {
+      "name": "completed cannot be exit1",
+      "passed": true
+    },
+    {
+      "name": "wire rejection 63",
+      "passed": true
+    },
+    {
+      "name": "wire rejection 64",
+      "passed": true
+    },
+    {
+      "name": "wire rejection 65",
+      "passed": true
+    },
+    {
+      "name": "wire rejection 66",
+      "passed": true
+    },
+    {
+      "name": "wire rejection 67",
+      "passed": true
+    },
+    {
+      "name": "strict wire valid receipt",
+      "passed": true
+    },
+    {
+      "name": "non-symmetric accounting byte oracle (JS only)",
+      "passed": true
+    },
+    {
+      "name": "SDK definition winnt.h",
+      "passed": true
+    },
+    {
+      "name": "SDK definition ioapiset.h",
+      "passed": true
+    },
+    {
+      "name": "SDK definition processthreadsapi.h",
+      "passed": true
+    },
+    {
+      "name": "SDK definition jobapi.h",
+      "passed": true
+    },
+    {
+      "name": "SDK definition winbase.h",
+      "passed": true
+    },
+    {
+      "name": "draft exact fixed args and no old output",
+      "passed": true
+    },
+    {
+      "name": "source and draft pin binding",
+      "passed": true
+    }
+  ],
+  "staticChecks": [
+    {
+      "name": "normal payload byte-identical",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "single normal entry",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "strict total2 retained",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "observer before assign/resume",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "root borrowed, no reopen",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "query minimal rights",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "no arbitrary OS enumeration/files",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "bounded members/events/census",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "observer no thread/no sleeping",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "state frozen against reopen",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "membership and creation rechecked",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "unknown parent explicit",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "no notification completeness claim",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "root handle retained until observer stop",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "layout runtime probe pending",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "suspended flags unchanged",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "owned Job termination retained",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "time limits retained",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    },
+    {
+      "name": "closed driver has no private spawn",
+      "passed": true,
+      "kind": "source-observation-not-native-execution"
+    }
+  ],
+  "definitions": [
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\winnt.h",
+      "sha256": "8693f0ad4ada355c912d40ca41ce929b480e92291bda2f9227acf56736bffbff"
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\ioapiset.h",
+      "sha256": "7c3f659f98b3f1748a314bd64106583d01649333e0419b66232b4f64b3f85b0c"
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\processthreadsapi.h",
+      "sha256": "436ae4cbb017d1cdb381aaf2119a3f89b04bae257fd4c881ef251daa02533540"
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\jobapi.h",
+      "sha256": "08ddff85ec80f12b156837bbce4f969480fea0e32a08dade7cc16acecb0892d1"
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\winbase.h",
+      "sha256": "ec538199f5ebe8cec2dfd4f1ba48316ef776c82d37277aed3a677965e494f192"
+    }
+  ],
+  "digests": {
+    "driver": "159ebccd369312a60f28a79ce7725408ba5b87c5676c48502a086216bc38c74b",
+    "runner": "e2ff7a33fd5f87778d832e756c3d445a2270d681d83d65fb7a2bcc1edb7e9aa8",
+    "observer": "3a72dd7dca1def5972a90367becce261c92a8a843058f7840ecb867e0a3517a4",
+    "script": "5c7aa5e3cd9e82dfbcb1e4da7e17ca1ea5316dde28ab06037499641f9f1aa161",
+    "config": "7184438a9f8e6df9b7084340bf4bd79c2800a6c402df849be6a880e21db65515"
+  },
+  "actualOSStarts": 0,
+  "compiled": false,
+  "nativeLoaded": false,
+  "fallbackHits": 0,
+  "limitations": [
+    "C# not compiled or executed; source observations only",
+    "Marshal and native observer state machine not dynamically tested",
+    "Receipt rejection tests execute real JavaScript validator with synthetic native facts",
+    "Parent relations deliberately UNKNOWN; notification completeness not guaranteed",
+    "No private OS runner exists in preparation driver; later executable binding needs new review"
+  ],
+  "ok": true,
+  "exitCode": 0
+}

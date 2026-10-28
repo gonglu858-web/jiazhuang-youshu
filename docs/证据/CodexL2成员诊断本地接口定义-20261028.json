@@ -1,0 +1,129 @@
+{
+  "schema": "codex-l2-local-sdk-definitions/1",
+  "basisCommit": "2627a0a",
+  "sdkVersion": "10.0.26100.0",
+  "files": [
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\winnt.h",
+      "sha256": "8693f0ad4ada355c912d40ca41ce929b480e92291bda2f9227acf56736bffbff",
+      "bytes": 876232,
+      "anchors": [
+        {
+          "name": "_JOBOBJECT_BASIC_ACCOUNTING_INFORMATION",
+          "line": 13330
+        },
+        {
+          "name": "_JOBOBJECT_BASIC_PROCESS_ID_LIST",
+          "line": 13368
+        },
+        {
+          "name": "_JOBOBJECT_ASSOCIATE_COMPLETION_PORT",
+          "line": 13394
+        },
+        {
+          "name": "JobObjectAssociateCompletionPortInformation",
+          "line": 13808
+        },
+        {
+          "name": "JOB_OBJECT_MSG_NEW_PROCESS",
+          "line": 13675
+        },
+        {
+          "name": "PROCESS_QUERY_LIMITED_INFORMATION",
+          "line": 12697
+        }
+      ]
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\ioapiset.h",
+      "sha256": "7c3f659f98b3f1748a314bd64106583d01649333e0419b66232b4f64b3f85b0c",
+      "bytes": 4791,
+      "anchors": [
+        {
+          "name": "CreateIoCompletionPort(",
+          "line": 32
+        },
+        {
+          "name": "GetQueuedCompletionStatus(",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\processthreadsapi.h",
+      "sha256": "436ae4cbb017d1cdb381aaf2119a3f89b04bae257fd4c881ef251daa02533540",
+      "bytes": 37180,
+      "anchors": [
+        {
+          "name": "GetProcessTimes(",
+          "line": 137
+        },
+        {
+          "name": "OpenProcess(",
+          "line": 888
+        }
+      ]
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\jobapi.h",
+      "sha256": "08ddff85ec80f12b156837bbce4f969480fea0e32a08dade7cc16acecb0892d1",
+      "bytes": 1307,
+      "anchors": [
+        {
+          "name": "IsProcessInJob(",
+          "line": 33
+        }
+      ]
+    },
+    {
+      "file": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\winbase.h",
+      "sha256": "ec538199f5ebe8cec2dfd4f1ba48316ef776c82d37277aed3a677965e494f192",
+      "bytes": 271704,
+      "anchors": [
+        {
+          "name": "QueryFullProcessImageNameW(",
+          "line": 3481
+        }
+      ]
+    }
+  ],
+  "accounting": {
+    "size": 48,
+    "fields": {
+      "User": 0,
+      "Kernel": 8,
+      "PeriodUser": 16,
+      "PeriodKernel": 24,
+      "Faults": 32,
+      "Total": 36,
+      "Active": 40,
+      "Terminated": 44
+    }
+  },
+  "processIdList": {
+    "headerBytes": 8,
+    "pointerBytes": 8,
+    "maxRecords": 16
+  },
+  "association": {
+    "size": 16,
+    "keyOffset": 0,
+    "portOffset": 8
+  },
+  "classes": {
+    "accounting": 1,
+    "processIds": 3,
+    "completionPort": 7
+  },
+  "messages": {
+    "activeZero": 4,
+    "new": 6,
+    "exit": 7,
+    "abnormalExit": 8
+  },
+  "rights": {
+    "queryLimited": 4096,
+    "synchronize": 1048576
+  },
+  "scope": "local headers only; no APIs invoked; runtime Marshal probe remains unexecuted; notifications not assumed complete"
+}
