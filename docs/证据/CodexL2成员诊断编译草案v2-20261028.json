@@ -1,0 +1,108 @@
+{
+  "schema": "codex-l2-member-compile-draft/1",
+  "basisCommit": "e76bf47",
+  "executionAuthorized": false,
+  "purpose": "compile-normal-only-diagnostic-no-execution",
+  "requiredRepoLocalExclude": "/artifacts/psr-l2/",
+  "host": {
+    "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+    "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+  },
+  "cwd": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP",
+  "compiler": {
+    "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+    "bytes": 2569832,
+    "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+  },
+  "compilerConfig": {
+    "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+    "bytes": 182,
+    "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+  },
+  "references": [
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+      "bytes": 5445432,
+      "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+      "bytes": 3545264,
+      "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+    }
+  ],
+  "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v2",
+  "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v2\\psr-l2-member-diag.exe",
+  "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v2\\tmp",
+  "args": [
+    "/nologo",
+    "/noconfig",
+    "/nostdlib+",
+    "/target:exe",
+    "/platform:x64",
+    "/langversion:5",
+    "/codepage:65001",
+    "/utf8output",
+    "/optimize+",
+    "/debug-",
+    "/warn:4",
+    "/warnaserror+",
+    "/errorreport:none",
+    "/nowin32manifest",
+    "/main:L2MemberRunner",
+    "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+    "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+    "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v2\\psr-l2-member-diag.exe",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断辅助层-20261028.cs",
+    "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员观察器v2-20261028.cs"
+  ],
+  "spawn": {
+    "shell": false,
+    "windowsHide": true,
+    "stdio": [
+      "ignore",
+      "pipe",
+      "pipe"
+    ],
+    "timeoutMs": 30000,
+    "reapMs": 2000,
+    "maxCombinedOutputBytes": 131072,
+    "maxDirectCompilerStarts": 1,
+    "automaticRetry": false
+  },
+  "childEnv": {
+    "SystemRoot": "C:\\Windows",
+    "WINDIR": "C:\\Windows",
+    "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+    "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v2\\tmp",
+    "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\member-diag-v2\\tmp"
+  },
+  "postcheck": {
+    "exitCode": 0,
+    "signal": null,
+    "stderrBytes": 0,
+    "stdoutBytes": 0,
+    "outputMachine": "AMD64",
+    "outputMagic": "PE32+",
+    "requiresClrHeader": true,
+    "maxOutputFileBytes": 1048576,
+    "tempDirectoryMustBeEmpty": true,
+    "executeOutput": false,
+    "unfreezeL2": false
+  },
+  "helperExecutionAuthorized": false,
+  "sources": [
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断辅助层-20261028.cs",
+      "sha256": "e2ff7a33fd5f87778d832e756c3d445a2270d681d83d65fb7a2bcc1edb7e9aa8"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员观察器v2-20261028.cs",
+      "sha256": "494b521fde330ea968bca917d8f82eac101a9ad2d9bc05a2aff515b7d019c178"
+    }
+  ],
+  "definitionRecord": {
+    "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员诊断本地接口定义-20261028.json",
+    "sha256": "a2e0c883a98c9466a4a1045cf9ab66bc1b01a903bf504694b5aba1a57e3a741e"
+  }
+}
