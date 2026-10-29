@@ -1,0 +1,5151 @@
+{
+  "schema": "codex-observer-fixed-managed-policy/1",
+  "binarySha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "reviewedAssemblies": [
+    {
+      "name": "mscorlib",
+      "version": "4.0.0.0",
+      "publicKeyToken": "b77a5c561934e089"
+    },
+    {
+      "name": "System",
+      "version": "4.0.0.0",
+      "publicKeyToken": "b77a5c561934e089"
+    },
+    {
+      "name": "System.Core",
+      "version": "4.0.0.0",
+      "publicKeyToken": "b77a5c561934e089"
+    }
+  ],
+  "reviewedTypes": [
+    "[mscorlib]System.Object",
+    "[mscorlib]System.ValueType",
+    "[mscorlib]System.Collections.Generic.Dictionary`2",
+    "[mscorlib]System.Collections.Generic.List`1",
+    "[mscorlib]System.Text.StringBuilder",
+    "[mscorlib]System.Action",
+    "[System]System.Collections.Generic.Queue`1",
+    "[System.Core]System.Collections.Generic.HashSet`1",
+    "[mscorlib]System.Runtime.InteropServices.OutAttribute",
+    "[mscorlib]System.Runtime.CompilerServices.CompilationRelaxationsAttribute",
+    "[mscorlib]System.Runtime.CompilerServices.RuntimeCompatibilityAttribute",
+    "[mscorlib]System.String",
+    "[mscorlib]System.StringComparison",
+    "[mscorlib]System.IntPtr",
+    "[mscorlib]System.InvalidOperationException",
+    "[mscorlib]System.UIntPtr",
+    "[mscorlib]System.Type",
+    "[mscorlib]System.RuntimeTypeHandle",
+    "[mscorlib]System.Runtime.InteropServices.Marshal",
+    "[mscorlib]System.Globalization.CultureInfo",
+    "[mscorlib]System.UInt64",
+    "[mscorlib]System.IFormatProvider",
+    "[mscorlib]System.UInt32",
+    "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection",
+    "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator",
+    "[mscorlib]System.IDisposable",
+    "[mscorlib]System.Collections.Generic.IEnumerable`1",
+    "[System.Core]System.Collections.Generic.HashSet`1+Enumerator",
+    "[mscorlib]System.Int64",
+    "[mscorlib]System.Exception",
+    "[mscorlib]System.Int32",
+    "[mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute",
+    "[mscorlib]System.Console",
+    "[mscorlib]System.Runtime.InteropServices.StructLayoutAttribute",
+    "[mscorlib]System.Runtime.InteropServices.LayoutKind"
+  ],
+  "reviewedMembers": [
+    {
+      "token": 167772161,
+      "owner": "[mscorlib]System.Runtime.InteropServices.OutAttribute",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772162,
+      "owner": "[mscorlib]System.Runtime.CompilerServices.CompilationRelaxationsAttribute",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(i4)"
+    },
+    {
+      "token": 167772163,
+      "owner": "[mscorlib]System.Runtime.CompilerServices.RuntimeCompatibilityAttribute",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772164,
+      "owner": "[mscorlib]System.String",
+      "name": "Equals",
+      "signature": "cc0/g0 bool(string,string,[mscorlib]System.StringComparison)"
+    },
+    {
+      "token": 167772165,
+      "owner": "[mscorlib]System.String",
+      "name": "op_Equality",
+      "signature": "cc0/g0 bool(string,string)"
+    },
+    {
+      "token": 167772166,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772167,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<string>",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772168,
+      "owner": "[mscorlib]System.Object",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772169,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": "get_Size",
+      "signature": "cc0/g0 i4()"
+    },
+    {
+      "token": 167772170,
+      "owner": "[mscorlib]System.InvalidOperationException",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(string)"
+    },
+    {
+      "token": 167772171,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(i4)"
+    },
+    {
+      "token": 167772172,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": "Zero",
+      "signature": "field native-int"
+    },
+    {
+      "token": 167772173,
+      "owner": "[mscorlib]System.UIntPtr",
+      "name": "Zero",
+      "signature": "field native-uint"
+    },
+    {
+      "token": 167772174,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": "op_Equality",
+      "signature": "cc0/g0 bool(native-int,native-int)"
+    },
+    {
+      "token": 167772175,
+      "owner": "[mscorlib]System.Type",
+      "name": "GetTypeFromHandle",
+      "signature": "cc0/g0 [mscorlib]System.Type([mscorlib]System.RuntimeTypeHandle)"
+    },
+    {
+      "token": 167772176,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "SizeOf",
+      "signature": "cc0/g0 i4([mscorlib]System.Type)"
+    },
+    {
+      "token": 167772177,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+      "name": "TryGetValue",
+      "signature": "cc32/g0 bool(!0,!1&)"
+    },
+    {
+      "token": 167772178,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+      "name": "get_Count",
+      "signature": "cc32/g0 i4()"
+    },
+    {
+      "token": 167772179,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+      "name": "Add",
+      "signature": "cc32/g0 void(!0,!1)"
+    },
+    {
+      "token": 167772180,
+      "owner": "[mscorlib]System.String",
+      "name": "op_Inequality",
+      "signature": "cc0/g0 bool(string,string)"
+    },
+    {
+      "token": 167772181,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(i4)"
+    },
+    {
+      "token": 167772182,
+      "owner": "[mscorlib]System.Globalization.CultureInfo",
+      "name": "get_InvariantCulture",
+      "signature": "cc0/g0 [mscorlib]System.Globalization.CultureInfo()"
+    },
+    {
+      "token": 167772183,
+      "owner": "[mscorlib]System.UInt64",
+      "name": "ToString",
+      "signature": "cc32/g0 string([mscorlib]System.IFormatProvider)"
+    },
+    {
+      "token": 167772184,
+      "owner": "[mscorlib]System.Object",
+      "name": "ToString",
+      "signature": "cc32/g0 string()"
+    },
+    {
+      "token": 167772185,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": "set_Length",
+      "signature": "cc32/g0 void(i4)"
+    },
+    {
+      "token": 167772186,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": "op_Inequality",
+      "signature": "cc0/g0 bool(native-int,native-int)"
+    },
+    {
+      "token": 167772187,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<string>",
+      "name": "get_Count",
+      "signature": "cc32/g0 i4()"
+    },
+    {
+      "token": 167772188,
+      "owner": "[mscorlib]System.UIntPtr",
+      "name": "ToUInt64",
+      "signature": "cc32/g0 u8()"
+    },
+    {
+      "token": 167772189,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<string>",
+      "name": "Add",
+      "signature": "cc32/g0 void(!0)"
+    },
+    {
+      "token": 167772190,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": "ToInt64",
+      "signature": "cc32/g0 i8()"
+    },
+    {
+      "token": 167772191,
+      "owner": "[mscorlib]System.String",
+      "name": "Concat",
+      "signature": "cc0/g0 string(object[])"
+    },
+    {
+      "token": 167772192,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "AllocHGlobal",
+      "signature": "cc0/g0 native-int(i4)"
+    },
+    {
+      "token": 167772193,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "WriteByte",
+      "signature": "cc0/g0 void(native-int,i4,u1)"
+    },
+    {
+      "token": 167772194,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "ReadInt32",
+      "signature": "cc0/g0 i4(native-int,i4)"
+    },
+    {
+      "token": 167772195,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<u4>",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772196,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "ReadInt64",
+      "signature": "cc0/g0 i8(native-int,i4)"
+    },
+    {
+      "token": 167772197,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<u4>",
+      "name": "Contains",
+      "signature": "cc32/g0 bool(!0)"
+    },
+    {
+      "token": 167772198,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<u4>",
+      "name": "Add",
+      "signature": "cc32/g0 void(!0)"
+    },
+    {
+      "token": 167772199,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "FreeHGlobal",
+      "signature": "cc0/g0 void(native-int)"
+    },
+    {
+      "token": 167772200,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+      "name": "get_Values",
+      "signature": "cc32/g0 [mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection<!0,!1>()"
+    },
+    {
+      "token": 167772201,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection<u4,Member>",
+      "name": "GetEnumerator",
+      "signature": "cc32/g0 [mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<!0,!1>()"
+    },
+    {
+      "token": 167772202,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>",
+      "name": "get_Current",
+      "signature": "cc32/g0 !1()"
+    },
+    {
+      "token": 167772203,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>",
+      "name": "MoveNext",
+      "signature": "cc32/g0 bool()"
+    },
+    {
+      "token": 167772204,
+      "owner": "[mscorlib]System.IDisposable",
+      "name": "Dispose",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772205,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(string)"
+    },
+    {
+      "token": 167772206,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": "Append",
+      "signature": "cc32/g0 [mscorlib]System.Text.StringBuilder(string)"
+    },
+    {
+      "token": 167772207,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": "Append",
+      "signature": "cc32/g0 [mscorlib]System.Text.StringBuilder(u4)"
+    },
+    {
+      "token": 167772208,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<string>",
+      "name": "ToArray",
+      "signature": "cc32/g0 !0[]()"
+    },
+    {
+      "token": 167772209,
+      "owner": "[mscorlib]System.String",
+      "name": "Join",
+      "signature": "cc0/g0 string(string,string[])"
+    },
+    {
+      "token": 167772210,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": "Append",
+      "signature": "cc32/g0 [mscorlib]System.Text.StringBuilder(char)"
+    },
+    {
+      "token": 167772211,
+      "owner": "[mscorlib]System.String",
+      "name": "Concat",
+      "signature": "cc0/g0 string(string,string,string)"
+    },
+    {
+      "token": 167772212,
+      "owner": "[System]System.Collections.Generic.Queue`1<Step>",
+      "name": "Enqueue",
+      "signature": "cc32/g0 void(!0)"
+    },
+    {
+      "token": 167772213,
+      "owner": "[System]System.Collections.Generic.Queue`1<Step>",
+      "name": "get_Count",
+      "signature": "cc32/g0 i4()"
+    },
+    {
+      "token": 167772214,
+      "owner": "[mscorlib]System.Collections.Generic.List`1<string>",
+      "name": "Clear",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772215,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": "Clear",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772216,
+      "owner": "[mscorlib]System.String",
+      "name": "get_Length",
+      "signature": "cc32/g0 i4()"
+    },
+    {
+      "token": 167772217,
+      "owner": "[mscorlib]System.IntPtr",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(i8)"
+    },
+    {
+      "token": 167772218,
+      "owner": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+      "name": "get_Item",
+      "signature": "cc32/g0 !1(!0)"
+    },
+    {
+      "token": 167772219,
+      "owner": "[mscorlib]System.String",
+      "name": "IndexOf",
+      "signature": "cc32/g0 i4(string,[mscorlib]System.StringComparison)"
+    },
+    {
+      "token": 167772220,
+      "owner": "[mscorlib]System.String",
+      "name": "Contains",
+      "signature": "cc32/g0 bool(string)"
+    },
+    {
+      "token": 167772221,
+      "owner": "[mscorlib]System.String",
+      "name": "ToUpperInvariant",
+      "signature": "cc32/g0 string()"
+    },
+    {
+      "token": 167772222,
+      "owner": "[mscorlib]System.String",
+      "name": "Concat",
+      "signature": "cc0/g0 string(string,string)"
+    },
+    {
+      "token": 167772223,
+      "owner": "[mscorlib]System.String",
+      "name": "Replace",
+      "signature": "cc32/g0 string(char,char)"
+    },
+    {
+      "token": 167772224,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": "SetEquals",
+      "signature": "cc32/g0 bool([mscorlib]System.Collections.Generic.IEnumerable`1<!0>)"
+    },
+    {
+      "token": 167772225,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": "get_Count",
+      "signature": "cc32/g0 i4()"
+    },
+    {
+      "token": 167772226,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": "GetEnumerator",
+      "signature": "cc32/g0 [System.Core]System.Collections.Generic.HashSet`1+Enumerator<!0>()"
+    },
+    {
+      "token": 167772227,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1+Enumerator<i8>",
+      "name": "get_Current",
+      "signature": "cc32/g0 !0()"
+    },
+    {
+      "token": 167772228,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": "Contains",
+      "signature": "cc32/g0 bool(!0)"
+    },
+    {
+      "token": 167772229,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1+Enumerator<i8>",
+      "name": "MoveNext",
+      "signature": "cc32/g0 bool()"
+    },
+    {
+      "token": 167772230,
+      "owner": "[mscorlib]System.Exception",
+      "name": "get_Message",
+      "signature": "cc32/g0 string()"
+    },
+    {
+      "token": 167772231,
+      "owner": "[mscorlib]System.Action",
+      "name": "Invoke",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772232,
+      "owner": "[mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772233,
+      "owner": "[mscorlib]System.Action",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(object,native-int)"
+    },
+    {
+      "token": 167772234,
+      "owner": "[mscorlib]System.String",
+      "name": "Concat",
+      "signature": "cc0/g0 string(object,object)"
+    },
+    {
+      "token": 167772235,
+      "owner": "[mscorlib]System.String",
+      "name": "Concat",
+      "signature": "cc0/g0 string(string[])"
+    },
+    {
+      "token": 167772236,
+      "owner": "[mscorlib]System.Console",
+      "name": "WriteLine",
+      "signature": "cc0/g0 void(string)"
+    },
+    {
+      "token": 167772237,
+      "owner": "[mscorlib]System.Runtime.InteropServices.StructLayoutAttribute",
+      "name": ".ctor",
+      "signature": "cc32/g0 void([mscorlib]System.Runtime.InteropServices.LayoutKind)"
+    },
+    {
+      "token": 167772238,
+      "owner": "[mscorlib]System.String",
+      "name": "Concat",
+      "signature": "cc0/g0 string(object,object,object)"
+    },
+    {
+      "token": 167772239,
+      "owner": "[System]System.Collections.Generic.Queue`1<Step>",
+      "name": "Dequeue",
+      "signature": "cc32/g0 !0()"
+    },
+    {
+      "token": 167772240,
+      "owner": "[mscorlib]System.UIntPtr",
+      "name": "op_Equality",
+      "signature": "cc0/g0 bool(native-uint,native-uint)"
+    },
+    {
+      "token": 167772241,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": "Add",
+      "signature": "cc32/g0 bool(!0)"
+    },
+    {
+      "token": 167772242,
+      "owner": "[mscorlib]System.UIntPtr",
+      "name": ".ctor",
+      "signature": "cc32/g0 void(u4)"
+    },
+    {
+      "token": 167772243,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "WriteInt32",
+      "signature": "cc0/g0 void(native-int,i4,i4)"
+    },
+    {
+      "token": 167772244,
+      "owner": "[mscorlib]System.Runtime.InteropServices.Marshal",
+      "name": "WriteInt64",
+      "signature": "cc0/g0 void(native-int,i4,i8)"
+    },
+    {
+      "token": 167772245,
+      "owner": "[mscorlib]System.Text.StringBuilder",
+      "name": "get_Capacity",
+      "signature": "cc32/g0 i4()"
+    },
+    {
+      "token": 167772246,
+      "owner": "[System]System.Collections.Generic.Queue`1<Step>",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    },
+    {
+      "token": 167772247,
+      "owner": "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+      "name": ".ctor",
+      "signature": "cc32/g0 void()"
+    }
+  ],
+  "reviewedTypeSpecs": [
+    "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>",
+    "[mscorlib]System.Collections.Generic.List`1<string>",
+    "[mscorlib]System.Collections.Generic.List`1<u4>",
+    "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection<u4,Member>",
+    "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>",
+    "[System]System.Collections.Generic.Queue`1<Step>",
+    "[System.Core]System.Collections.Generic.HashSet`1<i8>",
+    "[System.Core]System.Collections.Generic.HashSet`1+Enumerator<i8>"
+  ],
+  "reviewedMethodSpecs": [],
+  "reviewedCalls": [
+    {
+      "caller": "L2MemberObserver::ClassifyPath",
+      "offset": 7,
+      "opcode": "28",
+      "token": 167772164,
+      "target": "[mscorlib]System.String::Equals"
+    },
+    {
+      "caller": "L2MemberObserver::ClassifyPath",
+      "offset": 27,
+      "opcode": "28",
+      "token": 167772164,
+      "target": "[mscorlib]System.String::Equals"
+    },
+    {
+      "caller": "L2MemberObserver::CreateIoCompletionPort",
+      "offset": 4,
+      "opcode": "28",
+      "token": 100663354,
+      "target": "SyntheticBoundary::CreateIoCompletionPort"
+    },
+    {
+      "caller": "L2MemberObserver::GetQueuedCompletionStatus",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663356,
+      "target": "SyntheticBoundary::GetQueuedCompletionStatus"
+    },
+    {
+      "caller": "L2MemberObserver::Associate",
+      "offset": 4,
+      "opcode": "28",
+      "token": 100663355,
+      "target": "SyntheticBoundary::Associate"
+    },
+    {
+      "caller": "L2MemberObserver::QueryIds",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663358,
+      "target": "SyntheticBoundary::QueryIds"
+    },
+    {
+      "caller": "L2MemberObserver::OpenProcess",
+      "offset": 3,
+      "opcode": "28",
+      "token": 100663359,
+      "target": "SyntheticBoundary::OpenProcess"
+    },
+    {
+      "caller": "L2MemberObserver::IsProcessInJob",
+      "offset": 3,
+      "opcode": "28",
+      "token": 100663360,
+      "target": "SyntheticBoundary::IsProcessInJob"
+    },
+    {
+      "caller": "L2MemberObserver::GetProcessTimes",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663361,
+      "target": "SyntheticBoundary::GetProcessTimes"
+    },
+    {
+      "caller": "L2MemberObserver::QueryFullProcessImageNameW",
+      "offset": 4,
+      "opcode": "28",
+      "token": 100663362,
+      "target": "SyntheticBoundary::QueryFullProcessImageNameW"
+    },
+    {
+      "caller": "L2MemberObserver::WaitForSingleObject",
+      "offset": 2,
+      "opcode": "28",
+      "token": 100663363,
+      "target": "SyntheticBoundary::WaitForSingleObject"
+    },
+    {
+      "caller": "L2MemberObserver::CloseHandle",
+      "offset": 1,
+      "opcode": "28",
+      "token": 100663364,
+      "target": "SyntheticBoundary::CloseHandle"
+    },
+    {
+      "caller": "L2MemberObserver::Bad",
+      "offset": 11,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 1,
+      "opcode": "73",
+      "token": 167772166,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 12,
+      "opcode": "73",
+      "token": 167772167,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 41,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 53,
+      "opcode": "28",
+      "token": 167772169,
+      "target": "[mscorlib]System.IntPtr::get_Size"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 66,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 74,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 90,
+      "opcode": "28",
+      "token": 100663298,
+      "target": "L2MemberObserver::CreateIoCompletionPort"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 111,
+      "opcode": "28",
+      "token": 167772174,
+      "target": "[mscorlib]System.IntPtr::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 123,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 140,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 177,
+      "opcode": "28",
+      "token": 167772175,
+      "target": "[mscorlib]System.Type::GetTypeFromHandle"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 182,
+      "opcode": "28",
+      "token": 167772176,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::SizeOf"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 187,
+      "opcode": "28",
+      "token": 100663300,
+      "target": "L2MemberObserver::Associate"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 200,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::.ctor",
+      "offset": 214,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Slot",
+      "offset": 9,
+      "opcode": "6f",
+      "token": 167772177,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::TryGetValue"
+    },
+    {
+      "caller": "L2MemberObserver::Slot",
+      "offset": 27,
+      "opcode": "6f",
+      "token": 167772178,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Slot",
+      "offset": 42,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Slot",
+      "offset": 49,
+      "opcode": "73",
+      "token": 100663350,
+      "target": "Member::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::Slot",
+      "offset": 70,
+      "opcode": "6f",
+      "token": 167772179,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 11,
+      "opcode": "28",
+      "token": 167772180,
+      "target": "[mscorlib]System.String::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 38,
+      "opcode": "28",
+      "token": 167772174,
+      "target": "[mscorlib]System.IntPtr::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 57,
+      "opcode": "28",
+      "token": 100663302,
+      "target": "L2MemberObserver::OpenProcess"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 83,
+      "opcode": "28",
+      "token": 167772174,
+      "target": "[mscorlib]System.IntPtr::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 100,
+      "opcode": "28",
+      "token": 100663303,
+      "target": "L2MemberObserver::IsProcessInJob"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 124,
+      "opcode": "28",
+      "token": 100663306,
+      "target": "L2MemberObserver::WaitForSingleObject"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 157,
+      "opcode": "28",
+      "token": 100663304,
+      "target": "L2MemberObserver::GetProcessTimes"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 166,
+      "opcode": "28",
+      "token": 100663349,
+      "target": "FileTime::get_Value"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 192,
+      "opcode": "73",
+      "token": 167772181,
+      "target": "[mscorlib]System.Text.StringBuilder::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 212,
+      "opcode": "28",
+      "token": 100663305,
+      "target": "L2MemberObserver::QueryFullProcessImageNameW"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 253,
+      "opcode": "28",
+      "token": 100663304,
+      "target": "L2MemberObserver::GetProcessTimes"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 262,
+      "opcode": "28",
+      "token": 100663349,
+      "target": "FileTime::get_Value"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 269,
+      "opcode": "28",
+      "token": 100663349,
+      "target": "FileTime::get_Value"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 285,
+      "opcode": "28",
+      "token": 100663303,
+      "target": "L2MemberObserver::IsProcessInJob"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 310,
+      "opcode": "28",
+      "token": 100663349,
+      "target": "FileTime::get_Value"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 319,
+      "opcode": "28",
+      "token": 167772182,
+      "target": "[mscorlib]System.Globalization.CultureInfo::get_InvariantCulture"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 324,
+      "opcode": "28",
+      "token": 167772183,
+      "target": "[mscorlib]System.UInt64::ToString"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 336,
+      "opcode": "6f",
+      "token": 167772184,
+      "target": "[mscorlib]System.Object::ToString"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 346,
+      "opcode": "28",
+      "token": 100663297,
+      "target": "L2MemberObserver::ClassifyPath"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 368,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Capture",
+      "offset": 398,
+      "opcode": "6f",
+      "token": 167772185,
+      "target": "[mscorlib]System.Text.StringBuilder::set_Length"
+    },
+    {
+      "caller": "L2MemberObserver::Root",
+      "offset": 9,
+      "opcode": "28",
+      "token": 100663310,
+      "target": "L2MemberObserver::Slot"
+    },
+    {
+      "caller": "L2MemberObserver::Root",
+      "offset": 21,
+      "opcode": "28",
+      "token": 100663311,
+      "target": "L2MemberObserver::Capture"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 18,
+      "opcode": "28",
+      "token": 100663299,
+      "target": "L2MemberObserver::GetQueuedCompletionStatus"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 25,
+      "opcode": "28",
+      "token": 100663357,
+      "target": "SyntheticBoundary::LastError"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 43,
+      "opcode": "28",
+      "token": 167772186,
+      "target": "[mscorlib]System.IntPtr::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 56,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 68,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 86,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 94,
+      "opcode": "28",
+      "token": 167772188,
+      "target": "[mscorlib]System.UIntPtr::ToUInt64"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 109,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 130,
+      "opcode": "6f",
+      "token": 167772189,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 158,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 166,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 188,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 201,
+      "opcode": "28",
+      "token": 100663310,
+      "target": "L2MemberObserver::Slot"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 302,
+      "opcode": "28",
+      "token": 167772191,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 307,
+      "opcode": "6f",
+      "token": 167772189,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 348,
+      "opcode": "28",
+      "token": 100663311,
+      "target": "L2MemberObserver::Capture"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 375,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Drain",
+      "offset": 405,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 7,
+      "opcode": "28",
+      "token": 167772192,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::AllocHGlobal"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 20,
+      "opcode": "28",
+      "token": 167772193,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::WriteByte"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 44,
+      "opcode": "28",
+      "token": 100663301,
+      "target": "L2MemberObserver::QueryIds"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 57,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 69,
+      "opcode": "28",
+      "token": 167772194,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::ReadInt32"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 78,
+      "opcode": "28",
+      "token": 167772194,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::ReadInt32"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 124,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 134,
+      "opcode": "73",
+      "token": 167772195,
+      "target": "[mscorlib]System.Collections.Generic.List`1<u4>::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 153,
+      "opcode": "28",
+      "token": 167772196,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::ReadInt64"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 177,
+      "opcode": "6f",
+      "token": 167772197,
+      "target": "[mscorlib]System.Collections.Generic.List`1<u4>::Contains"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 190,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 202,
+      "opcode": "6f",
+      "token": 167772198,
+      "target": "[mscorlib]System.Collections.Generic.List`1<u4>::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 211,
+      "opcode": "28",
+      "token": 100663310,
+      "target": "L2MemberObserver::Slot"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 240,
+      "opcode": "28",
+      "token": 100663311,
+      "target": "L2MemberObserver::Capture"
+    },
+    {
+      "caller": "L2MemberObserver::Census",
+      "offset": 260,
+      "opcode": "28",
+      "token": 167772199,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::FreeHGlobal"
+    },
+    {
+      "caller": "L2MemberObserver::Poll",
+      "offset": 19,
+      "opcode": "28",
+      "token": 167772180,
+      "target": "[mscorlib]System.String::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Poll",
+      "offset": 28,
+      "opcode": "28",
+      "token": 100663313,
+      "target": "L2MemberObserver::Drain"
+    },
+    {
+      "caller": "L2MemberObserver::Poll",
+      "offset": 44,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Poll",
+      "offset": 52,
+      "opcode": "28",
+      "token": 100663314,
+      "target": "L2MemberObserver::Census"
+    },
+    {
+      "caller": "L2MemberObserver::Poll",
+      "offset": 66,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 10,
+      "opcode": "28",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 34,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 55,
+      "opcode": "6f",
+      "token": 167772178,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 83,
+      "opcode": "6f",
+      "token": 167772200,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Values"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 88,
+      "opcode": "6f",
+      "token": 167772201,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection<u4,Member>::GetEnumerator"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 102,
+      "opcode": "28",
+      "token": 167772202,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>::get_Current"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 119,
+      "opcode": "28",
+      "token": 167772180,
+      "target": "[mscorlib]System.String::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 137,
+      "opcode": "28",
+      "token": 167772174,
+      "target": "[mscorlib]System.IntPtr::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 162,
+      "opcode": "28",
+      "token": 167772186,
+      "target": "[mscorlib]System.IntPtr::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 183,
+      "opcode": "28",
+      "token": 100663304,
+      "target": "L2MemberObserver::GetProcessTimes"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 192,
+      "opcode": "28",
+      "token": 100663349,
+      "target": "FileTime::get_Value"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 201,
+      "opcode": "28",
+      "token": 167772182,
+      "target": "[mscorlib]System.Globalization.CultureInfo::get_InvariantCulture"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 206,
+      "opcode": "28",
+      "token": 167772183,
+      "target": "[mscorlib]System.UInt64::ToString"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 217,
+      "opcode": "28",
+      "token": 167772180,
+      "target": "[mscorlib]System.String::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 238,
+      "opcode": "28",
+      "token": 100663303,
+      "target": "L2MemberObserver::IsProcessInJob"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 256,
+      "opcode": "28",
+      "token": 100663306,
+      "target": "L2MemberObserver::WaitForSingleObject"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 286,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 306,
+      "opcode": "28",
+      "token": 167772186,
+      "target": "[mscorlib]System.IntPtr::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 328,
+      "opcode": "28",
+      "token": 100663307,
+      "target": "L2MemberObserver::CloseHandle"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 375,
+      "opcode": "28",
+      "token": 167772203,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>::MoveNext"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 395,
+      "opcode": "6f",
+      "token": 167772204,
+      "target": "[mscorlib]System.IDisposable::Dispose"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 412,
+      "opcode": "28",
+      "token": 167772186,
+      "target": "[mscorlib]System.IntPtr::op_Inequality"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 426,
+      "opcode": "28",
+      "token": 100663307,
+      "target": "L2MemberObserver::CloseHandle"
+    },
+    {
+      "caller": "L2MemberObserver::Stop",
+      "offset": 491,
+      "opcode": "28",
+      "token": 100663308,
+      "target": "L2MemberObserver::Bad"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 5,
+      "opcode": "73",
+      "token": 167772205,
+      "target": "[mscorlib]System.Text.StringBuilder::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 16,
+      "opcode": "28",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 26,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 51,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 61,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 86,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 96,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 121,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 131,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 156,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 166,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 177,
+      "opcode": "6f",
+      "token": 167772207,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 187,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 203,
+      "opcode": "6f",
+      "token": 167772208,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::ToArray"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 208,
+      "opcode": "28",
+      "token": 167772209,
+      "target": "[mscorlib]System.String::Join"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 213,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 223,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 237,
+      "opcode": "6f",
+      "token": 167772200,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Values"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 242,
+      "opcode": "6f",
+      "token": 167772201,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection<u4,Member>::GetEnumerator"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 255,
+      "opcode": "28",
+      "token": 167772202,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>::get_Current"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 267,
+      "opcode": "6f",
+      "token": 167772210,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 281,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 292,
+      "opcode": "6f",
+      "token": 167772207,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 302,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 331,
+      "opcode": "28",
+      "token": 167772211,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 343,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 353,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 364,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 374,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 385,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 395,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 406,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 416,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 447,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 457,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 482,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 492,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 517,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 527,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 552,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 559,
+      "opcode": "6f",
+      "token": 167772210,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 567,
+      "opcode": "28",
+      "token": 167772203,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator<u4,Member>::MoveNext"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 587,
+      "opcode": "6f",
+      "token": 167772204,
+      "target": "[mscorlib]System.IDisposable::Dispose"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 599,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "L2MemberObserver::Json",
+      "offset": 604,
+      "opcode": "6f",
+      "token": 167772184,
+      "target": "[mscorlib]System.Object::ToString"
+    },
+    {
+      "caller": "L2MemberObserver::Add",
+      "offset": 2,
+      "opcode": "73",
+      "token": 100663351,
+      "target": "Step::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::Add",
+      "offset": 14,
+      "opcode": "6f",
+      "token": 167772212,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::Enqueue"
+    },
+    {
+      "caller": "L2MemberObserver::Assert",
+      "offset": 8,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 5,
+      "opcode": "6f",
+      "token": 167772213,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 13,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 23,
+      "opcode": "6f",
+      "token": 167772214,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::Clear"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 39,
+      "opcode": "6f",
+      "token": 167772215,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Clear"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 49,
+      "opcode": "6f",
+      "token": 167772215,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Clear"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 59,
+      "opcode": "6f",
+      "token": 167772215,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Clear"
+    },
+    {
+      "caller": "L2MemberObserver::Reset",
+      "offset": 69,
+      "opcode": "6f",
+      "token": 167772215,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Clear"
+    },
+    {
+      "caller": "L2MemberObserver::EmptyPoll",
+      "offset": 11,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::EmptyPoll",
+      "offset": 29,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::EmptyPoll",
+      "offset": 55,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::NewObserver",
+      "offset": 7,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::NewObserver",
+      "offset": 24,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::NewObserver",
+      "offset": 35,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::NewObserver",
+      "offset": 40,
+      "opcode": "73",
+      "token": 100663309,
+      "target": "L2MemberObserver::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 52,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 105,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 152,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 164,
+      "opcode": "6f",
+      "token": 167772216,
+      "target": "[mscorlib]System.String::get_Length"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 235,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureScript",
+      "offset": 285,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalMember",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalMember",
+      "offset": 21,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalMember",
+      "offset": 33,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 42,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 72,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 80,
+      "opcode": "28",
+      "token": 100663323,
+      "target": "L2MemberObserver::CaptureScript"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 89,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 95,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 106,
+      "opcode": "73",
+      "token": 167772217,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 111,
+      "opcode": "6f",
+      "token": 100663312,
+      "target": "L2MemberObserver::Root"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 124,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 135,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 140,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 150,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 161,
+      "opcode": "73",
+      "token": 167772217,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 166,
+      "opcode": "6f",
+      "token": 100663312,
+      "target": "L2MemberObserver::Root"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 176,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 185,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 190,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 200,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 214,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 231,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 239,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 256,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 288,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 296,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 302,
+      "opcode": "6f",
+      "token": 100663317,
+      "target": "L2MemberObserver::Json"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 317,
+      "opcode": "6f",
+      "token": 167772219,
+      "target": "[mscorlib]System.String::IndexOf"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 332,
+      "opcode": "6f",
+      "token": 167772220,
+      "target": "[mscorlib]System.String::Contains"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 346,
+      "opcode": "6f",
+      "token": 167772220,
+      "target": "[mscorlib]System.String::Contains"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 354,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 364,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 373,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 379,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 391,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 398,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 408,
+      "opcode": "6f",
+      "token": 167772213,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::CaptureCase",
+      "offset": 426,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 11,
+      "opcode": "28",
+      "token": 100663297,
+      "target": "L2MemberObserver::ClassifyPath"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 21,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 33,
+      "opcode": "6f",
+      "token": 167772221,
+      "target": "[mscorlib]System.String::ToUpperInvariant"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 38,
+      "opcode": "28",
+      "token": 100663297,
+      "target": "L2MemberObserver::ClassifyPath"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 48,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 56,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 62,
+      "opcode": "28",
+      "token": 100663297,
+      "target": "L2MemberObserver::ClassifyPath"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 72,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 80,
+      "opcode": "6f",
+      "token": 167772221,
+      "target": "[mscorlib]System.String::ToUpperInvariant"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 85,
+      "opcode": "28",
+      "token": 100663297,
+      "target": "L2MemberObserver::ClassifyPath"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 95,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 103,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 131,
+      "opcode": "28",
+      "token": 167772222,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 145,
+      "opcode": "28",
+      "token": 167772222,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 159,
+      "opcode": "28",
+      "token": 167772222,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 188,
+      "opcode": "6f",
+      "token": 167772223,
+      "target": "[mscorlib]System.String::Replace"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 207,
+      "opcode": "28",
+      "token": 100663297,
+      "target": "L2MemberObserver::ClassifyPath"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 217,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Classification",
+      "offset": 222,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 5,
+      "opcode": "6f",
+      "token": 167772213,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 23,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 38,
+      "opcode": "6f",
+      "token": 167772224,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::SetEquals"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 43,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 53,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 63,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 74,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 81,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 91,
+      "opcode": "6f",
+      "token": 167772226,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::GetEnumerator"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 101,
+      "opcode": "28",
+      "token": 167772227,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1+Enumerator<i8>::get_Current"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 113,
+      "opcode": "6f",
+      "token": 167772228,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Contains"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 121,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 128,
+      "opcode": "28",
+      "token": 167772229,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1+Enumerator<i8>::MoveNext"
+    },
+    {
+      "caller": "L2MemberObserver::Done",
+      "offset": 145,
+      "opcode": "6f",
+      "token": 167772204,
+      "target": "[mscorlib]System.IDisposable::Dispose"
+    },
+    {
+      "caller": "L2MemberObserver::QueueEnd",
+      "offset": 11,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::QueueEnd",
+      "offset": 29,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 11,
+      "opcode": "28",
+      "token": 100663328,
+      "target": "L2MemberObserver::QueueEnd"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 27,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 299,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 311,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 316,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 332,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 340,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 362,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::CensusFailure",
+      "offset": 367,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 22,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 150,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 207,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 229,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 241,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 246,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 262,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 270,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 292,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::QueueFailure",
+      "offset": 297,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 18,
+      "opcode": "28",
+      "token": 100663323,
+      "target": "L2MemberObserver::CaptureScript"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 32,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 37,
+      "opcode": "6f",
+      "token": 100663312,
+      "target": "L2MemberObserver::Root"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 42,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 58,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 115,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 158,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 184,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 192,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 214,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 241,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 246,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::FinalFailure",
+      "offset": 251,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 12,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 29,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 59,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 64,
+      "opcode": "73",
+      "token": 100663309,
+      "target": "L2MemberObserver::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 81,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 86,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 102,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 132,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 161,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::PortCases",
+      "offset": 166,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 22,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 55,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 77,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 83,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 96,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 111,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 116,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 121,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 137,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 145,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 167,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::ExitBeforeNew",
+      "offset": 172,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 29,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 53,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 69,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 74,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 96,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 130,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 146,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 151,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 167,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 176,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 198,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::Limits",
+      "offset": 203,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 28,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 58,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 69,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 75,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 88,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 103,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 108,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 113,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 129,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 137,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 151,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 156,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 170,
+      "opcode": "28",
+      "token": 100663328,
+      "target": "L2MemberObserver::QueueEnd"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 186,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 293,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 323,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 336,
+      "opcode": "28",
+      "token": 100663323,
+      "target": "L2MemberObserver::CaptureScript"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 365,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 387,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 393,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 413,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 418,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 425,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 437,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 453,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 492,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 507,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 524,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 551,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 566,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::OwnedCases",
+      "offset": 571,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 22,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 43,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 48,
+      "opcode": "6f",
+      "token": 100663312,
+      "target": "L2MemberObserver::Root"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 61,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 66,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 78,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 94,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 102,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 124,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::RootException",
+      "offset": 129,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 18,
+      "opcode": "28",
+      "token": 100663323,
+      "target": "L2MemberObserver::CaptureScript"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 32,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 37,
+      "opcode": "6f",
+      "token": 100663312,
+      "target": "L2MemberObserver::Root"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 53,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 86,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 116,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 129,
+      "opcode": "28",
+      "token": 100663323,
+      "target": "L2MemberObserver::CaptureScript"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 146,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 179,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 212,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 223,
+      "opcode": "28",
+      "token": 100663328,
+      "target": "L2MemberObserver::QueueEnd"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 239,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 294,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 305,
+      "opcode": "6f",
+      "token": 167772178,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 321,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 341,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 354,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 359,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 371,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 383,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 399,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 416,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 424,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 448,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 472,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 492,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 505,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::TwoMembers",
+      "offset": 510,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 11,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 27,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 35,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 59,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 67,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::ZeroTotal",
+      "offset": 72,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 12,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 25,
+      "opcode": "28",
+      "token": 100663340,
+      "target": "L2MemberObserver::NewWithoutQueue"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 34,
+      "opcode": "6f",
+      "token": 167772230,
+      "target": "[mscorlib]System.Exception::get_Message"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 44,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 53,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::PortMissing",
+      "offset": 58,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::NewWithoutQueue",
+      "offset": 5,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::NewWithoutQueue",
+      "offset": 10,
+      "opcode": "73",
+      "token": 100663309,
+      "target": "L2MemberObserver::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 22,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 52,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 69,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 86,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 112,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 129,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 141,
+      "opcode": "6f",
+      "token": 100663315,
+      "target": "L2MemberObserver::Poll"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 157,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 172,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 187,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 195,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 207,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 223,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 240,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 248,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 262,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::ImageException",
+      "offset": 267,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 0,
+      "opcode": "28",
+      "token": 100663320,
+      "target": "L2MemberObserver::Reset"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 5,
+      "opcode": "28",
+      "token": 100663322,
+      "target": "L2MemberObserver::NewObserver"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 22,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 39,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 65,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 82,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 116,
+      "opcode": "6f",
+      "token": 167772216,
+      "target": "[mscorlib]System.String::get_Length"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 137,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 154,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 168,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 173,
+      "opcode": "6f",
+      "token": 100663312,
+      "target": "L2MemberObserver::Root"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 186,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 201,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 216,
+      "opcode": "6f",
+      "token": 167772218,
+      "target": "[mscorlib]System.Collections.Generic.Dictionary`2<u4,Member>::get_Item"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 241,
+      "opcode": "28",
+      "token": 167772165,
+      "target": "[mscorlib]System.String::op_Equality"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 249,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 254,
+      "opcode": "28",
+      "token": 100663321,
+      "target": "L2MemberObserver::EmptyPoll"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 266,
+      "opcode": "28",
+      "token": 100663324,
+      "target": "L2MemberObserver::FinalMember"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 282,
+      "opcode": "28",
+      "token": 100663318,
+      "target": "L2MemberObserver::Add"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 290,
+      "opcode": "6f",
+      "token": 100663316,
+      "target": "L2MemberObserver::Stop"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 296,
+      "opcode": "6f",
+      "token": 100663317,
+      "target": "L2MemberObserver::Json"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 309,
+      "opcode": "6f",
+      "token": 167772220,
+      "target": "[mscorlib]System.String::Contains"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 322,
+      "opcode": "6f",
+      "token": 167772220,
+      "target": "[mscorlib]System.String::Contains"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 330,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::PathThroughCapture",
+      "offset": 335,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 3,
+      "opcode": "6f",
+      "token": 167772231,
+      "target": "[mscorlib]System.Action::Invoke"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 8,
+      "opcode": "28",
+      "token": 100663327,
+      "target": "L2MemberObserver::Done"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 88,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 136,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 164,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 192,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 220,
+      "opcode": "6f",
+      "token": 167772225,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 248,
+      "opcode": "6f",
+      "token": 167772213,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 269,
+      "opcode": "28",
+      "token": 167772191,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::Case",
+      "offset": 274,
+      "opcode": "6f",
+      "token": 167772189,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::Add"
+    },
+    {
+      "caller": "L2MemberObserver::MustCase",
+      "offset": 2,
+      "opcode": "28",
+      "token": 100663343,
+      "target": "L2MemberObserver::Case"
+    },
+    {
+      "caller": "L2MemberObserver::MustCase",
+      "offset": 14,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 8,
+      "opcode": "28",
+      "token": 100663319,
+      "target": "L2MemberObserver::Assert"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 19,
+      "opcode": "fe06",
+      "token": 100663326,
+      "target": "L2MemberObserver::Classification"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 25,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 30,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 39,
+      "opcode": "73",
+      "token": 100663367,
+      "target": "<>c__DisplayClassc::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 63,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 69,
+      "opcode": "fe06",
+      "token": 100663368,
+      "target": "<>c__DisplayClassc::<SyntheticMain>b__0"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 75,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 80,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 96,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 102,
+      "opcode": "fe06",
+      "token": 100663369,
+      "target": "<>c__DisplayClassc::<SyntheticMain>b__1"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 108,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 113,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 131,
+      "opcode": "73",
+      "token": 100663370,
+      "target": "<>c__DisplayClasse::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 157,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 164,
+      "opcode": "fe06",
+      "token": 100663371,
+      "target": "<>c__DisplayClasse::<SyntheticMain>b__2"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 170,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 175,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 194,
+      "opcode": "73",
+      "token": 100663372,
+      "target": "<>c__DisplayClass10::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 222,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 229,
+      "opcode": "fe06",
+      "token": 100663373,
+      "target": "<>c__DisplayClass10::<SyntheticMain>b__3"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 235,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 240,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 261,
+      "opcode": "73",
+      "token": 100663374,
+      "target": "<>c__DisplayClass12::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 289,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 296,
+      "opcode": "fe06",
+      "token": 100663375,
+      "target": "<>c__DisplayClass12::<SyntheticMain>b__4"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 302,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 307,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 328,
+      "opcode": "73",
+      "token": 100663376,
+      "target": "<>c__DisplayClass14::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 356,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 363,
+      "opcode": "fe06",
+      "token": 100663377,
+      "target": "<>c__DisplayClass14::<SyntheticMain>b__5"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 369,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 374,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 396,
+      "opcode": "fe06",
+      "token": 100663333,
+      "target": "L2MemberObserver::ExitBeforeNew"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 402,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 407,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 417,
+      "opcode": "73",
+      "token": 100663378,
+      "target": "<>c__DisplayClass16::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 445,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 452,
+      "opcode": "fe06",
+      "token": 100663379,
+      "target": "<>c__DisplayClass16::<SyntheticMain>b__6"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 458,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 463,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 484,
+      "opcode": "73",
+      "token": 100663380,
+      "target": "<>c__DisplayClass18::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 512,
+      "opcode": "28",
+      "token": 167772234,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 519,
+      "opcode": "fe06",
+      "token": 100663381,
+      "target": "<>c__DisplayClass18::<SyntheticMain>b__7"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 525,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 530,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 552,
+      "opcode": "fe06",
+      "token": 100663336,
+      "target": "L2MemberObserver::RootException"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 558,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 563,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 574,
+      "opcode": "fe06",
+      "token": 100663337,
+      "target": "L2MemberObserver::TwoMembers"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 580,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 585,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 596,
+      "opcode": "fe06",
+      "token": 100663338,
+      "target": "L2MemberObserver::ZeroTotal"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 602,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 607,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 618,
+      "opcode": "fe06",
+      "token": 100663339,
+      "target": "L2MemberObserver::PortMissing"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 624,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 629,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 640,
+      "opcode": "fe06",
+      "token": 100663341,
+      "target": "L2MemberObserver::ImageException"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 646,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 651,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 669,
+      "opcode": "fe06",
+      "token": 100663346,
+      "target": "L2MemberObserver::<SyntheticMain>b__8"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 675,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 690,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 708,
+      "opcode": "fe06",
+      "token": 100663347,
+      "target": "L2MemberObserver::<SyntheticMain>b__9"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 714,
+      "opcode": "73",
+      "token": 167772233,
+      "target": "[mscorlib]System.Action::.ctor"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 729,
+      "opcode": "28",
+      "token": 100663344,
+      "target": "L2MemberObserver::MustCase"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 746,
+      "opcode": "6f",
+      "token": 167772213,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 758,
+      "opcode": "6f",
+      "token": 167772187,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::get_Count"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 808,
+      "opcode": "6f",
+      "token": 167772208,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::ToArray"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 813,
+      "opcode": "28",
+      "token": 167772209,
+      "target": "[mscorlib]System.String::Join"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 858,
+      "opcode": "28",
+      "token": 167772235,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "L2MemberObserver::SyntheticMain",
+      "offset": 863,
+      "opcode": "28",
+      "token": 167772236,
+      "target": "[mscorlib]System.Console::WriteLine"
+    },
+    {
+      "caller": "L2MemberObserver::<SyntheticMain>b__8",
+      "offset": 1,
+      "opcode": "28",
+      "token": 100663342,
+      "target": "L2MemberObserver::PathThroughCapture"
+    },
+    {
+      "caller": "L2MemberObserver::<SyntheticMain>b__9",
+      "offset": 1,
+      "opcode": "28",
+      "token": 100663342,
+      "target": "L2MemberObserver::PathThroughCapture"
+    },
+    {
+      "caller": "L2MemberObserver::.cctor",
+      "offset": 0,
+      "opcode": "73",
+      "token": 167772167,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::.ctor"
+    },
+    {
+      "caller": "Member::.ctor",
+      "offset": 34,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "Step::.ctor",
+      "offset": 54,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 17,
+      "opcode": "28",
+      "token": 167772238,
+      "target": "[mscorlib]System.String::Concat"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 22,
+      "opcode": "6f",
+      "token": 167772189,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 32,
+      "opcode": "6f",
+      "token": 167772213,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::get_Count"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 56,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 67,
+      "opcode": "6f",
+      "token": 167772239,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::Dequeue"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 80,
+      "opcode": "28",
+      "token": 167772180,
+      "target": "[mscorlib]System.String::op_Inequality"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 113,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::Take",
+      "offset": 132,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::Need",
+      "offset": 20,
+      "opcode": "73",
+      "token": 167772170,
+      "target": "[mscorlib]System.InvalidOperationException::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 2,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 17,
+      "opcode": "28",
+      "token": 167772174,
+      "target": "[mscorlib]System.IntPtr::op_Equality"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 30,
+      "opcode": "28",
+      "token": 167772240,
+      "target": "[mscorlib]System.UIntPtr::op_Equality"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 44,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 56,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 81,
+      "opcode": "6f",
+      "token": 167772241,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 86,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::CreateIoCompletionPort",
+      "offset": 105,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::Associate",
+      "offset": 2,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::Associate",
+      "offset": 25,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::Associate",
+      "offset": 40,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::Associate",
+      "offset": 61,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::Associate",
+      "offset": 77,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "offset": 2,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "offset": 23,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "offset": 39,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "offset": 66,
+      "opcode": "73",
+      "token": 167772242,
+      "target": "[mscorlib]System.UIntPtr::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "offset": 83,
+      "opcode": "73",
+      "token": 167772217,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::LastError",
+      "offset": 7,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 2,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 25,
+      "opcode": "28",
+      "token": 167772186,
+      "target": "[mscorlib]System.IntPtr::op_Inequality"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 43,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 59,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 89,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 102,
+      "opcode": "28",
+      "token": 167772243,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::WriteInt32"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 115,
+      "opcode": "28",
+      "token": 167772243,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::WriteInt32"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryIds",
+      "offset": 138,
+      "opcode": "28",
+      "token": 167772244,
+      "target": "[mscorlib]System.Runtime.InteropServices.Marshal::WriteInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::OpenProcess",
+      "offset": 19,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::OpenProcess",
+      "offset": 32,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::OpenProcess",
+      "offset": 57,
+      "opcode": "6f",
+      "token": 167772241,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::OpenProcess",
+      "offset": 62,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::OpenProcess",
+      "offset": 81,
+      "opcode": "73",
+      "token": 167772171,
+      "target": "[mscorlib]System.IntPtr::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::IsProcessInJob",
+      "offset": 2,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::IsProcessInJob",
+      "offset": 15,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::IsProcessInJob",
+      "offset": 27,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::IsProcessInJob",
+      "offset": 32,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::GetProcessTimes",
+      "offset": 7,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::GetProcessTimes",
+      "offset": 12,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "offset": 13,
+      "opcode": "6f",
+      "token": 167772245,
+      "target": "[mscorlib]System.Text.StringBuilder::get_Capacity"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "offset": 28,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "offset": 40,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "offset": 45,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "offset": 58,
+      "opcode": "6f",
+      "token": 167772206,
+      "target": "[mscorlib]System.Text.StringBuilder::Append"
+    },
+    {
+      "caller": "SyntheticBoundary::WaitForSingleObject",
+      "offset": 4,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::WaitForSingleObject",
+      "offset": 16,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::WaitForSingleObject",
+      "offset": 21,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 2,
+      "opcode": "28",
+      "token": 167772190,
+      "target": "[mscorlib]System.IntPtr::ToInt64"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 14,
+      "opcode": "6f",
+      "token": 167772228,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Contains"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 27,
+      "opcode": "6f",
+      "token": 167772241,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 35,
+      "opcode": "28",
+      "token": 100663353,
+      "target": "SyntheticBoundary::Need"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 46,
+      "opcode": "28",
+      "token": 100663352,
+      "target": "SyntheticBoundary::Take"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 66,
+      "opcode": "6f",
+      "token": 167772241,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 80,
+      "opcode": "6f",
+      "token": 167772241,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::CloseHandle",
+      "offset": 97,
+      "opcode": "6f",
+      "token": 167772241,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::Add"
+    },
+    {
+      "caller": "SyntheticBoundary::.cctor",
+      "offset": 0,
+      "opcode": "73",
+      "token": 167772246,
+      "target": "[System]System.Collections.Generic.Queue`1<Step>::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::.cctor",
+      "offset": 10,
+      "opcode": "73",
+      "token": 167772167,
+      "target": "[mscorlib]System.Collections.Generic.List`1<string>::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::.cctor",
+      "offset": 20,
+      "opcode": "73",
+      "token": 167772247,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::.cctor",
+      "offset": 30,
+      "opcode": "73",
+      "token": 167772247,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::.cctor",
+      "offset": 40,
+      "opcode": "73",
+      "token": 167772247,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::.ctor"
+    },
+    {
+      "caller": "SyntheticBoundary::.cctor",
+      "offset": 50,
+      "opcode": "73",
+      "token": 167772247,
+      "target": "[System.Core]System.Collections.Generic.HashSet`1<i8>::.ctor"
+    },
+    {
+      "caller": "L2ObserverSyntheticEntry::Main",
+      "offset": 1,
+      "opcode": "28",
+      "token": 100663345,
+      "target": "L2MemberObserver::SyntheticMain"
+    },
+    {
+      "caller": "<>c__DisplayClassc::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClassc::<SyntheticMain>b__0",
+      "offset": 7,
+      "opcode": "28",
+      "token": 100663325,
+      "target": "L2MemberObserver::CaptureCase"
+    },
+    {
+      "caller": "<>c__DisplayClassc::<SyntheticMain>b__1",
+      "offset": 7,
+      "opcode": "28",
+      "token": 100663325,
+      "target": "L2MemberObserver::CaptureCase"
+    },
+    {
+      "caller": "<>c__DisplayClasse::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClasse::<SyntheticMain>b__2",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663329,
+      "target": "L2MemberObserver::CensusFailure"
+    },
+    {
+      "caller": "<>c__DisplayClass10::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClass10::<SyntheticMain>b__3",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663330,
+      "target": "L2MemberObserver::QueueFailure"
+    },
+    {
+      "caller": "<>c__DisplayClass12::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClass12::<SyntheticMain>b__4",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663331,
+      "target": "L2MemberObserver::FinalFailure"
+    },
+    {
+      "caller": "<>c__DisplayClass14::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClass14::<SyntheticMain>b__5",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663332,
+      "target": "L2MemberObserver::PortCases"
+    },
+    {
+      "caller": "<>c__DisplayClass16::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClass16::<SyntheticMain>b__6",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663334,
+      "target": "L2MemberObserver::Limits"
+    },
+    {
+      "caller": "<>c__DisplayClass18::.ctor",
+      "offset": 1,
+      "opcode": "28",
+      "token": 167772168,
+      "target": "[mscorlib]System.Object::.ctor"
+    },
+    {
+      "caller": "<>c__DisplayClass18::<SyntheticMain>b__7",
+      "offset": 6,
+      "opcode": "28",
+      "token": 100663335,
+      "target": "L2MemberObserver::OwnedCases"
+    }
+  ],
+  "limitations": [
+    "Fixed binary inventory reviewed against pinned sources, not general-purpose CLR verifier",
+    "Marshal bounded by source-level local allocation review, not machine-checked pointer provenance",
+    "Delegate sites reviewed against fixed fixture; not a general dynamic dispatch proof",
+    "Runtime/framework transitive implementation not audited; execution still requires a bounded driver"
+  ]
+}
