@@ -1,0 +1,202 @@
+{
+  "schema": "codex-observer-preparation-offline/2",
+  "basisCommit": "0dc3df4",
+  "checks": 38,
+  "results": [
+    {
+      "name": "transform pinned source",
+      "passed": true
+    },
+    {
+      "name": "roundtrip source byte equality",
+      "passed": true
+    },
+    {
+      "name": "deterministic transform",
+      "passed": true
+    },
+    {
+      "name": "comment drift",
+      "passed": true
+    },
+    {
+      "name": "algorithm drift",
+      "passed": true
+    },
+    {
+      "name": "newline drift",
+      "passed": true
+    },
+    {
+      "name": "empty",
+      "passed": true
+    },
+    {
+      "name": "non buffer rejected",
+      "passed": true
+    },
+    {
+      "name": "no native declaration remains",
+      "passed": true
+    },
+    {
+      "name": "real logic suffix preserved",
+      "passed": true
+    },
+    {
+      "name": "classification preserved",
+      "passed": true
+    },
+    {
+      "name": "fixture prohibited source tokens absent",
+      "passed": true
+    },
+    {
+      "name": "fixture has CaptureCase",
+      "passed": true
+    },
+    {
+      "name": "fixture has CensusFailure",
+      "passed": true
+    },
+    {
+      "name": "fixture has QueueFailure",
+      "passed": true
+    },
+    {
+      "name": "fixture has FinalFailure",
+      "passed": true
+    },
+    {
+      "name": "fixture has PortCases",
+      "passed": true
+    },
+    {
+      "name": "fixture has ExitBeforeNew",
+      "passed": true
+    },
+    {
+      "name": "fixture has Limits",
+      "passed": true
+    },
+    {
+      "name": "fixture has OwnedCases",
+      "passed": true
+    },
+    {
+      "name": "fixture has RootException",
+      "passed": true
+    },
+    {
+      "name": "fixture has TwoMembers",
+      "passed": true
+    },
+    {
+      "name": "fixture has ZeroTotal",
+      "passed": true
+    },
+    {
+      "name": "fixture has PortMissing",
+      "passed": true
+    },
+    {
+      "name": "fixture has ImageException",
+      "passed": true
+    },
+    {
+      "name": "fixture has PathThroughCapture",
+      "passed": true
+    },
+    {
+      "name": "compile and execution remain false",
+      "passed": true
+    },
+    {
+      "name": "two member real chain",
+      "passed": true
+    },
+    {
+      "name": "independent handle ledger",
+      "passed": true
+    },
+    {
+      "name": "no duplicate switch labels",
+      "passed": true
+    },
+    {
+      "name": "72 planned case instances",
+      "passed": true
+    },
+    {
+      "name": "per case failure stops and final exit derives ok",
+      "passed": true
+    },
+    {
+      "name": "four fixed in-memory mutants",
+      "passed": true
+    },
+    {
+      "name": "mutant caseSensitive",
+      "passed": true
+    },
+    {
+      "name": "mutant finalIdentity",
+      "passed": true
+    },
+    {
+      "name": "mutant borrowedClose",
+      "passed": true
+    },
+    {
+      "name": "mutant recapture",
+      "passed": true
+    },
+    {
+      "name": "mutant source drift rejected",
+      "passed": true
+    }
+  ],
+  "sourceSha256": "722d28e9e2f145d9bcf4e00fb82ee4837ec4b365d53bdd86b4472a6228fd9019",
+  "generatedSha256": "6ebb2da69580ebebc56fe889d803571f60753b1e7140fe2aabacb283ff728b6a",
+  "fixtureSha256": "d8ad9ff7404a5d5060d57c0ee3872a0957d0ff0f19113cceff6f0d6d55842646",
+  "transformerSha256": "8756077864c233eac527072bbeff744c6a0b2715dbc30973af75228cd97ea1b8",
+  "mutantBuilderSha256": "7b7488cece38b39646a74d751df29f45c94576d35482a6e6e981a20df32935df",
+  "testSha256": "caa22db4516f4e65b1b82d4b5819e7b41161590a66105d79f1566f789d8b4510",
+  "mutants": [
+    {
+      "id": "caseSensitive",
+      "sha256": "3725054e6514c71473a7dfd88efa17f6f09002f0f7ce9ee6f3496e6324db38b8",
+      "expectedFirstFailure": "classification",
+      "expectedExitCode": 1
+    },
+    {
+      "id": "finalIdentity",
+      "sha256": "c7068cbb962b9e3feeabcaee2cd7b3295339ea5c885c1e62caa279fb58422441",
+      "expectedFirstFailure": "final1",
+      "expectedExitCode": 1
+    },
+    {
+      "id": "borrowedClose",
+      "sha256": "2049d6259dfcf412ea1bf228235cbecac119a671bef25ccf0f328ac37b90b437",
+      "expectedFirstFailure": "captureBorrowed0",
+      "expectedExitCode": 1
+    },
+    {
+      "id": "recapture",
+      "sha256": "faa7b51fa66cfc9a98a2e91572cb46d55c335ec44766a1e1442f6a6bd2f8a1a3",
+      "expectedFirstFailure": "captureBorrowed0",
+      "expectedExitCode": 1
+    }
+  ],
+  "unexpected": 0,
+  "csharpCompiled": false,
+  "csharpExecuted": false,
+  "plannedCsharpCases": 72,
+  "mutationSensitivityExecuted": false,
+  "limitations": [
+    "Static fixture checks are not C# compilation or behavior proof",
+    "Four mutation failures are predictions pending compiled execution",
+    "No binary capability audit performed"
+  ],
+  "ok": true
+}
