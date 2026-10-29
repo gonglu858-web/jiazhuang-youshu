@@ -1,3 +1,9 @@
+## 2026-10-29 Codex：第二变体finalIdentity驱动离线审查完成
+
+接手b159541；另存专用运行驱动、离线脚本/JSON及复核报告。54/54通过，实际产品启动0、编译0、守卫意外0。源码推导前46项与基线逐字段一致，第47项final1失败：calls14/unexpected2/owned1/closeAttempts1/closed0/closeFailures1/remainingSteps0；夹具故障与驱动守卫分列，不作通用豁免。默认只读Node exit2、starts0，实际运行回执不存在。
+
+来源：[复核](Codex复核-L2第二变体预期失败驱动离线-20261029.md)、[离线JSON](证据/CodexL2观察器第二变体驱动离线v1-20261029.json)。唯一下一步：核对摘要和回执不存在后仅运行finalIdentity一次，异常即停不重试；本轮产物未运行。baseline/caseSensitive不重做，其余两变体不编译。完整L2/真实私密输入未放行，A暂停，1/2号不重试，P不开展。未读真实编号/凭据、未查身份ACL、无PS/UI/DPAPI或云端操作。无临时文件，AGENTS既有修改排除。本节点无需转发给CodeBuddy。
+
 ## 2026-10-29 Codex：finalIdentity单次编译与只读12/12
 
 接手ca9b43b，固定v2编译器启动1次，PID7548/closed/exit0、stdout/stderr0、无kill、守卫意外0。产物b30a44b7…1645a，未运行。只读12/12：85方法中84体相同，仅Stop由520增至538字节；调用650→651，新增一次既有字符串不等比较，后续偏移顺移18。详见[记录](Codex记录-L2第二变体编译与只读核对-20261029.md)。下一步准备finalIdentity专用预期失败驱动及离线反例，不实际运行；需推导到final1的完整顺序与清理事实。已有通过项不重跑，完整L2/真实输入仍未放行；无临时文件，本节点无需转发给CodeBuddy。
