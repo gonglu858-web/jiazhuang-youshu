@@ -1,3 +1,7 @@
+## 2026-10-29 Codex：finalIdentity单次编译与只读12/12
+
+接手ca9b43b，固定v2编译器启动1次，PID7548/closed/exit0、stdout/stderr0、无kill、守卫意外0。产物b30a44b7…1645a，未运行。只读12/12：85方法中84体相同，仅Stop由520增至538字节；调用650→651，新增一次既有字符串不等比较，后续偏移顺移18。详见[记录](Codex记录-L2第二变体编译与只读核对-20261029.md)。下一步准备finalIdentity专用预期失败驱动及离线反例，不实际运行；需推导到final1的完整顺序与清理事实。已有通过项不重跑，完整L2/真实输入仍未放行；无临时文件，本节点无需转发给CodeBuddy。
+
 ## 2026-10-29 Codex：首变体单次预期失败验收通过
 
 接手ec1149f，caseSensitive启动1次，PID41160、closed/exit1、stdout244B/stderr0，无kill、守卫意外0，文件复核通过。仅classification失败、七计数0，驱动expectedFailureObserved=true/ok=true/exit0，失败与验收结论分述。详见[运行记录](Codex记录-L2首变体单次预期失败运行-20261029.md)。未重跑baseline或其他变体；下一步finalIdentity仅单次编译并只读检查、不运行，异常即停。完整L2/真实输入未放行，旧事实不变；无临时文件，本节点无需转发给CodeBuddy。

@@ -1,0 +1,87 @@
+{
+  "schema": "codex-observer-second-mutant-readonly/1",
+  "basisCommit": "ca9b43b",
+  "caseId": "finalIdentity",
+  "baselineSha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "mutantSha256": "b30a44b7e15fc3cc0af873855da7731823367deffe9b1621589bd77b5e41645a",
+  "scriptSha256": "7461b3dba817b40d612a3491d1ab1c721678654489cf49312cf16f98f056e7b6",
+  "parserSha256": "474d8aebdcc7f686440ac5587ec94bf0def67a5cc6f104b8b3d27d91dfa7d8db",
+  "policySha256": "770cdb4dd5dfb4477b3c3b3e7b91e78cf1184cc7cf51f00a419a6dcae37cca24",
+  "compileReceiptSha256": "b76ddd2e7cee91a90d13b15077109955e68b2e84d99512c38b09c6c095e93ae1",
+  "checks": 12,
+  "results": [
+    {
+      "name": "pinned parser and reviewed policy",
+      "passed": true
+    },
+    {
+      "name": "binary pins and path chain",
+      "passed": true
+    },
+    {
+      "name": "single compile successful receipt",
+      "passed": true
+    },
+    {
+      "name": "exact output directory and empty tmp",
+      "passed": true
+    },
+    {
+      "name": "only approved source replacement and unchanged fixture",
+      "passed": true
+    },
+    {
+      "name": "complete managed inventory equals baseline policy",
+      "passed": true
+    },
+    {
+      "name": "call delta only reviewed string comparison and shifted offsets",
+      "passed": true
+    },
+    {
+      "name": "84 unchanged bodies and pinned reviewed Stop body",
+      "passed": true
+    },
+    {
+      "name": "unchanged baseline rejected as missing mutation",
+      "passed": true
+    },
+    {
+      "name": "extra valid IL change rejected",
+      "passed": true
+    },
+    {
+      "name": "truncated binary rejected",
+      "passed": true
+    },
+    {
+      "name": "inputs unchanged after inspection",
+      "passed": true
+    }
+  ],
+  "differences": [
+    {
+      "method": "L2MemberObserver::Stop",
+      "baseBytes": 520,
+      "mutantBytes": 538,
+      "baseHash": "82a449553b2517820cb1a03378c235ff53bf965740c7f7bc00d27a3b11c4d5f2",
+      "mutantHash": "39f76d2bcae19bdcf071a96f12464677a6ba3575c76e853f435a80684d7c483c"
+    }
+  ],
+  "methods": 85,
+  "calls": 651,
+  "assemblyLoaded": false,
+  "productExecuted": false,
+  "compileStartsThisInspector": 0,
+  "staticCapabilityReviewPassed": true,
+  "executionApproved": false,
+  "guardUnexpected": 0,
+  "limitations": [
+    "Fixed artifact comparison, not general CLR verification",
+    "IL method bodies compared, not byte equality of entire PE metadata",
+    "Runtime/framework transitive behavior not proven",
+    "Expected final1 failure/exit1 not executed"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
