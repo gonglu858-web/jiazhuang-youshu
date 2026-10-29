@@ -1,0 +1,49 @@
+{
+  "schema": "codex-observer-first-mutant-run/1",
+  "basisCommit": "5539d59",
+  "caseId": "caseSensitive",
+  "binarySha256": "c5966ef9d48d79a5615c012a87e79d1d60dcc5eac2e33f1cbb73d8021048a0bf",
+  "executionRequested": true,
+  "process": {
+    "attempted": true,
+    "pid": 41160,
+    "closed": true,
+    "spawnFailed": false,
+    "exitCode": 1,
+    "signal": null,
+    "stdoutBytes": 244,
+    "stderrBytes": 0,
+    "killRequested": false,
+    "killAccepted": null,
+    "failure": null,
+    "result": {
+      "schema": "codex-observer-synthetic/2",
+      "results": [
+        {
+          "name": "classification",
+          "ok": false,
+          "calls": 0,
+          "unexpected": 0,
+          "owned": 0,
+          "closeAttempts": 0,
+          "closed": 0,
+          "closeFailures": 0,
+          "remainingSteps": 0
+        }
+      ],
+      "ok": false,
+      "nativeExecuted": false,
+      "l2Approved": false
+    }
+  },
+  "failure": null,
+  "expectedFailureObserved": true,
+  "l2Approved": false,
+  "descendantCoverage": "NOT_OBSERVED",
+  "directCloseConfirmed": true,
+  "postcheckPassed": true,
+  "starts": 1,
+  "guardUnexpected": 0,
+  "ok": true,
+  "exitCode": 0
+}

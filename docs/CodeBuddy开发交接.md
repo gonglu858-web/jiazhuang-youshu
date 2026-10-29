@@ -1,3 +1,7 @@
+## 2026-10-29 Codex：首变体单次预期失败验收通过
+
+接手ec1149f，caseSensitive启动1次，PID41160、closed/exit1、stdout244B/stderr0，无kill、守卫意外0，文件复核通过。仅classification失败、七计数0，驱动expectedFailureObserved=true/ok=true/exit0，失败与验收结论分述。详见[运行记录](Codex记录-L2首变体单次预期失败运行-20261029.md)。未重跑baseline或其他变体；下一步finalIdentity仅单次编译并只读检查、不运行，异常即停。完整L2/真实输入未放行，旧事实不变；无临时文件，本节点无需转发给CodeBuddy。
+
 ## 2026-10-29 Codex：首变体预期失败驱动离线49/49
 
 接手5539d59，新增caseSensitive专用摘要绑定驱动与离线反例，49/49通过、真实产物启动0。仅接受classification失败一项+七计数0+子进程exit1+正常收尾/复核/守卫；驱动成功exit0与子进程预期exit1分述。无回执不能认定成功；写入/关闭失败撤销成功。详见[审查记录](Codex复核-L2首变体预期失败驱动离线-20261029.md)。下一节点仅此变体单次运行，异常即停不重试；其他变体未启动、baseline不重跑。完整L2/真实输入未放行，旧事实保持；无临时文件，本节点无需转发给CodeBuddy。
