@@ -1,0 +1,358 @@
+{
+  "schema": "codex-observer-compile-offline/2",
+  "checks": 85,
+  "results": [
+    {
+      "name": "normal fixed vector/options single start",
+      "passed": true
+    },
+    {
+      "name": "throw",
+      "passed": true
+    },
+    {
+      "name": "noPid",
+      "passed": true
+    },
+    {
+      "name": "nonzero",
+      "passed": true
+    },
+    {
+      "name": "signal",
+      "passed": true
+    },
+    {
+      "name": "error",
+      "passed": true
+    },
+    {
+      "name": "stdout",
+      "passed": true
+    },
+    {
+      "name": "stderr",
+      "passed": true
+    },
+    {
+      "name": "limit",
+      "passed": true
+    },
+    {
+      "name": "type",
+      "passed": true
+    },
+    {
+      "name": "streamError",
+      "passed": true
+    },
+    {
+      "name": "missing",
+      "passed": true
+    },
+    {
+      "name": "timeout",
+      "passed": true
+    },
+    {
+      "name": "noClose",
+      "passed": true
+    },
+    {
+      "name": "killThrows",
+      "passed": true
+    },
+    {
+      "name": "killFalse",
+      "passed": true
+    },
+    {
+      "name": "utf8",
+      "passed": true
+    },
+    {
+      "name": "synthetic managed AMD64 PE",
+      "passed": true
+    },
+    {
+      "name": "PE reject truncated",
+      "passed": true
+    },
+    {
+      "name": "PE reject DOS",
+      "passed": true
+    },
+    {
+      "name": "PE reject signature",
+      "passed": true
+    },
+    {
+      "name": "PE reject machine",
+      "passed": true
+    },
+    {
+      "name": "PE reject magic",
+      "passed": true
+    },
+    {
+      "name": "PE reject CLR missing",
+      "passed": true
+    },
+    {
+      "name": "PE reject RVA invalid",
+      "passed": true
+    },
+    {
+      "name": "PE reject native entry",
+      "passed": true
+    },
+    {
+      "name": "PE reject entry zero",
+      "passed": true
+    },
+    {
+      "name": "PE reject metadata",
+      "passed": true
+    },
+    {
+      "name": "main default readonly zero mutations",
+      "passed": true
+    },
+    {
+      "name": "main exact one compile / synthetic PE / no execution",
+      "passed": true
+    },
+    {
+      "name": "main reject invalidCli",
+      "passed": true
+    },
+    {
+      "name": "main reject helperCli",
+      "passed": true
+    },
+    {
+      "name": "main reject evidenceExists",
+      "passed": true
+    },
+    {
+      "name": "main reject configDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject nodeDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject coreReferenceDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject secondSourceDrift",
+      "passed": true
+    },
+    {
+      "name": "main reject sourceLink",
+      "passed": true
+    },
+    {
+      "name": "main reject hostMismatch",
+      "passed": true
+    },
+    {
+      "name": "main reject excludeMissing",
+      "passed": true
+    },
+    {
+      "name": "main reject outputExists",
+      "passed": true
+    },
+    {
+      "name": "main reject outputLink",
+      "passed": true
+    },
+    {
+      "name": "main reject parentMissing",
+      "passed": true
+    },
+    {
+      "name": "main reject mkdirRace",
+      "passed": true
+    },
+    {
+      "name": "main reject tmpFailure",
+      "passed": true
+    },
+    {
+      "name": "main reject beforeStartExtra",
+      "passed": true
+    },
+    {
+      "name": "main reject sourceBeforeStart",
+      "passed": true
+    },
+    {
+      "name": "main reject sourceAfterStart",
+      "passed": true
+    },
+    {
+      "name": "main reject configAfterStart",
+      "passed": true
+    },
+    {
+      "name": "main reject startThrow",
+      "passed": true
+    },
+    {
+      "name": "main reject compilerError",
+      "passed": true
+    },
+    {
+      "name": "main reject stderr",
+      "passed": true
+    },
+    {
+      "name": "main reject outputOverflow",
+      "passed": true
+    },
+    {
+      "name": "main reject streamError",
+      "passed": true
+    },
+    {
+      "name": "main reject timeout",
+      "passed": true
+    },
+    {
+      "name": "main reject noClose",
+      "passed": true
+    },
+    {
+      "name": "main reject killFalse",
+      "passed": true
+    },
+    {
+      "name": "main reject noProduct",
+      "passed": true
+    },
+    {
+      "name": "main reject badPe",
+      "passed": true
+    },
+    {
+      "name": "main reject largeProduct",
+      "passed": true
+    },
+    {
+      "name": "main reject extraProduct",
+      "passed": true
+    },
+    {
+      "name": "main reject nonemptyTmp",
+      "passed": true
+    },
+    {
+      "name": "main reject productLink",
+      "passed": true
+    },
+    {
+      "name": "main caught guard earlyNetwork",
+      "passed": true
+    },
+    {
+      "name": "main caught guard postCompileHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard lateReadHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard lateHashHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard socketHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard dnsHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard fetchHit",
+      "passed": true
+    },
+    {
+      "name": "main caught guard processHit",
+      "passed": true
+    },
+    {
+      "name": "main evidence race cannot overwrite",
+      "passed": true
+    },
+    {
+      "name": "main final same-size product drift rejected",
+      "passed": true
+    },
+    {
+      "name": "draft/runtime inputs still pinned and output absent",
+      "passed": true
+    },
+    {
+      "name": "v2 config delta only reference and new destinations",
+      "passed": true
+    },
+    {
+      "name": "v2 executor only binding delta",
+      "passed": true
+    },
+    {
+      "name": "historical failed receipt remains unchanged",
+      "passed": true
+    },
+    {
+      "name": "case binding baseline",
+      "passed": true
+    },
+    {
+      "name": "case binding caseSensitive",
+      "passed": true
+    },
+    {
+      "name": "case binding finalIdentity",
+      "passed": true
+    },
+    {
+      "name": "case binding borrowedClose",
+      "passed": true
+    },
+    {
+      "name": "case binding recapture",
+      "passed": true
+    },
+    {
+      "name": "generated source drift prevents compiler",
+      "passed": true
+    },
+    {
+      "name": "runner and PE implementations reused byte exactly",
+      "passed": true
+    },
+    {
+      "name": "five isolated destinations and exact two-source vectors",
+      "passed": true
+    }
+  ],
+  "digests": {
+    "runner": "63ba0fd81cb52a9c3ddcc8ae67695b2b917d2cc0ab619adfbd0911f4222d91c2",
+    "test": "128fc5956b1ad6b8f9f9717381a01ab79019323b5d303f0d319086f482b4fa86",
+    "observer": "d8ad9ff7404a5d5060d57c0ee3872a0957d0ff0f19113cceff6f0d6d55842646",
+    "config": "5fbf8cba1a796c21bd72c54e05130612a2dee95e428653ce7994ff580806895a"
+  },
+  "unexpectedOS": 0,
+  "actualCompilerStarts": 0,
+  "helperExecuted": false,
+  "coverage": "Actual executor/runner/PE checks with memory FS and synthetic OS/PE; fixed observer sources and compiler configuration; C# not compiled or executed",
+  "ok": true,
+  "exitCode": 0
+}

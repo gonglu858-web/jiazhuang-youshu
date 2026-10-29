@@ -1,0 +1,54 @@
+{
+  "schema": "codex-hashset-reference/1",
+  "basisCommit": "2eb05f8",
+  "file": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+  "bytes": 1551104,
+  "sha256": "8b898bed54ae8cc61f9c58cc3eb062724f8357d2bdda338b5d363654ecff333d",
+  "metadata": {
+    "type": {
+      "row": 149,
+      "name": "HashSet`1",
+      "namespace": "System.Collections.Generic",
+      "flags": 1318913
+    },
+    "typeDefCount": 1176,
+    "definitionNotStringSearch": true
+  },
+  "checks": 7,
+  "results": [
+    {
+      "name": "fixed file no link",
+      "passed": true
+    },
+    {
+      "name": "HashSet public TypeDef",
+      "passed": true
+    },
+    {
+      "name": "truncated rejected",
+      "passed": true
+    },
+    {
+      "name": "name removal rejected",
+      "passed": true
+    },
+    {
+      "name": "mscorlib does not define requested type",
+      "passed": true
+    },
+    {
+      "name": "System does not define requested type",
+      "passed": true
+    },
+    {
+      "name": "unchanged file",
+      "passed": true
+    }
+  ],
+  "scriptSha256": "7cb5cf16714aa9ae1b9f31bb4f5b14dd8c104e50196d2599914e33934929cc0b",
+  "assemblyLoaded": false,
+  "compilerStarts": 0,
+  "guardUnexpected": 0,
+  "ok": true,
+  "exitCode": 0
+}
