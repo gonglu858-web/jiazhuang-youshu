@@ -1,0 +1,296 @@
+{
+  "schema": "codex-observer-compile-config/1",
+  "basisCommit": "46aa59b",
+  "executionAuthorized": false,
+  "requiredRepoLocalExclude": "/artifacts/psr-l2/",
+  "host": {
+    "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+    "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+  },
+  "cwd": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP",
+  "compiler": {
+    "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+    "bytes": 2569832,
+    "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+  },
+  "compilerConfig": {
+    "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+    "bytes": 182,
+    "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+  },
+  "references": [
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+      "bytes": 5445432,
+      "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+      "bytes": 3545264,
+      "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+    }
+  ],
+  "spawn": {
+    "shell": false,
+    "windowsHide": true,
+    "stdio": [
+      "ignore",
+      "pipe",
+      "pipe"
+    ],
+    "timeoutMs": 30000,
+    "reapMs": 2000,
+    "maxCombinedOutputBytes": 131072,
+    "maxDirectCompilerStarts": 1,
+    "automaticRetry": false
+  },
+  "postcheck": {
+    "exitCode": 0,
+    "signal": null,
+    "stderrBytes": 0,
+    "stdoutBytes": 0,
+    "outputMachine": "AMD64",
+    "outputMagic": "PE32+",
+    "requiresClrHeader": true,
+    "maxOutputFileBytes": 1048576,
+    "tempDirectoryMustBeEmpty": true,
+    "executeOutput": false,
+    "unfreezeL2": false,
+    "assemblyCapabilityAuditRequired": true,
+    "executionAllowed": false
+  },
+  "inputs": [
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2成员观察器v3-20261028.cs",
+      "sha256": "722d28e9e2f145d9bcf4e00fb82ee4837ec4b365d53bdd86b4472a6228fd9019"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器合成夹具v2-20261029.cs",
+      "sha256": "d8ad9ff7404a5d5060d57c0ee3872a0957d0ff0f19113cceff6f0d6d55842646"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器合成准备v1-20261028.cjs",
+      "sha256": "8756077864c233eac527072bbeff744c6a0b2715dbc30973af75228cd97ea1b8"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器敏感变体准备v1-20261029.cjs",
+      "sha256": "7b7488cece38b39646a74d751df29f45c94576d35482a6e6e981a20df32935df"
+    }
+  ],
+  "cases": [
+    {
+      "id": "baseline",
+      "sha256": "6ebb2da69580ebebc56fe889d803571f60753b1e7140fe2aabacb283ff728b6a",
+      "expectedExitCode": 0,
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\observer-test.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器单次编译v1-baseline-20261029.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\fixture.cs"
+      ],
+      "args": [
+        "/nologo",
+        "/noconfig",
+        "/nostdlib+",
+        "/target:exe",
+        "/platform:x64",
+        "/langversion:5",
+        "/codepage:65001",
+        "/utf8output",
+        "/optimize+",
+        "/debug-",
+        "/warn:4",
+        "/warnaserror+",
+        "/errorreport:none",
+        "/nowin32manifest",
+        "/main:L2ObserverSyntheticEntry",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\observer-test.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\fixture.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-baseline\\tmp"
+      }
+    },
+    {
+      "id": "caseSensitive",
+      "sha256": "3725054e6514c71473a7dfd88efa17f6f09002f0f7ce9ee6f3496e6324db38b8",
+      "expectedExitCode": 1,
+      "expectedFirstFailure": "classification",
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\observer-test.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器单次编译v1-caseSensitive-20261029.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\fixture.cs"
+      ],
+      "args": [
+        "/nologo",
+        "/noconfig",
+        "/nostdlib+",
+        "/target:exe",
+        "/platform:x64",
+        "/langversion:5",
+        "/codepage:65001",
+        "/utf8output",
+        "/optimize+",
+        "/debug-",
+        "/warn:4",
+        "/warnaserror+",
+        "/errorreport:none",
+        "/nowin32manifest",
+        "/main:L2ObserverSyntheticEntry",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\observer-test.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\fixture.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-caseSensitive\\tmp"
+      }
+    },
+    {
+      "id": "finalIdentity",
+      "sha256": "c7068cbb962b9e3feeabcaee2cd7b3295339ea5c885c1e62caa279fb58422441",
+      "expectedExitCode": 1,
+      "expectedFirstFailure": "final1",
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\observer-test.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器单次编译v1-finalIdentity-20261029.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\fixture.cs"
+      ],
+      "args": [
+        "/nologo",
+        "/noconfig",
+        "/nostdlib+",
+        "/target:exe",
+        "/platform:x64",
+        "/langversion:5",
+        "/codepage:65001",
+        "/utf8output",
+        "/optimize+",
+        "/debug-",
+        "/warn:4",
+        "/warnaserror+",
+        "/errorreport:none",
+        "/nowin32manifest",
+        "/main:L2ObserverSyntheticEntry",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\observer-test.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\fixture.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-finalIdentity\\tmp"
+      }
+    },
+    {
+      "id": "borrowedClose",
+      "sha256": "2049d6259dfcf412ea1bf228235cbecac119a671bef25ccf0f328ac37b90b437",
+      "expectedExitCode": 1,
+      "expectedFirstFailure": "captureBorrowed0",
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\observer-test.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器单次编译v1-borrowedClose-20261029.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\fixture.cs"
+      ],
+      "args": [
+        "/nologo",
+        "/noconfig",
+        "/nostdlib+",
+        "/target:exe",
+        "/platform:x64",
+        "/langversion:5",
+        "/codepage:65001",
+        "/utf8output",
+        "/optimize+",
+        "/debug-",
+        "/warn:4",
+        "/warnaserror+",
+        "/errorreport:none",
+        "/nowin32manifest",
+        "/main:L2ObserverSyntheticEntry",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\observer-test.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\fixture.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-borrowedClose\\tmp"
+      }
+    },
+    {
+      "id": "recapture",
+      "sha256": "faa7b51fa66cfc9a98a2e91572cb46d55c335ec44766a1e1442f6a6bd2f8a1a3",
+      "expectedExitCode": 1,
+      "expectedFirstFailure": "captureBorrowed0",
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\observer-test.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2观察器单次编译v1-recapture-20261029.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\fixture.cs"
+      ],
+      "args": [
+        "/nologo",
+        "/noconfig",
+        "/nostdlib+",
+        "/target:exe",
+        "/platform:x64",
+        "/langversion:5",
+        "/codepage:65001",
+        "/utf8output",
+        "/optimize+",
+        "/debug-",
+        "/warn:4",
+        "/warnaserror+",
+        "/errorreport:none",
+        "/nowin32manifest",
+        "/main:L2ObserverSyntheticEntry",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\observer-test.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\observer.cs",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\fixture.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\observer-synthetic-v1-recapture\\tmp"
+      }
+    }
+  ]
+}
