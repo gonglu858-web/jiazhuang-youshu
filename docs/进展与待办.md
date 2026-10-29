@@ -1,3 +1,9 @@
+## 2026-10-29 Codex：第二变体finalIdentity单次预期失败完成
+
+接手e0dac5c；摘要与回执不存在核对后仅运行一次，PID15168、closed=true、子exit1、stdout6459/stderr0、无signal/kill，驱动守卫0、执行后复核通过。前46项与baseline逐字段相同，第47项final1失败且calls14/unexpected2/owned1/closeAttempts1/closed0/closeFailures1/remainingSteps0，符合运行前推导。驱动ok=true/exit0/expectedFailureObserved=true；这是故障敏感性通过，不是变体产品通过。夹具故障与驱动守卫分列，无重试，无编译。
+
+来源：[本轮记录](Codex记录-L2第二变体单次预期失败运行-20261029.md)、[运行回执](证据/CodexL2观察器第二变体运行结果v1-20261029.json)。唯一下一步：第三变体borrowedClose固定配置编译前核对，通过后仅编译一次并只读检查产物，不运行；recapture暂不开展。完整L2/真实私密输入未放行，旧四成员失败/期望2/父链UNKNOWN不变；A暂停，1/2号不重试，P不开展。无真实编号/凭据/身份ACL/PS/UI/DPAPI/云端操作，无临时文件，AGENTS修改排除。本节点无需转发给CodeBuddy。
+
 ## 2026-10-29 Codex：第二变体finalIdentity驱动离线审查完成
 
 接手b159541；另存专用运行驱动、离线脚本/JSON及复核报告。54/54通过，实际产品启动0、编译0、守卫意外0。源码推导前46项与基线逐字段一致，第47项final1失败：calls14/unexpected2/owned1/closeAttempts1/closed0/closeFailures1/remainingSteps0；夹具故障与驱动守卫分列，不作通用豁免。默认只读Node exit2、starts0，实际运行回执不存在。
