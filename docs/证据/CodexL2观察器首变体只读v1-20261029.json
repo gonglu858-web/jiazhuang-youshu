@@ -1,0 +1,82 @@
+{
+  "schema": "codex-observer-first-mutant-readonly/1",
+  "basisCommit": "3ce97a7",
+  "caseId": "caseSensitive",
+  "baselineSha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "mutantSha256": "c5966ef9d48d79a5615c012a87e79d1d60dcc5eac2e33f1cbb73d8021048a0bf",
+  "scriptSha256": "65ba0f003548bcb607bc794879e147d60f45bcb718178a985b0f04b953ed7363",
+  "parserSha256": "474d8aebdcc7f686440ac5587ec94bf0def67a5cc6f104b8b3d27d91dfa7d8db",
+  "policySha256": "770cdb4dd5dfb4477b3c3b3e7b91e78cf1184cc7cf51f00a419a6dcae37cca24",
+  "compileReceiptSha256": "0b0c050aa59e665c5af39d3e78d1c81996e256c727bd786b7992bf33811b2769",
+  "checks": 11,
+  "results": [
+    {
+      "name": "pinned parser and reviewed policy",
+      "passed": true
+    },
+    {
+      "name": "binary pins and path chain",
+      "passed": true
+    },
+    {
+      "name": "single compile successful receipt",
+      "passed": true
+    },
+    {
+      "name": "exact output directory and empty tmp",
+      "passed": true
+    },
+    {
+      "name": "only approved source replacement and unchanged fixture",
+      "passed": true
+    },
+    {
+      "name": "complete managed inventory equals baseline policy",
+      "passed": true
+    },
+    {
+      "name": "all 85 IL bodies exactly one approved constant change",
+      "passed": true
+    },
+    {
+      "name": "unchanged baseline rejected as missing mutation",
+      "passed": true
+    },
+    {
+      "name": "extra valid IL change rejected",
+      "passed": true
+    },
+    {
+      "name": "truncated binary rejected",
+      "passed": true
+    },
+    {
+      "name": "inputs unchanged after inspection",
+      "passed": true
+    }
+  ],
+  "differences": [
+    {
+      "method": "L2MemberObserver::ClassifyPath",
+      "offset": 6,
+      "base": 27,
+      "mutant": 26
+    }
+  ],
+  "methods": 85,
+  "calls": 650,
+  "assemblyLoaded": false,
+  "productExecuted": false,
+  "compileStartsThisInspector": 0,
+  "staticCapabilityReviewPassed": true,
+  "executionApproved": false,
+  "guardUnexpected": 0,
+  "limitations": [
+    "Fixed artifact comparison, not general CLR verification",
+    "IL method bodies compared, not byte equality of entire PE metadata",
+    "Runtime/framework transitive behavior not proven",
+    "Expected classification failure/exit1 not executed"
+  ],
+  "ok": true,
+  "exitCode": 0
+}

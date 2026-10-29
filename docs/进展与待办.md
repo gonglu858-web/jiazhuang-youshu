@@ -1,3 +1,7 @@
+## 2026-10-29 Codex：首个caseSensitive变体编译与只读检查
+
+接手3ce97a7，固定v2驱动编译1次，PID12696/closed/exit0、stdout/stderr0，无kill、守卫意外0。产物c5966ef9…48a0bf，未运行。只读11/11：85方法/650调用清单一致，IL仅ClassifyPath偏移6的OrdinalIgnoreCase→Ordinal常量变更；内存反例拒绝。详见[本轮记录](Codex记录-L2观察器首变体编译与只读核对-20261029.md)。下一步准备绑定本变体摘要的预期失败运行驱动及离线反例，不实际运行。baseline72/72不重跑，其他变体未编译；完整L2/真实输入仍未放行。无临时文件，AGENTS排除；本节点无需转发给CodeBuddy。
+
 ## 2026-10-29 Codex：baseline单次合成运行72/72通过
 
 接手e1ef9f5；固定驱动启动合成EXE一次，PID33928、closed=true/exit0、stdout9742B/stderr0、无kill、守卫意外0、postcheck通过。72场景真实合成执行通过；port2/port3/owned4/owned5各一次预设关闭失败事实保留。原生观察器接口仍为替身，后代NOT_OBSERVED、完整L2未放行。详见[运行记录](Codex记录-L2观察器基线单次合成运行-20261029.md)。下一步核对既有配置后，首个caseSensitive变体仅单次编译并只读检查，不运行、不批量启动其他变体。baseline不重跑；旧四成员失败/期望2/父链UNKNOWN保持。无临时文件；本节点无需转发给CodeBuddy。
