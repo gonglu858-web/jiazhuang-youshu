@@ -1,0 +1,77 @@
+{
+  "schema": "codex-observer-binary-entry-review/1",
+  "basisCommit": "1253e2c",
+  "checks": 8,
+  "results": [
+    {
+      "name": "binary fixed hash and size",
+      "passed": true
+    },
+    {
+      "name": "binary path no links",
+      "passed": true
+    },
+    {
+      "name": "compile receipt pinned and success",
+      "passed": true
+    },
+    {
+      "name": "compile inputs still match",
+      "passed": true
+    },
+    {
+      "name": "actual PE and CLI file structure",
+      "passed": true
+    },
+    {
+      "name": "entry MethodDef owner signature and body range",
+      "passed": true
+    },
+    {
+      "name": "entry token out of range rejected",
+      "passed": true
+    },
+    {
+      "name": "binary unchanged after inspection",
+      "passed": true
+    }
+  ],
+  "binarySha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "pe": {
+    "machine": "AMD64",
+    "optionalHeader": "PE32+",
+    "sections": 2,
+    "clrSize": 72,
+    "clrFlags": 1,
+    "managedEntryToken": 100663366,
+    "metadataSignature": "BSJB",
+    "methodBodyNotExecuted": true
+  },
+  "entry": {
+    "entryToken": "0x06000046",
+    "moduleRefRows": 0,
+    "implMapRows": 0,
+    "pinvokeMethods": 0,
+    "methodDefCount": 85,
+    "owner": "L2ObserverSyntheticEntry",
+    "name": "Main",
+    "isStatic": true,
+    "signature": "int Main(string[])",
+    "ilBytes": 7,
+    "ilSemanticsVerified": false
+  },
+  "scriptSha256": "8f8f695054e483a93dce297893f9f6162c5baef76567da7bf6b8a7cea36c10be",
+  "compileEvidenceSha256": "a0d33fe1a57c43b9011f9fa09ee3f7fec74207fb67fe278aa7041d578c4a02b9",
+  "processesStarted": 0,
+  "assemblyLoaded": false,
+  "helperExecuted": false,
+  "assemblyCapabilityAuditPassed": false,
+  "guardUnexpected": 0,
+  "limitations": [
+    "PE/CLI metadata inspection only, not IL semantic verification",
+    "Job/handle cleanup and real transport not executed",
+    "This binds an existing compiled artifact; no deterministic rebuild claim"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
