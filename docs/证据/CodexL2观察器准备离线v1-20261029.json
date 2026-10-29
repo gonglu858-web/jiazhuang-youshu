@@ -1,0 +1,109 @@
+{
+  "schema": "codex-observer-preparation-offline/1",
+  "basisCommit": "176aa35",
+  "checks": 22,
+  "results": [
+    {
+      "name": "transform pinned source",
+      "passed": true
+    },
+    {
+      "name": "roundtrip source byte equality",
+      "passed": true
+    },
+    {
+      "name": "deterministic transform",
+      "passed": true
+    },
+    {
+      "name": "comment drift",
+      "passed": true
+    },
+    {
+      "name": "algorithm drift",
+      "passed": true
+    },
+    {
+      "name": "newline drift",
+      "passed": true
+    },
+    {
+      "name": "empty",
+      "passed": true
+    },
+    {
+      "name": "non buffer rejected",
+      "passed": true
+    },
+    {
+      "name": "no native declaration remains",
+      "passed": true
+    },
+    {
+      "name": "real logic suffix preserved",
+      "passed": true
+    },
+    {
+      "name": "classification preserved",
+      "passed": true
+    },
+    {
+      "name": "fixture prohibited source tokens absent",
+      "passed": true
+    },
+    {
+      "name": "fixture has CaptureCase",
+      "passed": true
+    },
+    {
+      "name": "fixture has CensusFailure",
+      "passed": true
+    },
+    {
+      "name": "fixture has QueueFailure",
+      "passed": true
+    },
+    {
+      "name": "fixture has FinalFailure",
+      "passed": true
+    },
+    {
+      "name": "fixture has PortCases",
+      "passed": true
+    },
+    {
+      "name": "fixture has ExitBeforeNew",
+      "passed": true
+    },
+    {
+      "name": "fixture has Limits",
+      "passed": true
+    },
+    {
+      "name": "fixture has OwnedCases",
+      "passed": true
+    },
+    {
+      "name": "fixture has RootException",
+      "passed": true
+    },
+    {
+      "name": "compile and execution remain false",
+      "passed": true
+    }
+  ],
+  "sourceSha256": "722d28e9e2f145d9bcf4e00fb82ee4837ec4b365d53bdd86b4472a6228fd9019",
+  "generatedSha256": "6ebb2da69580ebebc56fe889d803571f60753b1e7140fe2aabacb283ff728b6a",
+  "fixtureSha256": "db4ceb126fa2b1be9c94249a3837ea4127e20d33fe1444681ba3fdfae7a481f4",
+  "transformerSha256": "8756077864c233eac527072bbeff744c6a0b2715dbc30973af75228cd97ea1b8",
+  "testSha256": "cfffca1d489599c33c99bff0663d4d416acd2c6065af44f774ccb447660c40d7",
+  "unexpected": 0,
+  "csharpCompiled": false,
+  "csharpExecuted": false,
+  "matrixComplete": false,
+  "limitations": [
+    "Static fixture checks are not C# compilation or behavior proof",
+    "Remaining matrix and mutation sensitivity require completion before compiler configuration"
+  ],
+  "ok": true
+}
