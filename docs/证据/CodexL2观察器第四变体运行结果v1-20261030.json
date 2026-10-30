@@ -1,0 +1,60 @@
+{
+  "schema": "codex-observer-fourth-mutant-run/1",
+  "basisCommit": "c63ebf6",
+  "caseId": "recapture",
+  "binarySha256": "381886fd26286256c43997275162eaee3080470cb90084d2b2bd1e515a074b5d",
+  "executionRequested": true,
+  "process": {
+    "attempted": true,
+    "pid": 25932,
+    "closed": true,
+    "spawnFailed": false,
+    "exitCode": 1,
+    "signal": null,
+    "stdoutBytes": 383,
+    "stderrBytes": 0,
+    "killRequested": false,
+    "killAccepted": null,
+    "failure": null,
+    "result": {
+      "schema": "codex-observer-synthetic/2",
+      "results": [
+        {
+          "name": "classification",
+          "ok": true,
+          "calls": 0,
+          "unexpected": 0,
+          "owned": 0,
+          "closeAttempts": 0,
+          "closed": 0,
+          "closeFailures": 0,
+          "remainingSteps": 0
+        },
+        {
+          "name": "captureBorrowed0",
+          "ok": false,
+          "calls": 9,
+          "unexpected": 1,
+          "owned": 1,
+          "closeAttempts": 0,
+          "closed": 0,
+          "closeFailures": 0,
+          "remainingSteps": 0
+        }
+      ],
+      "ok": false,
+      "nativeExecuted": false,
+      "l2Approved": false
+    }
+  },
+  "failure": null,
+  "expectedFailureObserved": true,
+  "l2Approved": false,
+  "descendantCoverage": "NOT_OBSERVED",
+  "directCloseConfirmed": true,
+  "postcheckPassed": true,
+  "starts": 1,
+  "guardUnexpected": 0,
+  "ok": true,
+  "exitCode": 0
+}

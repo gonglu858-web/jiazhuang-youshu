@@ -1,3 +1,7 @@
+## 2026-10-30 recapture第四变体单次预期失败验证完成
+
+接手ad74432。七份固定摘要/离线58/静态22及回执不存在核对后，仅执行已审驱动一次：PID25932，closed=true/exit1，stdout383/stderr0、无signal/kill/错误；守卫意外0、postcheckPassed=true。classification成功七计数0；captureBorrowed0失败计数9/1/1/0/0/0/0精确吻合。驱动ok=true/expectedFailureObserved=true/exit0，子失败事实保留。回执独立回读比较通过，SHA a71bd6474574d47cdc8dbdc7dd7d019820684eacb32b338864099dfdeefd4ba9；驱动/EXE未变、tmp为空。详见[本轮记录](Codex记录-L2第四变体单次预期失败运行-20261030.md)及[回执](证据/CodexL2观察器第四变体运行结果v1-20261030.json)。下一步仅本地汇总baseline与四变体证据，对照B方案区分已关闭/未验证与完整L2剩余条件，不重跑、不恢复A。5文件，无落盘临时脚本；AGENTS排除，历史后缀保留。完整L2与真实私密输入未放行，1/2号不重试、P不开展。本节点无需转发给CodeBuddy。
+
 ## 2026-10-30 recapture第四变体单次驱动离线58项通过
 
 接手c63ebf6。新专用驱动及离线脚本/JSON完成，58/58，实际产物启动0/编译0、守卫意外0。默认入口只读native exit2、starts0、无回执。独立源码推导classification通过，captureBorrowed0为9/1/1/0/0/0/0（calls/unexpected/owned/closeAttempts/closed/closeFailures/remainingSteps），重复查询空队列拒绝且未进入Stop；上一变体计数及其他近似错误均拒绝。详见[本轮复核](Codex复核-L2第四变体预期失败驱动离线-20261030.md)及[58项证据](证据/CodexL2观察器第四变体驱动离线v1-20261030.json)。下一执行节点核对固定摘要与回执不存在后，只运行固定驱动一次，异常停、不重试/重编译/改预期；本轮未执行。7文件，无落盘临时脚本，旧文件和历史后缀保留，AGENTS排除。完整L2/真实私密输入未放行；A暂停、1/2号不重试、P不开展。本节点无需转发给CodeBuddy。
