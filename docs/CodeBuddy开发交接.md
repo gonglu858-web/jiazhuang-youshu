@@ -1,3 +1,7 @@
+## 2026-10-30 recapture第四变体单次编译与静态待核项
+
+接手bea32ea。第四变体固定配置仅编译一次成功：PID5340/closed=true/exit0，stdout/stderr0，守卫意外0；产物24064字节，未运行。初查85方法/649调用，59体字节相同、26体不同，Capture415→405；忽略编号后的成员引用集合和指定调用差异相符，但完整指令/操作数静态核对未完成，不放行运行。下一步仅本地准备字段/字符串/成员编号、分支、异常区域、方法头的完整比较及离线反例，不重编译、不运行。详见[本轮记录](Codex记录-L2第四变体编译与静态待核项-20261030.md)与[初查JSON](证据/CodexL2观察器第四变体只读初查v1-20261030.json)。本轮无落盘临时脚本；AGENTS既有修改排除，历史旧blob完整后缀保留。完整L2/真实私密输入未放行，A暂停、1/2号不重试、P不开展。本节点无需转发给CodeBuddy。
+
 ## 2026-10-30 Codex：第三变体单次预期失败完成
 
 接手e695d2f；摘要与回执不存在核对后仅运行borrowedClose一次。PID5872/closed=true/子exit1，stdout384/stderr0，无signal/kill，驱动守卫0、执行后复核通过。classification正例+captureBorrowed0失败，后者calls15/unexpected1/owned1/closeAttempts1/closed1/closeFailures0/remainingSteps0，精确吻合。驱动ok=true/exit0/expectedFailureObserved=true；指定故障观察通过，不是变体产品通过。

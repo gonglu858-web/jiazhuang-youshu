@@ -1,0 +1,208 @@
+{
+  "schema": "codex-observer-fourth-mutant-initial-readonly/1",
+  "basisCommit": "bea32ea",
+  "caseId": "recapture",
+  "scriptSha256": "a2813de8771db629922439d1f07210c8d6b69cf8a561aac24e860834e3bd8894",
+  "parserSha256": "474d8aebdcc7f686440ac5587ec94bf0def67a5cc6f104b8b3d27d91dfa7d8db",
+  "compileReceiptSha256": "b143529462ca6002a2d4598d024842d459679e314c7f7468d7f961a14052661b",
+  "baselineSha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "mutantSha256": "381886fd26286256c43997275162eaee3080470cb90084d2b2bd1e515a074b5d",
+  "methods": 85,
+  "calls": 649,
+  "referenceSetEqualIgnoringTokens": true,
+  "normalizedCallDeltaMatched": true,
+  "unchangedBodies": 59,
+  "changedBodies": [
+    {
+      "method": "L2MemberObserver::Capture",
+      "baseBytes": 415,
+      "mutantBytes": 405,
+      "baseHash": "bf69584618eb87e6a890ebfabb313c898fe84af99b3136c965e448772162d6bc",
+      "mutantHash": "fb077d098cc644c702ffc7fa08d25c9cf76481fe037ac705db6b3db6e493cb85"
+    },
+    {
+      "method": "L2MemberObserver::Drain",
+      "baseBytes": 416,
+      "mutantBytes": 416,
+      "baseHash": "daa1705dcc8328fa515357dbdb961ebd82a2daf6deb5c1de94f8777a6a42260b",
+      "mutantHash": "098002e8487735a887c75049872b2ffd2c5add4cdb2e94305ee49afb76951229"
+    },
+    {
+      "method": "L2MemberObserver::Census",
+      "baseBytes": 267,
+      "mutantBytes": 267,
+      "baseHash": "dbb767fc41691f3027c2316acd7061a1f11b1dc8d4c76609efdcebfab6d11028",
+      "mutantHash": "c13a416ba1ea120e463bc34f2d3663029473363e9db44353fc04d9d1126ab169"
+    },
+    {
+      "method": "L2MemberObserver::Poll",
+      "baseBytes": 74,
+      "mutantBytes": 74,
+      "baseHash": "7b2265410dadb9741e52b7fcfaa66278b50e3d7327011427cf82b9eccde6f53f",
+      "mutantHash": "68d0514e36bd55832fb7293ae977d63a99ae6a235362ddd86a9cdd14baeb07f4"
+    },
+    {
+      "method": "L2MemberObserver::Stop",
+      "baseBytes": 520,
+      "mutantBytes": 520,
+      "baseHash": "82a449553b2517820cb1a03378c235ff53bf965740c7f7bc00d27a3b11c4d5f2",
+      "mutantHash": "e410cfe6fcf1ee7ca984195614e3718d9babda1f20e2672601b9c638da078148"
+    },
+    {
+      "method": "L2MemberObserver::Json",
+      "baseBytes": 610,
+      "mutantBytes": 610,
+      "baseHash": "7a6af91b7f67a4f6f290e88e51ee7c22ef9d117c28def21070b7aef1d0ecc8a9",
+      "mutantHash": "18a0a497bb49db80bd028658012356fe6a1edb50bb9a220026de700a218db895"
+    },
+    {
+      "method": "L2MemberObserver::CaptureScript",
+      "baseBytes": 333,
+      "mutantBytes": 333,
+      "baseHash": "ccc32b4b66a32e56ca1800ce665bfc8447171b68dc03ba49b38825bd725f69ff",
+      "mutantHash": "7933be9e35bf88cf9a9110536e70d7e6a440f61a37e8eefa3b74ffa21f85a696"
+    },
+    {
+      "method": "L2MemberObserver::CaptureCase",
+      "baseBytes": 432,
+      "mutantBytes": 432,
+      "baseHash": "c39ed3dd93f2823eed0e5899e5308edf0c0aee77af37fb45306e806bbf4ec5da",
+      "mutantHash": "0964356910e556063a631c437f6086ae0afc3da2e78baeed00a233f072a2cf0a"
+    },
+    {
+      "method": "L2MemberObserver::QueueFailure",
+      "baseBytes": 303,
+      "mutantBytes": 303,
+      "baseHash": "c1e47de4b6ddfff2245f3af150be2c7af433bc2302fde492167109b2bd79f2e7",
+      "mutantHash": "2a648fa8a6e466f4e20edc2b261ec3a42cfe719139cf08319eb3ee1c81c39926"
+    },
+    {
+      "method": "L2MemberObserver::Limits",
+      "baseBytes": 209,
+      "mutantBytes": 209,
+      "baseHash": "60829161630b9e1cd677e697ef8e0abc7039210810cbb5a3b7e5b3fee04b48f6",
+      "mutantHash": "82ed415f39cc8100f2a58cd478c037a7b41c9f1eff983d8c7ea2655856103d37"
+    },
+    {
+      "method": "L2MemberObserver::OwnedCases",
+      "baseBytes": 577,
+      "mutantBytes": 577,
+      "baseHash": "1c678724dd2e635060e36161960a0249dfa1441438b37bb476ab9c40d50d1c7d",
+      "mutantHash": "11a6d543a3189c0139e802fb7f0e48ddefc999f9ac4a4fdd2e65d91a9a4fb072"
+    },
+    {
+      "method": "L2MemberObserver::ImageException",
+      "baseBytes": 273,
+      "mutantBytes": 273,
+      "baseHash": "6db966790e409a3b824e2b97026fa276a8c91382b6d46d7ff2b8c4bec78dade1",
+      "mutantHash": "4ac8f1808398c76a967003e49c38056fb68abfc870adc4f35fbff03879ce72dc"
+    },
+    {
+      "method": "L2MemberObserver::PathThroughCapture",
+      "baseBytes": 341,
+      "mutantBytes": 341,
+      "baseHash": "c2aacc99798f7da7b82c1801941d1e33f2ad8951726986a556d0edb35227677a",
+      "mutantHash": "c4269c59c6a66500678319421ed5f9d20e5522e3dcb924880036c4b32031a259"
+    },
+    {
+      "method": "L2MemberObserver::Case",
+      "baseBytes": 281,
+      "mutantBytes": 281,
+      "baseHash": "f4db90f582a6134cccf3aba9e19987976a9a979860935949c092c8344086f4fa",
+      "mutantHash": "25b7ec33910d969ca46d27aa2fd4007584d4635fca30b5d8562a4920020c7971"
+    },
+    {
+      "method": "L2MemberObserver::SyntheticMain",
+      "baseBytes": 875,
+      "mutantBytes": 875,
+      "baseHash": "42d598027ff05aaa5ca1a2252b411a40bba6ec4ab45d07dcebdbbad6dd47138a",
+      "mutantHash": "0a743426a6d82231e8be6701d58825795cd85392f6c22466a69997f7257a96fe"
+    },
+    {
+      "method": "Member::.ctor",
+      "baseBytes": 40,
+      "mutantBytes": 40,
+      "baseHash": "17b911d5c56c8fb0e611f3b2fea2f3df648dd7f43480dc572444a4d915207126",
+      "mutantHash": "b70291d2bbb5745796b4d2aab138c57a6a2ab9244a196e22f5167cd2c8c0b6ff"
+    },
+    {
+      "method": "SyntheticBoundary::Take",
+      "baseBytes": 140,
+      "mutantBytes": 140,
+      "baseHash": "2361a5178f33db7e9447bc91e6eaa26d732d95c924737c2953d948d6e0d083a9",
+      "mutantHash": "640becb97d290f1aed0c0a2ae76350166ee68cd1244e4b0f6e33fe04d7ce0cf4"
+    },
+    {
+      "method": "SyntheticBoundary::CreateIoCompletionPort",
+      "baseBytes": 111,
+      "mutantBytes": 111,
+      "baseHash": "7aa21aa3aace405492b499b6c85855ca2c052306fb8d7dbd93d2c049cbd79ec9",
+      "mutantHash": "d4dd9a877ebcb4082f1efa2558d3ee011ccf8d64e6333cc50831d3fb712a172c"
+    },
+    {
+      "method": "SyntheticBoundary::Associate",
+      "baseBytes": 88,
+      "mutantBytes": 88,
+      "baseHash": "5ed6b4475cbea3862a91a14fcd3b51b432a3ebd15d64e9a78854f823565be55d",
+      "mutantHash": "a6fa4095d248b529ea0aa914092d9badc60f4066a535d2b3cb2e9c43428d352b"
+    },
+    {
+      "method": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "baseBytes": 100,
+      "mutantBytes": 100,
+      "baseHash": "e1abe42200ac6bc9195ff059cc35b6771177ac1ed0d5fff77532ce12fec9f4b1",
+      "mutantHash": "f32d9b477eddccb809bb7c1ce9560fb6b55a4dbd48034278ba74b06a6fe2eae9"
+    },
+    {
+      "method": "SyntheticBoundary::QueryIds",
+      "baseBytes": 165,
+      "mutantBytes": 165,
+      "baseHash": "474dfb12b256037b6d8480e623c5e492efb134d2174f0614488e064776ac2cbc",
+      "mutantHash": "852256ff87b71f4c8e89dfe1f01ca145793064532711d30a5d5690f03887766e"
+    },
+    {
+      "method": "SyntheticBoundary::IsProcessInJob",
+      "baseBytes": 53,
+      "mutantBytes": 53,
+      "baseHash": "be31da8b6af87541be349bdfbe55c1a1ac99802f5a1604d6fef21af9d6b3d598",
+      "mutantHash": "10f799e71fe226d7c9f00ae61990703cdd12dda4c926286487d2ac3542cc783f"
+    },
+    {
+      "method": "SyntheticBoundary::GetProcessTimes",
+      "baseBytes": 83,
+      "mutantBytes": 83,
+      "baseHash": "d37963f4a8b27f6a7ee595615de7b53f553e44bb456c600375fd381e29ed4106",
+      "mutantHash": "5b3f98328d2e901cf7fd431397dafd8ce5fbb4c293564a068e92487f835f26a9"
+    },
+    {
+      "method": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "baseBytes": 79,
+      "mutantBytes": 79,
+      "baseHash": "d21639b7d0e75866a1c86726e42084ab8b297a5890b3ee76727883e003a6f69a",
+      "mutantHash": "9c231bca3b95ae103fcfa34aa8d557899beb9da7777be212ae7b73b41c4f324c"
+    },
+    {
+      "method": "SyntheticBoundary::WaitForSingleObject",
+      "baseBytes": 32,
+      "mutantBytes": 32,
+      "baseHash": "b99f8052aa16aa589027cee8f1390db94196f192c9f71a8015898628eb49c283",
+      "mutantHash": "c7ad7b236d0b5fa50cc09a33285f0cd245af50cdb00380f943c7b73f0494c657"
+    },
+    {
+      "method": "SyntheticBoundary::CloseHandle",
+      "baseBytes": 107,
+      "mutantBytes": 107,
+      "baseHash": "39ea3796815446057542973b66c2a18d25338aaf88b0e21e7e543cd0bcf5536d",
+      "mutantHash": "c55d9e733f3d6944f83d2f962f09497de752135d1b972852bb4d668f55b86d9f"
+    }
+  ],
+  "assemblyLoaded": false,
+  "productExecuted": false,
+  "compilerStartsThisInspector": 0,
+  "guardUnexpected": 0,
+  "staticCapabilityReviewPassed": false,
+  "executionApproved": false,
+  "pending": "Complete instruction/operand comparison, including field/string/member token renumbering, branch targets and exception regions; normalized call targets alone are insufficient",
+  "ok": true,
+  "exitCode": 0
+}
