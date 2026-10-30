@@ -1,3 +1,9 @@
+## 2026-10-30 Codex：第三变体专用运行驱动离线完成
+
+接手5d6330d；新驱动与离线证据54/54通过，产品启动0、编译0、守卫意外0。预期classification正例+captureBorrowed0失败；后者calls15/unexpected1/owned1/closeAttempts1/closed1/closeFailures0/remainingSteps0，源于借用关闭在Need处拒绝而端口正常关闭。计数尚待实际运行；驱动守卫必须0。默认只读Node exit2、无回执。
+
+来源：[复核](Codex复核-L2第三变体预期失败驱动离线-20261030.md)、[离线JSON](证据/CodexL2观察器第三变体驱动离线v1-20261030.json)。下一步摘要核对后仅运行borrowedClose一次，异常即停不重试；本轮不运行。已完成项不重做，recapture暂不开展。完整L2/真实私密输入未放行，A暂停，1/2号不重试，P不开展。无真实编号/凭据/身份ACL/PS/UI/DPAPI/云端操作，无临时文件，AGENTS修改排除。本节点无需转发给CodeBuddy。
+
 ## 2026-10-30 Codex：第三变体单次编译与只读核对完成
 
 接手5c601b6，10月29日开始并于30日接续。borrowedClose仅编译一次，PID30952/exit0/closed=true/153ms，输出0、守卫意外0；产物24064B，SHA f4281d21…8bc62。静态14/14通过，85方法中84体完全相同；唯一Stop偏移315的字段token Owned→Pid，650调用与Field表等均不变。产物未执行，无重编译。辅助输出失败及写前转换失败如实分述。

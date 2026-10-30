@@ -1,0 +1,234 @@
+{
+  "schema": "codex-observer-third-mutant-offline/1",
+  "basisCommit": "5d6330d",
+  "driverSha256": "56bf7501181fac9346db16510d169fef8ce59401d2ca062fb63e7466c766c5e9",
+  "scriptSha256": "12ffb957ddea113424b37afd551592fc5aa7f89d98a4887b6629a2f74a6d09ff",
+  "checks": 54,
+  "results": [
+    {
+      "name": "classification pass then captureBorrowed0 exact synthetic failure plus exit1 accepted, fixed OS arguments",
+      "passed": true
+    },
+    {
+      "name": "default readonly no receipt no starts",
+      "passed": true
+    },
+    {
+      "name": "prestart hash",
+      "passed": true
+    },
+    {
+      "name": "prestart link",
+      "passed": true
+    },
+    {
+      "name": "prestart occupied",
+      "passed": true
+    },
+    {
+      "name": "CLI --execute-once baseline",
+      "passed": true
+    },
+    {
+      "name": "CLI --unknown",
+      "passed": true
+    },
+    {
+      "name": "reject prefixFail",
+      "passed": true
+    },
+    {
+      "name": "reject prefixCounter",
+      "passed": true
+    },
+    {
+      "name": "reject prefixOrder",
+      "passed": true
+    },
+    {
+      "name": "reject noUnexpected",
+      "passed": true
+    },
+    {
+      "name": "reject tooManyUnexpected",
+      "passed": true
+    },
+    {
+      "name": "reject throw",
+      "passed": true
+    },
+    {
+      "name": "reject error",
+      "passed": true
+    },
+    {
+      "name": "reject noPid",
+      "passed": true
+    },
+    {
+      "name": "reject timeout",
+      "passed": true
+    },
+    {
+      "name": "reject noClose",
+      "passed": true
+    },
+    {
+      "name": "reject killThrow",
+      "passed": true
+    },
+    {
+      "name": "reject killFalse",
+      "passed": true
+    },
+    {
+      "name": "reject streamError",
+      "passed": true
+    },
+    {
+      "name": "reject type",
+      "passed": true
+    },
+    {
+      "name": "reject oversize",
+      "passed": true
+    },
+    {
+      "name": "reject stderr",
+      "passed": true
+    },
+    {
+      "name": "reject exit0",
+      "passed": true
+    },
+    {
+      "name": "reject exit2",
+      "passed": true
+    },
+    {
+      "name": "reject signal",
+      "passed": true
+    },
+    {
+      "name": "reject missing",
+      "passed": true
+    },
+    {
+      "name": "reject order",
+      "passed": true
+    },
+    {
+      "name": "reject caseFail",
+      "passed": true
+    },
+    {
+      "name": "reject unexpected",
+      "passed": true
+    },
+    {
+      "name": "reject pending",
+      "passed": true
+    },
+    {
+      "name": "reject negative",
+      "passed": true
+    },
+    {
+      "name": "reject extra",
+      "passed": true
+    },
+    {
+      "name": "reject native",
+      "passed": true
+    },
+    {
+      "name": "reject approve",
+      "passed": true
+    },
+    {
+      "name": "reject badFact",
+      "passed": true
+    },
+    {
+      "name": "reject malformed",
+      "passed": true
+    },
+    {
+      "name": "reject utf8",
+      "passed": true
+    },
+    {
+      "name": "reject ufffd",
+      "passed": true
+    },
+    {
+      "name": "reject twoLines",
+      "passed": true
+    },
+    {
+      "name": "reject empty",
+      "passed": true
+    },
+    {
+      "name": "reject topSuccess",
+      "passed": true
+    },
+    {
+      "name": "reject extraCase",
+      "passed": true
+    },
+    {
+      "name": "reject calls",
+      "passed": true
+    },
+    {
+      "name": "reject owned",
+      "passed": true
+    },
+    {
+      "name": "reject closeAttempt",
+      "passed": true
+    },
+    {
+      "name": "reject closeFailure",
+      "passed": true
+    },
+    {
+      "name": "reject missingField",
+      "passed": true
+    },
+    {
+      "name": "reject counterString",
+      "passed": true
+    },
+    {
+      "name": "reject postDrift",
+      "passed": true
+    },
+    {
+      "name": "reject lateHit",
+      "passed": true
+    },
+    {
+      "name": "reject writeFail",
+      "passed": true
+    },
+    {
+      "name": "reject closeFail",
+      "passed": true
+    },
+    {
+      "name": "second request cannot start twice",
+      "passed": true
+    }
+  ],
+  "actualProductStarts": 0,
+  "actualCompilerStarts": 0,
+  "vmOsSubstitute": true,
+  "receiptWritesInMemory": true,
+  "timersAccelerated": true,
+  "guardUnexpected": 0,
+  "executionApproved": false,
+  "ok": true,
+  "exitCode": 0
+}
