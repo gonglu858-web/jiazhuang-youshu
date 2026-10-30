@@ -1,0 +1,881 @@
+{
+  "schema": "codex-observer-fourth-mutant-complete-static/1",
+  "basisCommit": "fe87ada",
+  "caseId": "recapture",
+  "scriptSha256": "217b8e5aa8152db6a95d0c0213c46cc1f59b5f8bb57e3ebf9159fe51379bcb43",
+  "parserSha256": "474d8aebdcc7f686440ac5587ec94bf0def67a5cc6f104b8b3d27d91dfa7d8db",
+  "baselineSha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "mutantSha256": "381886fd26286256c43997275162eaee3080470cb90084d2b2bd1e515a074b5d",
+  "compileReceiptSha256": "b143529462ca6002a2d4598d024842d459679e314c7f7468d7f961a14052661b",
+  "checks": 22,
+  "results": [
+    {
+      "name": "fixed inputs, no links and single compile receipt",
+      "passed": true
+    },
+    {
+      "name": "added exports preserve original parser results on both binaries",
+      "passed": true
+    },
+    {
+      "name": "baseline matches reviewed capability inventory",
+      "passed": true
+    },
+    {
+      "name": "all metadata rows equal except mapped reference indexes, method RVAs and build MVID",
+      "passed": true
+    },
+    {
+      "name": "all 85 bodies, headers, operands, branch targets and exception clauses match exact delta",
+      "passed": true
+    },
+    {
+      "name": "unchanged baseline rejected as missing approved mutation",
+      "passed": true
+    },
+    {
+      "name": "valid field operand change rejected",
+      "passed": true
+    },
+    {
+      "name": "valid method operand change rejected",
+      "passed": true
+    },
+    {
+      "name": "string heap content change rejected",
+      "passed": true
+    },
+    {
+      "name": "valid branch destination change rejected",
+      "passed": true
+    },
+    {
+      "name": "constant operand change rejected",
+      "passed": true
+    },
+    {
+      "name": "valid opcode substitution rejected",
+      "passed": true
+    },
+    {
+      "name": "maxStack header change rejected",
+      "passed": true
+    },
+    {
+      "name": "initLocals flag change rejected",
+      "passed": true
+    },
+    {
+      "name": "method visibility flag change rejected",
+      "passed": true
+    },
+    {
+      "name": "valid exception region boundary change rejected",
+      "passed": true
+    },
+    {
+      "name": "exception catch type change rejected",
+      "passed": true
+    },
+    {
+      "name": "changed external member metadata rejected",
+      "passed": true
+    },
+    {
+      "name": "unknown instruction rejected by parser",
+      "passed": true
+    },
+    {
+      "name": "raw and normalized counts reconcile",
+      "passed": true
+    },
+    {
+      "name": "truncated binary rejected",
+      "passed": true
+    },
+    {
+      "name": "inputs unchanged after all memory-only cases",
+      "passed": true
+    }
+  ],
+  "parserPatchAnchors": [
+    "1a415d1ec9aa3808790b3df32118d8aebb357c5d372da95da81fb3f1b1daae4e",
+    "2010f7ff71e6e1ada77dbba5d506fe096ef46f132dfc8e70d8005e9294bd6f6a",
+    "27a510388590edccd049e21a5c5e34766dbaa94d9d7fc024867346e90e98a4b4",
+    "5c470e77989971e1282a26553f0bf05d8d226f9e3a9737a75b5521f0017d0644",
+    "2be45886ebd8dfc2da06060eb5197f101777bfeabc05212039850ba285773230",
+    "6d8911001ca2eb36c8c9eaa7b1005dd619a4ab20c6ecc17de3c0e355762f30ef",
+    "a6b81a8a0c8ffc4ae6709ead8930d160963775143a46cfefff57a804e34909ac",
+    "b996ad821fabf6305f301d206261028eca699c592381f45390428656c991026c"
+  ],
+  "methods": [
+    {
+      "method": "L2MemberObserver::ClassifyPath",
+      "instructions": 16,
+      "exceptionClauses": 0,
+      "normalizedSha256": "cdbeb5b9d1e0c4fe2bc9c8f527ff01014714f5f06b4a347bec96c41bbc5425a1",
+      "baselineNormalizedSha256": "cdbeb5b9d1e0c4fe2bc9c8f527ff01014714f5f06b4a347bec96c41bbc5425a1",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::CreateIoCompletionPort",
+      "instructions": 6,
+      "exceptionClauses": 0,
+      "normalizedSha256": "21b9a6d7b337bb27ccf7885868a43c930b20c0bab59d66a0c12a9cd1d2d186c5",
+      "baselineNormalizedSha256": "21b9a6d7b337bb27ccf7885868a43c930b20c0bab59d66a0c12a9cd1d2d186c5",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::GetQueuedCompletionStatus",
+      "instructions": 7,
+      "exceptionClauses": 0,
+      "normalizedSha256": "c9d4d0f63cd3f1bdcf813b89f74028d78752be0de62eaa2fcab3049864b92221",
+      "baselineNormalizedSha256": "c9d4d0f63cd3f1bdcf813b89f74028d78752be0de62eaa2fcab3049864b92221",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Associate",
+      "instructions": 6,
+      "exceptionClauses": 0,
+      "normalizedSha256": "2582532f1970174cc318876693ebf733e42a9f1ab149ce98c9fe8dc14165f8c1",
+      "baselineNormalizedSha256": "2582532f1970174cc318876693ebf733e42a9f1ab149ce98c9fe8dc14165f8c1",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::QueryIds",
+      "instructions": 7,
+      "exceptionClauses": 0,
+      "normalizedSha256": "19db106aad6149094e2fe51c0d532a74f911637e1bea52987d750e33cd7344d3",
+      "baselineNormalizedSha256": "19db106aad6149094e2fe51c0d532a74f911637e1bea52987d750e33cd7344d3",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::OpenProcess",
+      "instructions": 5,
+      "exceptionClauses": 0,
+      "normalizedSha256": "5add880838e1b5c70320528a1c1b04f7d5acdf0a0ba2fd729b5057a3f3fa411a",
+      "baselineNormalizedSha256": "5add880838e1b5c70320528a1c1b04f7d5acdf0a0ba2fd729b5057a3f3fa411a",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::IsProcessInJob",
+      "instructions": 5,
+      "exceptionClauses": 0,
+      "normalizedSha256": "dc12b4cbbbbdb3642c4ee9ec7ce802e598bdd055a7b9020cec521966b395e72a",
+      "baselineNormalizedSha256": "dc12b4cbbbbdb3642c4ee9ec7ce802e598bdd055a7b9020cec521966b395e72a",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::GetProcessTimes",
+      "instructions": 7,
+      "exceptionClauses": 0,
+      "normalizedSha256": "dce4db16121f69e65a4ed75c292ba5431c9831fd93a796f5bae6997fbc9ede33",
+      "baselineNormalizedSha256": "dce4db16121f69e65a4ed75c292ba5431c9831fd93a796f5bae6997fbc9ede33",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::QueryFullProcessImageNameW",
+      "instructions": 6,
+      "exceptionClauses": 0,
+      "normalizedSha256": "ab08beee0b34f85393fc7b1bda007a34a5f42d1b19ba7ddc54ce0c90ed852c0b",
+      "baselineNormalizedSha256": "ab08beee0b34f85393fc7b1bda007a34a5f42d1b19ba7ddc54ce0c90ed852c0b",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::WaitForSingleObject",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "05f7ab4020bcb50c88ba3def629b00c56387179b78e56c28c73aa735109328ce",
+      "baselineNormalizedSha256": "05f7ab4020bcb50c88ba3def629b00c56387179b78e56c28c73aa735109328ce",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::CloseHandle",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "976b438e89066051366900203cbef669c0dd390cb94f2a64f059a344f94bfb7d",
+      "baselineNormalizedSha256": "976b438e89066051366900203cbef669c0dd390cb94f2a64f059a344f94bfb7d",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Bad",
+      "instructions": 9,
+      "exceptionClauses": 0,
+      "normalizedSha256": "867ce5b4e21a78b19fa28c767001e4dd26be688ee95a96a87e12a7957996138e",
+      "baselineNormalizedSha256": "867ce5b4e21a78b19fa28c767001e4dd26be688ee95a96a87e12a7957996138e",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::.ctor",
+      "instructions": 68,
+      "exceptionClauses": 1,
+      "normalizedSha256": "cfc17535a24bb0bdd203bc4595f1ad84d070b72e893d09928393f10fe29774db",
+      "baselineNormalizedSha256": "cfc17535a24bb0bdd203bc4595f1ad84d070b72e893d09928393f10fe29774db",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Slot",
+      "instructions": 32,
+      "exceptionClauses": 0,
+      "normalizedSha256": "57b841e5010c6da348419026dd1a425203c985ff4825905b8e5f754cfff4b2c5",
+      "baselineNormalizedSha256": "57b841e5010c6da348419026dd1a425203c985ff4825905b8e5f754cfff4b2c5",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Capture",
+      "instructions": 145,
+      "exceptionClauses": 0,
+      "normalizedSha256": "f2f8cf599b6c8db2023e1170f4a6a6648a7aeaf4d7a037950036360e33194059",
+      "baselineNormalizedSha256": "3d7d3622770e353202c78e85afabe82048ed0f5c25d66a908f9c6cead211ccd5",
+      "changed": true
+    },
+    {
+      "method": "L2MemberObserver::Root",
+      "instructions": 14,
+      "exceptionClauses": 0,
+      "normalizedSha256": "f3e9b224b13713c79d695b441ba1ae481bfc40656fd954c2936303a891019edd",
+      "baselineNormalizedSha256": "f3e9b224b13713c79d695b441ba1ae481bfc40656fd954c2936303a891019edd",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Drain",
+      "instructions": 159,
+      "exceptionClauses": 0,
+      "normalizedSha256": "fe710f3a36b6d4be734f98ebe18075fc204152c757a87c2770200641c47a9682",
+      "baselineNormalizedSha256": "fe710f3a36b6d4be734f98ebe18075fc204152c757a87c2770200641c47a9682",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Census",
+      "instructions": 125,
+      "exceptionClauses": 1,
+      "normalizedSha256": "bcd047839c39d04bf980dd27868f5156e3dc9ef4ae2afcd8eb64396ebe8b28fc",
+      "baselineNormalizedSha256": "bcd047839c39d04bf980dd27868f5156e3dc9ef4ae2afcd8eb64396ebe8b28fc",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Poll",
+      "instructions": 25,
+      "exceptionClauses": 1,
+      "normalizedSha256": "fe7e0157d582b609aa8f5e98871b8b74ca28b44728afa76eb6587b7b56f0f055",
+      "baselineNormalizedSha256": "fe7e0157d582b609aa8f5e98871b8b74ca28b44728afa76eb6587b7b56f0f055",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Stop",
+      "instructions": 182,
+      "exceptionClauses": 5,
+      "normalizedSha256": "6a252aa38d7bcbdaf99c79081e389307ce46ea1503cff04191da84ef65867923",
+      "baselineNormalizedSha256": "6a252aa38d7bcbdaf99c79081e389307ce46ea1503cff04191da84ef65867923",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Json",
+      "instructions": 164,
+      "exceptionClauses": 1,
+      "normalizedSha256": "d75a6b8a7f342041ab9156782742a23f98f3bcd6d85822b3c0f047ea4ff472b1",
+      "baselineNormalizedSha256": "d75a6b8a7f342041ab9156782742a23f98f3bcd6d85822b3c0f047ea4ff472b1",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Add",
+      "instructions": 9,
+      "exceptionClauses": 0,
+      "normalizedSha256": "63d837e570f38c48a8949dc20c039d4d2375ca2aafbcf34127923e488b9aaacc",
+      "baselineNormalizedSha256": "63d837e570f38c48a8949dc20c039d4d2375ca2aafbcf34127923e488b9aaacc",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Assert",
+      "instructions": 6,
+      "exceptionClauses": 0,
+      "normalizedSha256": "a3355803e831ee9f4ecb782fd1b70e1c25198a363922a3cbc42814650675cb86",
+      "baselineNormalizedSha256": "a3355803e831ee9f4ecb782fd1b70e1c25198a363922a3cbc42814650675cb86",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Reset",
+      "instructions": 18,
+      "exceptionClauses": 0,
+      "normalizedSha256": "8092bb3f6319920a6b50813906ac367e039181025ab640ca114a3ac29cf53098",
+      "baselineNormalizedSha256": "8092bb3f6319920a6b50813906ac367e039181025ab640ca114a3ac29cf53098",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::EmptyPoll",
+      "instructions": 18,
+      "exceptionClauses": 0,
+      "normalizedSha256": "e9f7ec3f77fd365f51e6e29ba0b43a0286ccca55c4c9e5ab7fe8458615c138ad",
+      "baselineNormalizedSha256": "e9f7ec3f77fd365f51e6e29ba0b43a0286ccca55c4c9e5ab7fe8458615c138ad",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::NewObserver",
+      "instructions": 14,
+      "exceptionClauses": 0,
+      "normalizedSha256": "ce44af5355083171c2c50cc77287a284490cca1ee54f677e8d066b158c93a594",
+      "baselineNormalizedSha256": "ce44af5355083171c2c50cc77287a284490cca1ee54f677e8d066b158c93a594",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::CaptureScript",
+      "instructions": 139,
+      "exceptionClauses": 0,
+      "normalizedSha256": "98581858e558d7aa08d35f57feb73b7bba6ac0221b32b555130b91446a1d785e",
+      "baselineNormalizedSha256": "98581858e558d7aa08d35f57feb73b7bba6ac0221b32b555130b91446a1d785e",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::FinalMember",
+      "instructions": 16,
+      "exceptionClauses": 0,
+      "normalizedSha256": "2fd499fd98275110bbee8b8d51ce220c01bcf8601819cfb48971a91a075e7357",
+      "baselineNormalizedSha256": "2fd499fd98275110bbee8b8d51ce220c01bcf8601819cfb48971a91a075e7357",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::CaptureCase",
+      "instructions": 147,
+      "exceptionClauses": 0,
+      "normalizedSha256": "9ea149425e1f9f8b7bab2b406818b708bcc7ebb4eed687fd490940f673f8e92d",
+      "baselineNormalizedSha256": "9ea149425e1f9f8b7bab2b406818b708bcc7ebb4eed687fd490940f673f8e92d",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Classification",
+      "instructions": 92,
+      "exceptionClauses": 0,
+      "normalizedSha256": "6796393d4584412f95853408897e31eb745ca692a655feed133addc4806c021a",
+      "baselineNormalizedSha256": "6796393d4584412f95853408897e31eb745ca692a655feed133addc4806c021a",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Done",
+      "instructions": 44,
+      "exceptionClauses": 1,
+      "normalizedSha256": "5b902529ebbfa352d53317447960c22e1ee5f850dde027621b099de876312c5c",
+      "baselineNormalizedSha256": "5b902529ebbfa352d53317447960c22e1ee5f850dde027621b099de876312c5c",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::QueueEnd",
+      "instructions": 13,
+      "exceptionClauses": 0,
+      "normalizedSha256": "cc4555bc29f7eabcd34664e3de3a13eb015c7739a5b71fc86ef682714676ce92",
+      "baselineNormalizedSha256": "cc4555bc29f7eabcd34664e3de3a13eb015c7739a5b71fc86ef682714676ce92",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::CensusFailure",
+      "instructions": 118,
+      "exceptionClauses": 0,
+      "normalizedSha256": "d276c833518ce739833e17cc5a5f01968907da8d8b4c65710108da502d5cd8e7",
+      "baselineNormalizedSha256": "d276c833518ce739833e17cc5a5f01968907da8d8b4c65710108da502d5cd8e7",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::QueueFailure",
+      "instructions": 97,
+      "exceptionClauses": 0,
+      "normalizedSha256": "343310b5fc3875e96859b5e350a27c86936ac2aab5bda95e7c3f098c02a7033e",
+      "baselineNormalizedSha256": "343310b5fc3875e96859b5e350a27c86936ac2aab5bda95e7c3f098c02a7033e",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::FinalFailure",
+      "instructions": 93,
+      "exceptionClauses": 0,
+      "normalizedSha256": "dedba4b59c3eb37b82b0f0cb5118433df8c86e9c2cef0a538c7dcfed17937a53",
+      "baselineNormalizedSha256": "dedba4b59c3eb37b82b0f0cb5118433df8c86e9c2cef0a538c7dcfed17937a53",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::PortCases",
+      "instructions": 64,
+      "exceptionClauses": 0,
+      "normalizedSha256": "66002ac06383d63238f9144cc100d9223ceadad55b0c600c47a184b667856e5a",
+      "baselineNormalizedSha256": "66002ac06383d63238f9144cc100d9223ceadad55b0c600c47a184b667856e5a",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::ExitBeforeNew",
+      "instructions": 57,
+      "exceptionClauses": 0,
+      "normalizedSha256": "4e8ee56cb9f32ea0611be2e0cd1c17d912b1ff4339c7d902c0a13f36168fb0e4",
+      "baselineNormalizedSha256": "4e8ee56cb9f32ea0611be2e0cd1c17d912b1ff4339c7d902c0a13f36168fb0e4",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Limits",
+      "instructions": 78,
+      "exceptionClauses": 0,
+      "normalizedSha256": "fc52362aa960d05c7d563c8e70561c8262d547a4d9b8071c71c7aa3e13a77fb3",
+      "baselineNormalizedSha256": "fc52362aa960d05c7d563c8e70561c8262d547a4d9b8071c71c7aa3e13a77fb3",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::OwnedCases",
+      "instructions": 231,
+      "exceptionClauses": 0,
+      "normalizedSha256": "1d3418e4126cc0d1e76e8167ac74cf2a38201c0f9e8cc8fd8784392c8f995556",
+      "baselineNormalizedSha256": "1d3418e4126cc0d1e76e8167ac74cf2a38201c0f9e8cc8fd8784392c8f995556",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::RootException",
+      "instructions": 46,
+      "exceptionClauses": 1,
+      "normalizedSha256": "44eda511e30c1c11810131a770537e2c3ac272976a8e72ac613b3e5b9c58dc3b",
+      "baselineNormalizedSha256": "44eda511e30c1c11810131a770537e2c3ac272976a8e72ac613b3e5b9c58dc3b",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::TwoMembers",
+      "instructions": 179,
+      "exceptionClauses": 0,
+      "normalizedSha256": "9e75f665909f230041efd11a5143ce4f18e742b4d530582c81af0fac55b385fc",
+      "baselineNormalizedSha256": "9e75f665909f230041efd11a5143ce4f18e742b4d530582c81af0fac55b385fc",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::ZeroTotal",
+      "instructions": 24,
+      "exceptionClauses": 0,
+      "normalizedSha256": "f52ab889fd2534915048c8b53fa9e0181b3471ee063b0c68439c9efd51c71ff1",
+      "baselineNormalizedSha256": "f52ab889fd2534915048c8b53fa9e0181b3471ee063b0c68439c9efd51c71ff1",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::PortMissing",
+      "instructions": 22,
+      "exceptionClauses": 1,
+      "normalizedSha256": "35b43073dbc3eb8f02b4df2de32a66333bcba9fef35bbe9d7864cd76bff23324",
+      "baselineNormalizedSha256": "35b43073dbc3eb8f02b4df2de32a66333bcba9fef35bbe9d7864cd76bff23324",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::NewWithoutQueue",
+      "instructions": 5,
+      "exceptionClauses": 0,
+      "normalizedSha256": "e9a782ec541dad00fc4c2014fbf3f9ee04152cb723644c88ced480a94e4f9cb5",
+      "baselineNormalizedSha256": "e9a782ec541dad00fc4c2014fbf3f9ee04152cb723644c88ced480a94e4f9cb5",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::ImageException",
+      "instructions": 83,
+      "exceptionClauses": 0,
+      "normalizedSha256": "7c5baf4228e898892c37ec65ec0b437419abe761916a527218841770045645f7",
+      "baselineNormalizedSha256": "7c5baf4228e898892c37ec65ec0b437419abe761916a527218841770045645f7",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::PathThroughCapture",
+      "instructions": 102,
+      "exceptionClauses": 0,
+      "normalizedSha256": "b15f47871f4bb52ee5e04548c4a41833e20885ee1e1832ed2e221b506e2a80aa",
+      "baselineNormalizedSha256": "b15f47871f4bb52ee5e04548c4a41833e20885ee1e1832ed2e221b506e2a80aa",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::Case",
+      "instructions": 114,
+      "exceptionClauses": 1,
+      "normalizedSha256": "f4c03b3ee9792ce34b51a93c00966b98227071445bb1b5ec010a7066e02db15d",
+      "baselineNormalizedSha256": "f4c03b3ee9792ce34b51a93c00966b98227071445bb1b5ec010a7066e02db15d",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::MustCase",
+      "instructions": 8,
+      "exceptionClauses": 0,
+      "normalizedSha256": "f1d929fae89fdaf45c30aadd1602669449fb61d8209089c8c094d4ed0cbb06f3",
+      "baselineNormalizedSha256": "f1d929fae89fdaf45c30aadd1602669449fb61d8209089c8c094d4ed0cbb06f3",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::SyntheticMain",
+      "instructions": 286,
+      "exceptionClauses": 1,
+      "normalizedSha256": "a88802a1dfe45b8fbd8b0f81f09d52adb4708be70e415fef67e3dc646e82d688",
+      "baselineNormalizedSha256": "a88802a1dfe45b8fbd8b0f81f09d52adb4708be70e415fef67e3dc646e82d688",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::<SyntheticMain>b__8",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "aa8e46c583074c0a0897cce00abd0d5b12f38c5d0252939c0bd282ae82f73ebc",
+      "baselineNormalizedSha256": "aa8e46c583074c0a0897cce00abd0d5b12f38c5d0252939c0bd282ae82f73ebc",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::<SyntheticMain>b__9",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "5e619e5e25e6e1dc68d393e6b1fe5df8d4c16008bb65971b637af1256432c0a9",
+      "baselineNormalizedSha256": "5e619e5e25e6e1dc68d393e6b1fe5df8d4c16008bb65971b637af1256432c0a9",
+      "changed": false
+    },
+    {
+      "method": "L2MemberObserver::.cctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "40305d2c65e949c071564798acabe032ba11961ca09b87b7d20b7b66283ce557",
+      "baselineNormalizedSha256": "40305d2c65e949c071564798acabe032ba11961ca09b87b7d20b7b66283ce557",
+      "changed": false
+    },
+    {
+      "method": "FileTime::get_Value",
+      "instructions": 10,
+      "exceptionClauses": 0,
+      "normalizedSha256": "284439112f798cbf1950e2e892bb6786d597e8a78a77ba36012d39e5ad79311f",
+      "baselineNormalizedSha256": "284439112f798cbf1950e2e892bb6786d597e8a78a77ba36012d39e5ad79311f",
+      "changed": false
+    },
+    {
+      "method": "Member::.ctor",
+      "instructions": 12,
+      "exceptionClauses": 0,
+      "normalizedSha256": "bda187b928b0763e77345974dd5caff3ed6a1e8c097cb9df7b0c1f4ed0606714",
+      "baselineNormalizedSha256": "bda187b928b0763e77345974dd5caff3ed6a1e8c097cb9df7b0c1f4ed0606714",
+      "changed": false
+    },
+    {
+      "method": "Step::.ctor",
+      "instructions": 29,
+      "exceptionClauses": 0,
+      "normalizedSha256": "2cd9a32b1c9063f69dc95ddfb109bcd02f65bbd3cf1116730eba42d77b87eee1",
+      "baselineNormalizedSha256": "2cd9a32b1c9063f69dc95ddfb109bcd02f65bbd3cf1116730eba42d77b87eee1",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::Take",
+      "instructions": 44,
+      "exceptionClauses": 0,
+      "normalizedSha256": "1d9536598d2c87d6c7acd92e1a7d7af8d8bded94ce5ad45e6fb6e91478949872",
+      "baselineNormalizedSha256": "1d9536598d2c87d6c7acd92e1a7d7af8d8bded94ce5ad45e6fb6e91478949872",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::Need",
+      "instructions": 10,
+      "exceptionClauses": 0,
+      "normalizedSha256": "3a6f5af2a7cce27707272a26e1e679f6de5a0e3c47877a155e07f09683e3f2ed",
+      "baselineNormalizedSha256": "3a6f5af2a7cce27707272a26e1e679f6de5a0e3c47877a155e07f09683e3f2ed",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::CreateIoCompletionPort",
+      "instructions": 39,
+      "exceptionClauses": 0,
+      "normalizedSha256": "a063d53b509aa7a9b52408389f06fa2d312102ac1cd25424a655bb2eda2310dc",
+      "baselineNormalizedSha256": "a063d53b509aa7a9b52408389f06fa2d312102ac1cd25424a655bb2eda2310dc",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::Associate",
+      "instructions": 32,
+      "exceptionClauses": 0,
+      "normalizedSha256": "1cfc7964a4506180fa05d0830945c694ea53133e7a60bc57c4242d7365b327a8",
+      "baselineNormalizedSha256": "1cfc7964a4506180fa05d0830945c694ea53133e7a60bc57c4242d7365b327a8",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::GetQueuedCompletionStatus",
+      "instructions": 37,
+      "exceptionClauses": 0,
+      "normalizedSha256": "c3ee6d65e38c30491bedb43c509d85582fc10e5e5e14e8d7d7b2f513d11dc332",
+      "baselineNormalizedSha256": "c3ee6d65e38c30491bedb43c509d85582fc10e5e5e14e8d7d7b2f513d11dc332",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::LastError",
+      "instructions": 6,
+      "exceptionClauses": 0,
+      "normalizedSha256": "df9667ad722a9407756aef13d7ed26d5c5678427c368428f9f1584c0bb987a7f",
+      "baselineNormalizedSha256": "df9667ad722a9407756aef13d7ed26d5c5678427c368428f9f1584c0bb987a7f",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::QueryIds",
+      "instructions": 73,
+      "exceptionClauses": 0,
+      "normalizedSha256": "d6e714784e25b9831aec9cf5b22ed5862170484633fd0b2f2c69338369c9e346",
+      "baselineNormalizedSha256": "d6e714784e25b9831aec9cf5b22ed5862170484633fd0b2f2c69338369c9e346",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::OpenProcess",
+      "instructions": 31,
+      "exceptionClauses": 0,
+      "normalizedSha256": "9abfaf3bed66a42878c6125b1ca28e8c7cf41e9f7f5bdd12e3f81c85849f3b84",
+      "baselineNormalizedSha256": "9abfaf3bed66a42878c6125b1ca28e8c7cf41e9f7f5bdd12e3f81c85849f3b84",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::IsProcessInJob",
+      "instructions": 18,
+      "exceptionClauses": 0,
+      "normalizedSha256": "140b4d62ad8ed32eebdfd31ea0d167bc44b5d5e51489213a5fd872d2be66e047",
+      "baselineNormalizedSha256": "140b4d62ad8ed32eebdfd31ea0d167bc44b5d5e51489213a5fd872d2be66e047",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::GetProcessTimes",
+      "instructions": 28,
+      "exceptionClauses": 0,
+      "normalizedSha256": "d6ad27305dd3b4b78533ffc77212c5ca62a1d6f8d1eb5c74bd40216f9631d7d9",
+      "baselineNormalizedSha256": "d6ad27305dd3b4b78533ffc77212c5ca62a1d6f8d1eb5c74bd40216f9631d7d9",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::QueryFullProcessImageNameW",
+      "instructions": 30,
+      "exceptionClauses": 0,
+      "normalizedSha256": "7f9206ec4ede9b7412ac21150ecd5505358b11d535beb9addbf45371e95e434a",
+      "baselineNormalizedSha256": "7f9206ec4ede9b7412ac21150ecd5505358b11d535beb9addbf45371e95e434a",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::WaitForSingleObject",
+      "instructions": 10,
+      "exceptionClauses": 0,
+      "normalizedSha256": "da7ff1c744d8436e75ca06cb2570963f6685082e0e22ec5c9913d5c2ab094cbe",
+      "baselineNormalizedSha256": "da7ff1c744d8436e75ca06cb2570963f6685082e0e22ec5c9913d5c2ab094cbe",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::CloseHandle",
+      "instructions": 40,
+      "exceptionClauses": 1,
+      "normalizedSha256": "801dd38d974246014890dab5bd61dd17e22b6e9de4101ce34bdcf24b5ab6bcbb",
+      "baselineNormalizedSha256": "801dd38d974246014890dab5bd61dd17e22b6e9de4101ce34bdcf24b5ab6bcbb",
+      "changed": false
+    },
+    {
+      "method": "SyntheticBoundary::.cctor",
+      "instructions": 13,
+      "exceptionClauses": 0,
+      "normalizedSha256": "146726082fe398e87f339520defcf11cc6c284aafee17f0994c1cd3b4b450af3",
+      "baselineNormalizedSha256": "146726082fe398e87f339520defcf11cc6c284aafee17f0994c1cd3b4b450af3",
+      "changed": false
+    },
+    {
+      "method": "L2ObserverSyntheticEntry::Main",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "54b6167071438a4ab93f2341d3565b9b2e948bd455e9e63099b04634c0a24a09",
+      "baselineNormalizedSha256": "54b6167071438a4ab93f2341d3565b9b2e948bd455e9e63099b04634c0a24a09",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClassc::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "025991b2c43f46dc727d798df3bf574c6cfdade6ef128fd2a9fd133c1be97028",
+      "baselineNormalizedSha256": "025991b2c43f46dc727d798df3bf574c6cfdade6ef128fd2a9fd133c1be97028",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClassc::<SyntheticMain>b__0",
+      "instructions": 5,
+      "exceptionClauses": 0,
+      "normalizedSha256": "378a9eba24a4d1c65c086801a2f321ac606b09a7ca23d1fd1eb18c283b1fb889",
+      "baselineNormalizedSha256": "378a9eba24a4d1c65c086801a2f321ac606b09a7ca23d1fd1eb18c283b1fb889",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClassc::<SyntheticMain>b__1",
+      "instructions": 5,
+      "exceptionClauses": 0,
+      "normalizedSha256": "02770cdce45534bb941034965ef26f0267974bef7fdcfdf746136fd5cf1a830e",
+      "baselineNormalizedSha256": "02770cdce45534bb941034965ef26f0267974bef7fdcfdf746136fd5cf1a830e",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClasse::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "c604ec4c5131b7969c44cf4b006167212f698ed151bb2e16d4b9ccf3b0f5b1bc",
+      "baselineNormalizedSha256": "c604ec4c5131b7969c44cf4b006167212f698ed151bb2e16d4b9ccf3b0f5b1bc",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClasse::<SyntheticMain>b__2",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "fff0511c1e02fd53f93cf29d234b4fe84d1719d8d6e27adc9cfa7f8c605d43b1",
+      "baselineNormalizedSha256": "fff0511c1e02fd53f93cf29d234b4fe84d1719d8d6e27adc9cfa7f8c605d43b1",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass10::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "119726a3679b55f30991c7a133b71bf24839bc56936b5b9db2c9def5fc4a3edd",
+      "baselineNormalizedSha256": "119726a3679b55f30991c7a133b71bf24839bc56936b5b9db2c9def5fc4a3edd",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass10::<SyntheticMain>b__3",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "e58cc888a8f3028bffd68022fd2fbb40b5ed61f29b8634a4d5e540c25037728e",
+      "baselineNormalizedSha256": "e58cc888a8f3028bffd68022fd2fbb40b5ed61f29b8634a4d5e540c25037728e",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass12::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "f7805798aa13020bdbfbc8d46a22c98fd6397ffb7fa1b18d6cc70c68b76bbdb2",
+      "baselineNormalizedSha256": "f7805798aa13020bdbfbc8d46a22c98fd6397ffb7fa1b18d6cc70c68b76bbdb2",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass12::<SyntheticMain>b__4",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "da44e11780b01680c3df266275d38214954b575fd7502aaf32b5942e9e300404",
+      "baselineNormalizedSha256": "da44e11780b01680c3df266275d38214954b575fd7502aaf32b5942e9e300404",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass14::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "6da9811e1c6a308cc88c19a81e9b6a737005e45952a738de2a0c1e0a322a005f",
+      "baselineNormalizedSha256": "6da9811e1c6a308cc88c19a81e9b6a737005e45952a738de2a0c1e0a322a005f",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass14::<SyntheticMain>b__5",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "a9fbdc4130a3992b0882c8d503033bfe9f015d1dc7608622a1ba01b6d781acd1",
+      "baselineNormalizedSha256": "a9fbdc4130a3992b0882c8d503033bfe9f015d1dc7608622a1ba01b6d781acd1",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass16::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "333c3e5c4e6ae50b5ae2fd6aa0b95597935525f0ced419112b4fcc73808dcc32",
+      "baselineNormalizedSha256": "333c3e5c4e6ae50b5ae2fd6aa0b95597935525f0ced419112b4fcc73808dcc32",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass16::<SyntheticMain>b__6",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "6b9899f9a36ef80bd10c108f5f31e824c5f62c65699a2d530ad8c7b69d2692b7",
+      "baselineNormalizedSha256": "6b9899f9a36ef80bd10c108f5f31e824c5f62c65699a2d530ad8c7b69d2692b7",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass18::.ctor",
+      "instructions": 3,
+      "exceptionClauses": 0,
+      "normalizedSha256": "552e1f4e2c95d05d94c774e558351f72f43c736b187448fee3e28ace597f2cc8",
+      "baselineNormalizedSha256": "552e1f4e2c95d05d94c774e558351f72f43c736b187448fee3e28ace597f2cc8",
+      "changed": false
+    },
+    {
+      "method": "<>c__DisplayClass18::<SyntheticMain>b__7",
+      "instructions": 4,
+      "exceptionClauses": 0,
+      "normalizedSha256": "51e8dc7706888052d110e2051f5a6537ef29893387e76700fbc94e2e0be64a48",
+      "baselineNormalizedSha256": "51e8dc7706888052d110e2051f5a6537ef29893387e76700fbc94e2e0be64a48",
+      "changed": false
+    }
+  ],
+  "metadataRowsCompared": [
+    {
+      "table": 0,
+      "rows": 1
+    },
+    {
+      "table": 1,
+      "rows": 35
+    },
+    {
+      "table": 2,
+      "rows": 15
+    },
+    {
+      "table": 4,
+      "rows": 57
+    },
+    {
+      "table": 6,
+      "rows": 85
+    },
+    {
+      "table": 8,
+      "rows": 108
+    },
+    {
+      "table": 10,
+      "rows": 87
+    },
+    {
+      "table": 11,
+      "rows": 3
+    },
+    {
+      "table": 12,
+      "rows": 13
+    },
+    {
+      "table": 17,
+      "rows": 28
+    },
+    {
+      "table": 21,
+      "rows": 1
+    },
+    {
+      "table": 23,
+      "rows": 1
+    },
+    {
+      "table": 24,
+      "rows": 1
+    },
+    {
+      "table": 27,
+      "rows": 8
+    },
+    {
+      "table": 32,
+      "rows": 1
+    },
+    {
+      "table": 35,
+      "rows": 3
+    },
+    {
+      "table": 41,
+      "rows": 12
+    }
+  ],
+  "rawBodySame": 59,
+  "rawBodyDifferent": 26,
+  "normalizedUnchangedBodies": 84,
+  "exactChangedBody": "L2MemberObserver::Capture",
+  "assemblyLoaded": false,
+  "productExecuted": false,
+  "compilerStarts": 0,
+  "guardUnexpected": 0,
+  "staticCapabilityReviewPassed": true,
+  "executionApproved": false,
+  "limitations": [
+    "Fixed pair byte interpretation; not a general CLR verifier",
+    "MVID and method RVAs are layout/build identities excluded from equality",
+    "Does not prove runtime/framework transitive behavior",
+    "Expected captureBorrowed0 failure remains unexecuted"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
