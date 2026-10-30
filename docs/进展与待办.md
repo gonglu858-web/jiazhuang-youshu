@@ -1,3 +1,9 @@
+## 2026-10-30 Codex：第三变体单次编译与只读核对完成
+
+接手5c601b6，10月29日开始并于30日接续。borrowedClose仅编译一次，PID30952/exit0/closed=true/153ms，输出0、守卫意外0；产物24064B，SHA f4281d21…8bc62。静态14/14通过，85方法中84体完全相同；唯一Stop偏移315的字段token Owned→Pid，650调用与Field表等均不变。产物未执行，无重编译。辅助输出失败及写前转换失败如实分述。
+
+来源：[记录](Codex记录-L2第三变体编译与只读核对-20261030.md)、[静态JSON](证据/CodexL2观察器第三变体只读v1-20261030.json)。下一步仅准备borrowedClose专用驱动及离线反例，推导captureBorrowed0准确计数，先不运行。其他已完成项不重做，recapture不开展；完整L2/真实私密输入未放行，A暂停，1/2号不重试，P不开展。无真实编号/凭据/身份ACL/PS/UI/DPAPI/云端操作，无临时文件，AGENTS修改排除。本节点无需转发给CodeBuddy。
+
 ## 2026-10-29 Codex：第二变体finalIdentity单次预期失败完成
 
 接手e0dac5c；摘要与回执不存在核对后仅运行一次，PID15168、closed=true、子exit1、stdout6459/stderr0、无signal/kill，驱动守卫0、执行后复核通过。前46项与baseline逐字段相同，第47项final1失败且calls14/unexpected2/owned1/closeAttempts1/closed0/closeFailures1/remainingSteps0，符合运行前推导。驱动ok=true/exit0/expectedFailureObserved=true；这是故障敏感性通过，不是变体产品通过。夹具故障与驱动守卫分列，无重试，无编译。

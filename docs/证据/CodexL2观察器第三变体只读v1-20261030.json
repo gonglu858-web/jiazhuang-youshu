@@ -1,0 +1,112 @@
+{
+  "schema": "codex-observer-third-mutant-readonly/1",
+  "basisCommit": "5c601b6",
+  "caseId": "borrowedClose",
+  "baselineSha256": "d6c3fdfca6893ede87afb8c866dbc637c5c45e36def2ac8140266d08b3ba215b",
+  "mutantSha256": "f4281d21ca18db4608d5259bdb4ca0d6bf44c7102ca7c3a1bf8727662f28bc62",
+  "scriptSha256": "b5cfb2416ee204ee333a95fdc20ceb7629157585a130145fba24d3a3a01a3751",
+  "parserSha256": "474d8aebdcc7f686440ac5587ec94bf0def67a5cc6f104b8b3d27d91dfa7d8db",
+  "policySha256": "770cdb4dd5dfb4477b3c3b3e7b91e78cf1184cc7cf51f00a419a6dcae37cca24",
+  "compileReceiptSha256": "ecdb4fcfab6d96b80e18b5061ca4db553ca6625ff01a3b09593ce3770756f450",
+  "checks": 14,
+  "results": [
+    {
+      "name": "pinned parser and reviewed policy",
+      "passed": true
+    },
+    {
+      "name": "binary pins and path chain",
+      "passed": true
+    },
+    {
+      "name": "single compile successful receipt",
+      "passed": true
+    },
+    {
+      "name": "exact output directory and empty tmp",
+      "passed": true
+    },
+    {
+      "name": "only approved source replacement and unchanged fixture",
+      "passed": true
+    },
+    {
+      "name": "complete managed inventory equals baseline policy",
+      "passed": true
+    },
+    {
+      "name": "all 650 calls unchanged",
+      "passed": true
+    },
+    {
+      "name": "unchanged fields and exact Owned to Pid token meanings",
+      "passed": true
+    },
+    {
+      "name": "84 unchanged bodies and exact single-byte field-token substitution",
+      "passed": true
+    },
+    {
+      "name": "unchanged baseline rejected as missing mutation",
+      "passed": true
+    },
+    {
+      "name": "extra valid IL change rejected",
+      "passed": true
+    },
+    {
+      "name": "different field token rejected",
+      "passed": true
+    },
+    {
+      "name": "truncated binary rejected",
+      "passed": true
+    },
+    {
+      "name": "inputs unchanged after inspection",
+      "passed": true
+    }
+  ],
+  "differences": [
+    {
+      "method": "L2MemberObserver::Stop",
+      "baseBytes": 520,
+      "mutantBytes": 520,
+      "changedOffset": 315,
+      "baseFieldToken": 67108888,
+      "mutantFieldToken": 67108886,
+      "baseHash": "82a449553b2517820cb1a03378c235ff53bf965740c7f7bc00d27a3b11c4d5f2",
+      "mutantHash": "1fa5f445e5243db9969526afc0a452a376c213b3cb829c09df337ce3075a7d28"
+    }
+  ],
+  "fieldMapping": [
+    {
+      "token": 67108886,
+      "name": "Member::Pid",
+      "flags": 6,
+      "signature": "0609"
+    },
+    {
+      "token": 67108888,
+      "name": "Member::Owned",
+      "flags": 6,
+      "signature": "0602"
+    }
+  ],
+  "methods": 85,
+  "calls": 650,
+  "assemblyLoaded": false,
+  "productExecuted": false,
+  "compileStartsThisInspector": 0,
+  "staticCapabilityReviewPassed": true,
+  "executionApproved": false,
+  "guardUnexpected": 0,
+  "limitations": [
+    "Fixed artifact comparison, not general CLR verification",
+    "IL method bodies compared, not byte equality of entire PE metadata",
+    "Runtime/framework transitive behavior not proven",
+    "Expected captureBorrowed0 failure/exit1 not executed"
+  ],
+  "ok": true,
+  "exitCode": 0
+}
