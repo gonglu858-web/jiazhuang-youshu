@@ -1,3 +1,9 @@
+## 2026-10-30 Codex：第三变体单次预期失败完成
+
+接手e695d2f；摘要与回执不存在核对后仅运行borrowedClose一次。PID5872/closed=true/子exit1，stdout384/stderr0，无signal/kill，驱动守卫0、执行后复核通过。classification正例+captureBorrowed0失败，后者calls15/unexpected1/owned1/closeAttempts1/closed1/closeFailures0/remainingSteps0，精确吻合。驱动ok=true/exit0/expectedFailureObserved=true；指定故障观察通过，不是变体产品通过。
+
+来源：[记录](Codex记录-L2第三变体单次预期失败运行-20261030.md)、[回执](证据/CodexL2观察器第三变体运行结果v1-20261030.json)。下一步recapture固定编译前核对，通过后仅编译一次并静态检查，不运行；异常即停、不重试。已完成项不重做，完整L2/真实私密输入未放行，A暂停、1/2号不重试、P不开展。无真实编号/凭据/身份ACL/PS/UI/DPAPI/云端操作，无临时文件，AGENTS修改排除。本节点无需转发给CodeBuddy。
+
 ## 2026-10-30 Codex：第三变体专用运行驱动离线完成
 
 接手5d6330d；新驱动与离线证据54/54通过，产品启动0、编译0、守卫意外0。预期classification正例+captureBorrowed0失败；后者calls15/unexpected1/owned1/closeAttempts1/closed1/closeFailures0/remainingSteps0，源于借用关闭在Need处拒绝而端口正常关闭。计数尚待实际运行；驱动守卫必须0。默认只读Node exit2、无回执。
