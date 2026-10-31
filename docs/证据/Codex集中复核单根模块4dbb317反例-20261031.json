@@ -1,0 +1,237 @@
+{
+  "schema": "codex-rootonly-review-counterexamples/1",
+  "reviewedCommit": "4dbb317",
+  "basis": "7ed221f",
+  "kind": "source review plus actual JS modules with synthetic boundaries; VM audit uses read-only substitutions",
+  "checks": 22,
+  "results": [
+    {
+      "name": "normal synthetic control",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "spawn": 1
+      }
+    },
+    {
+      "name": "source drift before spawn",
+      "reproduced": true,
+      "observation": {
+        "spawn": 1,
+        "error": "DRIVER_FAILED"
+      }
+    },
+    {
+      "name": "receipt exists before spawn",
+      "reproduced": true,
+      "observation": {
+        "spawn": 1,
+        "error": "DRIVER_FAILED"
+      }
+    },
+    {
+      "name": "unbound target path never hashed",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "targetPathChecked": false,
+        "digestQueries": 4
+      }
+    },
+    {
+      "name": "forged binding overrides purpose and removes source checks",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "unapprovedArgsDelivered": true,
+        "digestQueries": 0
+      }
+    },
+    {
+      "name": "bound byte buffer mutable after hashing",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "storedHashDiffersFromBytes": true
+      }
+    },
+    {
+      "name": "same binding creates two successful runners",
+      "reproduced": true,
+      "observation": {
+        "spawns": 2
+      }
+    },
+    {
+      "name": "minimal PE with no sections or CLR bytes binds",
+      "reproduced": true,
+      "observation": {
+        "accepted": true,
+        "sectionCount": 0,
+        "optionalHeaderSize": 0,
+        "clrRvaBeyondFile": true
+      }
+    },
+    {
+      "name": "no stdout yet unrelated valid receipt gives success",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "observedStdoutBytes": 0
+      }
+    },
+    {
+      "name": "wrong stdout yet unrelated valid receipt gives success",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "observedStdoutBytes": 5
+      }
+    },
+    {
+      "name": "subscribe throws",
+      "reproduced": true,
+      "observation": {
+        "spawn": 1,
+        "kill": 0,
+        "error": "SYNTHETIC_SUBSCRIBE",
+        "factsAttached": false
+      }
+    },
+    {
+      "name": "wait throws",
+      "reproduced": true,
+      "observation": {
+        "spawn": 1,
+        "kill": 0,
+        "error": "SYNTHETIC_WAIT",
+        "factsAttached": false
+      }
+    },
+    {
+      "name": "output overflow does not stop the synthetic child",
+      "reproduced": true,
+      "observation": {
+        "failure": "OUTPUT_LIMIT",
+        "kill": 0
+      }
+    },
+    {
+      "name": "timeout kill has no subsequent close observation",
+      "reproduced": true,
+      "observation": {
+        "kill": 1,
+        "wait": 1,
+        "closed": false,
+        "killAcceptedRecorded": false
+      }
+    },
+    {
+      "name": "spawn setup throw is labelled closed without observing close",
+      "reproduced": true,
+      "observation": {
+        "partialCreation": true,
+        "closedClaim": true,
+        "wait": 0,
+        "kill": 0
+      }
+    },
+    {
+      "name": "compile source closure missing observer",
+      "reproduced": true,
+      "observation": {
+        "helperNeedsObserver": true,
+        "observerSourceInArgs": false,
+        "observerHashInInputs": false
+      }
+    },
+    {
+      "name": "actual audit VM normal control",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "exit": 0,
+        "checks": 41,
+        "failed": [],
+        "basis": "0da6af0",
+        "implementation": "feddd0a"
+      }
+    },
+    {
+      "name": "audit accepts compiler path override",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "exit": 0,
+        "checks": 41,
+        "failed": [],
+        "basis": "0da6af0",
+        "implementation": "feddd0a"
+      }
+    },
+    {
+      "name": "audit accepts extra source and unsafe argument",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "exit": 0,
+        "checks": 41,
+        "failed": [],
+        "basis": "0da6af0",
+        "implementation": "feddd0a"
+      }
+    },
+    {
+      "name": "audit accepts environment and timeout override",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "exit": 0,
+        "checks": 41,
+        "failed": [],
+        "basis": "0da6af0",
+        "implementation": "feddd0a"
+      }
+    },
+    {
+      "name": "audit accepts input absolute path moved but same basename",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "exit": 0,
+        "checks": 41,
+        "failed": [],
+        "basis": "0da6af0",
+        "implementation": "feddd0a"
+      }
+    },
+    {
+      "name": "audit accepts contract bytes drift",
+      "reproduced": true,
+      "observation": {
+        "ok": true,
+        "exit": 0,
+        "checks": 41,
+        "failed": [],
+        "basis": "0da6af0",
+        "implementation": "feddd0a"
+      }
+    }
+  ],
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "runtimeDigests": {
+    "module": "9896ed2c5345c5e495d349ef7a512d1777f304490909781ca02c764189fbeff6",
+    "audit": "a54d162229441c2176fe9f8bb1769e6134bb3467b5a9025873ce564442ca2586",
+    "compileConfig": "27890d3bec75de7eebf62386bd69e7b7ffe6d03c04b3e96e79240d579185da06",
+    "contract": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+    "self": "b9b9ef35078e607fe9ddad13e860f05c810de0b160f8a9627c56895a2281426a"
+  },
+  "ok": true,
+  "exitCode": 0,
+  "compiled": false,
+  "nativeLaunched": false,
+  "executionApproved": false
+}
