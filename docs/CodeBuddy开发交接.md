@@ -1,3 +1,25 @@
+# Codex：L2 单根完整模块 R1–R5 剩余返修·第二阶段（提交见交付文档）
+
+2026-10-31。接手 master faee6bc、受审 60ed280、技术基线 dac82a2，按 [Codex复核-L2剩余返修60ed280-20261031.md](Codex复核-L2剩余返修60ed280-20261031.md) §2–§3 一次完成五组剩余根因。详见[交付文档](Codex交付-L2单根剩余返修R1-R5续-20261031.md)与[当前状态](当前状态.md)。
+
+**工作树核实（报告 §3）**：三份入口文档工作树与 HEAD（faee6bc）已一致（index==worktree 逐文件 true）；后台写入安排已全部结束（两轮等待任务退出、脚本删除），本轮由本会话唯一写入者更新，未把旧内容提交回去。
+
+**R4（P1，先修）**：核验 v6——守卫安装于任何受审读取之前，恢复完整覆盖（http/https.request、net.Socket.prototype.connect、dns.promises、global fetch、child_process 七函数+ChildProcess.prototype.spawn）；探针阶段显式标注（guard.probing，不按命中数自动划类；5 固定探针跨 init/business/cleanup）；全部读取与摘要计算（含证据自身摘要）完成后由最新实际计数形成唯一 ok/exit，删除 !IS_FAULT 捷径；装载器对将执行字节自算 SHA-256+固定路径映射+按摘要缓存（伪造标签/未知路径 LOAD_PATH_UNKNOWN/缓存不一致/依赖漂移全拒），准备器与严格检查器纳入同一 VM 装载管线。七类子进程重入（firstRead/finalDigest/finalization/socketConnect/dnsPromises/fetchEntrance/childProto）全部 ok=false/exit1 且 unexpected=1。
+
+**R1（P1）**：驱动 v4（v3 原字节保留）——FIXED_REPO_ROOT+FIXED_ARTIFACT_REL→FIXED_ARTIFACT_ABS（分隔符规范化）；createRunner 校验实际路径严格等于固定槽位（PROVENANCE_PATH_MISMATCH 零启动）；provenance 字段 bind 时复制为内部不可变快照，binding getter 读快照（事后改写不泄露）。
+
+**R2（P1）**：awaitExit 非超时 closed:false → CLOSE_UNCONFIRMED + guardedKill + boundedReap（与其他失败一致收尾）；guardUnexpected 首读>0 启动前拒绝（GUARD_UNEXPECTED_PRE 零 spawn）、末读下降 GUARD_COUNT_DROPPED、读取异常 GUARD_READ_FAILED，f.unexpected 取 max(首读,末读) 不覆盖已有事实。
+
+**R3（P2）**：检查器 v2（v1 原字节保留）——公开契约收窄到原始 JSON 字节/字符串（parsed object 一律 CONFIG_WIRE）；唯一值快照=单次 JSON.parse；校验/选择/返回消费同一快照（deepFreeze 原地，无二次 stringify）；expectedConfig 对象导出移除、改不可变字符串 expectedConfigJson；八组篡改检查保留；selectSingleTarget 返回计划深冻结（push 实测被拒）。
+
+**R5（P2）**：准备器 v4+夹具 v4（v3 原字节保留）——FailAt 移外层类（嵌套观察器与 Hook 同一声明，SCOPE_FAILAT/FAILAT_REDECLARED 检查）；EnvFreeExpect[0]=1（成功场景到达 CREATE 行）；JsonQ 统一 JSON 转义（(char) 方式，JSON_ESCAPE_DEF/USE 检查）；inspect 的 Output 切片方向修正（Output 在 Receipt 之后，向前截到 RunSynthetic——裸 ReadFile 注入 Output 实测可检出）；Hook 句柄台账（Opened/Closed，Pipe 每对递增不复用）+ FinalizationOk 逐项打开/关闭对应核对（每句柄恰关一次、无重复、无未知）；删 finally 八次 Close 双层检出（静态 CLOSE_CALLS_COUNT==11 + 动态台账）；顺序断言用真实创建站点 site6(CreateProcess) 且 holdD 在首个 Wait 之后。本轮不编译。
+
+**实测**：核验 v6 29/29 ok=true exit0（守卫 5 探针显式分相全命中、意外 0；受控重入 7/7 全部经计数决定失败）；复跑同判；同源装载缓存 4 条目。新文件摘要：驱动 v4 4ef8d079e98341cc…、严格检查器 v2 59fbe641bd9e39b6…、Run 准备器 v4 2065c2d34c35b6c8…、夹具 v4 4904cabd863ddd13…、核验 v6 03ff20b3e54aa632…/JSON 16a71406e789e4a0…。
+
+**未验证/阻断**：全部 C# 夹具未编译未执行（pendingDynamicAssertions 单列）；真实 Job/管道/线程/CloseHandle/产物摘要绑定未验证；编译配置工具来源为历史事实；本轮未查询策略值、未重试受阻 -File；原 normal 恰2、真实累计4失败、父链UNKNOWN、候选真实性缺口保持；A 暂停；1/2号不重试；P 不开展。保护文件零改动；历史驱动 v1–v3、检查器 v1、准备器/夹具 v1–v3、核验 v3–v5 原字节保留。AGENTS.md 既有修改（f2b27c15…362c7f）保留排除。
+
+状态：本地自测完成待 Codex 集中复核，C# 动态及真实执行未放行。
+
 # Codex：L2 单根完整模块 R1–R5 剩余返修交付（提交见交付文档）
 
 2026-10-31。接手 master 3ac6cad、受审 42452cd、技术基线 dac82a2，按 [Codex复核-L2集中返修42452cd-20261031.md](Codex复查-L2集中返修42452cd-20261031.md) §2–§3 一次完成剩余返修。详见[交付文档](Codex交付-L2单根完整模块R1-R5剩余返修-20261031.md)与[当前状态](当前状态.md)。
