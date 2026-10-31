@@ -1,0 +1,41 @@
+{
+  "schema": "codex-l2-root-only-preparation/1",
+  "mode": "rootOnly",
+  "executionReady": false,
+  "artifactBound": false,
+  "root": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP",
+  "node": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+  "nodeSha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19",
+  "nodeArgs": [
+    "-e",
+    "process.stdout.write('L2_ROOT_ONLY');"
+  ],
+  "helperArgs": [
+    "rootOnly"
+  ],
+  "expectedProcesses": 1,
+  "output": "L2_ROOT_ONLY",
+  "creationFlags": 134218756,
+  "environmentPairs": [
+    "SystemRoot=C:\\Windows",
+    "WINDIR=C:\\Windows"
+  ],
+  "cwd": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP",
+  "memberLimit": 16,
+  "eventLimit": 128,
+  "workBudgetMs": 5000,
+  "cleanupBudgetMs": 2000,
+  "receiptElapsedLimitMs": 7500,
+  "driverTimeoutMs": 10000,
+  "outputLimitBytes": 131072,
+  "sources": [
+    {
+      "rel": "docs/证据/CodexL2单根对照辅助层v1-20261031.cs",
+      "sha256": "70acb6cf355b815a7b91e9a80d242844b905a7d0c56e3c3c96dd90a8fa2dbf37"
+    },
+    {
+      "rel": "docs/证据/CodexL2成员观察器v3-20261028.cs",
+      "sha256": "722d28e9e2f145d9bcf4e00fb82ee4837ec4b365d53bdd86b4472a6228fd9019"
+    }
+  ]
+}

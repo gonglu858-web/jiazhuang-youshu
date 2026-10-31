@@ -1,0 +1,316 @@
+{
+  "schema": "codex-l2-root-only-offline/1",
+  "basisCommit": "639f65d",
+  "kind": "synthetic receipt validation and source comparison only",
+  "fault": false,
+  "checks": 72,
+  "results": [
+    {
+      "name": "pinned legacy sources",
+      "ok": true
+    },
+    {
+      "name": "helper exactly four scoped replacements",
+      "ok": true
+    },
+    {
+      "name": "receipt grammar exact adaptation of pinned driver",
+      "ok": true
+    },
+    {
+      "name": "fixed config accepted and deeply frozen",
+      "ok": true
+    },
+    {
+      "name": "config rejects mode",
+      "ok": true
+    },
+    {
+      "name": "config rejects node",
+      "ok": true
+    },
+    {
+      "name": "config rejects nodeArgs",
+      "ok": true
+    },
+    {
+      "name": "config rejects helperArgs",
+      "ok": true
+    },
+    {
+      "name": "config rejects expectedProcesses",
+      "ok": true
+    },
+    {
+      "name": "config rejects output",
+      "ok": true
+    },
+    {
+      "name": "config rejects creationFlags",
+      "ok": true
+    },
+    {
+      "name": "config rejects environmentPairs",
+      "ok": true
+    },
+    {
+      "name": "config rejects memberLimit",
+      "ok": true
+    },
+    {
+      "name": "config rejects eventLimit",
+      "ok": true
+    },
+    {
+      "name": "config rejects driverTimeoutMs",
+      "ok": true
+    },
+    {
+      "name": "config rejects executionReady",
+      "ok": true
+    },
+    {
+      "name": "config rejects artifactBound",
+      "ok": true
+    },
+    {
+      "name": "config rejects sources",
+      "ok": true
+    },
+    {
+      "name": "config rejects exemption",
+      "ok": true
+    },
+    {
+      "name": "valid single root is diagnostic only",
+      "ok": true
+    },
+    {
+      "name": "count 0 rejected",
+      "ok": true
+    },
+    {
+      "name": "count 2 rejected",
+      "ok": true
+    },
+    {
+      "name": "count 4 rejected",
+      "ok": true
+    },
+    {
+      "name": "candidate cannot become single root success",
+      "ok": true
+    },
+    {
+      "name": "receipt schema codex-l2-member-job/2",
+      "ok": true
+    },
+    {
+      "name": "receipt mode normal",
+      "ok": true
+    },
+    {
+      "name": "receipt mode timeout",
+      "ok": true
+    },
+    {
+      "name": "receipt mode transport",
+      "ok": true
+    },
+    {
+      "name": "receipt rootExit 1",
+      "ok": true
+    },
+    {
+      "name": "receipt killRequested true",
+      "ok": true
+    },
+    {
+      "name": "receipt readersDone false",
+      "ok": true
+    },
+    {
+      "name": "receipt handlesClosed false",
+      "ok": true
+    },
+    {
+      "name": "receipt cleanupConfirmed false",
+      "ok": true
+    },
+    {
+      "name": "receipt accountingLayoutVerified false",
+      "ok": true
+    },
+    {
+      "name": "receipt stderrBytes 1",
+      "ok": true
+    },
+    {
+      "name": "receipt elapsedMs 7501",
+      "ok": true
+    },
+    {
+      "name": "receipt stdoutBytes 131073",
+      "ok": true
+    },
+    {
+      "name": "receipt stdoutBase64 ",
+      "ok": true
+    },
+    {
+      "name": "receipt observation null",
+      "ok": true
+    },
+    {
+      "name": "receipt extra secret",
+      "ok": true
+    },
+    {
+      "name": "same length wrong output",
+      "ok": true
+    },
+    {
+      "name": "active count contradicts empty",
+      "ok": true
+    },
+    {
+      "name": "parent claim rejected",
+      "ok": true
+    },
+    {
+      "name": "observer not stopped",
+      "ok": true
+    },
+    {
+      "name": "identity coverage missing",
+      "ok": true
+    },
+    {
+      "name": "observer close failed",
+      "ok": true
+    },
+    {
+      "name": "event/member disagreement",
+      "ok": true
+    },
+    {
+      "name": "unknown member property",
+      "ok": true
+    },
+    {
+      "name": "runner attempts 0",
+      "ok": true
+    },
+    {
+      "name": "runner attempts 2",
+      "ok": true
+    },
+    {
+      "name": "runner unexpected 1",
+      "ok": true
+    },
+    {
+      "name": "runner closed false",
+      "ok": true
+    },
+    {
+      "name": "runner status 1",
+      "ok": true
+    },
+    {
+      "name": "runner signal SIGKILL",
+      "ok": true
+    },
+    {
+      "name": "runner failure TIMEOUT",
+      "ok": true
+    },
+    {
+      "name": "runner failure SPAWN_FAILED",
+      "ok": true
+    },
+    {
+      "name": "runner failure OUTPUT_LIMIT",
+      "ok": true
+    },
+    {
+      "name": "runner killRequested true",
+      "ok": true
+    },
+    {
+      "name": "runner stderrBytes 1",
+      "ok": true
+    },
+    {
+      "name": "runner receiptExistsBefore true",
+      "ok": true
+    },
+    {
+      "name": "runner sourcesBefore false",
+      "ok": true
+    },
+    {
+      "name": "runner sourcesAfter false",
+      "ok": true
+    },
+    {
+      "name": "invalid bounded receipt 62",
+      "ok": true
+    },
+    {
+      "name": "invalid bounded receipt 63",
+      "ok": true
+    },
+    {
+      "name": "invalid bounded receipt 64",
+      "ok": true
+    },
+    {
+      "name": "invalid bounded receipt 65",
+      "ok": true
+    },
+    {
+      "name": "failed TREE_COUNT remains failed",
+      "ok": true
+    },
+    {
+      "name": "failed TIMEOUT remains failed",
+      "ok": true
+    },
+    {
+      "name": "failed SOURCE_HASH remains failed",
+      "ok": true
+    },
+    {
+      "name": "failed CREATE remains failed",
+      "ok": true
+    },
+    {
+      "name": "failed OUTPUT_LIMIT remains failed",
+      "ok": true
+    },
+    {
+      "name": "contract exports no launch or raw object inspection",
+      "ok": true
+    }
+  ],
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "runtimeDigests": {
+    "helper": "70acb6cf355b815a7b91e9a80d242844b905a7d0c56e3c3c96dd90a8fa2dbf37",
+    "config": "68a502d97db23a4f2ab19814531a45b684bc6df9f2fe01525d3df6e52830ae77",
+    "contract": "ceaa8c37a32acb4c888b8434d553386bbac295431d75fd5831e7150c4b59df73",
+    "evidence": "1c3ab764a66c015b1b07c3007bcb232a46b0a896e895064f2e52d1f575c9a0ef"
+  },
+  "limitations": [
+    "No helper compilation or execution",
+    "No Job, pipe or C# control flow dynamically tested",
+    "No runner exists yet: facts are synthetic, not authenticated runtime evidence",
+    "Old normal requires two; real four-member result remains failed"
+  ],
+  "ok": true,
+  "executionApproved": false,
+  "exitCode": 0
+}
