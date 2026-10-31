@@ -1,0 +1,361 @@
+{
+  "schema": "codex-rootonly-rework-review/1",
+  "reviewedCommit": "42452cd",
+  "basis": "aac8890",
+  "kind": "real JavaScript with synthetic boundaries; C# source observations only",
+  "results": [
+    {
+      "name": "positive: observed receipt and released hold",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 0,
+        "wait": 1,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\bound.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": 0
+      }
+    },
+    {
+      "name": "closed: preflight sources zero spawn",
+      "matched": true,
+      "facts": {
+        "spawn": 0,
+        "kill": 0,
+        "wait": 0,
+        "hold": 0,
+        "release": 0,
+        "heldPath": null,
+        "spawnPath": null,
+        "args": null,
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "closed: preflight receipt zero spawn",
+      "matched": true,
+      "facts": {
+        "spawn": 0,
+        "kill": 0,
+        "wait": 0,
+        "hold": 0,
+        "release": 0,
+        "heldPath": null,
+        "spawnPath": null,
+        "args": null,
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "closed: caller bytes mutation isolated",
+      "matched": true,
+      "facts": {
+        "copied": true
+      }
+    },
+    {
+      "name": "closed: empty stdout refuses",
+      "matched": true,
+      "facts": {
+        "refused": true
+      }
+    },
+    {
+      "name": "R1 symbol reflection forges binding and config",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "forgedConfigDelivered": true
+      }
+    },
+    {
+      "name": "R1 reflected state resets consumption",
+      "matched": true,
+      "facts": {
+        "launches": 2
+      }
+    },
+    {
+      "name": "R1 path getter changes between hold and launch",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "reads": 5,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\different.exe"
+      }
+    },
+    {
+      "name": "R1 CLR maps virtual tail beyond raw section",
+      "matched": true,
+      "facts": {
+        "accepted": true,
+        "sectionRawBytes": 512,
+        "clrOffsetWithinSection": 768
+      }
+    },
+    {
+      "name": "R2 digest mismatch leaks held token before try",
+      "matched": true,
+      "facts": {
+        "spawn": 0,
+        "kill": 0,
+        "wait": 0,
+        "hold": 1,
+        "release": 0,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": null,
+        "args": null,
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "R2 release throw still returns success",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "holdReleased": false
+      }
+    },
+    {
+      "name": "R2 release false is reported released",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "underlyingRelease": false,
+        "holdReleased": true
+      }
+    },
+    {
+      "name": "R2 postcheck throw skips release and escapes raw",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 0,
+        "wait": 1,
+        "hold": 1,
+        "release": 0,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\bound.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": 0,
+        "sanitizedFacts": false
+      }
+    },
+    {
+      "name": "R2 cleanup await throw escapes raw",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 1,
+        "wait": 2,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\bound.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": 0,
+        "sanitizedFacts": false
+      }
+    },
+    {
+      "name": "R2 subscription failure not stopped before normal wait",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 0,
+        "wait": 1,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\bound.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": 0
+      }
+    },
+    {
+      "name": "R2 kill exception escapes raw from cleanup",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 2,
+        "wait": 1,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\bound.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": 0,
+        "sanitizedFacts": false
+      }
+    },
+    {
+      "name": "positive: actual audit VM control",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R3 audit accepts host path",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R3 audit accepts reference path and digest",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R3 audit accepts environment shell limits cwd",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R3 audit accepts wrong main argument",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R3 audit accepts missing observer compiler argument",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R3 audit accepts coordinated input path move",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7"
+      }
+    },
+    {
+      "name": "R4 separately loaded contract differs from checked snapshot",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exitCode": 0,
+        "checks": 44,
+        "failed": [],
+        "checkedContractHash": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+        "loadedContractHash": "627d635c241d5c02124a6ccc0a08d64e6535d1f579bdbe5202f20eb4f6c4ff02"
+      }
+    },
+    {
+      "name": "R5 source declaration and signature contradictions (not compilation)",
+      "matched": true,
+      "facts": {
+        "undeclaredMode": true,
+        "duplicateHold": true,
+        "misplacedPlanReads": true,
+        "requireArityMismatch": true,
+        "missingTypes": [
+          "ProcessInfo",
+          "ExtendedLimit",
+          "Startup"
+        ],
+        "missingTextImport": true
+      }
+    },
+    {
+      "name": "R5 source has unbound OS call names despite capability ban",
+      "matched": true,
+      "facts": {
+        "undefinedCalls": [
+          "CloseHandle",
+          "AssignProcessToJobObject",
+          "TerminateJobObject",
+          "TerminateProcess"
+        ],
+        "noNativeInvocation": true
+      }
+    },
+    {
+      "name": "R5 scenario wiring and result contradictions (source only)",
+      "matched": true,
+      "facts": {
+        "failTableNotAssigned": true,
+        "successReasonWrong": true,
+        "treeCountAlwaysOneOutsideMemberLimit": true,
+        "oversizedCopyBeforeLimitObservation": true,
+        "unexpectedNotRecorded": true
+      }
+    }
+  ],
+  "checks": 27,
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "runtimeDigests": {
+    "driver": "bf9577f9a9155ce5861eed95fd2d10f2fca1ccbf0fee9c17f9e26ae3ec38ab23",
+    "audit": "49e7228454d659ff8663de5c4774fcf0baa53e95ec7e74f449b4f3214b557d04",
+    "ccfg": "5d46f85d8e4456ec2214e009dee45bf4fd5edec9fe52760141a76e18cd54eea7",
+    "contract": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+    "config": "1518269f0918b03052fec0540ac7a8934484341ec379445e86d86508685f98ce",
+    "run": "56117e55423805c2dd20e69817c5d31121521f332a6366db49d96599b8da07ee",
+    "self": "2ce02a2d2a377c38feab12355ad94862951ae73536e8bf76edd08f5a917ec1c3"
+  },
+  "ok": true,
+  "exitCode": 0,
+  "compiled": false,
+  "nativeLaunched": false,
+  "executionApproved": false
+}
