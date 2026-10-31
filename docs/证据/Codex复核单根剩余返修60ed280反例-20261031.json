@@ -1,0 +1,443 @@
+{
+  "schema": "codex-rootonly-60ed280-independent-review/1",
+  "reviewedCommit": "60ed280",
+  "runtimeDigests": {
+    "driver": "0b5f3a49e9b64e36f3817c65ff128cf3d988bdcf0a18f0f295f872c94933b49c",
+    "audit": "204ed3fdafa6ff17911050f531be4fb5b5f80324d70f5e7f6c7f14435a3cec3b",
+    "ccfg": "4d43a8419c5c964705f2a1dd7bef66cde75df2d15925d5b2db36d52f0f0dcfa0",
+    "contract": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+    "config": "1518269f0918b03052fec0540ac7a8934484341ec379445e86d86508685f98ce",
+    "run": "88ed80b47798d348717bb8b02dee9bbf3cb6412f0f0007258823cad8381f8b9e",
+    "checker": "72e68265c255f898b2c0ac8d76ffb3f02e46ce0e9a799b41e2e4368e5c591a37",
+    "prep": "eea43bed024acab302ca2b5d4f3bfb63425332d34d6661c9d083ddf73beac7d3"
+  },
+  "ok": true,
+  "exitCode": 0,
+  "checks": 25,
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "results": [
+    {
+      "name": "closed: WeakMap/byte-copy/shared single consumption",
+      "matched": true,
+      "facts": {
+        "closed": true
+      }
+    },
+    {
+      "name": "closed: productPath getter once and fixed launch options",
+      "matched": true,
+      "facts": {
+        "reads": 1
+      }
+    },
+    {
+      "name": "closed: source",
+      "matched": true,
+      "facts": {
+        "spawn": 0,
+        "kill": 0,
+        "wait": 0,
+        "hold": 0,
+        "release": 0,
+        "heldPath": null,
+        "spawnPath": null,
+        "args": null,
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "closed: receipt",
+      "matched": true,
+      "facts": {
+        "spawn": 0,
+        "kill": 0,
+        "wait": 0,
+        "hold": 0,
+        "release": 0,
+        "heldPath": null,
+        "spawnPath": null,
+        "args": null,
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "closed: holdDigest",
+      "matched": true,
+      "facts": {
+        "spawn": 0,
+        "kill": 0,
+        "wait": 0,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": null,
+        "args": null,
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "closed: release false and wait throw cannot succeed",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 1,
+        "wait": 2,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\synthetic\\bound.exe",
+        "spawnPath": "C:\\synthetic\\bound.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": 0
+      }
+    },
+    {
+      "name": "R1 fixed provenance does not bind actual launch path",
+      "matched": true,
+      "facts": {
+        "accepted": true,
+        "declared": "artifacts/psr-l2/rootonly-v3-helper/rootonly-helper.exe",
+        "actual": "C:\\synthetic\\bound.exe"
+      }
+    },
+    {
+      "name": "R1 provenance getters retain mutable caller record",
+      "matched": true,
+      "facts": {
+        "changedAfterBinding": true
+      }
+    },
+    {
+      "name": "R2 close unconfirmed skips kill and bounded reclaim",
+      "matched": true,
+      "facts": {
+        "facts": {
+          "attempts": 1,
+          "unexpected": 0,
+          "closed": false,
+          "status": 0,
+          "failure": "CLOSE_UNCONFIRMED",
+          "killRequested": false,
+          "killAccepted": null,
+          "stderrBytes": 0,
+          "receiptExistsBefore": false,
+          "sourcesBefore": true,
+          "sourcesAfter": true,
+          "holdAcquired": true,
+          "holdDigestChecked": true,
+          "releaseConfirmed": true,
+          "closedUnknown": false,
+          "timedOut": false,
+          "productUnchanged": true
+        },
+        "log": {
+          "spawn": 1,
+          "kill": 0,
+          "wait": 1,
+          "hold": 1,
+          "release": 1,
+          "heldPath": "C:\\synthetic\\bound.exe",
+          "spawnPath": "C:\\synthetic\\bound.exe",
+          "args": [
+            "rootOnly"
+          ],
+          "killAtFirstWait": null
+        }
+      }
+    },
+    {
+      "name": "R2 initial unexpected count can be erased by final count",
+      "matched": true,
+      "facts": {
+        "accepted": true,
+        "initialUnexpected": 1,
+        "finalUnexpected": 0,
+        "launches": 1
+      }
+    },
+    {
+      "name": "closed: strict config legal control and ordinary mutation",
+      "matched": true,
+      "facts": {
+        "closed": true
+      }
+    },
+    {
+      "name": "R3 exported expected configuration can change acceptance",
+      "matched": true,
+      "facts": {
+        "unapprovedExecuteOutputAccepted": true
+      }
+    },
+    {
+      "name": "R3 validation and returned copy read different values",
+      "matched": true,
+      "facts": {
+        "reads": 2,
+        "returned": "C:\\synthetic\\unapproved.exe"
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: normal",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 0,
+        "injected": false,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: ownFault",
+      "matched": true,
+      "facts": {
+        "ok": false,
+        "exit": 1,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 1,
+          "faultMode": true
+        },
+        "independentFallback": 0,
+        "injected": false,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: socket",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 1,
+        "injected": false,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: dns",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 1,
+        "injected": false,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: fetch",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 1,
+        "injected": false,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: processPrototype",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 1,
+        "injected": false,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: earlyRead",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 1,
+        "injected": true,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: lateDigest",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 1,
+          "faultMode": false
+        },
+        "independentFallback": 0,
+        "injected": true,
+        "loaderProof": null
+      }
+    },
+    {
+      "name": "R4 complete submitted audit VM: loader",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "checks": 36,
+        "failed": [],
+        "submittedGuard": {
+          "probes": 5,
+          "probePhases": [
+            "init",
+            "init",
+            "business",
+            "business",
+            "cleanup"
+          ],
+          "unexpected": 0,
+          "faultMode": false
+        },
+        "independentFallback": 0,
+        "injected": false,
+        "loaderProof": {
+          "wrongBytesAcceptedUnderPinnedLabel": true,
+          "unknownPathAccepted": true
+        }
+      }
+    },
+    {
+      "name": "R5 source checks: sibling FailAt, success EnvFree expectation, raw JSON string",
+      "matched": true,
+      "facts": {
+        "sourceOnly": true,
+        "csharpExecuted": false,
+        "successEnvFreeExpected": 0,
+        "unquotedNote": true
+      }
+    },
+    {
+      "name": "R5 Output capability check slices empty text and misses replacement",
+      "matched": true,
+      "facts": {
+        "unapprovedReadFileNotDetected": true
+      }
+    },
+    {
+      "name": "R5 removing all eight final close operations still passes static closure checker",
+      "matched": true,
+      "facts": {
+        "eightCloseRemovalUndetected": true,
+        "sourceOnly": true,
+        "csharpExecuted": false
+      }
+    }
+  ],
+  "limitations": [
+    "All OS boundaries are synthetic; fallback interceptions are separately recorded per VM.",
+    "Counterexample matched is not product acceptance. No C# compilation, OS tree, credentials, cloud, or real input."
+  ]
+}
