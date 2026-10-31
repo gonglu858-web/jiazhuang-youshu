@@ -1,3 +1,15 @@
+## 2026-10-31 CodeBuddy：L2单根对照离线完整模块开发交付（41项核验ok；C#动态未放行）
+
+- 接手：master 7ed221f；产品/证据基线 dac82a2；依据主任务书 docs/CodeBuddy任务-L2单根对照离线完整模块-20261031.md 与 AGENTS 第9节；AGENTS.md既有修改保留并继续排除。
+- 交付物：①docs/证据/CodexL2单根产物绑定与单次驱动v1-20261031.cjs——产物静态检查（PE32+/AMD64/CLR头）+摘要绑定+仅rootOnly私有单次驱动；模块不import child_process/net/http等公共入口，全部OS能力由显式boundary提供；未绑定拒绝（ARTIFACT_NOT_BOUND/PE_*/PRODUCT_WIRE）。②docs/证据/CodexL2单根对照固定编译配置v1-20261031.json——数据准备：单次编译/异常即停/不重试/产物不运行/绑定要求写明；两个用例（rootOnlyHelper、cleanupFixture）；工具与引用来源为历史事实（沿用已审观察器固定配置v2），本轮未再次核对环境文件；pending写明完整Run可执行夹具不在本配置、不因配置存在获得编译或运行批准。③docs/证据/CodexL2单根对照离线核验v3-20261031.cjs/.json——全模块汇总核验41项。④docs/Codex交付-L2单根对照离线完整模块-20261031.md——交付汇总与8行验收矩阵。
+- v3核验构成：v2沿用引用（81/81、守卫干净、digests与固定值一致）→固定编译配置结构校验+7项变更拒绝（executionAuthorized/executeOutput/maxDirectCompilerStarts等全部拒绝）→产物绑定矩阵（PE_MAGIC/PE_MACHINE/PE_OPTIONAL/PE_CLR/超限拒绝，摘要取自提供字节）→驱动替身矩阵（未绑定拒绝、缺boundary拒绝、正常单次diagnostic-only且l2Approved/executionApproved恒false、单次重复拒绝ALREADY_RUN、spawn异常/超时含kill/stderr/输出超限/关闭未确认拒绝且facts.failure分类附着在错误上可查、来源前后漂移/回执预存在拒绝、失败回执保持failed）→全Run源文顺序检查（Main准入→持有摘要→布局→Job/限制→观察器→管道/NUL→挂起创建→分配→观察根→关闭父写端→读取→恢复→轮询→成功/失败→finally Kill/Reap/整理/Stop/八次关闭/最终失败行；6项敏感性反例：去持有门、恢复前置、去Kill、失败保留正文、去关闭合并、去Main门全部拒绝；**非执行证明**）→13项收尾夹具审查结论无需修改→守卫5探针阻断/意外0、--fault-caught在全部读取与摘要之后注入被catch命中→意外1/ok=false/exit1。
+- 实测：v3核验41/41 ok=true exit0（main-exit=0），复跑同判；fault-caught exit1。本轮未编译、未运行任何C#产物，未启动真实进程树；未改PS1/登记/业务代码或测试，未机械重跑47/18。
+- 验收矩阵状态：来源与差异=已执行；准入与启动=静态已执行；关闭事实=已执行(合成)；回执消费=已执行(合成)；驱动=已执行(替身)；守卫=已执行；编译和运行准备=已准备待执行；保护与记录=已执行。全表见交付文档。
+- 未验证/阻断（不写成已通过）：13项C#收尾夹具与完整Run边界未编译未执行；真实CloseHandle/OS锁/线程并发/Job/管道动态缺口保留；真实产物摘要绑定、单次真实运行、真实单根诊断、完整L2未放行；驱动为替身边界合成自测；原normal恰2、真实累计4失败、父链UNKNOWN、候选真实性缺口保持；A暂停；1/2号不重试；P不开展。
+- 保护与记录：PS1/身份核心/private-store/local-tools/native-exec/decoder/固定DPAPI脚本/业务与P/E/X/管理员链/共享守卫/旧观察器/关闭来源/冻结包/历史证据与Codex报告反例零改动；进展/交接旧blob二进制完整后缀核验；暂存凭据/编号扫描零命中；12个临时文件集中清理无残留。
+- 状态：本地开发交付待Codex集中审核，C#动态及真实执行未放行。
+
+
 ## 2026-10-31 用户确认：完整模块开发＋集中审核
 
 - 用户明确“那就按这个方案调整”。协作规则写入AGENTS第9节：Codex一次明确模块目标/接口/范围/验收/停止条件，CodeBuddy连续完成完整开发、自测和交付，Codex集中审核、归并返修；不再按内部小步骤让用户反复“下一步”。

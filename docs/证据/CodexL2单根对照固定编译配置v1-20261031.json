@@ -1,0 +1,143 @@
+{
+  "schema": "codex-l2-rootonly-compile-config/1",
+  "basisCommit": "dac82a2",
+  "executionAuthorized": false,
+  "artifactExecutionApproved": false,
+  "singleCompile": {
+    "maxDirectCompilerStarts": 1,
+    "automaticRetry": false,
+    "failureStopsAll": true,
+    "note": "仅编译一次；异常即停、不重试；编译产物不运行"
+  },
+  "host": {
+    "path": "C:\\Users\\30591\\.agent-reach\\tools\\node-v22.16.0-win-x64\\node.exe",
+    "sha256": "c5ff4c736112dd483c750fd4149d30c8a116db1a49b8b3ec88be4b65e6c86c19"
+  },
+  "cwd": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP",
+  "toolFacts": {
+    "source": "historical",
+    "note": "编译器与引用摘要来自已审固定配置（CodexL2观察器固定编译配置v2-20261029.json）；本轮未再次核对环境文件，未读取候选系统文件",
+    "compiler": {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+      "bytes": 2569832,
+      "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+    },
+    "compilerConfig": {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe.config",
+      "bytes": 182,
+      "sha256": "2d4610ade011e530d817dd3ba4fc787e5dc0c2297cc520c30a643b8fb13f9093"
+    },
+    "references": [
+      {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "bytes": 5445432,
+        "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c"
+      },
+      {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "bytes": 3545264,
+        "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71"
+      },
+      {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+        "bytes": 1551104,
+        "sha256": "8b898bed54ae8cc61f9c58cc3eb062724f8357d2bdda338b5d363654ecff333d"
+      }
+    ]
+  },
+  "spawn": {
+    "shell": false,
+    "windowsHide": true,
+    "stdio": ["ignore", "pipe", "pipe"],
+    "timeoutMs": 30000,
+    "reapMs": 2000,
+    "maxCombinedOutputBytes": 131072
+  },
+  "postcheck": {
+    "exitCode": 0,
+    "signal": null,
+    "stderrBytes": 0,
+    "stdoutBytes": 0,
+    "outputMachine": "AMD64",
+    "outputMagic": "PE32+",
+    "requiresClrHeader": true,
+    "maxOutputFileBytes": 1048576,
+    "tempDirectoryMustBeEmpty": true,
+    "executeOutput": false,
+    "artifactBinding": "bound digest must equal postcheck product sha256 before any later single-run",
+    "executionAllowed": false
+  },
+  "inputs": [
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根对照辅助层v2-20261031.cs",
+      "sha256": "408d9108fff46b045bf19183d1488a53f02ca52f4e255fab987163df60124a7b"
+    },
+    {
+      "path": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根收尾合成夹具v1-20261031.cs",
+      "sha256": "9b76b6af754992cbb69b6a77c24191f16ed0132d6028a214118f31aed2840fd2"
+    }
+  ],
+  "cases": [
+    {
+      "id": "rootOnlyHelper",
+      "main": "L2MemberRunner",
+      "expectedExitCode": 0,
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-helper",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-helper\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-helper\\rootonly-helper.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根单次编译v1-helper-待执行.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根对照辅助层v2-20261031.cs"
+      ],
+      "args": [
+        "/nologo", "/noconfig", "/nostdlib+", "/target:exe", "/platform:x64", "/langversion:5",
+        "/codepage:65001", "/utf8output", "/optimize+", "/debug-", "/warn:4", "/warnaserror+",
+        "/errorreport:none", "/nowin32manifest", "/main:L2MemberRunner",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-helper\\rootonly-helper.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根对照辅助层v2-20261031.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-helper\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-helper\\tmp"
+      }
+    },
+    {
+      "id": "cleanupFixture",
+      "main": "RootOnlyCleanupFixture",
+      "expectedExitCode": 0,
+      "outputRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-cleanupFixture",
+      "tempRoot": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-cleanupFixture\\tmp",
+      "outputFile": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-cleanupFixture\\cleanup-fixture.exe",
+      "record": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根单次编译v1-cleanupFixture-待执行.json",
+      "sourceFiles": [
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根收尾合成夹具v1-20261031.cs"
+      ],
+      "args": [
+        "/nologo", "/noconfig", "/nostdlib+", "/target:exe", "/platform:x64", "/langversion:5",
+        "/codepage:65001", "/utf8output", "/optimize+", "/debug-", "/warn:4", "/warnaserror+",
+        "/errorreport:none", "/nowin32manifest", "/main:RootOnlyCleanupFixture",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+        "/reference:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+        "/out:C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-cleanupFixture\\cleanup-fixture.exe",
+        "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根收尾合成夹具v1-20261031.cs"
+      ],
+      "childEnv": {
+        "SystemRoot": "C:\\Windows",
+        "WINDIR": "C:\\Windows",
+        "PATH": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+        "TEMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-cleanupFixture\\tmp",
+        "TMP": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v1-cleanupFixture\\tmp"
+      }
+    }
+  ],
+  "pending": {
+    "runBoundaryFixture": "完整Run关键准入/创建/分配/恢复/失败/finally收尾的C#可执行合成边界本轮以源文顺序与敏感性检查准备（见离线核验v3），可执行夹具与编译用例待后续模块准备；不因本配置存在而获得编译或运行批准"
+  }
+}

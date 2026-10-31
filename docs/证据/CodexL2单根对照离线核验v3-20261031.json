@@ -1,0 +1,239 @@
+{
+  "schema": "codex-l2-root-only-offline/3",
+  "basisCommit": "0da6af0",
+  "reviewedImplementation": "feddd0a",
+  "kind": "full-module offline delivery verification: reuse references + new module synthetic matrix + source-order preparation",
+  "fault": false,
+  "checks": 41,
+  "results": [
+    {
+      "name": "v2 offline evidence reused: 81 checks pass with guard clean",
+      "ok": true
+    },
+    {
+      "name": "v2 evidence digests match pinned values",
+      "ok": true
+    },
+    {
+      "name": "compile config is data-only preparation",
+      "ok": true
+    },
+    {
+      "name": "compile config inputs match repo bytes",
+      "ok": true
+    },
+    {
+      "name": "compile config cases are single-run and distinct",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects executionAuthorized",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects artifactExecutionApproved",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects singleCompile.maxDirectCompilerStarts",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects singleCompile.automaticRetry",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects postcheck.executeOutput",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects postcheck.executionAllowed",
+      "ok": true
+    },
+    {
+      "name": "compile config rejects cases",
+      "ok": true
+    },
+    {
+      "name": "driver module has no public process/network surface",
+      "ok": true
+    },
+    {
+      "name": "binding computes digest from provided bytes and stays diagnostic",
+      "ok": true
+    },
+    {
+      "name": "bind rejects config mismatch",
+      "ok": true
+    },
+    {
+      "name": "bind rejects PE_MAGIC",
+      "ok": true
+    },
+    {
+      "name": "bind rejects PE_MACHINE",
+      "ok": true
+    },
+    {
+      "name": "bind rejects PE_OPTIONAL",
+      "ok": true
+    },
+    {
+      "name": "bind rejects PE_CLR",
+      "ok": true
+    },
+    {
+      "name": "bind rejects oversize product",
+      "ok": true
+    },
+    {
+      "name": "runner refuses unbound binding",
+      "ok": true
+    },
+    {
+      "name": "runner refuses missing boundary",
+      "ok": true
+    },
+    {
+      "name": "normal single run is diagnostic only",
+      "ok": true
+    },
+    {
+      "name": "second run refused (single run per binding)",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: spawn throw",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: timeout",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: stderr",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: output limit",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: close unconfirmed",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: sources drift before",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: sources drift after",
+      "ok": true
+    },
+    {
+      "name": "driver failure scenario: receipt pre-exists",
+      "ok": true
+    },
+    {
+      "name": "driver failed receipt stays failed and diagnostic",
+      "ok": true
+    },
+    {
+      "name": "full-run ordering source check only (admission..finally)",
+      "ok": true
+    },
+    {
+      "name": "run order sensitivity: held hash gate removed",
+      "ok": true
+    },
+    {
+      "name": "run order sensitivity: resume before assignment",
+      "ok": true
+    },
+    {
+      "name": "run order sensitivity: kill-on-abandon removed",
+      "ok": true
+    },
+    {
+      "name": "run order sensitivity: final failure body kept",
+      "ok": true
+    },
+    {
+      "name": "run order sensitivity: closed merge dropped",
+      "ok": true
+    },
+    {
+      "name": "run order sensitivity: main gate removed",
+      "ok": true
+    },
+    {
+      "name": "cleanup fixture v1 reviewed and unchanged",
+      "ok": true
+    }
+  ],
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "digests": {
+    "helper": "408d9108fff46b045bf19183d1488a53f02ca52f4e255fab987163df60124a7b",
+    "config": "1518269f0918b03052fec0540ac7a8934484341ec379445e86d86508685f98ce",
+    "offlineV2": "992421e5ec3621064bf30001f0fdd156fbe410549ed03d0c2087ef0b2ca4eddc",
+    "compileConfig": "27890d3bec75de7eebf62386bd69e7b7ffe6d03c04b3e96e79240d579185da06",
+    "binder": "9896ed2c5345c5e495d349ef7a512d1777f304490909781ca02c764189fbeff6",
+    "fixtureBuilder": "c22a543113d979994d5d84e3a3ae76c38c3e7db007a9d4d61cbd07b58d718858",
+    "fixture": "9b76b6af754992cbb69b6a77c24191f16ed0132d6028a214118f31aed2840fd2",
+    "evidence": "a54d162229441c2176fe9f8bb1769e6134bb3467b5a9025873ce564442ca2586"
+  },
+  "acceptanceMatrix": [
+    {
+      "item": "来源与差异",
+      "status": "已执行",
+      "evidence": "v2沿用81项 + 本轮 digests 固定源摘要；漂移拒绝（夹具/配置）"
+    },
+    {
+      "item": "准入与启动",
+      "status": "静态已执行",
+      "evidence": "fullRunOrder 全Run顺序检查与6项敏感性；Main/rootOnly准入、持有摘要、分配→恢复顺序；非执行证明"
+    },
+    {
+      "item": "关闭事实",
+      "status": "已执行(合成)",
+      "evidence": "v2沿用：F1/F2回执反例 + 13场景夹具准备（未编译）"
+    },
+    {
+      "item": "回执消费",
+      "status": "已执行(合成)",
+      "evidence": "v2沿用：成功/计数0·2·4/候选冒充/同长错误/身份缺失/晚失败/字段矛盾"
+    },
+    {
+      "item": "驱动",
+      "status": "已执行(替身)",
+      "evidence": "本轮：未绑定拒绝、单次、spawn异常/超时/输出超限/关闭未确认/前后来源漂移/回执预存在，事实由runner采集"
+    },
+    {
+      "item": "守卫",
+      "status": "已执行",
+      "evidence": "初始化至唯一最终判定；非探针命中含被catch者使ok=false/exit1；子替身结果经统一核验（faultProofs式：本证据为单进程矩阵，无子进程计数硬编码）"
+    },
+    {
+      "item": "编译和运行准备",
+      "status": "已准备待执行",
+      "evidence": "固定编译配置v1（单次/异常即停/不运行产物）；未编译、未伪造产物或运行摘要"
+    },
+    {
+      "item": "保护与记录",
+      "status": "已执行",
+      "evidence": "保护路径零改动；暂存凭据扫描见提交说明；历史后缀二进制核验"
+    }
+  ],
+  "limitations": [
+    "13项C#收尾夹具与Run边界仍未编译/执行；完整Run、线程/Job/管道动态缺口保留",
+    "驱动为替身边界合成自测，未运行真实产物；未绑定执行入口默认拒绝",
+    "compile config 工具来源为历史事实，本轮未再次核对环境文件",
+    "旧normal恰2、真实累计4失败、父链UNKNOWN、候选真实性缺口保持"
+  ],
+  "ok": true,
+  "executionApproved": false,
+  "exitCode": 0
+}
