@@ -1,0 +1,254 @@
+{
+  "schema": "codex-l2-root-only-offline/4",
+  "identity": {
+    "techBaseline": "dac82a2",
+    "handoverBaseline": "aac8890",
+    "reviewedImplementation": "4dbb317",
+    "runtimeHead": "aac8890",
+    "runtimeHeadGated": false,
+    "agentsWorktreeSha256Prefix": "f2b27c15f3d725fcb25f"
+  },
+  "kind": "R1-R5 concentrated rework verification: same-chain binding/launch, observed cleanup, dependency closure, prepared run boundary",
+  "fault": false,
+  "checks": 44,
+  "results": [
+    {
+      "name": "R4 loaded helper bytes match reviewed digest",
+      "ok": true
+    },
+    {
+      "name": "R4 loaded contract bytes match reviewed digest",
+      "ok": true
+    },
+    {
+      "name": "R4 loaded fixed config bytes match reviewed digest",
+      "ok": true
+    },
+    {
+      "name": "R4 loaded fixture/fixtureBuilder bytes match reviewed digests",
+      "ok": true
+    },
+    {
+      "name": "R4 loaded observer dependency matches reviewed digest",
+      "ok": true
+    },
+    {
+      "name": "R4 source-drift counterexample: injected comment on contract refuses",
+      "ok": true
+    },
+    {
+      "name": "R4 source-drift counterexample: mutated helper byte refuses",
+      "ok": true
+    },
+    {
+      "name": "R4 v2 reused evidence still matches its recorded conclusions",
+      "ok": true
+    },
+    {
+      "name": "R4 identity fields are separated and runtime HEAD is recorded, not gated",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config v2 validates with dependency closure",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config inputs match repo bytes",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects executionAuthorized",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects artifactExecutionApproved",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects singleCompile.maxDirectCompilerStarts",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects singleCompile.automaticRetry",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects postcheck.executeOutput",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects postcheck.executionAllowed",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects cases",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects toolFacts.compiler.path",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects cases.0.args",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects cases.0.sourceFiles",
+      "ok": true
+    },
+    {
+      "name": "R3 compile config rejects moved input directory (full-path check)",
+      "ok": true
+    },
+    {
+      "name": "R3 single-target selection returns one case and refuses unknown",
+      "ok": true
+    },
+    {
+      "name": "driver v2 module has no public process/network surface",
+      "ok": true
+    },
+    {
+      "name": "R1 binding copies bytes internally; digest stable and diagnostic-only",
+      "ok": true
+    },
+    {
+      "name": "R1 substantive PE checks refuse zero-section/zero-optional/CLR-less images",
+      "ok": true
+    },
+    {
+      "name": "R1 forged binding objects are refused",
+      "ok": true
+    },
+    {
+      "name": "R1 caller-side mutation of bound bytes cannot diverge digest",
+      "ok": true
+    },
+    {
+      "name": "R2 normal single run: receipt comes from THIS run output; facts are real",
+      "ok": true
+    },
+    {
+      "name": "R1 same binding across two runners still consumes once",
+      "ok": true
+    },
+    {
+      "name": "R1 forged/zero-product/drift/legacy-receipt refuse with ZERO spawn",
+      "ok": true
+    },
+    {
+      "name": "R1 product digest drift after run fails the result",
+      "ok": true
+    },
+    {
+      "name": "R2 unified cleanup: spawn throw keeps close unknown and attaches facts",
+      "ok": true
+    },
+    {
+      "name": "R2 unified cleanup: partial establishment failure keeps close unknown",
+      "ok": true
+    },
+    {
+      "name": "R2 unified cleanup: subscription throw inside child wiring is contained",
+      "ok": true
+    },
+    {
+      "name": "R2 immediate stop on stderr/limit with kill and bounded reclaim",
+      "ok": true
+    },
+    {
+      "name": "R2 timeout: kill then bounded reclaim, close unknown fails",
+      "ok": true
+    },
+    {
+      "name": "R2 empty/wrong output cannot be repaired by another channel",
+      "ok": true
+    },
+    {
+      "name": "R2 unexpected guard counts come from boundary records, not literals",
+      "ok": true
+    },
+    {
+      "name": "R2 runOne consumption is per binding, visible via consumed",
+      "ok": true
+    },
+    {
+      "name": "R5 run-boundary fixture regenerates byte-identically from pinned helper",
+      "ok": true
+    },
+    {
+      "name": "R5 run-boundary fixture refuses source drift",
+      "ok": true
+    },
+    {
+      "name": "R5 run-boundary fixture has no OS-facing capability and covers scenarios",
+      "ok": true
+    },
+    {
+      "name": "R5 pending dynamic assertions are declared",
+      "ok": true
+    }
+  ],
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "digests": {
+    "helper": "408d9108fff46b045bf19183d1488a53f02ca52f4e255fab987163df60124a7b",
+    "config": "1518269f0918b03052fec0540ac7a8934484341ec379445e86d86508685f98ce",
+    "contract": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+    "offlineV2": "992421e5ec3621064bf30001f0fdd156fbe410549ed03d0c2087ef0b2ca4eddc",
+    "driver": "bf9577f9a9155ce5861eed95fd2d10f2fca1ccbf0fee9c17f9e26ae3ec38ab23",
+    "ccfg": "5d46f85d8e4456ec2214e009dee45bf4fd5edec9fe52760141a76e18cd54eea7",
+    "runPrep": "d5ef149f518498ced5f70a92db3a300692faec967cae3a9b1f54708f5305ec3f",
+    "runFixture": "56117e55423805c2dd20e69817c5d31121521f332a6366db49d96599b8da07ee",
+    "fixtureBuilder": "c22a543113d979994d5d84e3a3ae76c38c3e7db007a9d4d61cbd07b58d718858",
+    "fixture": "9b76b6af754992cbb69b6a77c24191f16ed0132d6028a214118f31aed2840fd2",
+    "evidence": "49e7228454d659ff8663de5c4774fcf0baa53e95ec7e74f449b4f3214b557d04"
+  },
+  "acceptanceMatrix": [
+    {
+      "item": "R1 绑定与启动准入",
+      "status": "已执行(替身)",
+      "evidence": "Symbol品牌绑定+内部字节副本；同绑定跨runner单次；来源漂移/既有回执/产物摘要不符零启动；实质PE/CLR节表映射检查"
+    },
+    {
+      "item": "R2 异常收尾与回执观测",
+      "status": "已执行(替身)",
+      "evidence": "回执=本次受限stdout收集；统一try/finally；超限即时停止+kill+有界回收；killAccepted/closedUnknown/holdReleased入报告；空/错输出不可补成功；attempts/unexpected实际记账"
+    },
+    {
+      "item": "R3 编译配置",
+      "status": "已准备待执行",
+      "evidence": "依赖闭包（观察器+Run边界夹具）+严格字段核对+变更/移目录反例+单目标语义；本轮不编译"
+    },
+    {
+      "item": "R4 沿用字节与口径",
+      "status": "已执行",
+      "evidence": "实际装载字节逐项受审摘要核对+漂移反例；identity四字段分列；AGENTS当前摘要f2b27c15…实测"
+    },
+    {
+      "item": "R5 完整Run合成边界",
+      "status": "已准备未执行",
+      "evidence": "准备器v2+夹具v2（20场景，真实表达式提取+Hook替身+符号闭包禁令）；C#动态断言待编译执行"
+    },
+    {
+      "item": "守卫与最终出口",
+      "status": "已执行",
+      "evidence": "初始化至唯一最终判定；--fault-caught 意外1/ok=false/exit1"
+    },
+    {
+      "item": "保护与记录",
+      "status": "已执行",
+      "evidence": "保护路径零改动；历史后缀二进制核验；暂存凭据扫描"
+    }
+  ],
+  "limitations": [
+    "全部C#夹具（13收尾、Run边界20场景）仍未编译/执行；C#动态断言待后续授权",
+    "完整Run真实Job/管道/线程行为、真实CloseHandle、真实产物摘要绑定仍未验证",
+    "compile config 工具来源为历史事实；本轮未查询策略值、未重试受阻-File"
+  ],
+  "ok": true,
+  "executionApproved": false,
+  "exitCode": 0
+}

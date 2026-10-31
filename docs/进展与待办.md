@@ -1,3 +1,18 @@
+## 2026-10-31 CodeBuddy：L2单根完整模块R1–R5集中返修（v4核验44/44；C#动态未放行）
+
+- 接手：master aac8890；受审 4dbb317；依据 docs/Codex复查-L2单根完整模块4dbb317-20261031.md §2–§3；主任务书不变；AGENTS.md既有修改（f2b27c15…）保留并继续排除。
+- R1（P1，绑定与启动准入同链）：docs/证据/CodexL2单根产物绑定与单次驱动v2-20261031.cjs（v1保留）——bind() 以 Symbol 品牌绑定（不导出，无法伪造）+内部字节副本（调用方原地改写不偏移摘要）；createRunner 校验品牌拒绝手造绑定；消费标志移到绑定内部状态（同一绑定跨 runner 仍只消费一次）；启动前持有/复核契约核对实际启动文件摘要（boundary.holdProduct 返回摘要必须等于绑定摘要，不符零启动），来源漂移与既有回执在 spawn 前拒绝（零启动）；运行后再次核对产物摘要，漂移使 ok=false（回执本身 rootOnlyPassed 仍真实反映）；实质 PE/CLR 静态检查：节数>0、SizeOfOptionalHeader≥240、SizeOfHeaders/SizeOfImage 合理、节表 raw 映射不越界、CLR 目录长度≥0x48、RVA→节内映射、COR20 cb≥0x48 且运行时版本≥2。
+- R2（P1，异常收尾与回执观测）：回执=本次实际受限 stdout 收集（空/错/畸形输出不可由另一路合法对象补成成功）；统一 try/finally——spawn/订阅/等待异常均带净化 facts 返回，不逃逸；超限/意外 stderr 即时停止（stopReading）+kill；超时后 kill+有界回收（cleanupBudgetMs）且关闭未知→closedUnknown=true 入报告（第一失败保留，不覆盖为 CLOSE_UNCONFIRMED）；killAccepted/holdReleased/closedUnknown 入报告；facts.attempts/unexpected 取自实际记录（spawn 调用计数/boundary.guardUnexpected()），不是字面常量。
+- R3（P2，编译配置依赖闭包与严格核对）：docs/证据/CodexL2单根对照固定编译配置v2-20261031.json——rootOnlyHelper 用例补观察器源码（依赖闭包静态事实）；新增 runBoundaryFixture 用例（Run 合成边界夹具 v2）；inputs 六项含两个准备器；selection 单目标单次语义（每次获准仅选定一个用例编译一次，selectSingleTarget 拒绝未知目标，多用例不默认批跑）；严格核对完整字段（编译器摘要/完整参数含 /main 与全部源文件/无 /unsafe+/sourceFiles↔inputs↔args 完整路径对应/环境/限额/输出位置/关闭执行标志）；变更反例（executionAuthorized/executeOutput/单次次数/自动重试/编译器路径/参数加源/用例数）与移目录反例（完整路径核对，非 basename）全部拒绝。本轮不编译。
+- R4（P2，装载字节绑定与口径）：docs/证据/CodexL2单根对照离线核验v4-20261031.cjs/.json——实际装载字节逐项核对受审摘要（helper/config/contract/fixture/fixtureBuilder/observer），来源漂移反例（契约注入注释/辅助层改单字节）全部拒绝；不靠旧 JSON 自报值替代；identity 四字段分列：技术基线 dac82a2、接手基线 aac8890、被复查实现 4dbb317、运行时 HEAD 记录为事实不作判定门槛；AGENTS 当前工作树摘要 f2b27c15… 实测记录（不再用旧 9ef 片段）。守卫与唯一最终失败出口保留。
+- R5（P2，完整Run合成边界已准备）：docs/证据/CodexL2单根Run合成边界准备v2-20261031.cjs 生成 docs/证据/CodexL2单根Run合成边界夹具v2-20261031.cs——从辅助层 v2 逐字节提取 Run 全体及真实 Receipt/Close/Quote/Require/Allowed/Output，经 36 条唯一锚点替换表把 P/Invoke、Thread、Stopwatch、File(Hold)、Environment、Marshal 替换为固定 Hook 编号替身（未预期记账）；20 场景覆盖准入(MainGate 提取行)/Hold校验/创建/设置/限额/观察器/管道/NUL/创建进程/分配/早期关闭/恢复/成员限额/stderr/输出超限/超时/根退出/树计数/读失败/成功路径与 finally Kill/Reap/收尾断言；能力禁令（无 DllImport/extern/Process.Start/File./Environment./Thread./Stopwatch./Marshal.）静态核验通过；生成与落盘逐字节一致，漂移拒绝；pendingDynamicAssertions 声明哪些断言需编译执行才能成立。源文顺序检查保留为补充，不冒充实际方法执行。
+- 汇总核验 v4：44/44 ok=true exit0（守卫探针 5/意外 0）；--fault-caught 意外 1/ok=false/exit1；复跑同判。本轮未编译、未运行任何 C# 产物；未改 PS1/登记/业务代码或测试，未机械重跑 47/18。
+- 验收矩阵：R1=已执行(替身)；R2=已执行(替身)；R3=已准备待执行；R4=已执行；R5=已准备未执行；守卫与最终出口=已执行；保护与记录=已执行。全表见 docs/Codex交付-L2单根完整模块集中返修R1-R5-20261031.md。
+- 未验证/阻断：全部 C# 夹具（13 收尾、Run 边界 20 场景）未编译未执行；完整 Run 真实 Job/管道/线程、真实 CloseHandle、真实产物摘要绑定未验证；编译配置工具来源为历史事实；本轮未查询策略值、未重试受阻 -File；原 normal 恰2、真实累计4失败、父链 UNKNOWN、候选真实性缺口保持；A 暂停；1/2 号不重试；P 不开展。
+- 保护与记录：PS1/身份核心/private-store/local-tools/native-exec/decoder/固定 DPAPI 脚本/业务与 P/E/X/管理员链/共享守卫/旧观察器/关闭来源/冻结包/v1–v3 证据与 Codex 报告反例零改动；进展/交接旧 HEAD blob 二进制完整后缀核验（受阻文件经 git 官方 index/checkout 机制更新）；暂存凭据/编号扫描零命中；临时文件集中清理无残留。
+- 状态：本地自测完成待 Codex 集中复核，C# 动态及真实执行未放行。
+
+
 ## 2026-10-31 Codex集中审核4dbb317：未通过，统一返修R1–R5
 
 用户要求完整模块集中审核，依据AGENTS第9节与主任务书。主报告：[Codex复查-L2单根完整模块4dbb317-20261031.md](Codex复查-L2单根完整模块4dbb317-20261031.md)。受审4dbb317、接手7ed221f、技术基线dac82a2。
