@@ -1,0 +1,572 @@
+{
+  "schema": "codex-l2-70b1f76-independent-review/1",
+  "reviewedCommit": "70b1f76",
+  "ok": true,
+  "exitCode": 0,
+  "checks": 16,
+  "guard": {
+    "probes": 5,
+    "unexpected": 0
+  },
+  "digests": {
+    "driver": "4ef8d079e98341cc014c2786bb3fad45964b1d1063c5cc50bbbb5a997a64ad30",
+    "audit": "03ff20b3e54aa6321c34e3cb2994cc8caffc5cbe0021e38816f9068c2113e3e8",
+    "ccfg": "4d43a8419c5c964705f2a1dd7bef66cde75df2d15925d5b2db36d52f0f0dcfa0",
+    "contract": "2029ca70c718bd56f151448c5fd95db9d5e9e1c52bd63573d8907b849915bae7",
+    "config": "1518269f0918b03052fec0540ac7a8934484341ec379445e86d86508685f98ce",
+    "run": "4904cabd863ddd133ba9f9e9fe9407b94fcaeff3d113a045b1bce54165f73416",
+    "checker": "59fbe641bd9e39b6e4a752a5c0828b589b3d4273160a2aa4861f5a155be6ae15",
+    "prep": "2065c2d34c35b6c862781cd034031244f1e40010f7706bc2d97afcd820525062"
+  },
+  "results": [
+    {
+      "name": "closed R1: fixed path and ordinary provenance mutation",
+      "matched": true,
+      "facts": {
+        "closed": true
+      }
+    },
+    {
+      "name": "R1 provenance validates before second read snapshot",
+      "matched": true,
+      "facts": {
+        "acceptedWrongProvenance": true,
+        "reads": 2
+      }
+    },
+    {
+      "name": "closed R2: unconfirmed close reaps and positive initial counter refuses",
+      "matched": true,
+      "facts": {
+        "spawn": 1,
+        "kill": 1,
+        "wait": 2,
+        "hold": 1,
+        "release": 1,
+        "heldPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v3-helper\\rootonly-helper.exe",
+        "spawnPath": "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\artifacts\\psr-l2\\rootonly-v3-helper\\rootonly-helper.exe",
+        "args": [
+          "rootOnly"
+        ],
+        "killAtFirstWait": null
+      }
+    },
+    {
+      "name": "R2 invalid guard observation accepted: invalidInitial",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "unexpected": 0,
+        "launches": 1
+      }
+    },
+    {
+      "name": "R2 invalid guard observation accepted: invalidFinal",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "unexpected": 0,
+        "launches": 1
+      }
+    },
+    {
+      "name": "closed R3: object/getter/toJSON rejected without invocation and immutable selection",
+      "matched": true,
+      "facts": {
+        "closed": true
+      }
+    },
+    {
+      "name": "R5 compile selection still targets previous broken fixture",
+      "matched": true,
+      "facts": {
+        "selected": [
+          "C:\\Users\\30591\\Documents\\ChatGPT\\装修进度验收APP\\docs\\证据\\CodexL2单根Run合成边界夹具v3-20261031.cs"
+        ],
+        "currentReviewedFixture": "CodexL2单根Run合成边界夹具v4-20261031.cs"
+      }
+    },
+    {
+      "name": "R4 actual parent verdict in isolated full-script VM: normal",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "guard": {
+          "probes": 5,
+          "probePhases": [
+            "probe-init",
+            "probe-init",
+            "probe-business",
+            "probe-business",
+            "probe-cleanup"
+          ],
+          "unexpected": 0,
+          "probingExplicit": true
+        },
+        "reentry": {
+          "attempts": 7,
+          "completed": 0,
+          "failed": 7,
+          "faultOutcomes": [
+            {
+              "mode": "firstRead",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "finalDigest",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "finalization",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "socketConnect",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "dnsPromises",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "fetchEntrance",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "childProto",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            }
+          ]
+        },
+        "fallback": 0,
+        "runnerOptions": {
+          "shell": false
+        }
+      }
+    },
+    {
+      "name": "R4 actual parent verdict in isolated full-script VM: childMismatch",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "guard": {
+          "probes": 5,
+          "probePhases": [
+            "probe-init",
+            "probe-init",
+            "probe-business",
+            "probe-business",
+            "probe-cleanup"
+          ],
+          "unexpected": 0,
+          "probingExplicit": true
+        },
+        "reentry": {
+          "attempts": 7,
+          "completed": 7,
+          "failed": 0,
+          "faultOutcomes": [
+            {
+              "mode": "firstRead",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            },
+            {
+              "mode": "finalDigest",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            },
+            {
+              "mode": "finalization",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            },
+            {
+              "mode": "socketConnect",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            },
+            {
+              "mode": "dnsPromises",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            },
+            {
+              "mode": "fetchEntrance",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            },
+            {
+              "mode": "childProto",
+              "exitStatus": 0,
+              "parsedOk": true,
+              "parsedExit": 0,
+              "unexpected": 0,
+              "passed": false
+            }
+          ]
+        },
+        "fallback": 0,
+        "runnerOptions": {
+          "shell": false
+        }
+      }
+    },
+    {
+      "name": "R4 actual parent verdict in isolated full-script VM: childMalformed",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "guard": {
+          "probes": 5,
+          "probePhases": [
+            "probe-init",
+            "probe-init",
+            "probe-business",
+            "probe-business",
+            "probe-cleanup"
+          ],
+          "unexpected": 0,
+          "probingExplicit": true
+        },
+        "reentry": {
+          "attempts": 7,
+          "completed": 0,
+          "failed": 7,
+          "faultOutcomes": [
+            {
+              "mode": "firstRead",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            },
+            {
+              "mode": "finalDigest",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            },
+            {
+              "mode": "finalization",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            },
+            {
+              "mode": "socketConnect",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            },
+            {
+              "mode": "dnsPromises",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            },
+            {
+              "mode": "fetchEntrance",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            },
+            {
+              "mode": "childProto",
+              "exitStatus": 1,
+              "parsedOk": null,
+              "parsedExit": null,
+              "unexpected": null,
+              "passed": null
+            }
+          ]
+        },
+        "fallback": 0,
+        "runnerOptions": {
+          "shell": false
+        }
+      }
+    },
+    {
+      "name": "R4 actual parent verdict in isolated full-script VM: lateIdentity",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "guard": {
+          "probes": 5,
+          "probePhases": [
+            "probe-init",
+            "probe-init",
+            "probe-business",
+            "probe-business",
+            "probe-cleanup"
+          ],
+          "unexpected": 1,
+          "probingExplicit": true
+        },
+        "reentry": {
+          "attempts": 7,
+          "completed": 0,
+          "failed": 7,
+          "faultOutcomes": [
+            {
+              "mode": "firstRead",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "finalDigest",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "finalization",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "socketConnect",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "dnsPromises",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "fetchEntrance",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "childProto",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            }
+          ]
+        },
+        "fallback": 0,
+        "runnerOptions": {
+          "shell": false
+        }
+      }
+    },
+    {
+      "name": "R4 actual parent verdict in isolated full-script VM: dnsResolve4",
+      "matched": true,
+      "facts": {
+        "ok": true,
+        "exit": 0,
+        "guard": {
+          "probes": 5,
+          "probePhases": [
+            "probe-init",
+            "probe-init",
+            "probe-business",
+            "probe-business",
+            "probe-cleanup"
+          ],
+          "unexpected": 0,
+          "probingExplicit": true
+        },
+        "reentry": {
+          "attempts": 7,
+          "completed": 0,
+          "failed": 7,
+          "faultOutcomes": [
+            {
+              "mode": "firstRead",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "finalDigest",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "finalization",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "socketConnect",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "dnsPromises",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "fetchEntrance",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            },
+            {
+              "mode": "childProto",
+              "exitStatus": 1,
+              "parsedOk": false,
+              "parsedExit": 1,
+              "unexpected": 1,
+              "passed": true
+            }
+          ]
+        },
+        "fallback": 1,
+        "runnerOptions": {
+          "shell": false
+        }
+      }
+    },
+    {
+      "name": "closed R5: corrected scope/env, Output and close removal detected",
+      "matched": true,
+      "facts": {
+        "sourceChecksOnly": true
+      }
+    },
+    {
+      "name": "R5 Pipe failure produces unowned handles used by real finally",
+      "matched": true,
+      "facts": {
+        "sourceOnly": true,
+        "failedPipeOutputs": [
+          30,
+          31
+        ],
+        "opened": [],
+        "finallyAttemptsCloseUnowned": true,
+        "csharpExecuted": false
+      }
+    },
+    {
+      "name": "R5 JSON scalar fields now encoded as strings",
+      "matched": true,
+      "facts": {
+        "sourceProjection": {
+          "ok": "false",
+          "passed": "1",
+          "executedProductionHelper": "false"
+        },
+        "csharpExecuted": false
+      }
+    },
+    {
+      "name": "R5 source accessibility remains inconsistent",
+      "matched": true,
+      "facts": {
+        "sourceOnly": true,
+        "privateNestedTypesInInternalPublicSignatures": true,
+        "csharpCompiled": false
+      }
+    }
+  ],
+  "limitations": [
+    "VM child re-entry runs actual submitted JS recursively in inert realms; zero real process starts.",
+    "C# findings are source analysis, not compiler/runtime results.",
+    "Matched counterexamples are not acceptance or execution approval."
+  ]
+}
