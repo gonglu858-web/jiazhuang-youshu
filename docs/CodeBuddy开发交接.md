@@ -1,3 +1,20 @@
+# Codex：L2 单根完整模块 R1–R5 剩余返修交付（提交见交付文档）
+
+2026-10-31。接手 master 3ac6cad、受审 42452cd、技术基线 dac82a2，按 [Codex复核-L2集中返修42452cd-20261031.md](Codex复查-L2集中返修42452cd-20261031.md) §2–§3 一次完成剩余返修。详见[交付文档](Codex交付-L2单根完整模块R1-R5剩余返修-20261031.md)与[当前状态](当前状态.md)。
+
+**要点**：
+- **R1**：驱动 v3——内部状态入模块私有 WeakMap（零 Symbol、不可反射重置/伪造，FAKE_BINDING/ALREADY_RUN 实测）；createRunner 一次性受控快照（boundary.productPath 只读一次，持有/启动/后验消费同一对象，访问器分裂路径反例 reads===1 且全链一致）；spawn 能力参数内部构造（shell=false/windowsHide/stdio/env 无 NODE_OPTIONS）；bind 增加 provenance（固定接口配置摘要+固定产物 rel+prepared 状态，不符零启动拒绝）；PE CLR 必须落在节 raw 范围（虚拟尾部 RVA+别处藏头 PE_CLR_NOT_IN_RAW、越界 PE_CLR_RAW_RANGE）。
+- **R2**：hold 取得后立即进保护块；finally 独立逐项释放（sourcesAfter/productDigest/releaseHold/guard 各自 try/catch，不短路）；释放返回契约必须 true（false/抛错 → HOLD_RELEASE_UNCONFIRMED 决定总失败）；摘要失败不阻断释放（PRODUCT_DIGEST_CHECK_FAILED 且释放仍确认）；await/kill/回收异常统一净化（AWAIT_ERROR+closedUnknown+attempts）；订阅失败立即失败收尾；stdout 先限额后留存（200KB 单块→OUTPUT_LIMIT 无无界 concat）；合法/超时关闭对照通过。
+- **R3**：新建严格检查器——预期配置由独立受审常量重建（宿主/编译器/引用摘要/六输入/三用例完整参数与环境），strictCheck 精确深比较（字段集/完整路径/参数顺序/环境/限额/输出），selectSingleTarget 单目标固定入口；八组反例（宿主换 exe、引用+参数协同、shell、env NODE_OPTIONS、限额 cwd、/main 换 OtherEntry、删观察器源、inputs/sourceFiles/args 协调迁目录）全部走实际入口拒绝。
+- **R4**：核验 v5 受控 VM 同源装载——契约与驱动从已验证字节快照装载（装载前验摘要，依赖仅从验证缓存按摘要供给），loadedContract/DriverSha 与钉定相等；加载期漂移（加注释字节）LOAD_DRIFT 拒绝且缓存不被污染；identity 四字段分列，运行时 HEAD 记录非门槛；AGENTS 当前摘要 f2b27c15…362c7f 实测。
+- **R5**：Run 合成边界准备器 v3 生成夹具 v3——补齐结构体/常量/using 声明；Assign/Terminate/CloseHandle/ReadFile/LastError/EnvironmentBlock/FreeHGlobal 替换闭合；L2MemberObserver 嵌套修作用域；Require 单参重载；r.Mode 修复；Hook.PrepareScenario 一处重置全部场景状态（时钟/读队列/计数）；成功语义 Reason=NONE+completed、失败=失败码+failed；OUTPUT_LIMIT 33×4096 分块累计；Unexpected 实际记账（未建 Job 即 JobSet、非 WaitObject 后 ExitCode）；FinalizationOk 按 KILL/JOIN/HOLD_DISPOSE/ENV_FREE 期望表核对计数与成功场景顺序；inspect 十类静态检查对篡改有区分力（TYPE_UNDEF/OS_CALL_REMAINS/CAPABILITY_REMAINS/DECL_MISSING/RESET_MISSING 实测命中）。本轮不编译。
+
+**实测**：核验 v5 36/36 ok=true exit0；守卫 5 探针（init×2/business×2/cleanup×1）全命中、意外 0；--fault-caught 被 catch 命中 → 意外 1 → ok=false/exit1；复跑同判。新文件摘要：驱动 v3 0b5f3a49…、严格检查器 72e68265…、Run 准备器 eea43bed…、夹具 v3 88ed80b4…、编译配置 v3 4d43a841…、核验 v5 204ed3fd…/JSON 8d5f45f1…。
+
+**未验证/阻断**：全部 C# 夹具未编译未执行（pendingDynamicAssertions 单列）；真实 Job/管道/线程/CloseHandle/产物摘要绑定未验证；编译配置工具来源为历史事实；本轮未查询策略值、未重试受阻 -File；原 normal 恰2、真实累计4失败、父链UNKNOWN、候选真实性缺口保持；A 暂停；1/2号不重试；P 不开展。过程披露：当前状态.md 与两份历史文档 Write/Edit 工具持续受阻（备份机制故障，同前两轮同型），沿用已获复核记录的 git 官方 index/checkout 机制更新，未换名未删除绕过；后缀以 cat-file blob 二进制核验。AGENTS.md 既有修改保留排除。
+
+状态：本地自测完成待 Codex 集中复核，C# 动态及真实执行未放行。
+
 ## 2026-10-31 Codex接续复核42452cd：剩余R1–R5集中返修
 
 接手42452cd（父aac8890），按完整模块集中审核，主清单不变；补充结论见[Codex复核-L2集中返修42452cd-20261031.md](Codex复核-L2集中返修42452cd-20261031.md)。本轮仍未通过，不进入编译检查点。
